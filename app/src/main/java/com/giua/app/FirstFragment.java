@@ -1,11 +1,13 @@
 package com.giua.app;
 
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -16,8 +18,8 @@ import org.w3c.dom.Text;
 
 public class FirstFragment extends Fragment {
 
-    TextInputEditText user;
-    TextInputEditText password;
+    AppCompatEditText user;
+    AppCompatEditText password;
 
     GiuaScraper gS;
 
@@ -26,12 +28,15 @@ public class FirstFragment extends Fragment {
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         View fragmentFirstLayout = inflater.inflate(R.layout.fragment_first, container, false);
 
         user = fragmentFirstLayout.findViewById(R.id.textUser);
         password = fragmentFirstLayout.findViewById(R.id.textPassword);
 
-        gS = new GiuaScraper(user.getText().toString(), password.getText().toString());
+
 
 
         // Inflate the layout for this fragment
@@ -45,17 +50,16 @@ public class FirstFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
+            gS = new GiuaScraper(user.getText().toString(), password.getText().toString());
 
             gS.login();
 
-            if(gS.checkLogin()){
-                System.out.println("login ok");
+                if(gS.checkLogin() == true){
+                    System.out.println("login ok");
+                    NavHostFragment.findNavController(FirstFragment.this)
+                        .navigate(R.id.action_FirstFragment_to_SecondFragment);
+                }
 
-            }
-
-
-                /*NavHostFragment.findNavController(FirstFragment.this)
-                        .navigate(R.id.action_FirstFragment_to_SecondFragment);*/
             }
         });
     }
