@@ -19,6 +19,8 @@ public class FirstFragment extends Fragment {
     TextInputEditText user;
     TextInputEditText password;
 
+    GiuaScraper gS;
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
@@ -28,6 +30,8 @@ public class FirstFragment extends Fragment {
 
         user = fragmentFirstLayout.findViewById(R.id.textUser);
         password = fragmentFirstLayout.findViewById(R.id.textPassword);
+
+        gS = new GiuaScraper(user.getText().toString(), password.getText().toString());
 
 
         // Inflate the layout for this fragment
@@ -42,6 +46,12 @@ public class FirstFragment extends Fragment {
             public void onClick(View view) {
 
 
+            gS.login();
+
+            if(gS.checkLogin()){
+                System.out.println("login ok");
+
+            }
 
 
                 /*NavHostFragment.findNavController(FirstFragment.this)
