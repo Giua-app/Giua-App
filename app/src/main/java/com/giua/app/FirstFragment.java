@@ -9,15 +9,29 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.giua.webscraper.GiuaScraper;
+import com.google.android.material.textfield.TextInputEditText;
+
+import org.w3c.dom.Text;
+
 public class FirstFragment extends Fragment {
+
+    TextInputEditText user;
+    TextInputEditText password;
 
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
+        View fragmentFirstLayout = inflater.inflate(R.layout.fragment_first, container, false);
+
+        user = fragmentFirstLayout.findViewById(R.id.textUser);
+        password = fragmentFirstLayout.findViewById(R.id.textPassword);
+
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_first, container, false);
+        return fragmentFirstLayout;
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -26,8 +40,12 @@ public class FirstFragment extends Fragment {
         view.findViewById(R.id.button_first).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NavHostFragment.findNavController(FirstFragment.this)
-                        .navigate(R.id.action_FirstFragment_to_SecondFragment);
+
+
+
+
+                /*NavHostFragment.findNavController(FirstFragment.this)
+                        .navigate(R.id.action_FirstFragment_to_SecondFragment);*/
             }
         });
     }
