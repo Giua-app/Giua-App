@@ -5,6 +5,7 @@ import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatEditText;
@@ -13,6 +14,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.giua.webscraper.GiuaScraper;
 import com.google.android.material.textfield.TextInputEditText;
+import com.giua.app.GlobalVars;
 
 import org.w3c.dom.Text;
 
@@ -20,6 +22,7 @@ public class FirstFragment extends Fragment {
 
     AppCompatEditText user;
     AppCompatEditText password;
+    ProgressBar progressBar;
 
     GiuaScraper gS;
 
@@ -35,6 +38,7 @@ public class FirstFragment extends Fragment {
 
         user = fragmentFirstLayout.findViewById(R.id.textUser);
         password = fragmentFirstLayout.findViewById(R.id.textPassword);
+        progressBar = fragmentFirstLayout.findViewById(R.id.progressBar);
 
 
 
@@ -49,17 +53,18 @@ public class FirstFragment extends Fragment {
         view.findViewById(R.id.button_first).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                progressBar.setVisibility(View.VISIBLE);
 
-            gS = new GiuaScraper(user.getText().toString(), password.getText().toString());
+                GiuaScraper gS = new GlobalVars().setgS(user.getText().toString(), password.getText().toString());
 
-            gS.login();
+
+                gS.login();
 
                 if(gS.checkLogin() == true){
                     System.out.println("login ok");
                     NavHostFragment.findNavController(FirstFragment.this)
-                        .navigate(R.id.action_FirstFragment_to_SecondFragment);
+                            .navigate(R.id.action_FirstFragment_to_SecondFragment);
                 }
-
             }
         });
     }
