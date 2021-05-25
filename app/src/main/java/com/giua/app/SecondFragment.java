@@ -38,13 +38,13 @@ public class SecondFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        GiuaScraper gS = new GlobalVars().gS;
+        GiuaScraper gS = GlobalVars.gS;
 
         Document doc = gS.getPage("https://registro.giua.edu.it");
 
         text.setText("Benvenuto " + gS.getUserType(doc));
 
-        text2.setText("" + Vote.getAllVotes(gS).toString());
+        text2.setText("" + gS.getAllVotes().toString());
 
 
         view.findViewById(R.id.button_second).setOnClickListener(new View.OnClickListener() {
