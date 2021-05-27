@@ -1,5 +1,6 @@
 package com.giua.app;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.giua.webscraper.GiuaScraper;
@@ -13,6 +14,7 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.os.Parcelable;
 import android.os.StrictMode;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -25,6 +27,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
+import static android.provider.AlarmClock.EXTRA_MESSAGE;
+
 public class MainActivity extends AppCompatActivity {
 
     EditText user;
@@ -32,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar progressBar;
     Button btnShowPassword;
     boolean btnShowActivated = false;
+    GiuaScraper gS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,14 +71,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 progressBar.setVisibility(View.VISIBLE);
                 
-                GiuaScraper gS = GlobalVars.gS;
-                GlobalVars.setgS(user.getText().toString(), password.getText().toString());
-
-                gS.login();
+                gS = new GiuaScraper(user.getText().toString(), password.getText().toString());
 
                 if(gS.checkLogin()){
                     System.out.println("login ok");
                     //TODO: Fai partire la seconda activity
+                    Intent intent = new Intent(MainActivity.this, LoggedInActivity.class);
+                    intent.putExtra("giuascraper", gS);
+                    startActivity(intent);
                 }
             }
         });

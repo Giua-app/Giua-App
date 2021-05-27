@@ -1,4 +1,4 @@
-package com.giua.app;
+/*package com.giua.app;
 
 import com.giua.webscraper.GiuaScraper;
 
@@ -11,4 +11,4 @@ public class GlobalVars {
         return gS;
     }
 
-}
+}*/
