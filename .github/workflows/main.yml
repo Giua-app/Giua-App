@@ -33,7 +33,7 @@ jobs:
       - name: Permission to gradle File
         run: chmod +x gradlew
       - name: Build with Gradle
-        run: ./gradlew assembleDebug
+        run: ./gradlew assemble
         
       - uses: actions/upload-artifact@v2
         with:
