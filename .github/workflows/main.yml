@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Java CI with Gradle assembleDebug
+name: Gradle assemble apk
 
 # Controls when the action will run. 
 on:
