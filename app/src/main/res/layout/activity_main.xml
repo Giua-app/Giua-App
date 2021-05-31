@@ -78,7 +78,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/main_color"
-        android:theme="@style/Theme.GiuaApp.AppBarOverlay"
+        android:theme="@style/Theme.GiuaApp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -92,17 +92,6 @@
             app:popupTheme="@style/Theme.GiuaApp.PopupOverlay" />
 
     </com.google.android.material.appbar.AppBarLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/main_color"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
 
     <ImageButton
         android:id="@+id/show_password_button"

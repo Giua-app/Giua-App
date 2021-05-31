@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_drawer_vote_element"
+            android:onClick="onClickVotesNavDrawer"
+            android:title="Voti" />
+        <item
+            android:id="@+id/nav_drawer_agenda_element"
+            android:onClick="onClickAgendaNavDrawer"
+            android:title="Agenda" />
+        <item
+            android:id="@+id/nav_drawer_lessons_element"
+            android:onClick="onClickLessonsNavDrawer"
+            android:title="Lezioni" />
+    </group>
+</menu>

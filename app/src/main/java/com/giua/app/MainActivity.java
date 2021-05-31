@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     Button btnLogin;
     boolean btnShowActivated = false;
     GiuaScraper gS;
+    Toast toast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,29 +48,32 @@ public class MainActivity extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         /**
          * Login click listener
          */
-        findViewById(R.id.login_button).setOnClickListener(new View.OnClickListener() {
+        btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(etPassword.getText().length() < 1){
+                    toast = Toast.makeText(getApplicationContext(), "Il campo della password non può essere vuoto!", Toast.LENGTH_SHORT);
+                    toast.show();
+                    return;
+                }
+                else if(etUsername.getText().length() < 1){
+                    toast = Toast.makeText(getApplicationContext(), "Il campo dello username non può essere vuoto!", Toast.LENGTH_SHORT);
+                    toast.show();
+                    return;
+                }
+
                 pgProgressBar.setVisibility(View.VISIBLE);
 
                 try {
                     gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString());
                 } catch (GiuaScraperExceptions.SessionCookieEmpty sce){
-                    Toast toast = Toast.makeText(getApplicationContext(), "Informazioni di login errate!", Toast.LENGTH_SHORT);
+                    toast = Toast.makeText(getApplicationContext(), "Informazioni di login errate!", Toast.LENGTH_SHORT);
                     toast.show();
                     etPassword.setText("");
                     pgProgressBar.setVisibility(View.INVISIBLE);
@@ -82,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("giuascraper", gS);
                     startActivity(intent);
                 } else {
-                    Toast toast = Toast.makeText(getApplicationContext(), "Qualcosa e andato storto!", Toast.LENGTH_SHORT);
+                    toast = Toast.makeText(getApplicationContext(), "Qualcosa e andato storto!", Toast.LENGTH_SHORT);
                     toast.show();
                     etPassword.setText("");
                     pgProgressBar.setVisibility(View.INVISIBLE);
