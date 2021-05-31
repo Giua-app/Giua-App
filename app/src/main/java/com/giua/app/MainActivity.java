@@ -47,9 +47,9 @@ public class MainActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.app_name);
-        setSupportActionBar(toolbar);
+        //Toolbar toolbar = findViewById(R.id.toolbar);
+        //toolbar.setTitle(R.string.app_name);
+        //setSupportActionBar(toolbar);
 
         /**
          * Login click listener
@@ -82,11 +82,11 @@ public class MainActivity extends AppCompatActivity {
 
                 if(gS.checkLogin()){
                     System.out.println("login ok");
-                    Intent intent = new Intent(MainActivity.this, LoggedInActivity.class);
+                    Intent intent = new Intent(MainActivity.this, DrawerActivity.class);
                     intent.putExtra("giuascraper", gS);
                     startActivity(intent);
                 } else {
-                    toast = Toast.makeText(getApplicationContext(), "Qualcosa e andato storto!", Toast.LENGTH_SHORT);
+                    toast = Toast.makeText(getApplicationContext(), "Qualcosa e' andato storto!", Toast.LENGTH_SHORT);
                     toast.show();
                     etPassword.setText("");
                     pgProgressBar.setVisibility(View.INVISIBLE);
