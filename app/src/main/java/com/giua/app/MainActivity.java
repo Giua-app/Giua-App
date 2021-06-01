@@ -1,25 +1,25 @@
 package com.giua.app;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
+import android.os.Handler;
 import android.os.StrictMode;
 import android.text.InputType;
 import android.view.View;
 
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,7 +31,10 @@ public class MainActivity extends AppCompatActivity {
     Button btnLogin;
     boolean btnShowActivated = false;
     GiuaScraper gS;
-    Toast toast;
+    TextView txvErrorMessage;
+    Animation errorMessageAnimationStart;
+    Animation errorMessageAnimationEnd;
+    Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,50 +50,86 @@ public class MainActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        //Toolbar toolbar = findViewById(R.id.toolbar);
-        //toolbar.setTitle(R.string.app_name);
-        //setSupportActionBar(toolbar);
+        handler = new Handler();
+
+        txvErrorMessage = findViewById(R.id.error_notification);
+        errorMessageAnimationStart = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.error_notification_animation_start);    //Animazione per mostrare il messaggio
+
+        errorMessageAnimationEnd = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.error_notification_animation_end);        //Animazione per far andare via il messaggio
+
+        Runnable runnable = () -> txvErrorMessage.startAnimation(errorMessageAnimationEnd);
+
+        /**
+         * Oncick per la TextView dell'errore
+         */
+        txvErrorMessage.setOnClickListener(view -> {            //Quando si clicca l'errore questo scompare
+            handler.removeCallbacks(runnable);
+            txvErrorMessage.startAnimation(errorMessageAnimationEnd);
+        });
+
+        /**
+         * Listener per l'animazione per mostrare il messaggio
+         */
+        errorMessageAnimationEnd.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {}
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+            @Override
+            public void onAnimationEnd(Animation animation) {       //Quando hai finito l animazione dell'uscita fai scomparire il messaggio
+                txvErrorMessage.setVisibility(View.GONE);
+                txvErrorMessage.setText("");
+            }
+        });
+
+        /**
+         * Listener per l'animazione per far andare via il messaggio
+         */
+        errorMessageAnimationStart.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {}
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                handler.postDelayed(runnable, 5000);
+            }
+        });
 
         /**
          * Login click listener
          */
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(etPassword.getText().length() < 1){
-                    toast = Toast.makeText(getApplicationContext(), "Il campo della password non può essere vuoto!", Toast.LENGTH_SHORT);
-                    toast.show();
-                    return;
-                }
-                else if(etUsername.getText().length() < 1){
-                    toast = Toast.makeText(getApplicationContext(), "Il campo dello username non può essere vuoto!", Toast.LENGTH_SHORT);
-                    toast.show();
-                    return;
-                }
+        btnLogin.setOnClickListener(view -> {
+            handler.removeCallbacks(runnable);
+            if(etPassword.getText().length() < 1){
+                setErrorMessage("Il campo della password non può essere vuoto!");
+                return;
+            }
+            else if(etUsername.getText().length() < 1){
+                setErrorMessage("Il campo dello username non può essere vuoto!");
+                return;
+            }
 
-                pgProgressBar.setVisibility(View.VISIBLE);
+            pgProgressBar.setVisibility(View.VISIBLE);
 
-                try {
-                    gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString());
-                } catch (GiuaScraperExceptions.SessionCookieEmpty sce){
-                    toast = Toast.makeText(getApplicationContext(), "Informazioni di login errate!", Toast.LENGTH_SHORT);
-                    toast.show();
-                    etPassword.setText("");
-                    pgProgressBar.setVisibility(View.INVISIBLE);
-                    return;
-                }
+            try {
+                gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString());
+            } catch (GiuaScraperExceptions.SessionCookieEmpty sce){
+                setErrorMessage("Informazioni di login errate!");
+                etPassword.setText("");
+                pgProgressBar.setVisibility(View.INVISIBLE);
+                return;
+            }
 
-                if(gS.checkLogin()){
-                    System.out.println("login ok");
-                    Intent intent = new Intent(MainActivity.this, DrawerActivity.class);
-                    intent.putExtra("giuascraper", gS);
-                    startActivity(intent);
-                } else {
-                    toast = Toast.makeText(getApplicationContext(), "Qualcosa e' andato storto!", Toast.LENGTH_SHORT);
-                    toast.show();
-                    etPassword.setText("");
-                    pgProgressBar.setVisibility(View.INVISIBLE);
-                }
+            if(gS.checkLogin()){
+                System.out.println("login ok");
+                Intent intent = new Intent(MainActivity.this, DrawerActivity.class);
+                intent.putExtra("giuascraper", gS);
+                startActivity(intent);
+            } else {
+                setErrorMessage("Qualcosa e' andato storto!");
+                etPassword.setText("");
+                pgProgressBar.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -98,18 +137,15 @@ public class MainActivity extends AppCompatActivity {
         /**
          * Show password click listener
          */
-        btnShowPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!btnShowActivated) {
-                    etPassword.setInputType (InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD | InputType.TYPE_CLASS_TEXT);      //Mostra la password
-                    btnShowPassword.setImageResource(R.drawable.btn_show_password_true_image);
-                } else {
-                    etPassword.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD | InputType.TYPE_CLASS_TEXT);  //Nasconde la password
-                    btnShowPassword.setImageResource(R.drawable.btn_show_password_false_image);
-                }
-                btnShowActivated = !btnShowActivated;
+        btnShowPassword.setOnClickListener(view -> {
+            if(!btnShowActivated) {
+                etPassword.setInputType (InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD | InputType.TYPE_CLASS_TEXT);      //Mostra la password
+                btnShowPassword.setImageResource(R.drawable.btn_show_password_true_image);
+            } else {
+                etPassword.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD | InputType.TYPE_CLASS_TEXT);  //Nasconde la password
+                btnShowPassword.setImageResource(R.drawable.btn_show_password_false_image);
             }
+            btnShowActivated = !btnShowActivated;
         });
     }
 
@@ -122,5 +158,14 @@ public class MainActivity extends AppCompatActivity {
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+    }
+
+    private void setErrorMessage(String message){
+        //TODO: Fare in modo che questo tipo di funzione possa essere richiamabile anche in altre classi
+        if(!txvErrorMessage.getText().equals(message)) {
+            txvErrorMessage.setVisibility(View.VISIBLE);
+            txvErrorMessage.setText(message);
+            txvErrorMessage.startAnimation(errorMessageAnimationStart);
+        }
     }
 }

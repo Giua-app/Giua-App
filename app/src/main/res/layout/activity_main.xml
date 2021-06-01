@@ -89,4 +89,23 @@
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/btn_show_password_false_image" />
 
+    <TextView
+        android:id="@+id/error_notification"
+        android:layout_width="350dp"
+        android:layout_height="125dp"
+        android:layout_marginBottom="28dp"
+        android:background="@drawable/error_notification_style"
+        android:fontFamily="sans-serif-black"
+        android:paddingStart="15dp"
+        android:paddingTop="35dp"
+        android:paddingEnd="15dp"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
