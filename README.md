@@ -1,6 +1,6 @@
 # Giua-App
 [![Gradle assemble apk](https://github.com/Giua-app/Giua-App/actions/workflows/main.yml/badge.svg)](https://github.com/Giua-app/Giua-App/actions/workflows/main.yml)
-ver. Alpha
+ver. 0.0.29 Alpha
 
 questo readme è una bozza
 
