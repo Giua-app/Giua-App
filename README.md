@@ -20,3 +20,6 @@ Vai nella scheda [Actions](https://github.com/Giua-app/Giua-App/actions) e clicc
 - [ ] visualizza avvisi
 - [ ] controlla in background per novità (nuovo voto, nuovo avviso, ecc)
 - [ ] invia notifica quando ci sono novità
+
+## Come posso contribuire?
+Contatta HiemSword o Franck1421
