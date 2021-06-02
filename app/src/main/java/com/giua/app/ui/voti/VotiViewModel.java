@@ -1,16 +1,21 @@
-package com.giua.app.ui.gallery;
+package com.giua.app.ui.voti;
+
+import android.content.Intent;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class GalleryViewModel extends ViewModel {
+import com.giua.webscraper.GiuaScraper;
+
+public class VotiViewModel extends ViewModel {
 
     private MutableLiveData<String> mText;
 
-    public GalleryViewModel() {
+    public VotiViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is gallery fragment");
+
+        mText.setValue("This is home fragment");
     }
 
     public LiveData<String> getText() {

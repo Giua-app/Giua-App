@@ -23,7 +23,7 @@ public class LoggedInActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_after_login);
+        //setContentView(R.layout.fra);
 
         Intent intent = getIntent();
         gS = (GiuaScraper) intent.getSerializableExtra("giuascraper");

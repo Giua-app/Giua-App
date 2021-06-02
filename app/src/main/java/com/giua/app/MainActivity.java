@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
+import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         btnShowPassword = findViewById(R.id.show_password_button);
         btnLogin = findViewById(R.id.login_button);
 
+        //TODO: da togliere in futuro
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
@@ -58,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         errorMessageAnimationEnd = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.error_notification_animation_end);        //Animazione per far andare via il messaggio
 
         Runnable runnable = () -> txvErrorMessage.startAnimation(errorMessageAnimationEnd);
+
+        View vErrorView = findViewById(R.id.mainLayout);
 
         /**
          * Oncick per la TextView dell'errore
@@ -102,11 +106,11 @@ public class MainActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(view -> {
             handler.removeCallbacks(runnable);
             if(etPassword.getText().length() < 1){
-                setErrorMessage("Il campo della password non può essere vuoto!");
+                setErrorMessage("Il campo della password non può essere vuoto!",vErrorView);
                 return;
             }
             else if(etUsername.getText().length() < 1){
-                setErrorMessage("Il campo dello username non può essere vuoto!");
+                setErrorMessage("Il campo dello username non può essere vuoto!",vErrorView);
                 return;
             }
 
@@ -115,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString());
             } catch (GiuaScraperExceptions.SessionCookieEmpty sce){
-                setErrorMessage("Informazioni di login errate!");
+                setErrorMessage("Informazioni di login errate!",vErrorView);
                 etPassword.setText("");
                 pgProgressBar.setVisibility(View.INVISIBLE);
                 return;
@@ -123,11 +127,15 @@ public class MainActivity extends AppCompatActivity {
 
             if(gS.checkLogin()){
                 System.out.println("login ok");
+                LoginData.setCredentials(this,
+                        etUsername.getText().toString(),
+                        etPassword.getText().toString());
+
                 Intent intent = new Intent(MainActivity.this, DrawerActivity.class);
                 intent.putExtra("giuascraper", gS);
                 startActivity(intent);
             } else {
-                setErrorMessage("Qualcosa e' andato storto!");
+                setErrorMessage("Qualcosa e' andato storto!",vErrorView);
                 etPassword.setText("");
                 pgProgressBar.setVisibility(View.INVISIBLE);
             }
@@ -154,18 +162,22 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed(){
+        //TODO: da usare solo per debug, l'utente una volta loggato non dovrebbe tornare indietro al login
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
 
-    private void setErrorMessage(String message){
+    private void setErrorMessage(String message, View errorView){
+        /*
         //TODO: Fare in modo che questo tipo di funzione possa essere richiamabile anche in altre classi
         if(!txvErrorMessage.getText().equals(message)) {
             txvErrorMessage.setVisibility(View.VISIBLE);
             txvErrorMessage.setText(message);
             txvErrorMessage.startAnimation(errorMessageAnimationStart);
-        }
+        }*/
+
+        Snackbar.make(errorView, message, Snackbar.LENGTH_SHORT).show();
     }
 }

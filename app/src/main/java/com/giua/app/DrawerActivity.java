@@ -1,9 +1,12 @@
 package com.giua.app;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Menu;
+import android.widget.TextView;
 
+import com.giua.webscraper.GiuaScraper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
@@ -19,6 +22,9 @@ import androidx.appcompat.widget.Toolbar;
 public class DrawerActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
+
+    GiuaScraper gS;
+    TextView tvUsername;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +47,7 @@ public class DrawerActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
+                R.id.nav_voti, R.id.nav_agenda, R.id.nav_lezioni)
                 .setDrawerLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -49,8 +55,13 @@ public class DrawerActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
         // --
 
+        Intent intent = getIntent();
+        gS = (GiuaScraper) intent.getSerializableExtra("giuascraper");
 
+        tvUsername = navigationView.findViewById(R.id.txtUsername);
 
+        //tvUsername.setText(LoginData.getUser(this));
+        System.out.println(LoginData.getUser(this));
     }
 
     @Override

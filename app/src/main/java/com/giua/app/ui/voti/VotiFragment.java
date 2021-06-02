@@ -1,5 +1,6 @@
-package com.giua.app.ui.gallery;
+package com.giua.app.ui.voti;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,18 +14,26 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.giua.app.R;
+import com.giua.webscraper.GiuaScraper;
 
-public class GalleryFragment extends Fragment {
+public class VotiFragment extends Fragment {
 
-    private GalleryViewModel galleryViewModel;
+    private VotiViewModel votiViewModel;
+
+    GiuaScraper gS;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        galleryViewModel =
-                new ViewModelProvider(this).get(GalleryViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_gallery, container, false);
-        final TextView textView = root.findViewById(R.id.text_gallery);
-        galleryViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        votiViewModel =
+                new ViewModelProvider(this).get(VotiViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_voti, container, false);
+        final TextView textView = root.findViewById(R.id.text_home);
+
+
+        Intent intent = getActivity().getIntent();
+        gS = (GiuaScraper) intent.getSerializableExtra("giuascraper");
+
+        votiViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);
