@@ -2,15 +2,21 @@ package com.giua.app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.widget.TextView;
 
+import com.giua.app.ui.agenda.AgendaFragment;
+import com.giua.app.ui.lezioni.LezioniFragment;
 import com.giua.webscraper.GiuaScraper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.annotation.NonNull;
+import androidx.core.view.GravityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -19,12 +25,19 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-public class DrawerActivity extends AppCompatActivity {
+import org.jetbrains.annotations.NotNull;
+
+public class DrawerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private AppBarConfiguration mAppBarConfiguration;
 
     GiuaScraper gS;
     TextView tvUsername;
+    TextView tvUserType;
+    Bundle bundle;
+    DrawerLayout drawerLayout;
+    NavigationView navigationView;
+    NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,41 +47,31 @@ public class DrawerActivity extends AppCompatActivity {
         // -- Prepara la activity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_voti, R.id.nav_agenda, R.id.nav_lezioni)
-                .setDrawerLayout(drawer)
+                .setOpenableLayout(drawerLayout)
                 .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
-        // --
 
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+
+        navigationView.setNavigationItemSelectedListener(this);
         Intent intent = getIntent();
         gS = (GiuaScraper) intent.getSerializableExtra("giuascraper");
 
-        tvUsername = navigationView.findViewById(R.id.txtUsername);
+        tvUsername = navigationView.getHeaderView(0).findViewById(R.id.txtUsername);
+        tvUserType = navigationView.getHeaderView(0).findViewById(R.id.txtUserType);
 
-        //tvUsername.setText(LoginData.getUser(this));
-        System.out.println(LoginData.getUser(this));
-    }
+        tvUsername.setText(gS.getUser());
+        tvUserType.setText(gS.getUserType());
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.drawer, menu);
-        return true;
+        bundle = new Bundle();
+        bundle.putSerializable("giuascraper", gS);
+
+        startLessonsFragment();
     }
 
     @Override
@@ -76,5 +79,57 @@ public class DrawerActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull @NotNull MenuItem item) {
+        if(item.getItemId() == R.id.nav_voti){
+            startVotesFragment();
+        } else if(item.getItemId() == R.id.nav_agenda){
+            startAgendaFragment();
+        } else if(item.getItemId() == R.id.nav_lezioni){
+            startLessonsFragment();
+        }
+
+        return true;
+    }
+
+    private void closeNavDrawer(){
+        if(drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        }
+    }
+
+    private void startVotesFragment(){
+        VotesFragment votesFragment = new VotesFragment();
+        votesFragment.setArguments(bundle);
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_placeholder, votesFragment, "votes_fragment_tag")
+                .commit();
+
+        closeNavDrawer();
+    }
+
+    private void startLessonsFragment(){
+        LezioniFragment lezioniFragment = new LezioniFragment();
+        lezioniFragment.setArguments(bundle);
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_placeholder, lezioniFragment, "lessons_fragment_tag")
+                .commit();
+
+        closeNavDrawer();
+    }
+
+    private void startAgendaFragment(){
+        AgendaFragment agendaFragment = new AgendaFragment();
+        agendaFragment.setArguments(bundle);
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_placeholder, agendaFragment, "agenda_fragment_tag")
+                .commit();
+
+        closeNavDrawer();
     }
 }

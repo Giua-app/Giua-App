@@ -21,7 +21,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
         //TODO: da togliere in futuro
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+
+        etUsername.setText(LoginData.getUser(getApplicationContext()));     //Imposta lo username memorizzato
+        etPassword.setText(LoginData.getPassword(getApplicationContext()));     //Imposta la password memorizzata
 
         handler = new Handler();
 

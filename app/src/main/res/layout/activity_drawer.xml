@@ -6,11 +6,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".LoggedInActivity"
+    tools:context=".DrawerActivity"
     tools:openDrawer="start">
 
     <FrameLayout
-        android:id="@+id/votes_fragment_placeholder"
+        android:id="@+id/fragment_placeholder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"

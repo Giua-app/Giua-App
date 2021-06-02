@@ -34,11 +34,9 @@ public class VotesFragment extends Fragment {
         text = view.findViewById(R.id.txvWelcome);
         text2 = view.findViewById(R.id.txvVotes);
 
-        Document doc = gS.getPage("");
+        text.setText("Benvenuto " + gS.getUserType());
 
-        text.setText("Benvenuto " + gS.getUserType(doc));
-
-        text2.setText("" + gS.getAllVotes().toString());
+        text2.setText(gS.getAllVotes(false).toString());
 
 
 
