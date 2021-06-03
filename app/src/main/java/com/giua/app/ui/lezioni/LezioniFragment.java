@@ -16,20 +16,9 @@ import com.giua.app.R;
 
 public class LezioniFragment extends Fragment {
 
-    private LezioniViewModel lezioniViewModel;
-
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        lezioniViewModel =
-                new ViewModelProvider(this).get(LezioniViewModel.class);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_lezioni, container, false);
-        final TextView textView = root.findViewById(R.id.text_slideshow);
-        lezioniViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+
         return root;
     }
 }

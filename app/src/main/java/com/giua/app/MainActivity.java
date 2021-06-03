@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     Animation errorMessageAnimationEnd;
     Handler handler;
     View vErrorView;
+    CheckBox chRememberCredentials;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
         Runnable runnable = () -> txvErrorMessage.startAnimation(errorMessageAnimationEnd);
 
         vErrorView = findViewById(R.id.mainLayout);
+
+        chRememberCredentials = findViewById(R.id.checkbox_remember_credentials);
 
         /**
          * Oncick per la TextView dell'errore
@@ -157,9 +161,11 @@ public class MainActivity extends AppCompatActivity {
 
         if(gS.checkLogin()){
             System.out.println("login ok");
-            LoginData.setCredentials(this,
-                    etUsername.getText().toString(),
-                    etPassword.getText().toString());
+            if(chRememberCredentials.isChecked()) {
+                LoginData.setCredentials(this,
+                        etUsername.getText().toString(),
+                        etPassword.getText().toString());
+            }
 
             Intent intent = new Intent(MainActivity.this, DrawerActivity.class);
             intent.putExtra("giuascraper", gS);

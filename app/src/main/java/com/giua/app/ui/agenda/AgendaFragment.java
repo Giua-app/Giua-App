@@ -16,20 +16,9 @@ import com.giua.app.R;
 
 public class AgendaFragment extends Fragment {
 
-    private AgendaViewModel agendaViewModel;
-
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        agendaViewModel =
-                new ViewModelProvider(this).get(AgendaViewModel.class);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_agenda, container, false);
-        final TextView textView = root.findViewById(R.id.text_gallery);
-        agendaViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+
         return root;
     }
 }
