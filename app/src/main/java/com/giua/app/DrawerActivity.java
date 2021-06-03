@@ -37,15 +37,14 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     TextView tvUserType;
     Bundle bundle;
     DrawerLayout drawerLayout;
-    NavigationView navigationView;
-    NavController navController;
+    NavigationView navigationView;     //Il navigation drawer vero e proprio
+    NavController navController;     //Si puo intendere come il manager dei fragments
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer);
 
-        // -- Prepara la activity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -71,8 +70,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
         bundle = new Bundle();
         bundle.putSerializable("giuascraper", gS);
-
-        startLessonsFragment();
     }
 
     @Override
@@ -102,35 +99,17 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     }
 
     private void startVotesFragment(){
-        VotiFragment votesFragment = new VotiFragment();
-        votesFragment.setArguments(bundle);
-
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_placeholder, votesFragment, "votes_fragment_tag")
-                .commit();
-
+        navController.navigate(R.id.nav_voti, bundle);
         closeNavDrawer();
     }
 
     private void startLessonsFragment(){
-        LezioniFragment lezioniFragment = new LezioniFragment();
-        lezioniFragment.setArguments(bundle);
-
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_placeholder, lezioniFragment, "lessons_fragment_tag")
-                .commit();
-
+        navController.navigate(R.id.nav_lezioni, bundle);
         closeNavDrawer();
     }
 
     private void startAgendaFragment(){
-        AgendaFragment agendaFragment = new AgendaFragment();
-        agendaFragment.setArguments(bundle);
-
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_placeholder, agendaFragment, "agenda_fragment_tag")
-                .commit();
-
+        navController.navigate(R.id.nav_agenda, bundle);
         closeNavDrawer();
     }
 }

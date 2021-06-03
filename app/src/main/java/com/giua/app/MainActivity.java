@@ -143,9 +143,6 @@ public class MainActivity extends AppCompatActivity {
         if(!etUsername.getText().toString().isEmpty() && !etPassword.getText().toString().isEmpty()){
             login();
         }
-
-
-
     }
 
     private void login(){
