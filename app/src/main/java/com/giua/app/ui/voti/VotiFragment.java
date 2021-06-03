@@ -15,12 +15,15 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.giua.app.R;
 import com.giua.webscraper.GiuaScraper;
+import com.google.android.material.snackbar.Snackbar;
 
 public class VotiFragment extends Fragment {
 
     private VotiViewModel votiViewModel;
 
     GiuaScraper gS;
+    TextView text;
+    TextView text2;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -41,4 +44,28 @@ public class VotiFragment extends Fragment {
         });
         return root;
     }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        //gS = (GiuaScraper) getArguments().get("giuascraper");
+
+        text = view.findViewById(R.id.txvWelcome);
+        text2 = view.findViewById(R.id.txvVotes);
+
+        text.setText("Benvenuto " + gS.getUserType());
+
+        text2.setText(gS.getAllVotes(false).toString());
+
+
+
+        view.findViewById(R.id.button_second).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Snackbar.make(view, "no vai via non mi toccare", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+    }
+
 }

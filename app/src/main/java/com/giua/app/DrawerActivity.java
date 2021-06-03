@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.giua.app.ui.agenda.AgendaFragment;
 import com.giua.app.ui.lezioni.LezioniFragment;
+import com.giua.app.ui.voti.VotiFragment;
 import com.giua.webscraper.GiuaScraper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -101,7 +102,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     }
 
     private void startVotesFragment(){
-        VotesFragment votesFragment = new VotesFragment();
+        VotiFragment votesFragment = new VotiFragment();
         votesFragment.setArguments(bundle);
 
         getSupportFragmentManager().beginTransaction()
