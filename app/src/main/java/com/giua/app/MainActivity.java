@@ -7,9 +7,11 @@ import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.os.StrictMode;
 import android.text.InputType;
 import android.view.View;
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     Animation errorMessageAnimationStart;
     Animation errorMessageAnimationEnd;
     Handler handler;
+    View vErrorView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
         Runnable runnable = () -> txvErrorMessage.startAnimation(errorMessageAnimationEnd);
 
-        View vErrorView = findViewById(R.id.mainLayout);
+        vErrorView = findViewById(R.id.mainLayout);
 
         /**
          * Oncick per la TextView dell'errore
@@ -108,39 +111,17 @@ public class MainActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(view -> {
             handler.removeCallbacks(runnable);
             if(etPassword.getText().length() < 1){
-                setErrorMessage("Il campo della password non può essere vuoto!",vErrorView);
+                setErrorMessage("Il campo della password non può essere vuoto!");
                 return;
             }
             else if(etUsername.getText().length() < 1){
-                setErrorMessage("Il campo dello username non può essere vuoto!",vErrorView);
+                setErrorMessage("Il campo dello username non può essere vuoto!");
                 return;
             }
 
             pgProgressBar.setVisibility(View.VISIBLE);
 
-            try {
-                gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString());
-            } catch (GiuaScraperExceptions.SessionCookieEmpty sce){
-                setErrorMessage("Informazioni di login errate!",vErrorView);
-                etPassword.setText("");
-                pgProgressBar.setVisibility(View.INVISIBLE);
-                return;
-            }
-
-            if(gS.checkLogin()){
-                System.out.println("login ok");
-                LoginData.setCredentials(this,
-                        etUsername.getText().toString(),
-                        etPassword.getText().toString());
-
-                Intent intent = new Intent(MainActivity.this, DrawerActivity.class);
-                intent.putExtra("giuascraper", gS);
-                startActivity(intent);
-            } else {
-                setErrorMessage("Qualcosa e' andato storto!",vErrorView);
-                etPassword.setText("");
-                pgProgressBar.setVisibility(View.INVISIBLE);
-            }
+            login();
         });
 
 
@@ -157,7 +138,49 @@ public class MainActivity extends AppCompatActivity {
             }
             btnShowActivated = !btnShowActivated;
         });
+
+        //Login automatico se user e password presenti
+        if(!etUsername.getText().toString().isEmpty() && !etPassword.getText().toString().isEmpty()){
+            login();
+        }
+
+
+
     }
+
+    private void login(){
+        try {
+            gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString());
+        } catch (GiuaScraperExceptions.SessionCookieEmpty sce){
+            setErrorMessage("Informazioni di login errate!");
+            etPassword.setText("");
+            pgProgressBar.setVisibility(View.INVISIBLE);
+            return;
+        }
+
+        if(gS.checkLogin()){
+            System.out.println("login ok");
+            LoginData.setCredentials(this,
+                    etUsername.getText().toString(),
+                    etPassword.getText().toString());
+
+            Intent intent = new Intent(MainActivity.this, DrawerActivity.class);
+            intent.putExtra("giuascraper", gS);
+            startActivity(intent);
+        } else {
+            setErrorMessage("Qualcosa e' andato storto!");
+            etPassword.setText("");
+            pgProgressBar.setVisibility(View.INVISIBLE);
+        }
+    }
+/*
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setContentView(R.layout.activity_main);
+
+
+    }*/
 
     /**
      * Esci dall'applicazione simulando la pressione del tasto home
@@ -171,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void setErrorMessage(String message, View errorView){
+    private void setErrorMessage(String message){
         /*
         //TODO: Fare in modo che questo tipo di funzione possa essere richiamabile anche in altre classi
         if(!txvErrorMessage.getText().equals(message)) {
@@ -180,6 +203,6 @@ public class MainActivity extends AppCompatActivity {
             txvErrorMessage.startAnimation(errorMessageAnimationStart);
         }*/
 
-        Snackbar.make(errorView, message, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
     }
 }
