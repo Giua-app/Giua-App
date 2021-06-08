@@ -21,6 +21,7 @@ import java.util.Map;
 public class VotiFragment extends Fragment {
 
     GiuaScraper gS;
+    TextView text;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -28,14 +29,19 @@ public class VotiFragment extends Fragment {
 
         Intent intent = getActivity().getIntent();
         gS = (GiuaScraper) intent.getSerializableExtra("giuascraper");
-        Map<String, List<Vote>> allVotes = gS.getAllVotes(false);
+        text = root.findViewById(R.id.textView);
+
 
         return root;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        Map<String, List<Vote>> allVotes = gS.getAllVotes(false);
 
+        for(String m: allVotes.keySet()){
+            text.setText(text.getText().toString() + " - " + allVotes.get(m).toString());
+        }
     }
 
 }
