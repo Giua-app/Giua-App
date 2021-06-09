@@ -2,18 +2,10 @@ package com.giua.app;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.Menu;
 import android.widget.TextView;
 
-import com.giua.app.ui.agenda.AgendaFragment;
-import com.giua.app.ui.lezioni.LezioniFragment;
-import com.giua.app.ui.voti.VotiFragment;
 import com.giua.webscraper.GiuaScraper;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;

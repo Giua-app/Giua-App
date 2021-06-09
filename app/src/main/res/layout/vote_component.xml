@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <!-- Questo è il componente utilizzato per aggiungere i voti -->
+
+    <TextView
+        android:id="@+id/text_view_subject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="TextView"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/text_view_vote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="70dp"
+        android:layout_weight="1"
+        android:text="TextView"
+        android:textSize="20sp" />
+</LinearLayout>

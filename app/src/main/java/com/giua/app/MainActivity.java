@@ -7,11 +7,9 @@ import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Handler;
-import android.os.PersistableBundle;
 import android.os.StrictMode;
 import android.text.InputType;
 import android.view.View;
