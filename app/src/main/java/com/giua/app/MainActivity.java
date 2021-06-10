@@ -155,6 +155,17 @@ public class MainActivity extends AppCompatActivity {
             etPassword.setText("");
             pgProgressBar.setVisibility(View.INVISIBLE);
             return;
+        } catch (GiuaScraperExceptions.UnableToLogin utl){
+            if(!GiuaScraper.isMyInternetWorking()){
+                setErrorMessage("Sono stati riscontrati problemi con la tua rete");
+            } else if(!GiuaScraper.isSiteWorking()){
+                setErrorMessage("Il sito non sta funzionando, riprova tra poco!");
+            } else {
+                setErrorMessage("E' stato riscontrato qualche problema sconosciuto riguardo la rete");
+            }
+            etPassword.setText("");
+            pgProgressBar.setVisibility(View.INVISIBLE);
+            return;
         }
 
         if(gS.checkLogin()){
