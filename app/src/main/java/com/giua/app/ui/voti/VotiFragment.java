@@ -49,7 +49,7 @@ public class VotiFragment extends Fragment {
         float mean;     //media aritmetica dei voti
 
         allVoteView = new Vector<>();
-        params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params = new LinearLayout.LayoutParams(mainLayout.getLayoutParams().width, mainLayout.getLayoutParams().height);
         params.setMargins(10, 20, 0, 30);
 
         for(String subject: allVotes.keySet()){     //Cicla ogni materia

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="main_color">#0066cc</color>
+    <color name="background_light">#ECECEC</color>
     <color name="error_message">#F84141</color>
     <color name="error_edit_text_input">#FF0000</color>
     <color name="black">#181818</color>
