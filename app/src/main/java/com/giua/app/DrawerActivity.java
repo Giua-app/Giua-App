@@ -73,7 +73,9 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
     @Override
     public boolean onNavigationItemSelected(@NonNull @NotNull MenuItem item) {
-        if(item.getItemId() == R.id.nav_voti){
+        if(item.isChecked()){
+            closeNavDrawer();
+        } else if(item.getItemId() == R.id.nav_voti){
             startVotesFragment();
         } else if(item.getItemId() == R.id.nav_agenda){
             startAgendaFragment();

@@ -1,24 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/vote_view_style">
 
     <!-- Questo è il componente utilizzato per aggiungere i voti -->
 
     <TextView
         android:id="@+id/text_view_subject"
-        android:layout_width="wrap_content"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_marginStart="10dp"
+        android:fontFamily="@font/caviar_dreams_bold"
+        android:paddingStart="5dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="5dp"
+        android:paddingBottom="5dp"
         android:text="TextView"
         android:textSize="20sp" />
 
     <TextView
         android:id="@+id/text_view_vote"
-        android:layout_width="wrap_content"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="70dp"
-        android:layout_weight="1"
+        android:layout_marginStart="140dp"
+        android:background="@drawable/vote_style"
+        android:fontFamily="@font/caviar_dreams_bold"
+        android:paddingStart="5dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="5dp"
+        android:paddingBottom="5dp"
         android:text="TextView"
+        android:textAlignment="center"
         android:textSize="20sp" />
 </LinearLayout>

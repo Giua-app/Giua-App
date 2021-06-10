@@ -18,17 +18,18 @@ public class VoteView extends LinearLayout {
     String voteValue;
     TextView tvVote;
     TextView tvSubject;
+    float rawVote;
 
-
-    public VoteView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, String subject, String vote) {
+    public VoteView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, String subject, String vote, float rawVote) {
         super(context, attrs);
 
         this.subjectValue = subject;
         this.voteValue = vote;
+        this.rawVote = rawVote;
         initializeComponent(context);
     }
 
-    public void initializeComponent(Context context){
+    private void initializeComponent(Context context){
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layoutInflater.inflate(R.layout.vote_component, this);
 
@@ -37,6 +38,16 @@ public class VoteView extends LinearLayout {
 
         tvSubject.setText(this.subjectValue);
         tvVote.setText(this.voteValue);
+
+        if(rawVote == -1f){
+            tvVote.setBackgroundTintList(getResources().getColorStateList(R.color.non_vote, context.getTheme()));
+        } else if(rawVote >= 6f){
+            tvVote.setBackgroundTintList(getResources().getColorStateList(R.color.good_vote, context.getTheme()));
+        } else if(rawVote < 6f && rawVote >= 5){
+            tvVote.setBackgroundTintList(getResources().getColorStateList(R.color.middle_vote, context.getTheme()));
+        } else if(rawVote < 5){
+            tvVote.setBackgroundTintList(getResources().getColorStateList(R.color.bad_vote, context.getTheme()));
+        }
     }
 
     @Override

@@ -5,4 +5,8 @@
     <color name="error_edit_text_input">#FF0000</color>
     <color name="black">#181818</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="good_vote">#3EDC3E</color>
+    <color name="bad_vote">#D8201C</color>
+    <color name="middle_vote">#eb951a</color>
+    <color name="non_vote">#878787</color>
 </resources>

@@ -19,18 +19,22 @@ import com.giua.app.R;
 import com.giua.objects.Vote;
 import com.giua.webscraper.GiuaScraper;
 
+import java.text.AttributedCharacterIterator;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 public class VotiFragment extends Fragment {
 
     GiuaScraper gS;
     TextView text;
     VoteView voteView;
-    ConstraintLayout mainLayout;
-    ConstraintSet constraintSet;
+    LinearLayout mainLayout;
     List<VoteView> allVoteView;
+    LinearLayout.LayoutParams params;
+    private DecimalFormat df = new DecimalFormat("0.0");
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_voti, container, false);
@@ -44,64 +48,57 @@ public class VotiFragment extends Fragment {
 
         float mean;     //media aritmetica dei voti
 
-        constraintSet = new ConstraintSet();
-        constraintSet.clone(mainLayout);
         allVoteView = new Vector<>();
+        params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(10, 20, 0, 30);
 
-        for(String subject: allVotes.keySet()){
+        for(String subject: allVotes.keySet()){     //Cicla ogni materia
             mean = 0f;
+            int voteCounter = 0;     //Conta solamente i voti che ci sono e non gli asterischi
 
-            for(Vote vote: allVotes.get(subject)){
-                if(vote.value.length() > 0){
-                    if(vote.value.length() > 1){
-                        if(vote.value.charAt(1) == '+'){
-                            mean += Character.getNumericValue(vote.value.charAt(0));
-                            mean += 0.15f;
-                        } else if(vote.value.charAt(1) == '-'){
-                            mean += Character.getNumericValue(vote.value.charAt(0))-1;
-                            mean += 0.75f;
-                        } else if(vote.value.charAt(1) == '½'){
-                            mean += Character.getNumericValue(vote.value.charAt(0));
-                            mean += 0.5f;
-                        }
-                    } else {
-                        mean += Integer.parseInt(vote.value);
-                    }
+            for(Vote vote: allVotes.get(subject)){      //Cicla ogni voto della materia
+                if(vote.value.length() > 0 && !vote.isFirstQuarterly){      //TODO: se il secondo quadrimestre e partito fa la media solo su quelli altrimenti fa la media solo sui voti del primo
+                    mean += getNumberFromVote(vote);
+                    voteCounter++;
                 }
             }
 
-            mean /= allVotes.get(subject).size();
-
-            addVoteView(subject, Float.toString(mean));
+            if(voteCounter != 0) {
+                mean /= voteCounter;
+                addVoteView(subject, df.format(mean), mean);
+            } else{
+                addVoteView(subject, "/", -1f);
+            }
 
         }
-
-        for(int j = 0; j < allVoteView.size(); j++){
-            //if(j == 0) {
-                constraintSet.connect(allVoteView.get(j).getId(), ConstraintSet.TOP, mainLayout.getId(), ConstraintSet.TOP);
-                constraintSet.connect(allVoteView.get(j).getId(), ConstraintSet.START, mainLayout.getId(), ConstraintSet.START);
-                constraintSet.connect(allVoteView.get(j).getId(), ConstraintSet.END, mainLayout.getId(), ConstraintSet.END);
-                constraintSet.connect(allVoteView.get(j).getId(), ConstraintSet.BOTTOM, mainLayout.getId(), ConstraintSet.BOTTOM);
-            /*} else {
-                constraintSet.connect(allVoteView.get(j).getId(), ConstraintSet.TOP, allVoteView.get(j-1).getId(), ConstraintSet.BOTTOM);
-                constraintSet.connect(allVoteView.get(j).getId(), ConstraintSet.START, allVoteView.get(j-1).getId(), ConstraintSet.START);
-                constraintSet.connect(allVoteView.get(j).getId(), ConstraintSet.END, allVoteView.get(j-1).getId(), ConstraintSet.END);
-                constraintSet.connect(allVoteView.get(j).getId(), ConstraintSet.BOTTOM, mainLayout.getId(), ConstraintSet.BOTTOM);
-            }*/
-
-            mainLayout.addView(allVoteView.get(j));
-        }
-
-        constraintSet.applyTo(mainLayout);
 
         return root;
     }
 
-    private void addVoteView(String subject, String vote){
-        voteView = new VoteView(getContext(), null, subject, vote);
+    private float getNumberFromVote(Vote vote) {
+        char lastChar = vote.value.charAt(vote.value.length() - 1);
+        if (lastChar == '+') {
+            return (vote.value.length() == 2) ? Character.getNumericValue(vote.value.charAt(0)) + 0.15f : Integer.parseInt(vote.value.substring(0, 2)) + 0.15f;
+
+        } else if (lastChar == '-') {
+            return (vote.value.length() == 2) ? Character.getNumericValue(vote.value.charAt(0)) - 1 + 0.85f : Integer.parseInt(vote.value.substring(0, 2)) - 1 + 0.85f;
+
+        } else if (lastChar == '½') {
+            return (vote.value.length() == 2) ? Character.getNumericValue(vote.value.charAt(0)) + 0.5f : Integer.parseInt(vote.value.substring(0, 2)) + 0.5f;
+
+        } else {
+            return Integer.parseInt(vote.value);
+
+        }
+    }
+
+    private void addVoteView(String subject, String vote, float rawVote){
+        voteView = new VoteView(getContext(), null, subject, vote, rawVote);
         voteView.setId(View.generateViewId());
+        voteView.setLayoutParams(params);
 
         allVoteView.add(voteView);
+        mainLayout.addView(voteView);
     }
 
     @Override
