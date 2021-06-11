@@ -4,13 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_light"
+    android:id="@+id/vote_fragment_scroll_view"
     android:orientation="vertical"
     tools:context=".ui.voti.VotiFragment">
 
     <LinearLayout
-        android:id="@+id/main_constraint_layout"
+        android:id="@+id/vote_fragment_constraint_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical" />
 
 </ScrollView>

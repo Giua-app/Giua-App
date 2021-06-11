@@ -6,25 +6,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
 
 import com.giua.app.R;
 import com.giua.objects.Vote;
 import com.giua.webscraper.GiuaScraper;
 
-import java.text.AttributedCharacterIterator;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import java.util.regex.Pattern;
 
 public class VotiFragment extends Fragment {
 
@@ -32,9 +27,10 @@ public class VotiFragment extends Fragment {
     TextView text;
     VoteView voteView;
     LinearLayout mainLayout;
+    ScrollView scrollView;
     List<VoteView> allVoteView;
     LinearLayout.LayoutParams params;
-    private DecimalFormat df = new DecimalFormat("0.0");
+    DecimalFormat df = new DecimalFormat("0.0");
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_voti, container, false);
@@ -42,32 +38,50 @@ public class VotiFragment extends Fragment {
         Intent intent = getActivity().getIntent();
         gS = (GiuaScraper) intent.getSerializableExtra("giuascraper");
         text = root.findViewById(R.id.textView);
-        mainLayout = root.findViewById(R.id.main_constraint_layout);
+        mainLayout = root.findViewById(R.id.vote_fragment_constraint_layout);
+        scrollView = root.findViewById(R.id.vote_fragment_scroll_view);
 
         Map<String, List<Vote>> allVotes = gS.getAllVotes(false);
 
-        float mean;     //media aritmetica dei voti
+        float meanSecondQuarter;
+        float meanFirstQuarter;     //media aritmetica dei voti
+        int voteCounterFirstQuarter;     //Conta solamente i voti che ci sono e non gli asterischi
+        int voteCounterSecondQuarter;
 
         allVoteView = new Vector<>();
         params = new LinearLayout.LayoutParams(mainLayout.getLayoutParams().width, mainLayout.getLayoutParams().height);
         params.setMargins(10, 20, 0, 30);
 
         for(String subject: allVotes.keySet()){     //Cicla ogni materia
-            mean = 0f;
-            int voteCounter = 0;     //Conta solamente i voti che ci sono e non gli asterischi
+            meanFirstQuarter = 0f;
+            meanSecondQuarter = 0f;
+            voteCounterFirstQuarter = 0;     //Conta solamente i voti che ci sono e non gli asterischi
+            voteCounterSecondQuarter = 0;
 
             for(Vote vote: allVotes.get(subject)){      //Cicla ogni voto della materia
-                if(vote.value.length() > 0 && !vote.isFirstQuarterly){      //TODO: se il secondo quadrimestre e partito fa la media solo su quelli altrimenti fa la media solo sui voti del primo
-                    mean += getNumberFromVote(vote);
-                    voteCounter++;
+                if(vote.value.length() > 0 && vote.isFirstQuarterly){
+                    meanFirstQuarter += getNumberFromVote(vote);
+                    voteCounterFirstQuarter++;
+                } else if(vote.value.length() > 0) {
+                    meanSecondQuarter += getNumberFromVote(vote);
+                    voteCounterSecondQuarter++;
                 }
             }
 
-            if(voteCounter != 0) {
-                mean /= voteCounter;
-                addVoteView(subject, df.format(mean), mean);
+            if(voteCounterFirstQuarter != 0 && voteCounterSecondQuarter != 0) {
+                meanFirstQuarter /= voteCounterFirstQuarter;
+                meanSecondQuarter /= voteCounterSecondQuarter;
+                addVoteView(subject, df.format(meanFirstQuarter), meanFirstQuarter, df.format(meanSecondQuarter), meanSecondQuarter);
             } else{
-                addVoteView(subject, "/", -1f);
+                if(voteCounterFirstQuarter == 0 && voteCounterSecondQuarter != 0) {
+                    meanSecondQuarter /= voteCounterSecondQuarter;
+                    addVoteView(subject, "/", -1f, df.format(meanSecondQuarter), meanSecondQuarter);
+                } else if(voteCounterFirstQuarter != 0){
+                    meanFirstQuarter /= voteCounterFirstQuarter;
+                    addVoteView(subject, df.format(meanFirstQuarter), meanFirstQuarter, "/", -1f);
+                } else {
+                    addVoteView(subject, "/", -1f, "/", -1f);
+                }
             }
 
         }
@@ -92,10 +106,16 @@ public class VotiFragment extends Fragment {
         }
     }
 
-    private void addVoteView(String subject, String vote, float rawVote){
-        voteView = new VoteView(getContext(), null, subject, vote, rawVote);
+    private void addVoteView(String subject, String voteFirstQuart, float rawVoteFirstQuart, String voteSecondQuart, float rawVoteSecondQuart){
+        voteView = new VoteView(getContext(), null, subject, voteFirstQuart, rawVoteFirstQuart, voteSecondQuart, rawVoteSecondQuart);
         voteView.setId(View.generateViewId());
+
         voteView.setLayoutParams(params);
+
+        voteView.setOnClickListener(view -> {
+            mainLayout.removeView(view);
+            mainLayout.addView(view, 0);
+        });
 
         allVoteView.add(voteView);
         mainLayout.addView(voteView);

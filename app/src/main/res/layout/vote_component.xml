@@ -21,14 +21,33 @@
         android:text="Materia"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/text_view_vote"
+        app:layout_constraintEnd_toStartOf="@+id/text_view_vote_primo_quadrimestre"
         app:layout_constraintHorizontal_bias="0.021"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/text_view_vote"
-        android:layout_width="wrap_content"
+        android:id="@+id/text_view_vote_primo_quadrimestre"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/vote_style"
+        android:fontFamily="@font/caviar_dreams_bold"
+        android:paddingStart="5dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="5dp"
+        android:paddingBottom="5dp"
+        android:text="Voto"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/text_view_vote_secondo_quadrimestre"
+        app:layout_constraintHorizontal_bias="0.971"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_view_vote_secondo_quadrimestre"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:background="@drawable/vote_style"
         android:fontFamily="@font/caviar_dreams_bold"
@@ -41,7 +60,8 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.898"
+        app:layout_constraintHorizontal_bias="0.991"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.526" />
 </androidx.constraintlayout.widget.ConstraintLayout>

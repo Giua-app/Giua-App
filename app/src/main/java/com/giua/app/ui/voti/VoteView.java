@@ -1,6 +1,7 @@
 package com.giua.app.ui.voti;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
@@ -8,26 +9,32 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 
 import com.giua.app.R;
+import com.giua.objects.Vote;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class VoteView extends LinearLayout {
     String subjectValue;
-    String voteValue;
-    TextView tvVote;
+    String voteFirstQuarter;
+    float rawVoteFirstQuarter;
+    String voteSecondQuarter;
+    float rawVoteSecondQuarter;
+    TextView tvVoteFisrtQuarter;
+    TextView tvVoteSecondQuarter;
     TextView tvSubject;
-    float rawVote;
 
-    public VoteView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, String subject, String vote, float rawVote) {
+    public VoteView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, String subject, String voteFirstQuarter, float rawVoteFirstQuarter, String voteSecondQuarter, float rawVoteSecondQuarter) {
         super(context, attrs);
 
         this.subjectValue = subject;
-        this.voteValue = vote;
-        this.rawVote = rawVote;
+        this.voteFirstQuarter = voteFirstQuarter;
+        this.rawVoteFirstQuarter = rawVoteFirstQuarter;
+        this.voteSecondQuarter = voteSecondQuarter;
+        this.rawVoteSecondQuarter = rawVoteSecondQuarter;
         initializeComponent(context);
     }
 
@@ -36,27 +43,27 @@ public class VoteView extends LinearLayout {
         layoutInflater.inflate(R.layout.vote_component, this);
 
         tvSubject = findViewById(R.id.text_view_subject);
-        tvVote = findViewById(R.id.text_view_vote);
+        tvVoteFisrtQuarter = findViewById(R.id.text_view_vote_primo_quadrimestre);
+        tvVoteSecondQuarter = findViewById(R.id.text_view_vote_secondo_quadrimestre);
 
         tvSubject.setText(this.subjectValue);
-        tvVote.setText(this.voteValue);
+        tvVoteFisrtQuarter.setText(this.voteFirstQuarter);
+        tvVoteSecondQuarter.setText(this.voteSecondQuarter);
 
-        if(rawVote == -1f){
-            tvVote.setBackgroundTintList(getResources().getColorStateList(R.color.non_vote, context.getTheme()));
-        } else if(rawVote >= 6f){
-            tvVote.setBackgroundTintList(getResources().getColorStateList(R.color.good_vote, context.getTheme()));
-        } else if(rawVote < 6f && rawVote >= 5){
-            tvVote.setBackgroundTintList(getResources().getColorStateList(R.color.middle_vote, context.getTheme()));
-        } else if(rawVote < 5){
-            tvVote.setBackgroundTintList(getResources().getColorStateList(R.color.bad_vote, context.getTheme()));
-        }
+        tvVoteFisrtQuarter.setBackgroundTintList(getColorFromVote(rawVoteFirstQuarter));
+        tvVoteSecondQuarter.setBackgroundTintList(getColorFromVote(rawVoteSecondQuarter));
     }
 
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-
-        addView(tvSubject);
-        addView(tvVote);
+    private ColorStateList getColorFromVote(float vote){
+        if(vote == -1f){
+            return getResources().getColorStateList(R.color.non_vote, getContext().getTheme());
+        } else if(vote >= 6f){
+            return getResources().getColorStateList(R.color.good_vote, getContext().getTheme());
+        } else if(vote < 6f && vote >= 5){
+            return getResources().getColorStateList(R.color.middle_vote, getContext().getTheme());
+        } else if(vote < 5){
+            return getResources().getColorStateList(R.color.bad_vote, getContext().getTheme());
+        }
+        return getResources().getColorStateList(R.color.non_vote, getContext().getTheme()); //Non si dovrebbe mai verificare
     }
 }
