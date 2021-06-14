@@ -1,15 +1,22 @@
 package com.giua.app.ui.voti;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import com.giua.app.R;
@@ -24,22 +31,26 @@ import java.util.Vector;
 public class VotiFragment extends Fragment {
 
     GiuaScraper gS;
-    TextView text;
     VoteView voteView;
     LinearLayout mainLayout;
     ScrollView scrollView;
     List<VoteView> allVoteView;
     LinearLayout.LayoutParams params;
     DecimalFormat df = new DecimalFormat("0.0");
+    ConstraintLayout constraintLayout;
+    ConstraintSet constraintSet;
 
+    @SuppressLint("ClickableViewAccessibility")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_voti, container, false);
 
         Intent intent = getActivity().getIntent();
         gS = (GiuaScraper) intent.getSerializableExtra("giuascraper");
-        text = root.findViewById(R.id.textView);
-        mainLayout = root.findViewById(R.id.vote_fragment_constraint_layout);
+        mainLayout = root.findViewById(R.id.vote_fragment_linear_layout);
         scrollView = root.findViewById(R.id.vote_fragment_scroll_view);
+        constraintLayout = root.findViewById(R.id.vote_fragment_constraint_layout);
+        constraintSet = new ConstraintSet();
+        constraintSet.clone(constraintLayout);
 
         Map<String, List<Vote>> allVotes = gS.getAllVotes(false);
 
@@ -90,44 +101,79 @@ public class VotiFragment extends Fragment {
     }
 
     private float getNumberFromVote(Vote vote) {
+        if(vote.isAsterisk)
+            return -1f;
+
         char lastChar = vote.value.charAt(vote.value.length() - 1);
-        if (lastChar == '+') {
+        if (lastChar == '+')
             return (vote.value.length() == 2) ? Character.getNumericValue(vote.value.charAt(0)) + 0.15f : Integer.parseInt(vote.value.substring(0, 2)) + 0.15f;
 
-        } else if (lastChar == '-') {
+        else if (lastChar == '-')
             return (vote.value.length() == 2) ? Character.getNumericValue(vote.value.charAt(0)) - 1 + 0.85f : Integer.parseInt(vote.value.substring(0, 2)) - 1 + 0.85f;
 
-        } else if (lastChar == '½') {
+        else if (lastChar == '½')
             return (vote.value.length() == 2) ? Character.getNumericValue(vote.value.charAt(0)) + 0.5f : Integer.parseInt(vote.value.substring(0, 2)) + 0.5f;
 
-        } else {
+        else
             return Integer.parseInt(vote.value);
-
-        }
     }
 
+    /*private void addVotesToListVotes(List<Vote> votes){
+        listVoteLayoutFirstQuarter.removeAllViews();
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(100, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(10,0,0,0);
+        for(Vote vote : votes){
+            TextView tvVote = new TextView(getContext(), null);
+            tvVote.setId(View.generateViewId());
+
+            if(!vote.isAsterisk)
+                tvVote.setText(vote.value);
+            else
+                tvVote.setText("*");
+
+            tvVote.setTextSize(16);
+            tvVote.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.vote_style, getContext().getTheme()));
+            tvVote.setBackgroundTintList(getColorFromVote(getNumberFromVote(vote)));
+            tvVote.setPadding(10, 10, 10, 10);
+            tvVote.setLayoutParams(params);
+            listVoteLayoutFirstQuarter.addView(tvVote);
+        }
+        listVoteLayoutFirstQuarter.setVisibility(View.VISIBLE);
+    }*/
+
+    @SuppressLint("ClickableViewAccessibility")
     private void addVoteView(String subject, String voteFirstQuart, float rawVoteFirstQuart, String voteSecondQuart, float rawVoteSecondQuart){
         voteView = new VoteView(getContext(), null, subject, voteFirstQuart, rawVoteFirstQuart, voteSecondQuart, rawVoteSecondQuart);
         voteView.setId(View.generateViewId());
 
         voteView.setLayoutParams(params);
 
+        voteView.setOnTouchListener((view, motionEvent) -> {
+            if(motionEvent.getAction() != MotionEvent.ACTION_DOWN)
+                view.setAlpha(1);
+            else
+                view.setAlpha(0.5f);
+            return false;
+        });
+
         voteView.setOnClickListener(view -> {
-            mainLayout.removeView(view);
-            mainLayout.addView(view, 0);
+            //TODO: Mostra tutti i voti della materia cliccata
         });
 
         allVoteView.add(voteView);
         mainLayout.addView(voteView);
     }
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        /*Map<String, List<Vote>> allVotes = gS.getAllVotes(false);
-
-        for(String m: allVotes.keySet()){
-            text.setText(text.getText().toString() + " - " + allVotes.get(m).toString());
-        }*/
+    private ColorStateList getColorFromVote(float vote){
+        if(vote == -1f){
+            return getResources().getColorStateList(R.color.non_vote, getContext().getTheme());
+        } else if(vote >= 6f){
+            return getResources().getColorStateList(R.color.good_vote, getContext().getTheme());
+        } else if(vote < 6f && vote >= 5){
+            return getResources().getColorStateList(R.color.middle_vote, getContext().getTheme());
+        } else if(vote < 5){
+            return getResources().getColorStateList(R.color.bad_vote, getContext().getTheme());
+        }
+        return getResources().getColorStateList(R.color.non_vote, getContext().getTheme()); //Non si dovrebbe mai verificare
     }
-
 }

@@ -66,4 +66,6 @@ public class VoteView extends LinearLayout {
         }
         return getResources().getColorStateList(R.color.non_vote, getContext().getTheme()); //Non si dovrebbe mai verificare
     }
+
+
 }
