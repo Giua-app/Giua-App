@@ -38,28 +38,10 @@ public class MainActivity extends AppCompatActivity {
     Handler handler;
     View vErrorView;
     CheckBox chRememberCredentials;
-    String login_username;
-    String login_password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //TODO: da togliere in futuro
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
-        login_username = LoginData.getUser(getApplicationContext());
-        login_password = LoginData.getPassword(getApplicationContext());
-
-        //Login automatico se user e password presenti
-        if (!login_username.isEmpty() && !login_password.isEmpty()) {
-            setContentView(R.layout.loading_screen);
-            findViewById(R.id.auto_login_progressbar).setVisibility(View.VISIBLE);
-            if (auto_login()) {
-                return;
-            }
-        }
         setContentView(R.layout.activity_main);
 
         etUsername = findViewById(R.id.textUser);
@@ -68,8 +50,12 @@ public class MainActivity extends AppCompatActivity {
         btnShowPassword = findViewById(R.id.show_password_button);
         btnLogin = findViewById(R.id.login_button);
 
-        etUsername.setText(login_username);     //Imposta lo username memorizzato
-        etPassword.setText(login_password);     //Imposta la password memorizzata
+        //TODO: da togliere in futuro
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        etUsername.setText(LoginData.getUser(getApplicationContext()));     //Imposta lo username memorizzato
+        etPassword.setText(LoginData.getPassword(getApplicationContext()));     //Imposta la password memorizzata
 
         handler = new Handler();
 
@@ -85,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         chRememberCredentials = findViewById(R.id.checkbox_remember_credentials);
 
         /**
-         * Onclick per la TextView dell'errore
+         * Oncick per la TextView dell'errore
          */
         txvErrorMessage.setOnClickListener(view -> {            //Quando si clicca l'errore questo scompare
             handler.removeCallbacks(runnable);
@@ -97,13 +83,9 @@ public class MainActivity extends AppCompatActivity {
          */
         errorMessageAnimationEnd.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
+            public void onAnimationStart(Animation animation) {}
             @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-
+            public void onAnimationRepeat(Animation animation) {}
             @Override
             public void onAnimationEnd(Animation animation) {       //Quando hai finito l animazione dell'uscita fai scomparire il messaggio
                 txvErrorMessage.setVisibility(View.GONE);
@@ -116,13 +98,9 @@ public class MainActivity extends AppCompatActivity {
          */
         errorMessageAnimationStart.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
+            public void onAnimationStart(Animation animation) {}
             @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-
+            public void onAnimationRepeat(Animation animation) {}
             @Override
             public void onAnimationEnd(Animation animation) {
                 handler.postDelayed(runnable, 5000);
@@ -134,10 +112,11 @@ public class MainActivity extends AppCompatActivity {
          */
         btnLogin.setOnClickListener(view -> {
             handler.removeCallbacks(runnable);
-            if (etPassword.getText().length() < 1) {
+            if(etPassword.getText().length() < 1){
                 setErrorMessage("Il campo della password non può essere vuoto!");
                 return;
-            } else if (etUsername.getText().length() < 1) {
+            }
+            else if(etUsername.getText().length() < 1){
                 setErrorMessage("Il campo dello username non può essere vuoto!");
                 return;
             }
@@ -152,8 +131,8 @@ public class MainActivity extends AppCompatActivity {
          * Show password click listener
          */
         btnShowPassword.setOnClickListener(view -> {
-            if (!btnShowActivated) {
-                etPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD | InputType.TYPE_CLASS_TEXT);      //Mostra la password
+            if(!btnShowActivated) {
+                etPassword.setInputType (InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD | InputType.TYPE_CLASS_TEXT);      //Mostra la password
                 btnShowPassword.setImageResource(R.drawable.btn_show_password_true_image);
             } else {
                 etPassword.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD | InputType.TYPE_CLASS_TEXT);  //Nasconde la password
@@ -161,39 +140,16 @@ public class MainActivity extends AppCompatActivity {
             }
             btnShowActivated = !btnShowActivated;
         });
-    }
 
-    private boolean auto_login(){
-        try {
-            gS = new GiuaScraper(login_username, login_password);
-            if(gS.checkLogin()){
-                Intent intent = new Intent(MainActivity.this, DrawerActivity.class);
-                intent.putExtra("giuascraper", gS);
-                startActivity(intent);
-                return true;
-            } else {
-                setErrorMessage("Qualcosa e' andato storto!");
-                return false;
-            }
-        } catch (GiuaScraperExceptions.SessionCookieEmpty sce){
-            setErrorMessage("Informazioni di login errate!");
-            return false;
-        } catch (GiuaScraperExceptions.UnableToLogin utl){
-            if(!GiuaScraper.isMyInternetWorking()){
-                setErrorMessage("Sono stati riscontrati problemi con la tua rete");
-            } else if(!GiuaScraper.isSiteWorking()){
-                setErrorMessage("Il sito non sta funzionando, riprova tra poco!");
-            } else {
-                setErrorMessage("E' stato riscontrato qualche problema sconosciuto riguardo la rete");
-            }
-            return false;
+        //Login automatico se user e password presenti
+        if(!etUsername.getText().toString().isEmpty() && !etPassword.getText().toString().isEmpty()){
+            login();
         }
-
     }
 
     private void login(){
         try {
-            gS = new GiuaScraper(login_username, login_password);
+            gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString());
         } catch (GiuaScraperExceptions.SessionCookieEmpty sce){
             setErrorMessage("Informazioni di login errate!");
             etPassword.setText("");
@@ -216,8 +172,8 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("login ok");
             if(chRememberCredentials.isChecked()) {
                 LoginData.setCredentials(this,
-                        login_username,
-                        login_password);
+                        etUsername.getText().toString(),
+                        etPassword.getText().toString());
             }
 
             Intent intent = new Intent(MainActivity.this, DrawerActivity.class);
@@ -234,8 +190,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         setContentView(R.layout.activity_main);
-
-
     }*/
 
     /**
