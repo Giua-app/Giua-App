@@ -3,19 +3,22 @@ package com.giua.app.ui.voti;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
@@ -33,7 +36,10 @@ public class VotiFragment extends Fragment {
     GiuaScraper gS;
     VoteView voteView;
     LinearLayout mainLayout;
-    ScrollView scrollView;
+    LinearLayout voteListLayout;
+    LinearLayout listVoteScrollView1;       //Scroll view del primo quadrimestre
+    LinearLayout listVoteScrollView2;       //Scroll view del secondo quadrimestre
+    TextView tvSecondQuarter;
     List<VoteView> allVoteView;
     LinearLayout.LayoutParams params;
     DecimalFormat df = new DecimalFormat("0.0");
@@ -47,8 +53,11 @@ public class VotiFragment extends Fragment {
         Intent intent = getActivity().getIntent();
         gS = (GiuaScraper) intent.getSerializableExtra("giuascraper");
         mainLayout = root.findViewById(R.id.vote_fragment_linear_layout);
-        scrollView = root.findViewById(R.id.vote_fragment_scroll_view);
+        listVoteScrollView1 = root.findViewById(R.id.list_vote_linear_layout_1);
+        listVoteScrollView2 = root.findViewById(R.id.list_vote_linear_layout_2);
         constraintLayout = root.findViewById(R.id.vote_fragment_constraint_layout);
+        tvSecondQuarter = root.findViewById(R.id.list_votes_text_view_2);
+        voteListLayout = root.findViewById(R.id.list_vote_layout);
         constraintSet = new ConstraintSet();
         constraintSet.clone(constraintLayout);
 
@@ -118,28 +127,38 @@ public class VotiFragment extends Fragment {
             return Integer.parseInt(vote.value);
     }
 
-    /*private void addVotesToListVotes(List<Vote> votes){
-        listVoteLayoutFirstQuarter.removeAllViews();
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(100, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.setMargins(10,0,0,0);
+    private void addVotesToListVotes(List<Vote> votes){
+        LinearLayout.LayoutParams singleVoteParams = new LinearLayout.LayoutParams(95, ViewGroup.LayoutParams.WRAP_CONTENT);
+        singleVoteParams.setMargins(20,0,0,0);
+
+        listVoteScrollView1.removeAllViews();
+        listVoteScrollView2.removeAllViews();
+
         for(Vote vote : votes){
             TextView tvVote = new TextView(getContext(), null);
+
+            tvVote.setText(vote.value);
+            tvVote.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            tvVote.setTypeface(ResourcesCompat.getFont(getContext(), R.font.varela_round_regular));
             tvVote.setId(View.generateViewId());
-
-            if(!vote.isAsterisk)
-                tvVote.setText(vote.value);
-            else
-                tvVote.setText("*");
-
-            tvVote.setTextSize(16);
-            tvVote.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.vote_style, getContext().getTheme()));
+            tvVote.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.single_vote_style));
             tvVote.setBackgroundTintList(getColorFromVote(getNumberFromVote(vote)));
-            tvVote.setPadding(10, 10, 10, 10);
-            tvVote.setLayoutParams(params);
-            listVoteLayoutFirstQuarter.addView(tvVote);
+            tvVote.setTextSize(18f);
+            tvVote.setLayoutParams(singleVoteParams);
+            tvVote.setPadding(5,5,5,5);
+
+            if(vote.isFirstQuarterly)
+                listVoteScrollView1.addView(tvVote);
+            else {
+                if (tvSecondQuarter.getVisibility() == View.GONE){
+                    tvSecondQuarter.setVisibility(View.VISIBLE);
+                }
+                listVoteScrollView2.addView(tvVote);
+            }
+
         }
-        listVoteLayoutFirstQuarter.setVisibility(View.VISIBLE);
-    }*/
+        voteListLayout.setVisibility(View.VISIBLE);
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     private void addVoteView(String subject, String voteFirstQuart, float rawVoteFirstQuart, String voteSecondQuart, float rawVoteSecondQuart){
@@ -158,6 +177,7 @@ public class VotiFragment extends Fragment {
 
         voteView.setOnClickListener(view -> {
             //TODO: Mostra tutti i voti della materia cliccata
+            addVotesToListVotes(gS.getAllVotes(false).get(((VoteView) view).subjectValue));
         });
 
         allVoteView.add(voteView);
