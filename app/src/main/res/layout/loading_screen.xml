@@ -14,7 +14,6 @@
         android:text="Registro Elettronico"
         android:textAlignment="center"
         android:textSize="36sp"
-        app:layout_constraintBottom_toTopOf="@+id/textUser"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
