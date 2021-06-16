@@ -117,11 +117,19 @@
         app:layout_constraintTop_toTopOf="@+id/list_vote_layout">
 
         <TextView
-            android:id="@+id/text_view_vote_primo_quadrimestre"
-            android:layout_width="55dp"
+            android:id="@+id/mean_layout_text_view"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/mean_vote_style"
+            android:fontFamily="@font/varela_round_regular"
+            android:text="Medie:"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/text_view_vote_primo_quadrimestre"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:background="@drawable/single_vote_style"
             android:fontFamily="@font/varela_round_regular"
             android:paddingStart="5dp"
             android:paddingTop="5dp"
@@ -129,7 +137,7 @@
             android:paddingBottom="5dp"
             android:text="7.3"
             android:textAlignment="center"
-            android:textSize="20sp"
+            android:textSize="17sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text_view_subject"
@@ -137,10 +145,10 @@
 
         <TextView
             android:id="@+id/text_view_vote_secondo_quadrimestre"
-            android:layout_width="55dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="35dp"
-            android:background="@drawable/mean_vote_style"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/single_vote_style"
             android:fontFamily="@font/varela_round_regular"
             android:paddingStart="5dp"
             android:paddingTop="5dp"
@@ -148,7 +156,7 @@
             android:paddingBottom="5dp"
             android:text="7.3"
             android:textAlignment="center"
-            android:textSize="20sp"
+            android:textSize="17sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/text_view_vote_primo_quadrimestre"
             app:layout_constraintHorizontal_bias="0.0"

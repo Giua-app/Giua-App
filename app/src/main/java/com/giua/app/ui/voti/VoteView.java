@@ -69,20 +69,20 @@ public class VoteView extends LinearLayout {
 
         for(Vote vote : allVotes){
             TextView tvVote = new TextView(getContext(), null);
+            tvVote.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            tvVote.setTypeface(ResourcesCompat.getFont(getContext(), R.font.varela_round_regular));
+            tvVote.setId(View.generateViewId());
+            tvVote.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.single_vote_style));
+
+            tvVote.setTextSize(18f);
+            tvVote.setLayoutParams(singleVoteParams);
+            tvVote.setPadding(5,5,5,5);
 
             if(!vote.isAsterisk)
                 tvVote.setText(vote.value);
             else
                 tvVote.setText("*");
-            tvVote.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-            tvVote.setTypeface(ResourcesCompat.getFont(getContext(), R.font.varela_round_regular));
-            tvVote.setId(View.generateViewId());
-            tvVote.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.single_vote_style));
             tvVote.setBackgroundTintList(getColorFromVote(getNumberFromVote(vote)));
-            tvVote.setTextSize(18f);
-            tvVote.setLayoutParams(singleVoteParams);
-            tvVote.setPadding(5,5,5,5);
-
             if(vote.isFirstQuarterly)
                 listVoteLayout1.addView(tvVote);
             else
