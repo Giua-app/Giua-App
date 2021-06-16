@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
@@ -22,6 +23,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
+import com.giua.app.DrawerActivity;
 import com.giua.app.R;
 import com.giua.objects.Vote;
 import com.giua.webscraper.GiuaScraper;
@@ -45,6 +47,7 @@ public class VotiFragment extends Fragment {
     DecimalFormat df = new DecimalFormat("0.0");
     ConstraintLayout constraintLayout;
     ConstraintSet constraintSet;
+    boolean isListVoteOpened = false;
 
     @SuppressLint("ClickableViewAccessibility")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -127,73 +130,16 @@ public class VotiFragment extends Fragment {
             return Integer.parseInt(vote.value);
     }
 
-    private void addVotesToListVotes(List<Vote> votes){
-        LinearLayout.LayoutParams singleVoteParams = new LinearLayout.LayoutParams(95, ViewGroup.LayoutParams.WRAP_CONTENT);
-        singleVoteParams.setMargins(20,0,0,0);
-
-        listVoteScrollView1.removeAllViews();
-        listVoteScrollView2.removeAllViews();
-
-        for(Vote vote : votes){
-            TextView tvVote = new TextView(getContext(), null);
-
-            tvVote.setText(vote.value);
-            tvVote.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-            tvVote.setTypeface(ResourcesCompat.getFont(getContext(), R.font.varela_round_regular));
-            tvVote.setId(View.generateViewId());
-            tvVote.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.single_vote_style));
-            tvVote.setBackgroundTintList(getColorFromVote(getNumberFromVote(vote)));
-            tvVote.setTextSize(18f);
-            tvVote.setLayoutParams(singleVoteParams);
-            tvVote.setPadding(5,5,5,5);
-
-            if(vote.isFirstQuarterly)
-                listVoteScrollView1.addView(tvVote);
-            else {
-                if (tvSecondQuarter.getVisibility() == View.GONE){
-                    tvSecondQuarter.setVisibility(View.VISIBLE);
-                }
-                listVoteScrollView2.addView(tvVote);
-            }
-
-        }
-        voteListLayout.setVisibility(View.VISIBLE);
-    }
-
     @SuppressLint("ClickableViewAccessibility")
     private void addVoteView(String subject, String voteFirstQuart, float rawVoteFirstQuart, String voteSecondQuart, float rawVoteSecondQuart){
-        voteView = new VoteView(getContext(), null, subject, voteFirstQuart, rawVoteFirstQuart, voteSecondQuart, rawVoteSecondQuart);
+        voteView = new VoteView(getContext(), null, subject, voteFirstQuart, rawVoteFirstQuart, voteSecondQuart, rawVoteSecondQuart, gS.getAllVotes(false).get(subject));
         voteView.setId(View.generateViewId());
 
         voteView.setLayoutParams(params);
 
-        voteView.setOnTouchListener((view, motionEvent) -> {
-            if(motionEvent.getAction() != MotionEvent.ACTION_DOWN)
-                view.setAlpha(1);
-            else
-                view.setAlpha(0.5f);
-            return false;
-        });
-
-        voteView.setOnClickListener(view -> {
-            //TODO: Mostra tutti i voti della materia cliccata
-            addVotesToListVotes(gS.getAllVotes(false).get(((VoteView) view).subjectValue));
-        });
+        //TODO: Add on click effect that work
 
         allVoteView.add(voteView);
         mainLayout.addView(voteView);
-    }
-
-    private ColorStateList getColorFromVote(float vote){
-        if(vote == -1f){
-            return getResources().getColorStateList(R.color.non_vote, getContext().getTheme());
-        } else if(vote >= 6f){
-            return getResources().getColorStateList(R.color.good_vote, getContext().getTheme());
-        } else if(vote < 6f && vote >= 5){
-            return getResources().getColorStateList(R.color.middle_vote, getContext().getTheme());
-        } else if(vote < 5){
-            return getResources().getColorStateList(R.color.bad_vote, getContext().getTheme());
-        }
-        return getResources().getColorStateList(R.color.non_vote, getContext().getTheme()); //Non si dovrebbe mai verificare
     }
 }

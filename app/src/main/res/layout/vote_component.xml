@@ -5,7 +5,8 @@
     android:id="@+id/vote_view_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/vote_view_style">
+    android:background="@drawable/vote_view_style"
+    android:padding="10dp">
 
     <!-- Questo è il componente utilizzato per aggiungere i voti -->
 
@@ -13,6 +14,7 @@
         android:id="@+id/text_view_subject"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:fontFamily="@font/varela_round_regular"
         android:paddingStart="5dp"
         android:paddingTop="5dp"
@@ -21,47 +23,139 @@
         android:text="Materia"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/text_view_vote_primo_quadrimestre"
-        app:layout_constraintHorizontal_bias="0.021"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/text_view_vote_primo_quadrimestre"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/mean_vote_style"
-        android:fontFamily="@font/varela_round_regular"
-        android:paddingStart="5dp"
-        android:paddingTop="5dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="5dp"
-        android:text="Voto"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/text_view_vote_secondo_quadrimestre"
-        app:layout_constraintHorizontal_bias="0.971"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/text_view_vote_secondo_quadrimestre"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/mean_vote_style"
-        android:fontFamily="@font/varela_round_regular"
-        android:paddingStart="5dp"
-        android:paddingTop="5dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="5dp"
-        android:text="Voto"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.991"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.526" />
+        app:layout_constraintVertical_bias="0.041" />
+
+    <LinearLayout
+        android:id="@+id/list_vote_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/list_vote_style"
+        android:elevation="10dp"
+        android:orientation="vertical"
+        android:padding="5dp"
+        android:paddingStart="5dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="5dp"
+        android:paddingBottom="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/mean_vote_layout"
+        app:layout_constraintStart_toStartOf="@+id/text_view_subject"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_subject"
+        app:layout_constraintVertical_bias="0.0">
+
+        <TextView
+            android:id="@+id/list_votes_text_view_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:fontFamily="@font/varela_round_regular"
+            android:text="1° Quadrimestre"
+            android:textSize="15sp" />
+
+        <HorizontalScrollView
+            android:id="@+id/list_vote_scroll_view_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:requiresFadingEdge="none"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/list_vote_linear_layout_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <TextView
+            android:id="@+id/list_votes_text_view_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/varela_round_regular"
+            android:text="2° Quadrimestre"
+            android:textSize="15sp" />
+
+        <HorizontalScrollView
+            android:id="@+id/list_vote_scroll_view_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:requiresFadingEdge="none"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/list_vote_linear_layout_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+
+        </HorizontalScrollView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mean_vote_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/mean_vote_layout_style"
+        android:elevation="10dp"
+        android:orientation="vertical"
+        android:padding="5dp"
+        app:layout_constraintBottom_toBottomOf="@+id/list_vote_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/list_vote_layout">
+
+        <TextView
+            android:id="@+id/text_view_vote_primo_quadrimestre"
+            android:layout_width="55dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/mean_vote_style"
+            android:fontFamily="@font/varela_round_regular"
+            android:paddingStart="5dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="5dp"
+            android:paddingBottom="5dp"
+            android:text="7.3"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_view_subject"
+            app:layout_constraintVertical_bias="0.278" />
+
+        <TextView
+            android:id="@+id/text_view_vote_secondo_quadrimestre"
+            android:layout_width="55dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="35dp"
+            android:background="@drawable/mean_vote_style"
+            android:fontFamily="@font/varela_round_regular"
+            android:paddingStart="5dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="5dp"
+            android:paddingBottom="5dp"
+            android:text="7.3"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/text_view_vote_primo_quadrimestre"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/text_view_vote_primo_quadrimestre"
+            app:layout_constraintTop_toBottomOf="@+id/text_view_vote_primo_quadrimestre"
+            app:layout_constraintVertical_bias="1.0" />
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

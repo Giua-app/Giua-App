@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:androd="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/vote_fragment_constraint_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:androd="http://schemas.android.com/apk/res-auto"
     android:background="@color/background_light"
-    android:id="@+id/vote_fragment_constraint_layout"
     android:orientation="vertical"
+    android:padding="5dp"
     tools:context=".ui.voti.VotiFragment">
 
     <ScrollView
@@ -28,78 +29,4 @@
     </ScrollView>
 
     <!-- Qui verranno visualizzati i dettagli del voto cliccatao-->
-    <LinearLayout
-        android:id="@+id/list_vote_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="5dp"
-        android:background="@drawable/list_vote_style"
-        android:orientation="vertical"
-        android:padding="5dp"
-        android:paddingStart="5dp"
-        android:paddingTop="5dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="5dp"
-        android:visibility="gone"
-        androd:layout_constraintBottom_toBottomOf="parent"
-        androd:layout_constraintEnd_toEndOf="parent"
-        androd:layout_constraintStart_toStartOf="parent">
-
-        <TextView
-            android:id="@+id/list_votes_text_view_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:fontFamily="@font/varela_round_regular"
-            android:text="1° Quadrimestre"
-            android:textSize="15sp" />
-
-        <HorizontalScrollView
-            android:id="@+id/list_vote_scroll_view_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:requiresFadingEdge="none"
-            android:scrollbars="none">
-
-            <LinearLayout
-                android:id="@+id/list_vote_linear_layout_1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal" >
-
-            </LinearLayout>
-        </HorizontalScrollView>
-
-        <TextView
-            android:id="@+id/list_votes_text_view_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="10dp"
-            android:layout_weight="1"
-            android:fontFamily="@font/varela_round_regular"
-            android:text="2° Quadrimestre"
-            android:textSize="15sp"
-            android:visibility="gone" />
-
-        <HorizontalScrollView
-            android:id="@+id/list_vote_scroll_view_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:requiresFadingEdge="none"
-            android:scrollbars="none">
-
-            <LinearLayout
-                android:id="@+id/list_vote_linear_layout_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal" />
-
-        </HorizontalScrollView>
-
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
