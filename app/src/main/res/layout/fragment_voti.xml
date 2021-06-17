@@ -7,26 +7,94 @@
     android:layout_height="match_parent"
     android:background="@color/background_light"
     android:orientation="vertical"
-    android:padding="5dp"
     tools:context=".ui.voti.VotiFragment">
+
+    <!-- Qui verranno visualizzati i dettagli del voto cliccato-->
 
     <ScrollView
         android:id="@+id/vote_fragment_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none"
+        android:overScrollMode="never"
         androd:layout_constraintBottom_toBottomOf="parent"
         androd:layout_constraintEnd_toEndOf="parent"
+        androd:layout_constraintHorizontal_bias="0.0"
         androd:layout_constraintStart_toStartOf="parent"
-        androd:layout_constraintTop_toTopOf="parent">
+        androd:layout_constraintTop_toTopOf="parent"
+        androd:layout_constraintVertical_bias="1.0">
 
         <LinearLayout
             android:id="@+id/vote_fragment_linear_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:padding="5dp" />
 
     </ScrollView>
 
-    <!-- Qui verranno visualizzati i dettagli del voto cliccatao-->
+    <LinearLayout
+        android:id="@+id/detail_vote_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:background="@drawable/vote_view_style"
+        android:elevation="20dp"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:visibility="gone"
+        androd:layout_constraintBottom_toBottomOf="parent"
+        androd:layout_constraintEnd_toEndOf="parent"
+        androd:layout_constraintStart_toStartOf="parent"
+        androd:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/detail_vote_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/varela_round_regular"
+            android:text="@string/detail_vote_date"
+            android:textSize="15sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/detail_vote_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/varela_round_regular"
+            android:text="@string/detail_vote_type"
+            android:textSize="15sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/detail_vote_arguments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/varela_round_regular"
+            android:text="@string/detail_vote_arguments"
+            android:textSize="15sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/detail_vote_judge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/varela_round_regular"
+            android:text="@string/detail_vote_judge"
+            android:textSize="15sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/obscure_layout_image_button"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/obscure_style"
+        android:visibility="gone"
+        androd:layout_constraintBottom_toBottomOf="parent"
+        androd:layout_constraintEnd_toEndOf="parent"
+        androd:layout_constraintStart_toStartOf="parent"
+        androd:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

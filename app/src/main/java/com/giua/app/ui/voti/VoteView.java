@@ -6,11 +6,13 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -20,6 +22,7 @@ import com.giua.objects.Vote;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 public class VoteView extends LinearLayout {
     String subjectValue;
@@ -33,8 +36,9 @@ public class VoteView extends LinearLayout {
     LinearLayout listVoteLayout1;
     LinearLayout listVoteLayout2;
     List<Vote> allVotes;
+    OnClickListener onClick;
 
-    public VoteView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, String subject, String voteFirstQuarter, float rawVoteFirstQuarter, String voteSecondQuarter, float rawVoteSecondQuarter, List<Vote> allVotes) {
+    public VoteView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, String subject, String voteFirstQuarter, float rawVoteFirstQuarter, String voteSecondQuarter, float rawVoteSecondQuarter, List<Vote> allVotes, OnClickListener onClick) {
         super(context, attrs);
 
         this.subjectValue = subject;
@@ -43,6 +47,7 @@ public class VoteView extends LinearLayout {
         this.voteSecondQuarter = voteSecondQuarter;
         this.rawVoteSecondQuarter = rawVoteSecondQuarter;
         this.allVotes = allVotes;
+        this.onClick = onClick;
         initializeComponent(context);
     }
 
@@ -64,11 +69,15 @@ public class VoteView extends LinearLayout {
         listVoteLayout1 = findViewById(R.id.list_vote_linear_layout_1);
         listVoteLayout2 = findViewById(R.id.list_vote_linear_layout_2);
 
+        createSingleVotes();
+    }
+
+    private void createSingleVotes(){
         LinearLayout.LayoutParams singleVoteParams = new LinearLayout.LayoutParams(95, ViewGroup.LayoutParams.WRAP_CONTENT);
         singleVoteParams.setMargins(20,0,0,0);
 
         for(Vote vote : allVotes){
-            TextView tvVote = new TextView(getContext(), null);
+            SingleVoteView tvVote = new SingleVoteView(getContext(), null, vote);
             tvVote.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             tvVote.setTypeface(ResourcesCompat.getFont(getContext(), R.font.varela_round_regular));
             tvVote.setId(View.generateViewId());
@@ -77,6 +86,7 @@ public class VoteView extends LinearLayout {
             tvVote.setTextSize(18f);
             tvVote.setLayoutParams(singleVoteParams);
             tvVote.setPadding(5,5,5,5);
+            tvVote.setOnClickListener(onClick);
 
             if(!vote.isAsterisk)
                 tvVote.setText(vote.value);

@@ -10,4 +10,8 @@
     <color name="bad_vote">#D8201C</color>
     <color name="middle_vote">#eb951a</color>
     <color name="non_vote">#878787</color>
+    <color name="good_vote_lighter">#7BDF7B</color>
+    <color name="bad_vote_lighter">#E4605D</color>
+    <color name="middle_vote_lighter">#EAB365</color>
+    <color name="non_vote_lighter">#878787</color>
 </resources>

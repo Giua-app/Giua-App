@@ -9,8 +9,11 @@
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
-
     <string name="menu_voti">Voti</string>
     <string name="menu_agenda">Agenda</string>
     <string name="menu_lezioni">Lezioni</string>
+    <string name="detail_vote_date">Data:</string>
+    <string name="detail_vote_type">Tipo:</string>
+    <string name="detail_vote_arguments">Argomenti:</string>
+    <string name="detail_vote_judge">Giudizio:</string>
 </resources>

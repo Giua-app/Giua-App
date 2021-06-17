@@ -4,26 +4,23 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.HorizontalScrollView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
-import com.giua.app.DrawerActivity;
 import com.giua.app.R;
 import com.giua.objects.Vote;
 import com.giua.webscraper.GiuaScraper;
@@ -41,13 +38,14 @@ public class VotiFragment extends Fragment {
     LinearLayout voteListLayout;
     LinearLayout listVoteScrollView1;       //Scroll view del primo quadrimestre
     LinearLayout listVoteScrollView2;       //Scroll view del secondo quadrimestre
-    TextView tvSecondQuarter;
-    List<VoteView> allVoteView;
+    LinearLayout detailVoteLayout;
     LinearLayout.LayoutParams params;
-    DecimalFormat df = new DecimalFormat("0.0");
     ConstraintLayout constraintLayout;
-    ConstraintSet constraintSet;
-    boolean isListVoteOpened = false;
+    ScrollView voteScrollView;
+    TextView tvSecondQuarter;
+    ImageButton obscureLayoutButton;    //Questo bottone viene triggerato viene visualizzato dietro al detail layout e se viene cliccato si esce dai dettaglic
+    List<VoteView> allVoteView;
+    DecimalFormat df = new DecimalFormat("0.0");
 
     @SuppressLint("ClickableViewAccessibility")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -59,10 +57,13 @@ public class VotiFragment extends Fragment {
         listVoteScrollView1 = root.findViewById(R.id.list_vote_linear_layout_1);
         listVoteScrollView2 = root.findViewById(R.id.list_vote_linear_layout_2);
         constraintLayout = root.findViewById(R.id.vote_fragment_constraint_layout);
+        obscureLayoutButton = root.findViewById(R.id.obscure_layout_image_button);
+        voteScrollView = root.findViewById(R.id.vote_fragment_scroll_view);
         tvSecondQuarter = root.findViewById(R.id.list_votes_text_view_2);
         voteListLayout = root.findViewById(R.id.list_vote_layout);
-        constraintSet = new ConstraintSet();
-        constraintSet.clone(constraintLayout);
+        detailVoteLayout = root.findViewById(R.id.detail_vote_layout);
+
+        obscureLayoutButton.setOnClickListener(this::obscureButtonClick);
 
         Map<String, List<Vote>> allVotes = gS.getAllVotes(false);
 
@@ -130,9 +131,54 @@ public class VotiFragment extends Fragment {
             return Integer.parseInt(vote.value);
     }
 
+    public void obscureButtonClick(View view){
+        detailVoteLayout.setVisibility(View.GONE);
+        obscureLayoutButton.setVisibility(View.GONE);
+    }
+
+    private Drawable getDrawable(int id){
+        return ResourcesCompat.getDrawable(getResources(), id, getContext().getTheme());
+    }
+
+    private ColorStateList getColorStateList(int id){
+        return ResourcesCompat.getColorStateList(getResources(), id, getContext().getTheme());
+    }
+
+    private void onClickSingleVote(View view){
+        Resources res = getResources();
+        SingleVoteView _view = (SingleVoteView) view;
+        TextView detailVoteDate = detailVoteLayout.findViewById(R.id.detail_vote_date);
+        TextView detailVoteType = detailVoteLayout.findViewById(R.id.detail_vote_type);
+        TextView detailVoteArguments = detailVoteLayout.findViewById(R.id.detail_vote_arguments);
+        TextView detailVoteJudge = detailVoteLayout.findViewById(R.id.detail_vote_judge);
+        detailVoteDate.setVisibility(View.GONE);
+        detailVoteType.setVisibility(View.GONE);
+        detailVoteArguments.setVisibility(View.GONE);
+        detailVoteJudge.setVisibility(View.GONE);
+        detailVoteLayout.setVisibility(View.VISIBLE);
+        obscureLayoutButton.setVisibility(View.VISIBLE);
+
+        if(!_view.vote.date.equals("")) {
+            detailVoteDate.setVisibility(View.VISIBLE);
+            detailVoteDate.setText(Html.fromHtml("<b>" + res.getString(R.string.detail_vote_date) + "</b> " + _view.vote.date, Html.FROM_HTML_MODE_COMPACT));
+        }
+        if(!_view.vote.testType.equals("")) {
+            detailVoteType.setVisibility(View.VISIBLE);
+            detailVoteType.setText(Html.fromHtml("<b>" + res.getString(R.string.detail_vote_type) + "</b> " + _view.vote.testType, Html.FROM_HTML_MODE_COMPACT));
+        }
+        if(!_view.vote.arguments.equals("")) {
+            detailVoteArguments.setVisibility(View.VISIBLE);
+            detailVoteArguments.setText(Html.fromHtml("<b>" + res.getString(R.string.detail_vote_arguments) + "</b> " + _view.vote.arguments, Html.FROM_HTML_MODE_COMPACT));
+        }
+        if(!_view.vote.judgement.equals("")) {
+            detailVoteJudge.setVisibility(View.VISIBLE);
+            detailVoteJudge.setText(Html.fromHtml("<b>" + res.getString(R.string.detail_vote_judge) + "</b> " + _view.vote.judgement, Html.FROM_HTML_MODE_COMPACT));
+        }
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     private void addVoteView(String subject, String voteFirstQuart, float rawVoteFirstQuart, String voteSecondQuart, float rawVoteSecondQuart){
-        voteView = new VoteView(getContext(), null, subject, voteFirstQuart, rawVoteFirstQuart, voteSecondQuart, rawVoteSecondQuart, gS.getAllVotes(false).get(subject));
+        voteView = new VoteView(getContext(), null, subject, voteFirstQuart, rawVoteFirstQuart, voteSecondQuart, rawVoteSecondQuart, gS.getAllVotes(false).get(subject), this::onClickSingleVote);
         voteView.setId(View.generateViewId());
 
         voteView.setLayoutParams(params);
