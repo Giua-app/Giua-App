@@ -28,4 +28,10 @@
         <item name="android:fontFamily">@font/varela_round_regular</item>
         <item name="android:textSize">20sp</item>
     </style>
+
+    <style name="NavDrawerItemStyle" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">15sp</item>
+        <item name="fontFamily">@font/varela_round_regular</item>
+    </style>
 </resources>

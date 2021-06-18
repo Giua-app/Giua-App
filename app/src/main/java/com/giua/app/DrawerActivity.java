@@ -43,7 +43,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         navigationView = findViewById(R.id.nav_view);
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_voti, R.id.nav_agenda, R.id.nav_lezioni)
+                R.id.nav_voti, R.id.nav_agenda, R.id.nav_lezioni, R.id.nav_circolari)
                 .setOpenableLayout(drawerLayout)
                 .build();
 
@@ -81,6 +81,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             startAgendaFragment();
         } else if(item.getItemId() == R.id.nav_lezioni){
             startLessonsFragment();
+        } else if(item.getItemId() == R.id.nav_circolari){
+            startNewsLetterFragment();
         }
 
         return true;
@@ -90,6 +92,11 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         if(drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         }
+    }
+
+    private void startNewsLetterFragment(){
+        navController.navigate(R.id.nav_circolari, bundle);
+        closeNavDrawer();
     }
 
     private void startVotesFragment(){

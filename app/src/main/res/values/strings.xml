@@ -16,4 +16,5 @@
     <string name="detail_vote_type">Tipo:</string>
     <string name="detail_vote_arguments">Argomenti:</string>
     <string name="detail_vote_judge">Giudizio:</string>
+    <string name="menu_circolari">Circolari</string>
 </resources>

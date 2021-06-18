@@ -22,4 +22,10 @@
         android:name="com.giua.app.ui.lezioni.LezioniFragment"
         android:label="@string/menu_lezioni"
         tools:layout="@layout/fragment_lezioni" />
+
+    <fragment
+        android:id="@+id/nav_circolari"
+        android:name="com.giua.app.ui.circolari.CircolariFragment"
+        android:label="@string/menu_circolari"
+        tools:layout="@layout/fragment_circolari" />
 </navigation>
