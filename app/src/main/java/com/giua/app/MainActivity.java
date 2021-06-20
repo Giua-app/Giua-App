@@ -178,32 +178,15 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, DrawerActivity.class);
             intent.putExtra("giuascraper", gS);
             startActivity(intent);
+            finish();
         } else {
             setErrorMessage("Qualcosa e' andato storto!");
             etPassword.setText("");
             pgProgressBar.setVisibility(View.INVISIBLE);
         }
     }
-/*
-    @Override
-    protected void onResume() {
-        super.onResume();
-        setContentView(R.layout.activity_main);
-    }*/
 
-    /**
-     * Esci dall'applicazione simulando la pressione del tasto home
-     */
-    @Override
-    public void onBackPressed(){
-        //TODO: da usare solo per debug, l'utente una volta loggato non dovrebbe tornare indietro al login
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-    }
-
-    private void setErrorMessage(String message){
+    private void setErrorMessage(String message) {
         /*
         //TODO: Fare in modo che questo tipo di funzione possa essere richiamabile anche in altre classi
         if(!txvErrorMessage.getText().equals(message)) {
@@ -213,5 +196,43 @@ public class MainActivity extends AppCompatActivity {
         }*/
 
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Esci dall'applicazione simulando la pressione del tasto home
+     */
+    @Override
+    public void onBackPressed() {
+        //TODO: da usare solo per debug, l'utente una volta loggato non dovrebbe tornare indietro al login
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
+    @Override
+    protected void onRestart() {
+        onRestoreInstanceState(new Bundle());
+        releaseInstance();
+        super.onRestart();
+    }
+
+    @Override
+    protected void onResume() {
+        onRestoreInstanceState(new Bundle());
+        releaseInstance();
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        onSaveInstanceState(new Bundle());
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        onSaveInstanceState(new Bundle());
+        super.onStop();
     }
 }

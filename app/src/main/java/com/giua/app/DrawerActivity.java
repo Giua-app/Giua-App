@@ -5,18 +5,18 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.giua.webscraper.GiuaScraper;
-import com.google.android.material.navigation.NavigationView;
-
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+
+import com.giua.webscraper.GiuaScraper;
+import com.google.android.material.navigation.NavigationView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -49,6 +49,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+
 
         navigationView.setNavigationItemSelectedListener(this);
         Intent intent = getIntent();
@@ -104,13 +105,51 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         closeNavDrawer();
     }
 
-    private void startLessonsFragment(){
+    private void startLessonsFragment() {
         navController.navigate(R.id.nav_lezioni, bundle);
         closeNavDrawer();
     }
 
-    private void startAgendaFragment(){
+    private void startAgendaFragment() {
         navController.navigate(R.id.nav_agenda, bundle);
         closeNavDrawer();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (navController.getCurrentDestination().getId() != R.id.nav_voti)
+            startVotesFragment();
+        else {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        onRestoreInstanceState(new Bundle());
+        releaseInstance();
+        super.onRestart();
+    }
+
+    @Override
+    protected void onResume() {
+        onRestoreInstanceState(new Bundle());
+        releaseInstance();
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        onSaveInstanceState(new Bundle());
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        onSaveInstanceState(new Bundle());
+        super.onStop();
     }
 }
