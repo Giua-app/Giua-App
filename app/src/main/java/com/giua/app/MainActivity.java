@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        GiuaScraper.setDebugMode(true);
 
         etUsername = findViewById(R.id.textUser);
         etPassword = findViewById(R.id.textPassword);
