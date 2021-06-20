@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
-        android:background="@drawable/vote_view_style"
+        android:background="@drawable/general_view_style"
         android:elevation="20dp"
         android:orientation="vertical"
         android:padding="10dp"

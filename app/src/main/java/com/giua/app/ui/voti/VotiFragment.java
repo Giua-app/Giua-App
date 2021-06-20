@@ -182,8 +182,6 @@ public class VotiFragment extends Fragment {
 
         voteView.setLayoutParams(params);
 
-        //TODO: Add on click effect that work
-
         allVoteView.add(voteView);
         mainLayout.addView(voteView);
     }

@@ -2,18 +2,10 @@ package com.giua.app;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import com.giua.webscraper.GiuaScraper;
-import com.giua.webscraper.GiuaScraperExceptions;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Handler;
 import android.os.StrictMode;
 import android.text.InputType;
 import android.view.View;
-
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -22,6 +14,12 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.giua.webscraper.GiuaScraper;
+import com.giua.webscraper.GiuaScraperExceptions;
+import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        GiuaScraper.setDebugMode(true);
 
         etUsername = findViewById(R.id.textUser);
         etPassword = findViewById(R.id.textPassword);
@@ -149,7 +149,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void login(){
         try {
-            gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString());
+            String cookie = LoginData.getCookie(this);
+            gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString(), cookie, true);
         } catch (GiuaScraperExceptions.SessionCookieEmpty sce){
             setErrorMessage("Informazioni di login errate!");
             etPassword.setText("");
@@ -171,9 +172,8 @@ public class MainActivity extends AppCompatActivity {
         if(gS.checkLogin()){
             System.out.println("login ok");
             if(chRememberCredentials.isChecked()) {
-                LoginData.setCredentials(this,
-                        etUsername.getText().toString(),
-                        etPassword.getText().toString());
+                String c = gS.getSessionCookie();
+                LoginData.setCredentials(this, etUsername.getText().toString(), etPassword.getText().toString(), c);
             }
 
             Intent intent = new Intent(MainActivity.this, DrawerActivity.class);

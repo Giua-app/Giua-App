@@ -6,7 +6,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -22,9 +21,8 @@ import com.giua.objects.Vote;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 
-public class VoteView extends LinearLayout {
+public class VoteView extends ConstraintLayout {
     String subjectValue;
     String voteFirstQuarter;
     float rawVoteFirstQuarter;
