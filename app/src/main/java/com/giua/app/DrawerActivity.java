@@ -82,25 +82,34 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             startAgendaFragment();
         } else if(item.getItemId() == R.id.nav_lezioni){
             startLessonsFragment();
-        } else if(item.getItemId() == R.id.nav_circolari){
+        } else if (item.getItemId() == R.id.nav_circolari) {
             startNewsLetterFragment();
+        } else if (item.getItemId() == R.id.nav_logout_button) {
+            logoutButtonClick();
         }
 
         return true;
     }
 
-    private void closeNavDrawer(){
-        if(drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+    private void closeNavDrawer() {
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         }
     }
 
-    private void startNewsLetterFragment(){
+    private void logoutButtonClick() {
+        Intent intent = new Intent(this, MainActivity.class);
+        LoginData.setCredentials(this, "", "", "");
+        startActivity(intent);
+        finish();
+    }
+
+    private void startNewsLetterFragment() {
         navController.navigate(R.id.nav_circolari, bundle);
         closeNavDrawer();
     }
 
-    private void startVotesFragment(){
+    private void startVotesFragment() {
         navController.navigate(R.id.nav_voti, bundle);
         closeNavDrawer();
     }
