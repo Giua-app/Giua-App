@@ -16,6 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+
     <!-- Questo e il NavigationDrawer -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
@@ -25,5 +26,22 @@
         android:fitsSystemWindows="true"
         app:itemTextAppearance="@style/NavDrawerItemStyle"
         app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/activity_main_drawer" />
+        app:menu="@menu/activity_main_drawer">
+
+        <Button
+            android:id="@+id/logout_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="#00FFFFFF"
+            android:fontFamily="@font/varela_round_regular"
+            android:paddingStart="22dp"
+            android:paddingEnd="22dp"
+            android:text="Logout"
+            android:textAlignment="viewStart"
+            android:textAllCaps="false"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+    </com.google.android.material.navigation.NavigationView>
 </androidx.drawerlayout.widget.DrawerLayout>

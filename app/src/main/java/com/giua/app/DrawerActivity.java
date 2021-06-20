@@ -3,6 +3,8 @@ package com.giua.app;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -31,6 +33,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     DrawerLayout drawerLayout;
     NavigationView navigationView;     //Il navigation drawer vero e proprio
     NavController navController;     //Si puo intendere come il manager dei fragments
+    Button btnLogout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +44,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         setSupportActionBar(toolbar);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
+        btnLogout = findViewById(R.id.logout_button);
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_voti, R.id.nav_agenda, R.id.nav_lezioni, R.id.nav_circolari)
@@ -64,6 +68,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         bundle = new Bundle();
         bundle.putSerializable("giuascraper", gS);
         navigationView.setCheckedItem(R.id.nav_voti);
+
+        btnLogout.setOnClickListener(this::logoutButtonClick);
     }
 
     @Override
@@ -84,8 +90,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             startLessonsFragment();
         } else if (item.getItemId() == R.id.nav_circolari) {
             startNewsLetterFragment();
-        } else if (item.getItemId() == R.id.nav_logout_button) {
-            logoutButtonClick();
         }
 
         return true;
@@ -97,7 +101,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         }
     }
 
-    private void logoutButtonClick() {
+    private void logoutButtonClick(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         LoginData.setCredentials(this, "", "", "");
         startActivity(intent);

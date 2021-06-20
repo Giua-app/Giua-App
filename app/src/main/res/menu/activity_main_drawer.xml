@@ -18,7 +18,4 @@
             android:title="Circolari" />
     </group>
 
-    <item
-        android:id="@+id/nav_logout_button"
-        android:title="Logout"/>
 </menu>
