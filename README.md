@@ -17,7 +17,7 @@ Vai nella scheda [Actions](https://github.com/Giua-app/Giua-App/actions) e clicc
 ## Funzioni da implementare
 
 - [x] ~~pagina login~~
-- [x] visualizza voti e medie
+- [x] ~~visualizza voti e medie~~
 - [ ] visualizza lezioni
 - [ ] visualizza circolari
 - [ ] visualizza avvisi
