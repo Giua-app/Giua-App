@@ -12,11 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
@@ -34,14 +32,8 @@ public class VotiFragment extends Fragment {
     GiuaScraper gS;
     VoteView voteView;
     LinearLayout mainLayout;
-    LinearLayout voteListLayout;
-    LinearLayout listVoteScrollView1;       //Scroll view del primo quadrimestre
-    LinearLayout listVoteScrollView2;       //Scroll view del secondo quadrimestre
     LinearLayout detailVoteLayout;
     LinearLayout.LayoutParams params;
-    ConstraintLayout constraintLayout;
-    ScrollView voteScrollView;
-    TextView tvSecondQuarter;
     ImageButton obscureLayoutButton;    //Questo bottone viene triggerato viene visualizzato dietro al detail layout e se viene cliccato si esce dai dettaglic
     List<VoteView> allVoteView;
     DecimalFormat df = new DecimalFormat("0.0");
@@ -53,13 +45,7 @@ public class VotiFragment extends Fragment {
         Intent intent = getActivity().getIntent();
         gS = (GiuaScraper) intent.getSerializableExtra("giuascraper");
         mainLayout = root.findViewById(R.id.vote_fragment_linear_layout);
-        listVoteScrollView1 = root.findViewById(R.id.list_vote_linear_layout_1);
-        listVoteScrollView2 = root.findViewById(R.id.list_vote_linear_layout_2);
-        constraintLayout = root.findViewById(R.id.vote_fragment_constraint_layout);
         obscureLayoutButton = root.findViewById(R.id.obscure_layout_image_button);
-        voteScrollView = root.findViewById(R.id.vote_fragment_scroll_view);
-        tvSecondQuarter = root.findViewById(R.id.list_votes_text_view_2);
-        voteListLayout = root.findViewById(R.id.list_vote_layout);
         detailVoteLayout = root.findViewById(R.id.detail_vote_layout);
 
         obscureLayoutButton.setOnClickListener(this::obscureButtonClick);

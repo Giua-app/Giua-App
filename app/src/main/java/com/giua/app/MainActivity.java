@@ -2,12 +2,9 @@ package com.giua.app;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.StrictMode;
 import android.text.InputType;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -31,10 +28,6 @@ public class MainActivity extends AppCompatActivity {
     boolean btnShowActivated = false;
     GiuaScraper gS;
     TextView txvErrorMessage;
-    Animation errorMessageAnimationStart;
-    Animation errorMessageAnimationEnd;
-    Handler handler;
-    View vErrorView;
     CheckBox chRememberCredentials;
 
     @Override
@@ -42,12 +35,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //GiuaScraper.setSiteURL("SITO");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
 
         etUsername = findViewById(R.id.textUser);
         etPassword = findViewById(R.id.textPassword);
         pgProgressBar = findViewById(R.id.progressBar);
         btnShowPassword = findViewById(R.id.show_password_button);
         btnLogin = findViewById(R.id.login_button);
+        txvErrorMessage = findViewById(R.id.error_notification);
+        chRememberCredentials = findViewById(R.id.checkbox_remember_credentials);
 
         //TODO: da togliere in futuro
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -56,62 +52,18 @@ public class MainActivity extends AppCompatActivity {
         etUsername.setText(LoginData.getUser(getApplicationContext()));     //Imposta lo username memorizzato
         etPassword.setText(LoginData.getPassword(getApplicationContext()));     //Imposta la password memorizzata
 
-        handler = new Handler();
-
-        txvErrorMessage = findViewById(R.id.error_notification);
-        errorMessageAnimationStart = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.error_notification_animation_start);    //Animazione per mostrare il messaggio
-
-        errorMessageAnimationEnd = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.error_notification_animation_end);        //Animazione per far andare via il messaggio
-
-        Runnable runnable = () -> txvErrorMessage.startAnimation(errorMessageAnimationEnd);
-
-        vErrorView = findViewById(R.id.mainLayout);
-
-        chRememberCredentials = findViewById(R.id.checkbox_remember_credentials);
-
         /**
-         * Oncick per la TextView dell'errore
+         * Settings button click listener
          */
-        txvErrorMessage.setOnClickListener(view -> {            //Quando si clicca l'errore questo scompare
-            handler.removeCallbacks(runnable);
-            txvErrorMessage.startAnimation(errorMessageAnimationEnd);
-        });
-
-        /**
-         * Listener per l'animazione per mostrare il messaggio
-         */
-        errorMessageAnimationEnd.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {}
-            @Override
-            public void onAnimationRepeat(Animation animation) {}
-            @Override
-            public void onAnimationEnd(Animation animation) {       //Quando hai finito l animazione dell'uscita fai scomparire il messaggio
-                txvErrorMessage.setVisibility(View.GONE);
-                txvErrorMessage.setText("");
-            }
-        });
-
-        /**
-         * Listener per l'animazione per far andare via il messaggio
-         */
-        errorMessageAnimationStart.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {}
-            @Override
-            public void onAnimationRepeat(Animation animation) {}
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                handler.postDelayed(runnable, 5000);
-            }
+        findViewById(R.id.floating_settings_button).setOnClickListener(view -> {
+            startActivity(new Intent(this, SettingsActivity.class));
         });
 
         /**
          * Login click listener
          */
         btnLogin.setOnClickListener(view -> {
-            handler.removeCallbacks(runnable);
-            if(etPassword.getText().length() < 1){
+            if (etPassword.getText().length() < 1) {
                 setErrorMessage("Il campo della password non può essere vuoto!");
                 return;
             }
@@ -187,14 +139,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setErrorMessage(String message) {
-        /*
-        //TODO: Fare in modo che questo tipo di funzione possa essere richiamabile anche in altre classi
-        if(!txvErrorMessage.getText().equals(message)) {
-            txvErrorMessage.setVisibility(View.VISIBLE);
-            txvErrorMessage.setText(message);
-            txvErrorMessage.startAnimation(errorMessageAnimationStart);
-        }*/
-
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
     }
 
@@ -203,7 +147,6 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        //TODO: da usare solo per debug, l'utente una volta loggato non dovrebbe tornare indietro al login
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

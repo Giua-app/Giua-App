@@ -17,4 +17,6 @@
     <string name="detail_vote_arguments">Argomenti:</string>
     <string name="detail_vote_judge">Giudizio:</string>
     <string name="menu_circolari">Circolari</string>
+    <string name="impostazioni">Impostazioni</string>
+    <string name="site_url_text_view">Imposta l\'url del sito:</string>
 </resources>
