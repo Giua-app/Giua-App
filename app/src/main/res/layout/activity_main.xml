@@ -32,16 +32,16 @@
 
     <EditText
         android:id="@+id/textPassword"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="48dp"
-        android:ems="10"
+        android:layout_marginBottom="52dp"
+        android:fontFamily="sans-serif"
         android:hint="password"
         android:inputType="textPassword"
         app:layout_constraintBottom_toTopOf="@+id/login_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="@+id/textUser"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/textUser" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -60,9 +60,10 @@
     <ImageButton
         android:id="@+id/show_password_button"
         android:layout_width="44dp"
-        android:layout_height="49dp"
+        android:layout_height="0dp"
         android:layout_marginEnd="16dp"
-        android:backgroundTint="@color/main_color"
+        android:backgroundTint="#00000000"
+        android:contentDescription="Mostra password"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="@+id/textPassword"
         app:layout_constraintEnd_toEndOf="parent"
@@ -70,7 +71,7 @@
         app:layout_constraintStart_toEndOf="@+id/textPassword"
         app:layout_constraintTop_toTopOf="@+id/textPassword"
         app:layout_constraintVertical_bias="1.0"
-        app:srcCompat="@drawable/btn_show_password_false_image" />
+        app:srcCompat="@drawable/ic_baseline_visibility_off_24" />
 
     <EditText
         android:id="@+id/textUser"
@@ -78,6 +79,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
         android:ems="10"
+        android:fontFamily="sans-serif"
         android:hint="nome.cognome.f1"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/textPassword"

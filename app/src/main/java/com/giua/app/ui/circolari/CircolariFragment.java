@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
 
@@ -46,7 +45,7 @@ public class CircolariFragment extends Fragment {
         params.setMargins(0, 40, 0, 0);
 
         for (Newsletter newsletter : allNewsletter) {
-            NewsletterView newsletterView = new NewsletterView(context, null, newsletter.status, newsletter.number, newsletter.date, newsletter.newslettersObject, newsletter.detailsUrl);
+            NewsletterView newsletterView = new NewsletterView(context, null, newsletter);
             newsletterView.setLayoutParams(params);
 
             newsletterView.setOnClickListener(this::onClickNewsletterView);
@@ -56,9 +55,9 @@ public class CircolariFragment extends Fragment {
     }
 
     public void onClickNewsletterView(View view) {
-        pdfViewer.setVisibility(View.VISIBLE);
+        /*pdfViewer.setVisibility(View.VISIBLE);
         pdfViewer.getSettings().setJavaScriptEnabled(true);
         pdfViewer.getSettings().setPluginState(WebSettings.PluginState.ON);
-        pdfViewer.loadUrl(gS.getSiteURL() + ((NewsletterView) view).url);
+        pdfViewer.loadUrl(gS.getSiteURL() + ((NewsletterView) view).url);*/
     }
 }

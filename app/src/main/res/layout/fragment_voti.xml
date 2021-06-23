@@ -46,8 +46,10 @@
         android:visibility="gone"
         androd:layout_constraintBottom_toBottomOf="parent"
         androd:layout_constraintEnd_toEndOf="parent"
+        androd:layout_constraintHorizontal_bias="0.0"
         androd:layout_constraintStart_toStartOf="parent"
-        androd:layout_constraintTop_toTopOf="parent">
+        androd:layout_constraintTop_toTopOf="parent"
+        androd:layout_constraintVertical_bias="0.422">
 
         <TextView
             android:id="@+id/detail_vote_date"

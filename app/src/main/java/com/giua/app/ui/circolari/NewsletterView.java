@@ -10,28 +10,21 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.giua.app.R;
+import com.giua.objects.Newsletter;
 
 import org.jetbrains.annotations.NotNull;
 
 public class NewsletterView extends ConstraintLayout {
-    String status;
-    String numberID;
-    String date;
-    String object;
-    String url;
+    Newsletter newsletter;
     TextView tvStatus;
     TextView tvNumberID;
     TextView tvDate;
     TextView tvObject;
 
-    public NewsletterView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, String status, String numberID, String date, String object, String url) {
+    public NewsletterView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, Newsletter newsletter) {
         super(context, attrs);
 
-        this.status = status;
-        this.numberID = numberID;
-        this.date = date;
-        this.object = object;
-        this.url = url;
+        this.newsletter = newsletter;
 
         initializeComponent(context);
     }
@@ -45,7 +38,7 @@ public class NewsletterView extends ConstraintLayout {
         tvDate = findViewById(R.id.newsletter_date_text_view);
         tvObject = findViewById(R.id.newsletter_object_text_view);
 
-        if (status.equals("LETTA")) {
+        if (newsletter.isRead()) {
             tvStatus.setText("Letta");
             //IMPOSTA ANCHE IL COLORE DI BACKGROUND
         } else {
@@ -53,9 +46,9 @@ public class NewsletterView extends ConstraintLayout {
             //IMPOSTA ANCHE IL COLORE DI BACKGROUND
         }
 
-        tvNumberID.setText(numberID);
-        tvDate.setText(date);
-        tvObject.setText(object);
+        tvNumberID.setText(newsletter.number);
+        tvDate.setText(newsletter.date);
+        tvObject.setText(newsletter.newslettersObject);
     }
 
 

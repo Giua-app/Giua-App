@@ -35,7 +35,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //GiuaScraper.setSiteURL("SITO");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
+        /*Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {      //crash handler
+            setErrorMessage(throwable.toString());
+            throwable.printStackTrace();
+            finish();
+        });*/
+
+        //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
+        //GiuaScraper.setDebugMode(true);
 
         etUsername = findViewById(R.id.textUser);
         etPassword = findViewById(R.id.textPassword);
@@ -83,11 +90,13 @@ public class MainActivity extends AppCompatActivity {
          */
         btnShowPassword.setOnClickListener(view -> {
             if(!btnShowActivated) {
-                etPassword.setInputType (InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD | InputType.TYPE_CLASS_TEXT);      //Mostra la password
-                btnShowPassword.setImageResource(R.drawable.btn_show_password_true_image);
+                etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_NULL);      //Mostra la password
+                btnShowPassword.setImageResource(R.drawable.ic_baseline_visibility_24);
+                etPassword.setSelection(etPassword.getText().length());
             } else {
-                etPassword.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD | InputType.TYPE_CLASS_TEXT);  //Nasconde la password
-                btnShowPassword.setImageResource(R.drawable.btn_show_password_false_image);
+                etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);  //Nasconde la password
+                btnShowPassword.setImageResource(R.drawable.ic_baseline_visibility_off_24);
+                etPassword.setSelection(etPassword.getText().length());
             }
             btnShowActivated = !btnShowActivated;
         });

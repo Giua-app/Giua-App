@@ -27,6 +27,7 @@ public class SettingsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         etSiteURL.setText(GiuaScraper.getSiteURL());
+        etSiteURL.setSelection(etSiteURL.getText().length());
 
         findViewById(R.id.settings_save_button).setOnClickListener(view -> {
             if (Pattern.matches("https?://([a-zA-Z0-9]+[.])+([a-zA-Z0-9]+)(:[0-9]+)?", String.valueOf(etSiteURL.getText()))) {
