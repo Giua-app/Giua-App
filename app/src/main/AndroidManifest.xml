@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GiuaApp">
         <activity
-            android:name=".MainActivity"
+            android:name=".ActivityManager"
             android:label="@string/app_name"
             android:theme="@style/Theme.GiuaApp.NoActionBar">
             <intent-filter>
@@ -21,6 +21,24 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".MainLogin"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.GiuaApp.NoActionBar">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ActivityManager" />
+        </activity>
+        <activity
+            android:name=".LoadingScreenLogin"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.GiuaApp.NoActionBar">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ActivityManager" />
+        </activity>
+        <activity
             android:name=".DrawerActivity"
             android:label="@string/title_activity_drawer"
             android:theme="@style/Theme.GiuaApp.NoActionBar">
@@ -28,7 +46,7 @@
             <!-- The meta-data tag is required if you support API level 15 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".ActivityManager" />
         </activity>
         <activity
             android:name=".SettingsActivity"
@@ -38,7 +56,7 @@
             <!-- The meta-data tag is required if you support API level 15 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".ActivityManager" />
         </activity>
 
     </application>

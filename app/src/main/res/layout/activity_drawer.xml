@@ -11,6 +11,13 @@
 
 
     <!-- Con questo include viene messa la toolbar -->
+
+    <ProgressBar
+        android:id="@+id/progressBar4"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <include
         layout="@layout/app_bar_main"
         android:layout_width="match_parent"

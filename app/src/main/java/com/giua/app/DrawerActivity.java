@@ -102,7 +102,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     }
 
     private void logoutButtonClick(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, ActivityManager.class);
         LoginData.setCredentials(this, "", "", "");
         startActivity(intent);
         finish();

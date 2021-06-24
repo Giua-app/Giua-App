@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.giua.app.R;
 import com.giua.objects.Newsletter;
@@ -38,15 +39,14 @@ public class NewsletterView extends ConstraintLayout {
         tvDate = findViewById(R.id.newsletter_date_text_view);
         tvObject = findViewById(R.id.newsletter_object_text_view);
 
-        if (newsletter.isRead()) {
-            tvStatus.setText("Letta");
-            //IMPOSTA ANCHE IL COLORE DI BACKGROUND
-        } else {
+        if (!newsletter.isRead()) {
             tvStatus.setText("Da leggere");
-            //IMPOSTA ANCHE IL COLORE DI BACKGROUND
+            tvStatus.setBackgroundTintList(ResourcesCompat.getColorStateList(getResources(), R.color.middle_vote, context.getTheme()));
+        } else {
+            tvStatus.setText("Letta");
         }
 
-        tvNumberID.setText(newsletter.number);
+        tvNumberID.setText("n." + newsletter.number);
         tvDate.setText(newsletter.date);
         tvObject.setText(newsletter.newslettersObject);
     }
