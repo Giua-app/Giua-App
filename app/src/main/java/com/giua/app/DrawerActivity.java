@@ -1,7 +1,9 @@
 package com.giua.app;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
@@ -34,6 +37,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     NavigationView navigationView;     //Il navigation drawer vero e proprio
     NavController navController;     //Si puo intendere come il manager dei fragments
     Button btnLogout;
+    Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +74,13 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         navigationView.setCheckedItem(R.id.nav_voti);
 
         btnLogout.setOnClickListener(this::logoutButtonClick);
+
+        if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
+        }
     }
+
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -80,13 +90,13 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
     @Override
     public boolean onNavigationItemSelected(@NonNull @NotNull MenuItem item) {
-        if(item.isChecked()){
+        if (item.isChecked()) {
             closeNavDrawer();
-        } else if(item.getItemId() == R.id.nav_voti){
+        } else if (item.getItemId() == R.id.nav_voti) {
             startVotesFragment();
-        } else if(item.getItemId() == R.id.nav_agenda){
+        } else if (item.getItemId() == R.id.nav_agenda) {
             startAgendaFragment();
-        } else if(item.getItemId() == R.id.nav_lezioni){
+        } else if (item.getItemId() == R.id.nav_lezioni) {
             startLessonsFragment();
         } else if (item.getItemId() == R.id.nav_circolari) {
             startNewsLetterFragment();
@@ -109,22 +119,30 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     }
 
     private void startNewsLetterFragment() {
-        navController.navigate(R.id.nav_circolari, bundle);
+        handler.post(() -> {
+            navController.navigate(R.id.nav_circolari, bundle);
+        });
         closeNavDrawer();
     }
 
     private void startVotesFragment() {
-        navController.navigate(R.id.nav_voti, bundle);
+        handler.post(() -> {
+            navController.navigate(R.id.nav_voti, bundle);
+        });
         closeNavDrawer();
     }
 
     private void startLessonsFragment() {
-        navController.navigate(R.id.nav_lezioni, bundle);
+        handler.post(() -> {
+            navController.navigate(R.id.nav_lezioni, bundle);
+        });
         closeNavDrawer();
     }
 
     private void startAgendaFragment() {
-        navController.navigate(R.id.nav_agenda, bundle);
+        handler.post(() -> {
+            navController.navigate(R.id.nav_agenda, bundle);
+        });
         closeNavDrawer();
     }
 

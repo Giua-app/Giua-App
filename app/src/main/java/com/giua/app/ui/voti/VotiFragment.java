@@ -6,12 +6,14 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -30,6 +32,7 @@ import java.util.Vector;
 public class VotiFragment extends Fragment {
 
     GiuaScraper gS;
+    ProgressBar progressBar;
     VoteView voteView;
     LinearLayout mainLayout;
     LinearLayout detailVoteLayout;
@@ -37,6 +40,8 @@ public class VotiFragment extends Fragment {
     ImageButton obscureLayoutButton;    //Questo bottone viene triggerato viene visualizzato dietro al detail layout e se viene cliccato si esce dai dettaglic
     List<VoteView> allVoteView;
     DecimalFormat df = new DecimalFormat("0.0");
+    Map<String, List<Vote>> allVotes;
+    Handler handler = new Handler();
 
     @SuppressLint("ClickableViewAccessibility")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -47,11 +52,23 @@ public class VotiFragment extends Fragment {
         mainLayout = root.findViewById(R.id.vote_fragment_linear_layout);
         obscureLayoutButton = root.findViewById(R.id.obscure_layout_image_button);
         detailVoteLayout = root.findViewById(R.id.detail_vote_layout);
+        progressBar = root.findViewById(R.id.vote_loading_page_bar);
 
         obscureLayoutButton.setOnClickListener(this::obscureButtonClick);
 
-        Map<String, List<Vote>> allVotes = gS.getAllVotes(false);
+        generateAllViewsAsync();
 
+        return root;
+    }
+
+    private void generateAllViewsAsync() {
+        new Thread(() -> {
+            allVotes = gS.getAllVotes(false);
+            handler.post(this::generateAllViews);
+        }).start();
+    }
+
+    private void generateAllViews() {
         float meanSecondQuarter;
         float meanFirstQuarter;     //media aritmetica dei voti
         int voteCounterFirstQuarter;     //Conta solamente i voti che ci sono e non gli asterischi
@@ -61,17 +78,17 @@ public class VotiFragment extends Fragment {
         params = new LinearLayout.LayoutParams(mainLayout.getLayoutParams().width, mainLayout.getLayoutParams().height);
         params.setMargins(10, 20, 0, 30);
 
-        for(String subject: allVotes.keySet()){     //Cicla ogni materia
+        for (String subject : allVotes.keySet()) {     //Cicla ogni materia
             meanFirstQuarter = 0f;
             meanSecondQuarter = 0f;
             voteCounterFirstQuarter = 0;     //Conta solamente i voti che ci sono e non gli asterischi
             voteCounterSecondQuarter = 0;
 
-            for(Vote vote: allVotes.get(subject)){      //Cicla ogni voto della materia
-                if(vote.value.length() > 0 && vote.isFirstQuarterly){
+            for (Vote vote : allVotes.get(subject)) {      //Cicla ogni voto della materia
+                if (vote.value.length() > 0 && vote.isFirstQuarterly) {
                     meanFirstQuarter += getNumberFromVote(vote);
                     voteCounterFirstQuarter++;
-                } else if(vote.value.length() > 0) {
+                } else if (vote.value.length() > 0) {
                     meanSecondQuarter += getNumberFromVote(vote);
                     voteCounterSecondQuarter++;
                 }
@@ -92,10 +109,8 @@ public class VotiFragment extends Fragment {
                     addVoteView(subject, "/", -1f, "/", -1f);
                 }
             }
-
         }
-
-        return root;
+        progressBar.setVisibility(View.GONE);
     }
 
     private float getNumberFromVote(Vote vote) {
