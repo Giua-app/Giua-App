@@ -7,10 +7,23 @@
     android:padding="10dp">
 
     <TextView
+        android:id="@+id/newsletter_status_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/newsletter_status_style"
+        android:fontFamily="@font/varela_round_regular"
+        android:padding="5dp"
+        android:text="Stato"
+        android:textSize="15sp"
+        app:layout_constraintStart_toEndOf="@+id/newsletter_view_left_image"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/newsletter_numberid_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="144dp"
+        android:layout_marginStart="148dp"
         android:fontFamily="@font/varela_round_regular"
         android:padding="5dp"
         android:text="Numero"
@@ -22,32 +35,17 @@
 
     <TextView
         android:id="@+id/newsletter_object_text_view"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:fontFamily="@font/varela_round_regular"
-        android:paddingLeft="5dp"
-        android:paddingEnd="10dp"
+        android:paddingStart="5dp"
         android:text="Oggetto"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/newsletter_status_text_view"
         app:layout_constraintTop_toBottomOf="@+id/newsletter_status_text_view" />
-
-    <TextView
-        android:id="@+id/newsletter_status_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/newsletter_status_style"
-        android:fontFamily="@font/varela_round_regular"
-        android:padding="5dp"
-        android:text="Stato"
-        android:textSize="15sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/newsletter_date_text_view"
@@ -59,12 +57,13 @@
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="@+id/newsletter_numberid_text_view"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintHorizontal_bias="0.674"
         app:layout_constraintStart_toEndOf="@+id/newsletter_numberid_text_view"
         app:layout_constraintTop_toTopOf="@+id/newsletter_numberid_text_view"
         app:layout_constraintVertical_bias="0.0" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
@@ -74,14 +73,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/newsletter_object_text_view"
-        app:layout_constraintTop_toBottomOf="@+id/newsletter_object_text_view">
+        app:layout_constraintTop_toBottomOf="@+id/newsletter_object_text_view" />
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="TextView" />
-    </LinearLayout>
+    <ImageView
+        android:id="@+id/newsletter_view_left_image"
+        android:layout_width="20dp"
+        android:layout_height="0dp"
+        android:background="@drawable/general_view_style"
+        android:backgroundTint="@color/middle_vote"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

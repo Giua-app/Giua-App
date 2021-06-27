@@ -1,14 +1,15 @@
 package com.giua.app.ui.circolari;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.res.ResourcesCompat;
 
 import com.giua.app.R;
 import com.giua.objects.Newsletter;
@@ -21,6 +22,7 @@ public class NewsletterView extends ConstraintLayout {
     TextView tvNumberID;
     TextView tvDate;
     TextView tvObject;
+    ImageView imageView;
 
     public NewsletterView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, Newsletter newsletter) {
         super(context, attrs);
@@ -38,10 +40,15 @@ public class NewsletterView extends ConstraintLayout {
         tvNumberID = findViewById(R.id.newsletter_numberid_text_view);
         tvDate = findViewById(R.id.newsletter_date_text_view);
         tvObject = findViewById(R.id.newsletter_object_text_view);
+        imageView = findViewById(R.id.newsletter_view_left_image);
 
         if (!newsletter.isRead()) {
             tvStatus.setText("Da leggere");
-            tvStatus.setBackgroundTintList(ResourcesCompat.getColorStateList(getResources(), R.color.middle_vote, context.getTheme()));
+            tvStatus.setTypeface(tvStatus.getTypeface(), Typeface.BOLD);
+            tvDate.setTypeface(tvDate.getTypeface(), Typeface.BOLD);
+            tvNumberID.setTypeface(tvNumberID.getTypeface(), Typeface.BOLD);
+            tvObject.setTypeface(tvObject.getTypeface(), Typeface.BOLD);
+            imageView.setVisibility(VISIBLE);
         } else {
             tvStatus.setText("Letta");
         }

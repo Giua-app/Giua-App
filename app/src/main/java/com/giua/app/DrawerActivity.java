@@ -119,38 +119,30 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     }
 
     private void startNewsLetterFragment() {
-        handler.post(() -> {
-            navController.navigate(R.id.nav_circolari, bundle);
-        });
+        handler.post(() -> navController.navigate(R.id.nav_circolari, bundle));
         closeNavDrawer();
     }
 
     private void startVotesFragment() {
-        handler.post(() -> {
-            navController.navigate(R.id.nav_voti, bundle);
-        });
+        handler.post(() -> navController.navigate(R.id.nav_voti, bundle));
         closeNavDrawer();
     }
 
     private void startLessonsFragment() {
-        handler.post(() -> {
-            navController.navigate(R.id.nav_lezioni, bundle);
-        });
+        handler.post(() -> navController.navigate(R.id.nav_lezioni, bundle));
         closeNavDrawer();
     }
 
     private void startAgendaFragment() {
-        handler.post(() -> {
-            navController.navigate(R.id.nav_agenda, bundle);
-        });
+        handler.post(() -> navController.navigate(R.id.nav_agenda, bundle));
         closeNavDrawer();
     }
 
     @Override
     public void onBackPressed() {
-        if (navController.getCurrentDestination().getId() != R.id.nav_voti)
+        if (navController.getCurrentDestination().getId() != R.id.nav_voti) {
             startVotesFragment();
-        else {
+        } else {
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_HOME);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

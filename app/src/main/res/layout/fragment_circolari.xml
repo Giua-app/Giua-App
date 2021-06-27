@@ -10,11 +10,16 @@
         style="?android:attr/progressBarStyle"
         android:layout_width="67dp"
         android:layout_height="67dp"
+        android:translationZ="10dp"
         androd:layout_constraintBottom_toBottomOf="parent"
         androd:layout_constraintEnd_toEndOf="parent"
         androd:layout_constraintStart_toStartOf="parent"
         androd:layout_constraintTop_toTopOf="parent"
-        androd:layout_constraintVertical_bias="0.425" />
+        androd:layout_constraintVertical_bias="0.425"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/newsletter_scroll_view" />
 
     <ScrollView
         android:id="@+id/newsletter_scroll_view"

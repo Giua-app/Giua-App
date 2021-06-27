@@ -95,7 +95,7 @@ public class CircolariFragment extends Fragment {
         target.setDataAndType(FileProvider.getUriForFile(getContext(), "com.giua.app.provider", new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/circolare.pdf")), "application/pdf");
         target.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-        Intent intent = Intent.createChooser(target, "Apri il pdf");
+        Intent intent = Intent.createChooser(target, "Apri la circolare con:");
         try {
             startActivity(intent);
         } catch (ActivityNotFoundException e) {
