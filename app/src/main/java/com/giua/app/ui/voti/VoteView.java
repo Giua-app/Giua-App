@@ -77,9 +77,9 @@ public class VoteView extends ConstraintLayout {
         for(Vote vote : allVotes){
             SingleVoteView tvVote = new SingleVoteView(getContext(), null, vote);
             tvVote.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-            tvVote.setTypeface(ResourcesCompat.getFont(getContext(), R.font.varela_round_regular));
+            tvVote.setTypeface(ResourcesCompat.getFont(getContext(), R.font.varelaroundregular));
             tvVote.setId(View.generateViewId());
-            tvVote.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.single_vote_style));
+            tvVote.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.corner_radius_10dp));
 
             tvVote.setTextSize(18f);
             tvVote.setLayoutParams(singleVoteParams);
@@ -128,6 +128,4 @@ public class VoteView extends ConstraintLayout {
         }
         return getResources().getColorStateList(R.color.non_vote, getContext().getTheme()); //Non si dovrebbe mai verificare
     }
-
-
 }

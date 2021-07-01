@@ -25,13 +25,14 @@
 
     <style name="ToolbarTextStyle" parent="Theme.GiuaApp.NoActionBar">
         <item name="android:textColor">@color/white</item>
-        <item name="android:fontFamily">@font/varela_round_regular</item>
+        <item name="android:fontFamily">@font/varelaroundregular</item>
         <item name="android:textSize">20sp</item>
     </style>
 
     <style name="NavDrawerItemStyle" parent="android:Widget.TextView">
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">15sp</item>
-        <item name="fontFamily">@font/varela_round_regular</item>
+        <item name="fontFamily">@font/varelaroundregular</item>
     </style>
+
 </resources>

@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/general_view_style"
     android:padding="10dp">
 
@@ -11,8 +11,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:background="@drawable/newsletter_status_style"
-        android:fontFamily="@font/varela_round_regular"
+        android:background="@drawable/corner_radius_10dp"
+        android:fontFamily="@font/varelaroundregular"
         android:padding="5dp"
         android:text="Stato"
         android:textSize="15sp"
@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="148dp"
-        android:fontFamily="@font/varela_round_regular"
+        android:fontFamily="@font/varelaroundregular"
         android:padding="5dp"
         android:text="Numero"
         android:textSize="15sp"
@@ -38,7 +38,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:fontFamily="@font/varela_round_regular"
+        android:fontFamily="@font/varelaroundregular"
         android:paddingStart="5dp"
         android:text="Oggetto"
         android:textSize="15sp"
@@ -51,7 +51,7 @@
         android:id="@+id/newsletter_date_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/varela_round_regular"
+        android:fontFamily="@font/varelaroundregular"
         android:padding="5dp"
         android:text="Data"
         android:textSize="15sp"
@@ -64,16 +64,42 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/corner_radius_10dp"
+        android:backgroundTint="@color/white"
+        android:elevation="4dp"
         android:orientation="horizontal"
         android:paddingStart="5dp"
         android:paddingEnd="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/newsletter_object_text_view"
-        app:layout_constraintTop_toBottomOf="@+id/newsletter_object_text_view" />
+        app:layout_constraintTop_toBottomOf="@+id/newsletter_object_text_view">
+
+        <ImageButton
+            android:id="@+id/newsletter_view_btn_document"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#00FFFFFF"
+            android:scaleType="centerInside"
+            app:srcCompat="@drawable/ic_baseline_pageview_24" />
+
+        <ImageButton
+            android:id="@+id/newsletter_view_btn_attachment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#00000000"
+            android:scaleType="centerInside"
+            app:srcCompat="@drawable/ic_baseline_attachment_24" />
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/newsletter_view_left_image"

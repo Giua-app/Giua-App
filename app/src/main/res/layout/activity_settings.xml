@@ -50,7 +50,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:fontFamily="@font/varela_round_regular"
+                android:fontFamily="@font/varelaroundregular"
                 android:text="@string/site_url_text_view"
                 android:textSize="15sp" />
 
@@ -59,7 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:fontFamily="@font/varela_round_regular"
+                android:fontFamily="@font/varelaroundregular"
                 android:hint="URL"
                 android:inputType="textUri"
                 android:labelFor="@id/settings_url_text_view"

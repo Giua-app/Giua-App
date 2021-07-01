@@ -22,6 +22,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.giua.webscraper.GiuaScraper;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -121,6 +122,9 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     private void startNewsLetterFragment() {
         handler.post(() -> navController.navigate(R.id.nav_circolari, bundle));
         closeNavDrawer();
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
+                0);
     }
 
     private void startVotesFragment() {
@@ -136,6 +140,10 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     private void startAgendaFragment() {
         handler.post(() -> navController.navigate(R.id.nav_agenda, bundle));
         closeNavDrawer();
+    }
+
+    public static void setErrorMessage(String message, View view) {
+        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

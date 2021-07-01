@@ -26,6 +26,7 @@ public class LoadingScreenLogin extends AppCompatActivity {
         new Thread(() -> {
             try {
                 gS = new GiuaScraper(LoginData.getUser(this), LoginData.getPassword(this), LoginData.getCookie(this), true);
+                gS.login();
                 startDrawerActivity();
             } catch (GiuaScraperExceptions.InternetProblems ip) {
                 if (!GiuaScraper.isMyInternetWorking()) {

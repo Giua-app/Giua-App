@@ -1,9 +1,11 @@
 package com.giua.app.ui.circolari;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,11 +25,17 @@ public class NewsletterView extends ConstraintLayout {
     TextView tvDate;
     TextView tvObject;
     ImageView imageView;
+    ImageButton btnDocument;
+    ImageButton btnAttachments;
+    Runnable clickDocument;
+    Runnable clickAttachment;
 
-    public NewsletterView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, Newsletter newsletter) {
+    public NewsletterView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, Newsletter newsletter, Runnable clickDocument, Runnable clickAttachment) {
         super(context, attrs);
 
         this.newsletter = newsletter;
+        this.clickDocument = clickDocument;
+        this.clickAttachment = clickAttachment;
 
         initializeComponent(context);
     }
@@ -41,6 +49,17 @@ public class NewsletterView extends ConstraintLayout {
         tvDate = findViewById(R.id.newsletter_date_text_view);
         tvObject = findViewById(R.id.newsletter_object_text_view);
         imageView = findViewById(R.id.newsletter_view_left_image);
+        btnDocument = findViewById(R.id.newsletter_view_btn_document);
+        btnAttachments = findViewById(R.id.newsletter_view_btn_attachment);
+
+        btnDocument.setOnClickListener((view) -> clickDocument.run());
+
+        if (newsletter.attachments != null) {
+            btnAttachments.setOnClickListener((view) -> clickAttachment.run());
+        } else {
+            btnAttachments.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.non_vote, context.getTheme())));
+            btnAttachments.setAlpha(0.3f);
+        }
 
         if (!newsletter.isRead()) {
             tvStatus.setText("Da leggere");
@@ -57,6 +76,4 @@ public class NewsletterView extends ConstraintLayout {
         tvDate.setText(newsletter.date);
         tvObject.setText(newsletter.newslettersObject);
     }
-
-
 }

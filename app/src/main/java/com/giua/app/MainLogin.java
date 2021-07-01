@@ -50,6 +50,7 @@ public class MainLogin extends AppCompatActivity {
         new Thread(() -> {
             try {
                 gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString(), LoginData.getCookie(this), true);
+                gS.login();
             } catch (GiuaScraperExceptions.SessionCookieEmpty sce) {
                 setErrorMessage("Informazioni di login errate!");
                 etPassword.setText("");

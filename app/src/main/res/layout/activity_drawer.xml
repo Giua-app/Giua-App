@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:background="#00FFFFFF"
-            android:fontFamily="@font/varela_round_regular"
+            android:fontFamily="@font/varelaroundregular"
             android:paddingStart="22dp"
             android:paddingEnd="22dp"
             android:text="Logout"

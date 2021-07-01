@@ -27,7 +27,6 @@ import com.giua.webscraper.GiuaScraper;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 public class VotiFragment extends Fragment {
 
@@ -38,7 +37,6 @@ public class VotiFragment extends Fragment {
     LinearLayout detailVoteLayout;
     LinearLayout.LayoutParams params;
     ImageButton obscureLayoutButton;    //Questo bottone viene triggerato viene visualizzato dietro al detail layout e se viene cliccato si esce dai dettaglic
-    List<VoteView> allVoteView;
     DecimalFormat df = new DecimalFormat("0.0");
     Map<String, List<Vote>> allVotes;
     Handler handler = new Handler();
@@ -51,7 +49,7 @@ public class VotiFragment extends Fragment {
         gS = (GiuaScraper) intent.getSerializableExtra("giuascraper");
         mainLayout = root.findViewById(R.id.vote_fragment_linear_layout);
         obscureLayoutButton = root.findViewById(R.id.obscure_layout_image_button);
-        detailVoteLayout = root.findViewById(R.id.detail_vote_layout);
+        detailVoteLayout = root.findViewById(R.id.attachment_layout);
         progressBar = root.findViewById(R.id.vote_loading_page_bar);
 
         obscureLayoutButton.setOnClickListener(this::obscureButtonClick);
@@ -74,7 +72,6 @@ public class VotiFragment extends Fragment {
         int voteCounterFirstQuarter;     //Conta solamente i voti che ci sono e non gli asterischi
         int voteCounterSecondQuarter;
 
-        allVoteView = new Vector<>();
         params = new LinearLayout.LayoutParams(mainLayout.getLayoutParams().width, mainLayout.getLayoutParams().height);
         params.setMargins(10, 20, 0, 30);
 
@@ -183,7 +180,6 @@ public class VotiFragment extends Fragment {
 
         voteView.setLayoutParams(params);
 
-        allVoteView.add(voteView);
         mainLayout.addView(voteView);
     }
 }

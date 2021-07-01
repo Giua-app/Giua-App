@@ -4,7 +4,7 @@
     android:id="@+id/vote_view_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/general_view_style"
+    android:background="@drawable/corner_radius_10dp"
     android:padding="10dp">
 
     <!-- Questo è il componente utilizzato per aggiungere i voti -->
@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:fontFamily="@font/varela_round_regular"
+        android:fontFamily="@font/varelaroundregular"
         android:paddingStart="5dp"
         android:paddingTop="5dp"
         android:paddingEnd="5dp"
@@ -33,7 +33,8 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        android:background="@drawable/list_vote_style"
+        android:background="@drawable/corner_radius_10dp"
+        android:backgroundTint="@color/white"
         android:elevation="10dp"
         android:orientation="vertical"
         android:padding="5dp"
@@ -52,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
-            android:fontFamily="@font/varela_round_regular"
+            android:fontFamily="@font/varelaroundregular"
             android:text="1° Quadrimestre"
             android:textSize="15sp" />
 
@@ -60,8 +61,8 @@
             android:id="@+id/list_vote_scroll_view_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
             android:overScrollMode="never"
+            android:padding="5dp"
             android:scrollbars="none">
 
             <LinearLayout
@@ -80,7 +81,7 @@
             android:layout_marginStart="15dp"
             android:layout_marginTop="10dp"
             android:layout_weight="1"
-            android:fontFamily="@font/varela_round_regular"
+            android:fontFamily="@font/varelaroundregular"
             android:text="2° Quadrimestre"
             android:textSize="15sp" />
 
@@ -88,8 +89,8 @@
             android:id="@+id/list_vote_scroll_view_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
             android:overScrollMode="never"
+            android:padding="5dp"
             android:scrollbars="none">
 
             <LinearLayout
@@ -107,7 +108,8 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginEnd="10dp"
-        android:background="@drawable/mean_vote_layout_style"
+        android:background="@drawable/corner_radius_10dp"
+        android:backgroundTint="@color/white"
         android:elevation="10dp"
         android:orientation="vertical"
         android:padding="5dp"
@@ -119,7 +121,7 @@
             android:id="@+id/mean_layout_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/varela_round_regular"
+            android:fontFamily="@font/varelaroundregular"
             android:text="Medie:"
             android:textSize="15sp" />
 
@@ -128,8 +130,8 @@
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
-            android:background="@drawable/single_vote_style"
-            android:fontFamily="@font/varela_round_regular"
+            android:background="@drawable/corner_radius_10dp"
+            android:fontFamily="@font/varelaroundregular"
             android:paddingStart="5dp"
             android:paddingTop="5dp"
             android:paddingEnd="5dp"
@@ -147,8 +149,8 @@
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:background="@drawable/single_vote_style"
-            android:fontFamily="@font/varela_round_regular"
+            android:background="@drawable/corner_radius_10dp"
+            android:fontFamily="@font/varelaroundregular"
             android:paddingStart="5dp"
             android:paddingTop="5dp"
             android:paddingEnd="5dp"
