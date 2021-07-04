@@ -52,4 +52,8 @@ public class LoginData {
         return getSharedPreferences(context).getString(cookieKey, "");
     }
 
+    public static void clearAll(final Context context) {
+        setCredentials(context, "", "", "");
+    }
+
 }

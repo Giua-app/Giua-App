@@ -28,7 +28,7 @@ public class LoadingScreenLogin extends AppCompatActivity {
                 gS = new GiuaScraper(LoginData.getUser(this), LoginData.getPassword(this), LoginData.getCookie(this), true);
                 gS.login();
                 startDrawerActivity();
-            } catch (GiuaScraperExceptions.InternetProblems ip) {
+            } catch (GiuaScraperExceptions.InternetProblems | GiuaScraperExceptions.SiteConnectionProblems e) {
                 if (!GiuaScraper.isMyInternetWorking()) {
                     setErrorMessage("Sono stati riscontrati problemi con la tua rete");
                 } else if (!GiuaScraper.isSiteWorking()) {
@@ -43,9 +43,17 @@ public class LoadingScreenLogin extends AppCompatActivity {
                     if (waitToReLogin < 30)
                         waitToReLogin += 5;
                     loginWithPreviousCredentials();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                } catch (InterruptedException e2) {
+                    e2.printStackTrace();
                 }
+            } catch (GiuaScraperExceptions.SessionCookieEmpty sce) {     //Se il login non dovesse funzionare lancia l acitvity di login ed elimina le credenziali salvate
+                LoginData.clearAll(this);
+                setErrorMessage("Le credenziali di accesso non sono più valide");
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                }
+                startActivity(new Intent(LoadingScreenLogin.this, MainLogin.class));
             }
         }).start();
     }

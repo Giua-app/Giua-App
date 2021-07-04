@@ -16,12 +16,6 @@ public class ActivityManager extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        /*Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {      //crash handler
-                setErrorMessage(throwable.toString());
-                throwable.printStackTrace();
-                finish();
-            });*/
-
         //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
         //GiuaScraper.setDebugMode(true);
 
