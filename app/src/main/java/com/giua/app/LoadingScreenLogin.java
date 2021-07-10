@@ -19,6 +19,7 @@ public class LoadingScreenLogin extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.loading_screen);
 
+        GiuaScraper.setDebugMode(true);
         loginWithPreviousCredentials();
     }
 
@@ -27,6 +28,7 @@ public class LoadingScreenLogin extends AppCompatActivity {
             try {
                 gS = new GiuaScraper(LoginData.getUser(this), LoginData.getPassword(this), LoginData.getCookie(this), true);
                 gS.login();
+                LoginData.setCredentials(this, LoginData.getUser(this), LoginData.getPassword(this), gS.getSessionCookie());
                 startDrawerActivity();
             } catch (GiuaScraperExceptions.InternetProblems | GiuaScraperExceptions.SiteConnectionProblems e) {
                 if (!GiuaScraper.isMyInternetWorking()) {

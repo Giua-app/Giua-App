@@ -11,7 +11,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:background="@drawable/corner_radius_10dp"
         android:fontFamily="@font/varelaroundregular"
         android:padding="5dp"
         android:text="Stato"

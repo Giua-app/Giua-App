@@ -62,7 +62,7 @@ public class VotiFragment extends Fragment {
     private void generateAllViewsAsync() {
         new Thread(() -> {
             allVotes = gS.getAllVotes(false);
-            handler.post(this::generateAllViews);
+            getActivity().runOnUiThread(this::generateAllViews);
         }).start();
     }
 
