@@ -54,7 +54,7 @@
 
     <LinearLayout
         android:id="@+id/attachment_layout"
-        android:layout_width="wrap_content"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:background="@drawable/corner_radius_10dp"
         android:orientation="vertical"

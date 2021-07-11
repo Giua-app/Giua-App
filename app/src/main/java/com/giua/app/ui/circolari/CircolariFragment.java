@@ -5,9 +5,11 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,6 +78,9 @@ public class CircolariFragment extends Fragment {
 
         scrollView.setOnScrollChangeListener(this::onScrollViewScrolled);
 
+        attachmentLayout.setOnClickListener((view) -> {
+        });
+
         obscureButton.setOnClickListener((view) -> {
             view.setVisibility(View.GONE);
             attachmentLayout.setVisibility(View.GONE);
@@ -89,11 +94,17 @@ public class CircolariFragment extends Fragment {
 
     private void addNewslettersToViewAsync() {
         loadingPage = true;
+        if (progressBarLoadingPage.getVisibility() == View.GONE && progressBarLoadingNewsletters.getParent() == null)
+            layout.addView(progressBarLoadingNewsletters);
 
         new Thread(() -> {
             if (!loadedAllPages) {
                 try {
                     allNewsletter = gS.getAllNewsletters(currentPage, true);
+                    if (allNewsletter.size() == 0)
+                        loadedAllPages = true;
+                    activity.runOnUiThread(this::addNewslettersToView);
+                    currentPage++;
                 } catch (GiuaScraperExceptions.InternetProblems e) {
                     DrawerActivity.setErrorMessage("E' stato riscontrato qualche problema con la tua connessione", layout);
                     allNewsletter = new Vector<>();
@@ -101,10 +112,6 @@ public class CircolariFragment extends Fragment {
                     DrawerActivity.setErrorMessage("E' stato riscontrato qualche problema con la connessione del registro", layout);
                     allNewsletter = new Vector<>();
                 }
-                if (allNewsletter.size() == 0)
-                    loadedAllPages = true;
-                activity.runOnUiThread(this::addNewslettersToView);
-                currentPage++;
             }
             activity.runOnUiThread(() -> layout.removeView(progressBarLoadingNewsletters));
             loadingPage = false;
@@ -179,10 +186,8 @@ public class CircolariFragment extends Fragment {
     }
 
     private void onClickAttachmentImage(Newsletter newsletter) {
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 130);
         List<String> allAttachments = newsletter.attachments;
-
-        params.setMargins(0, 50, 0, 0);
 
         int counter = 0;
         for (String attachment : allAttachments) {
@@ -192,10 +197,13 @@ public class CircolariFragment extends Fragment {
             tvAttachment.setId(View.generateViewId());
             tvAttachment.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.corner_radius_10dp, context.getTheme()));
             tvAttachment.setTypeface(ResourcesCompat.getFont(getContext(), R.font.varelaroundregular));
+            tvAttachment.setGravity(Gravity.CENTER);
             tvAttachment.setTextSize(16f);
 
-            if (counter != 0)
-                tvAttachment.setLayoutParams(params);
+            if (counter % 2 != 0)
+                tvAttachment.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.black, context.getTheme())).withAlpha(40));
+
+            tvAttachment.setLayoutParams(params);
 
             counter++;
 
@@ -213,8 +221,7 @@ public class CircolariFragment extends Fragment {
     }
 
     private void onScrollViewScrolled(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-        if (!view.canScrollVertically(100) && !loadedAllPages && !loadingPage) {
-            layout.addView(progressBarLoadingNewsletters);
+        if (!loadedAllPages && !loadingPage && !view.canScrollVertically(100) && scrollY - oldScrollY > 10) {
             addNewslettersToViewAsync();
         }
     }

@@ -1,6 +1,7 @@
 package com.giua.app;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
 
 import androidx.annotation.Nullable;
@@ -29,18 +30,20 @@ public class SettingsActivity extends AppCompatActivity {
         etSiteURL.setText(GiuaScraper.getSiteURL());
         etSiteURL.setSelection(etSiteURL.getText().length());
 
-        findViewById(R.id.settings_save_button).setOnClickListener(view -> {
-            if (Pattern.matches("https?://([a-zA-Z0-9]+[.])+([a-zA-Z0-9]+)(:[0-9]+)?", String.valueOf(etSiteURL.getText()))) {
-                GiuaScraper.setSiteURL(String.valueOf(etSiteURL.getText()));
-                finish();
-            } else
-                setErrorMessage("L'url inserito non e' valido.");
-
-        });
+        findViewById(R.id.settings_save_button).setOnClickListener(this::btnSaveClick);
 
     }
 
     private void setErrorMessage(String message) {
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    private void btnSaveClick(View view) {
+        if (Pattern.matches("https?://([a-zA-Z0-9]+[.])+([a-zA-Z0-9]+)(:[0-9]+)?", String.valueOf(etSiteURL.getText()))) {
+            GiuaScraper.setSiteURL(String.valueOf(etSiteURL.getText()));
+            SettingsData.saveSettingString(this, "defaultUrl", GiuaScraper.getSiteURL());
+            finish();
+        } else
+            setErrorMessage("L'url inserito non e' valido.");
     }
 }
