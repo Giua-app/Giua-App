@@ -4,29 +4,130 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_light"
     tools:context=".ui.lezioni.LezioniFragment">
 
     <TextView
-        android:id="@+id/text_slideshow"
-        android:layout_width="match_parent"
+        android:id="@+id/lezioni_fragment_current_date"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="28dp"
+        android:fontFamily="@font/varelaroundregular"
+        android:text="Data attuale"
         android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="22sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/lezioni_fragment_prev_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="lalalallalal"
-        app:layout_constraintBottom_toTopOf="@+id/text_slideshow"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="24dp"
+        android:fontFamily="@font/varelaroundregular"
+        android:text="Data precedente"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/lezioni_fragment_current_date"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/lezioni_fragment_current_date" />
+
+    <TextView
+        android:id="@+id/lezioni_fragment_next_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="10dp"
+        android:fontFamily="@font/varelaroundregular"
+        android:text="Data successiva"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/lezioni_fragment_prev_date"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/lezioni_fragment_current_date"
+        app:layout_constraintTop_toTopOf="@+id/lezioni_fragment_current_date"
+        app:layout_constraintVertical_bias="1.0" />
+
+
+    <TextView
+        android:id="@+id/lezioni_fragment_no_elements_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/varelaroundregular"
+        android:text="@string/no_elements"
+        android:textSize="16sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.396" />
+
+    <ImageView
+        android:id="@+id/lezioni_fragment_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/ic_baseline_calendar_today_24"
+        app:layout_constraintBottom_toTopOf="@+id/lezioni_fragment_prev_date"
+        app:layout_constraintEnd_toStartOf="@+id/lezioni_fragment_current_date"
+        app:layout_constraintHorizontal_bias="0.02"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="150dp"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/lezioni_fragment_lessons_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible" />
+    </ScrollView>
+
+    <ImageButton
+        android:id="@+id/obscure_layout_image_button3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/obscure_style"
+        android:visibility="gone"
+        tools:layout_editor_absoluteY="180dp" />
+
+    <FrameLayout
+        android:id="@+id/lezioni_fragment_frame_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.366">
+
+        <CalendarView
+            android:id="@+id/lezioni_fragment_calendar_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white" />
+    </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

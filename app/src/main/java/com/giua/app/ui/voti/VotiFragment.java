@@ -50,7 +50,7 @@ public class VotiFragment extends Fragment {
         obscureLayoutButton = root.findViewById(R.id.obscure_layout_image_button);
         detailVoteLayout = root.findViewById(R.id.attachment_layout);
         progressBar = root.findViewById(R.id.vote_loading_page_bar);
-        tvNoElements = root.findViewById(R.id.vote_fragment_no_elements_text);
+        tvNoElements = root.findViewById(R.id.vote_fragment_no_elements_view);
 
         obscureLayoutButton.setOnClickListener(this::obscureButtonClick);
 

@@ -70,7 +70,7 @@ public class CircolariFragment extends Fragment {
         scrollView = root.findViewById(R.id.newsletter_scroll_view);
         attachmentLayout = root.findViewById(R.id.attachment_layout);
         obscureButton = root.findViewById(R.id.obscure_layout_image_button2);
-        tvNoElements = root.findViewById(R.id.newsletter_fragment_no_elements_text);
+        tvNoElements = root.findViewById(R.id.newsletter_fragment_no_elements_view);
         activity = requireActivity();
 
         progressBarLoadingNewsletters = new ProgressBar(getContext());
