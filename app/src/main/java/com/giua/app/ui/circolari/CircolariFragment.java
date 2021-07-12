@@ -109,9 +109,17 @@ public class CircolariFragment extends Fragment {
                     currentPage++;
                 } catch (GiuaScraperExceptions.InternetProblems e) {
                     DrawerActivity.setErrorMessage("E' stato riscontrato qualche problema con la tua connessione", layout);
+                    activity.runOnUiThread(() -> {
+                        tvNoElements.setVisibility(View.VISIBLE);
+                        progressBarLoadingPage.setVisibility(View.GONE);
+                    });
                     allNewsletter = new Vector<>();
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     DrawerActivity.setErrorMessage("E' stato riscontrato qualche problema con la connessione del registro", layout);
+                    activity.runOnUiThread(() -> {
+                        tvNoElements.setVisibility(View.VISIBLE);
+                        progressBarLoadingPage.setVisibility(View.GONE);
+                    });
                     allNewsletter = new Vector<>();
                 }
             }
