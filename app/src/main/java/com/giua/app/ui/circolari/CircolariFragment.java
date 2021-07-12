@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,8 +50,8 @@ public class CircolariFragment extends Fragment {
     ScrollView scrollView;
     LinearLayout attachmentLayout;
     ImageButton obscureButton;
-    Handler handler = new Handler();
     ProgressBar progressBarLoadingNewsletters;
+    TextView tvNoElements;
     FragmentActivity activity;
     boolean isDownloading = false;
     int currentPage = 1;
@@ -62,7 +61,7 @@ public class CircolariFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_circolari, container, false);
 
-        Intent intent = getActivity().getIntent();
+        Intent intent = requireActivity().getIntent();
         gS = (GiuaScraper) intent.getSerializableExtra("giuascraper");
 
         context = getContext();
@@ -71,7 +70,8 @@ public class CircolariFragment extends Fragment {
         scrollView = root.findViewById(R.id.newsletter_scroll_view);
         attachmentLayout = root.findViewById(R.id.attachment_layout);
         obscureButton = root.findViewById(R.id.obscure_layout_image_button2);
-        activity = getActivity();
+        tvNoElements = root.findViewById(R.id.newsletter_fragment_no_elements_text);
+        activity = requireActivity();
 
         progressBarLoadingNewsletters = new ProgressBar(getContext());
         progressBarLoadingNewsletters.setId(View.generateViewId());
@@ -101,7 +101,9 @@ public class CircolariFragment extends Fragment {
             if (!loadedAllPages) {
                 try {
                     allNewsletter = gS.getAllNewsletters(currentPage, true);
-                    if (allNewsletter.size() == 0)
+                    if (allNewsletter.isEmpty() && currentPage == 1)
+                        tvNoElements.setVisibility(View.VISIBLE);
+                    else if (allNewsletter.isEmpty())
                         loadedAllPages = true;
                     activity.runOnUiThread(this::addNewslettersToView);
                     currentPage++;

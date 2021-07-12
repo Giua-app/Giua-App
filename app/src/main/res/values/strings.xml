@@ -19,4 +19,5 @@
     <string name="menu_circolari">Circolari</string>
     <string name="impostazioni">Impostazioni</string>
     <string name="site_url_text_view">Imposta l\'url del sito:</string>
+    <string name="no_elements">Non ci sono elementi da visualizzare</string>
 </resources>
