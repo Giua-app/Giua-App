@@ -101,7 +101,7 @@
         android:id="@+id/lezioni_fragment_scroll_lessons_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="115dp"
         android:overScrollMode="never"
         android:padding="5dp"
         android:visibility="visible"
@@ -123,10 +123,10 @@
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="12dp"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="@+id/lezioni_fragment_current_date"
-        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="@+id/lezioni_fragment_current_date"
         app:layout_constraintTop_toBottomOf="@+id/lezioni_fragment_current_date" />
 

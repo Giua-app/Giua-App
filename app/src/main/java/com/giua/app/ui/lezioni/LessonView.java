@@ -31,9 +31,9 @@ public class LessonView extends ConstraintLayout {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layoutInflater.inflate(R.layout.lesson_view, this);
 
-        ((TextView) findViewById(R.id.lesson_view_subject)).setText(Html.fromHtml("<b>Materia: </b> " + lesson.subject, Html.FROM_HTML_MODE_COMPACT));
-        ((TextView) findViewById(R.id.lesson_view_argument)).setText(Html.fromHtml("<b>Argomenti: </b> " + lesson.arguments, Html.FROM_HTML_MODE_COMPACT));
-        ((TextView) findViewById(R.id.lesson_view_activity)).setText(Html.fromHtml("<b>Attività: </b> " + lesson.activities, Html.FROM_HTML_MODE_COMPACT));
-        ((TextView) findViewById(R.id.lesson_view_time)).setText(lesson.time);
+        ((TextView) findViewById(R.id.lesson_view_subject)).setText(Html.fromHtml("" + lesson.subject, Html.FROM_HTML_MODE_COMPACT));
+        //((TextView) findViewById(R.id.lesson_view_argument)).setText(Html.fromHtml("<b>Argomenti: </b> " + lesson.arguments, Html.FROM_HTML_MODE_COMPACT));
+        //((TextView) findViewById(R.id.lesson_view_activity)).setText(Html.fromHtml("<b>Attività: </b> " + lesson.activities, Html.FROM_HTML_MODE_COMPACT));
+        ((TextView) findViewById(R.id.lesson_view_time)).setText("   "+lesson.time);
     }
 }
