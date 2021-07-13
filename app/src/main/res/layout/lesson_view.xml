@@ -3,57 +3,74 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/general_view_style"
-    android:padding="10dp">
+    android:background="@drawable/general_view_style">
 
-    <TextView
-        android:id="@+id/lesson_view_subject"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="18dp"
-        android:fontFamily="@font/varelaroundregular"
-        android:text="Materia: "
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lesson_view_time" />
-
-    <TextView
-        android:id="@+id/lesson_view_argument"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:fontFamily="@font/varelaroundregular"
-        android:text="Argomenti: "
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/lesson_view_subject"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/lesson_view_subject"
-        app:layout_constraintTop_toBottomOf="@+id/lesson_view_subject" />
-
-    <TextView
-        android:id="@+id/lesson_view_activity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:fontFamily="@font/varelaroundregular"
-        android:text="Attività: "
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/lesson_view_argument"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/lesson_view_argument"
-        app:layout_constraintTop_toBottomOf="@+id/lesson_view_argument" />
 
     <TextView
         android:id="@+id/lesson_view_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:fontFamily="@font/varelaroundregular"
         android:text="Tempo"
-        android:textSize="16dp"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="10dp"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="true"
+        app:contentPadding="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lesson_view_time">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/lesson_view_subject"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/varelaroundregular"
+                android:text="Materia: "
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lesson_view_time" />
+
+            <TextView
+                android:id="@+id/lesson_view_argument"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/varelaroundregular"
+                android:text="Argomenti: "
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/lesson_view_subject"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/lesson_view_subject"
+                app:layout_constraintTop_toBottomOf="@+id/lesson_view_subject" />
+
+            <TextView
+                android:id="@+id/lesson_view_activity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/varelaroundregular"
+                android:text="Attività: "
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/lesson_view_argument"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/lesson_view_argument"
+                app:layout_constraintTop_toBottomOf="@+id/lesson_view_argument" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
