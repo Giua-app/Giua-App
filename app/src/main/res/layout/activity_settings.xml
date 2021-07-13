@@ -65,6 +65,24 @@
                 android:labelFor="@id/settings_url_text_view"
                 android:textSize="16sp" />
 
+            <TextView
+                android:id="@+id/settings_crash_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="5dp"
+                android:fontFamily="@font/varelaroundregular"
+                android:text="Clicca per far crashare l\'app"
+                android:textSize="15sp" />
+
+            <Button
+                android:id="@+id/settings_crash_button"
+                android:layout_width="157dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="destroy the world" />
+
         </LinearLayout>
     </ScrollView>
 

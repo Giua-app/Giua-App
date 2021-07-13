@@ -20,4 +20,15 @@
     <string name="impostazioni">Impostazioni</string>
     <string name="site_url_text_view">Imposta l\'url del sito:</string>
     <string name="no_elements">Non ci sono elementi da visualizzare</string>
+
+    <!-- Error activity strings -->
+    <string name="customactivityoncrash_error_activity_error_occurred_explanation">C\'è stato un errore inaspettato.\nCi scusiamo per il disagio.</string>
+    <string name="customactivityoncrash_error_activity_unknown_exception">Impossibile determinare errore!</string>
+    <string name="customactivityoncrash_error_activity_restart_app">Riavvia app</string>
+    <string name="customactivityoncrash_error_activity_close_app">Chiudi l\'app</string>
+    <string name="customactivityoncrash_error_activity_error_details">Dettagli</string>
+    <string name="customactivityoncrash_error_activity_error_details_title">Informazioni Errore</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">OK</string>
+    <string name="customactivityoncrash_error_activity_error_details_copy">Copia</string>
+    <string name="customactivityoncrash_error_activity_error_details_copied">Copiato negli appunti</string>
 </resources>

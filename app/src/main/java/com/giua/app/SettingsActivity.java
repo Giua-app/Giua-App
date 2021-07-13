@@ -32,6 +32,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         findViewById(R.id.settings_save_button).setOnClickListener(this::btnSaveClick);
 
+        findViewById(R.id.settings_crash_button).setOnClickListener(this::btnCrashClick);
     }
 
     private void setErrorMessage(String message) {
@@ -45,5 +46,10 @@ public class SettingsActivity extends AppCompatActivity {
             finish();
         } else
             setErrorMessage("L'url inserito non e' valido.");
+    }
+
+    private void btnCrashClick(View view) {
+        setErrorMessage("Goodbye");
+        throw new RuntimeException("FATAL ERROR: World not found. What have you done?!?!");
     }
 }
