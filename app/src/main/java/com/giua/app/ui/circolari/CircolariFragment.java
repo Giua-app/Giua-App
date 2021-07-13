@@ -5,9 +5,10 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,32 +23,36 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.giua.app.DrawerActivity;
 import com.giua.app.R;
 import com.giua.objects.Newsletter;
 import com.giua.webscraper.GiuaScraper;
+import com.giua.webscraper.GiuaScraperExceptions;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Vector;
 
 public class CircolariFragment extends Fragment {
 
     //TODO: aggiungere la ricerca delle circolari per oggetto e anche i filtri per i mesi come nel sito
     //TODO: Rivedere un po la UI perchè non è il massimo
-    //TODO: Aggiungere qualche caricamento quando si scaricano i pdf e quando si stanno ottenendo altre circolari
 
     GiuaScraper gS;
     LinearLayout layout;
     Context context;
-    List<Newsletter> allNewsletter;
-    ProgressBar progressBar;
+    List<Newsletter> allNewsletter = new Vector<>();
+    ProgressBar progressBarLoadingPage;
     ScrollView scrollView;
     LinearLayout attachmentLayout;
     ImageButton obscureButton;
-    Handler handler = new Handler();
+    ProgressBar progressBarLoadingNewsletters;
+    TextView tvNoElements;
+    FragmentActivity activity;
     boolean isDownloading = false;
     int currentPage = 1;
     boolean loadedAllPages = false;
@@ -56,17 +61,25 @@ public class CircolariFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_circolari, container, false);
 
-        Intent intent = getActivity().getIntent();
+        Intent intent = requireActivity().getIntent();
         gS = (GiuaScraper) intent.getSerializableExtra("giuascraper");
 
         context = getContext();
         layout = root.findViewById(R.id.newsletter_linear_layout);
-        progressBar = root.findViewById(R.id.circolari_loading_page_bar);
+        progressBarLoadingPage = root.findViewById(R.id.circolari_loading_page_bar);
         scrollView = root.findViewById(R.id.newsletter_scroll_view);
         attachmentLayout = root.findViewById(R.id.attachment_layout);
         obscureButton = root.findViewById(R.id.obscure_layout_image_button2);
+        tvNoElements = root.findViewById(R.id.newsletter_fragment_no_elements_view);
+        activity = requireActivity();
+
+        progressBarLoadingNewsletters = new ProgressBar(getContext());
+        progressBarLoadingNewsletters.setId(View.generateViewId());
 
         scrollView.setOnScrollChangeListener(this::onScrollViewScrolled);
+
+        attachmentLayout.setOnClickListener((view) -> {
+        });
 
         obscureButton.setOnClickListener((view) -> {
             view.setVisibility(View.GONE);
@@ -81,16 +94,38 @@ public class CircolariFragment extends Fragment {
 
     private void addNewslettersToViewAsync() {
         loadingPage = true;
-        handler.post(() -> {
+        if (progressBarLoadingPage.getVisibility() == View.GONE && progressBarLoadingNewsletters.getParent() == null)
+            layout.addView(progressBarLoadingNewsletters);
+
+        new Thread(() -> {
             if (!loadedAllPages) {
-                allNewsletter = gS.getAllNewsletters(currentPage, true);
-                if (allNewsletter.size() == 0)
-                    loadedAllPages = true;
-                addNewslettersToView();
-                currentPage++;
+                try {
+                    allNewsletter = gS.getAllNewsletters(currentPage, true);
+                    if (allNewsletter.isEmpty() && currentPage == 1)
+                        tvNoElements.setVisibility(View.VISIBLE);
+                    else if (allNewsletter.isEmpty())
+                        loadedAllPages = true;
+                    activity.runOnUiThread(this::addNewslettersToView);
+                    currentPage++;
+                } catch (GiuaScraperExceptions.InternetProblems e) {
+                    DrawerActivity.setErrorMessage("E' stato riscontrato qualche problema con la tua connessione", layout);
+                    activity.runOnUiThread(() -> {
+                        tvNoElements.setVisibility(View.VISIBLE);
+                        progressBarLoadingPage.setVisibility(View.GONE);
+                    });
+                    allNewsletter = new Vector<>();
+                } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
+                    DrawerActivity.setErrorMessage("E' stato riscontrato qualche problema con la connessione del registro", layout);
+                    activity.runOnUiThread(() -> {
+                        tvNoElements.setVisibility(View.VISIBLE);
+                        progressBarLoadingPage.setVisibility(View.GONE);
+                    });
+                    allNewsletter = new Vector<>();
+                }
             }
+            activity.runOnUiThread(() -> layout.removeView(progressBarLoadingNewsletters));
             loadingPage = false;
-        });
+        }).start();
     }
 
     private void addNewslettersToView() {
@@ -104,7 +139,7 @@ public class CircolariFragment extends Fragment {
             layout.addView(newsletterView);
         }
 
-        progressBar.setVisibility(View.GONE);
+        progressBarLoadingPage.setVisibility(View.GONE);
     }
 
     /**
@@ -114,18 +149,24 @@ public class CircolariFragment extends Fragment {
      */
     private void downloadFile(String url) {
         isDownloading = true;
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            try {
-                FileOutputStream out = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/circolare.pdf");
-                out.write(gS.download(url));
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+        progressBarLoadingPage.setZ(10f);
+        progressBarLoadingPage.setVisibility(View.VISIBLE);
+        new Thread(() -> {
+            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                try {
+                    FileOutputStream out = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/circolare.pdf");
+                    out.write(gS.download(url));
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                DrawerActivity.setErrorMessage("Impossibile salvare il file: permesso negato", layout);
             }
-        } else {
-            DrawerActivity.setErrorMessage("Impossibile salvare il file: permesso negato", layout);
-        }
-        isDownloading = false;
+            openFile();
+            isDownloading = false;
+            activity.runOnUiThread(() -> progressBarLoadingPage.setVisibility(View.GONE));
+        }).start();
     }
 
     /**
@@ -149,15 +190,14 @@ public class CircolariFragment extends Fragment {
     }
 
     private void onClickSingleAttachment(String url) {
-        downloadFile(url);
-        openFile();
+        if (!isDownloading) {
+            downloadFile(url);
+        }
     }
 
     private void onClickAttachmentImage(Newsletter newsletter) {
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 130);
         List<String> allAttachments = newsletter.attachments;
-
-        params.setMargins(0, 50, 0, 0);
 
         int counter = 0;
         for (String attachment : allAttachments) {
@@ -167,11 +207,13 @@ public class CircolariFragment extends Fragment {
             tvAttachment.setId(View.generateViewId());
             tvAttachment.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.corner_radius_10dp, context.getTheme()));
             tvAttachment.setTypeface(ResourcesCompat.getFont(getContext(), R.font.varelaroundregular));
+            tvAttachment.setGravity(Gravity.CENTER);
             tvAttachment.setTextSize(16f);
-            //tvAttachment.setHeight(120);
 
-            if (counter != 0)
-                tvAttachment.setLayoutParams(params);
+            if (counter % 2 != 0)
+                tvAttachment.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.black, context.getTheme())).withAlpha(40));
+
+            tvAttachment.setLayoutParams(params);
 
             counter++;
 
@@ -185,12 +227,11 @@ public class CircolariFragment extends Fragment {
     private void onClickDocument(Newsletter newsletter) {
         if (!isDownloading) {
             downloadFile(newsletter.detailsUrl);
-            openFile();
         }
     }
 
     private void onScrollViewScrolled(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-        if (!view.canScrollVertically(100) && !loadedAllPages && !loadingPage) {
+        if (!loadedAllPages && !loadingPage && !view.canScrollVertically(100) && scrollY - oldScrollY > 10) {
             addNewslettersToViewAsync();
         }
     }

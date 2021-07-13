@@ -6,7 +6,6 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,13 +32,13 @@ public class VotiFragment extends Fragment {
     GiuaScraper gS;
     ProgressBar progressBar;
     VoteView voteView;
+    TextView tvNoElements;
     LinearLayout mainLayout;
     LinearLayout detailVoteLayout;
     LinearLayout.LayoutParams params;
-    ImageButton obscureLayoutButton;    //Questo bottone viene triggerato viene visualizzato dietro al detail layout e se viene cliccato si esce dai dettaglic
+    ImageButton obscureLayoutButton;    //Questo bottone viene visualizzato dietro al detail layout e se viene cliccato si esce dai dettaglii
     DecimalFormat df = new DecimalFormat("0.0");
     Map<String, List<Vote>> allVotes;
-    Handler handler = new Handler();
 
     @SuppressLint("ClickableViewAccessibility")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,6 +50,7 @@ public class VotiFragment extends Fragment {
         obscureLayoutButton = root.findViewById(R.id.obscure_layout_image_button);
         detailVoteLayout = root.findViewById(R.id.attachment_layout);
         progressBar = root.findViewById(R.id.vote_loading_page_bar);
+        tvNoElements = root.findViewById(R.id.vote_fragment_no_elements_view);
 
         obscureLayoutButton.setOnClickListener(this::obscureButtonClick);
 
@@ -62,7 +62,7 @@ public class VotiFragment extends Fragment {
     private void generateAllViewsAsync() {
         new Thread(() -> {
             allVotes = gS.getAllVotes(false);
-            handler.post(this::generateAllViews);
+            requireActivity().runOnUiThread(this::generateAllViews);
         }).start();
     }
 
@@ -74,6 +74,10 @@ public class VotiFragment extends Fragment {
 
         params = new LinearLayout.LayoutParams(mainLayout.getLayoutParams().width, mainLayout.getLayoutParams().height);
         params.setMargins(10, 20, 0, 30);
+
+        if (allVotes.isEmpty()) {
+            tvNoElements.setVisibility(View.VISIBLE);
+        }
 
         for (String subject : allVotes.keySet()) {     //Cicla ogni materia
             meanFirstQuarter = 0f;

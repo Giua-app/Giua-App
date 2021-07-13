@@ -22,6 +22,21 @@
         androd:layout_constraintTop_toTopOf="parent"
         androd:layout_constraintVertical_bias="0.425" />
 
+    <TextView
+        android:id="@+id/vote_fragment_no_elements_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/varelaroundregular"
+        android:text="@string/no_elements"
+        android:textSize="16sp"
+        android:visibility="gone"
+        androd:layout_constraintBottom_toBottomOf="parent"
+        androd:layout_constraintEnd_toEndOf="parent"
+        androd:layout_constraintHorizontal_bias="0.495"
+        androd:layout_constraintStart_toStartOf="parent"
+        androd:layout_constraintTop_toTopOf="parent"
+        androd:layout_constraintVertical_bias="0.441" />
+
     <ScrollView
         android:id="@+id/vote_fragment_scroll_view"
         android:layout_width="match_parent"

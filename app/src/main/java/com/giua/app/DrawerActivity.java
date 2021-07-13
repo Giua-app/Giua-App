@@ -45,11 +45,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer);
 
-        /*Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {      //crash handler
-                setErrorMessage(throwable.toString(), navigationView);
-                throwable.printStackTrace();
-        });*/
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -119,7 +114,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
     private void logoutButtonClick(View view) {
         Intent intent = new Intent(this, ActivityManager.class);
-        LoginData.setCredentials(this, "", "", "");
+        LoginData.clearAll(this);
         startActivity(intent);
         finish();
     }
@@ -155,6 +150,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     @Override
     public void onBackPressed() {
         if (navController.getCurrentDestination().getId() != R.id.nav_voti) {
+            navigationView.setCheckedItem(R.id.nav_voti);
             startVotesFragment();
         } else {
             Intent intent = new Intent(Intent.ACTION_MAIN);
