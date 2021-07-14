@@ -138,6 +138,41 @@
         android:visibility="gone"
         tools:layout_editor_absoluteY="180dp" />
 
+    <LinearLayout
+        android:id="@+id/lezioni_fragment_lesson_detail"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/corner_radius_10dp"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.445">
+
+        <TextView
+            android:id="@+id/lezioni_fragment_lesson_detail_args"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/varelaroundregular"
+            android:text="Argomenti"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/lezioni_fragment_lesson_detail_acts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/varelaroundregular"
+            android:text="Attivita"
+            android:textSize="16sp" />
+    </LinearLayout>
+
     <FrameLayout
         android:id="@+id/lezioni_fragment_frame_layout"
         android:layout_width="wrap_content"

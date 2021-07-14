@@ -2,6 +2,7 @@ package com.giua.app.ui.lezioni;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,11 +38,14 @@ public class LezioniFragment extends Fragment {
     ImageView calendarBtn;
     ImageView obscureLayout;
     TextView tvNoElements;
+    TextView tvDetailArgs;
+    TextView tvDetailActs;
     ProgressBar pbLoadingContent;
     FrameLayout frameLayout;
     CalendarView calendarView;
     FragmentActivity activity;
     LinearLayout lessonsLayout;
+    LinearLayout lessonDetailLayout;
     ScrollView scrollView;
     List<Lesson> allLessons;
     Date currentDate;
@@ -67,6 +71,9 @@ public class LezioniFragment extends Fragment {
         tvNoElements = root.findViewById(R.id.lezioni_fragment_no_elements_view);
         pbLoadingContent = root.findViewById(R.id.lezioni_fragment_loading_content);
         scrollView = root.findViewById(R.id.lezioni_fragment_scroll_lessons_view);
+        lessonDetailLayout = root.findViewById(R.id.lezioni_fragment_lesson_detail);
+        tvDetailArgs = root.findViewById(R.id.lezioni_fragment_lesson_detail_args);
+        tvDetailActs = root.findViewById(R.id.lezioni_fragment_lesson_detail_acts);
 
         activity = requireActivity();
         calendar = Calendar.getInstance();
@@ -111,7 +118,7 @@ public class LezioniFragment extends Fragment {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lessonsLayout.removeAllViews();
 
-        params.setMargins(10, 40, 10, 0);
+        params.setMargins(20, 40, 20, 0);
         tvNoElements.setVisibility(View.GONE);
 
         if (allLessons.size() == 1 && !allLessons.get(0).exists) {
@@ -121,12 +128,26 @@ public class LezioniFragment extends Fragment {
                 LessonView lessonView = new LessonView(requireContext(), null, lesson);
                 lessonView.setId(View.generateViewId());
                 lessonView.setLayoutParams(params);
+                lessonView.setOnClickListener(this::lessonViewOnClick);
 
                 lessonsLayout.addView(lessonView);
             }
         }
+    }
 
-        scrollView.scrollTo(0, 0);
+    private void lessonViewOnClick(View view) {
+        lessonDetailLayout.setVisibility(View.VISIBLE);
+        obscureLayout.setVisibility(View.VISIBLE);
+
+        if (!((LessonView) view).lesson.arguments.equals(""))
+            tvDetailArgs.setText(Html.fromHtml("<b>Argomenti:</b> " + ((LessonView) view).lesson.arguments, Html.FROM_HTML_MODE_COMPACT));
+        else
+            tvDetailArgs.setText(Html.fromHtml("<b>Argomenti:</b> Non specificati", Html.FROM_HTML_MODE_COMPACT));
+
+        if (!((LessonView) view).lesson.activities.equals(""))
+            tvDetailActs.setText(Html.fromHtml("<b>Attività:</b> " + ((LessonView) view).lesson.activities, Html.FROM_HTML_MODE_COMPACT));
+        else
+            tvDetailActs.setText(Html.fromHtml("<b>Attività:</b> Non specificata", Html.FROM_HTML_MODE_COMPACT));
     }
 
     private void calendarOnChangeDateListener(CalendarView view, int year, int month, int dayOfMonth) {
@@ -145,6 +166,7 @@ public class LezioniFragment extends Fragment {
     private void obscureLayoutOnClick(View view) {
         frameLayout.setVisibility(View.GONE);
         obscureLayout.setVisibility(View.GONE);
+        lessonDetailLayout.setVisibility(View.GONE);
     }
 
     private void calendarBtnOnClick(View view) {
