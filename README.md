@@ -1,9 +1,9 @@
 # Giua-App
 [![Gradle assemble apk](https://github.com/Giua-app/Giua-App/actions/workflows/main.yml/badge.svg)](https://github.com/Giua-app/Giua-App/actions/workflows/main.yml)
 ---
-ver. 0.1.x-alpha
+ver. 0.2.x-alpha
 
-Based on giua-webscraper ver. 0.8.x-alpha
+Based on giua-webscraper ver. 0.9.x-alpha
 
 questo readme è una bozza
 
@@ -18,8 +18,8 @@ Vai nella scheda [Actions](https://github.com/Giua-app/Giua-App/actions) e clicc
 
 - [x] ~~pagina login~~
 - [x] ~~visualizza voti e medie~~
-- [ ] visualizza lezioni
-- [ ] visualizza circolari
+- [x] ~~visualizza lezioni~~
+- [x] ~~visualizza circolari~~
 - [ ] visualizza avvisi
 - [ ] controlla in background per novità (nuovo voto, nuovo avviso, ecc)
 - [ ] invia notifica quando ci sono novità
