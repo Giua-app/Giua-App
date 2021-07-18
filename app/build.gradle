@@ -11,7 +11,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 30
         versionCode 1
-        versionName "0.2.13"
+        versionName "0.2.15"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -36,7 +36,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment:2.3.5'
     implementation 'androidx.navigation:navigation-ui:2.3.5'
     // jsoup HTML parser library @ https://jsoup.org/
-    implementation 'org.jsoup:jsoup:1.14.1'
+    //implementation 'org.jsoup:jsoup:1.13.1'
     // Giua scraper
     implementation 'com.github.Giua-app:Giua-Webscraper:v0.9.5-alpha'
     // Error handler lib
