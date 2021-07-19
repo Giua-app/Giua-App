@@ -20,7 +20,6 @@
 package com.giua.app.ui.voti;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -38,9 +37,11 @@ import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
+import com.giua.app.DrawerActivity;
+import com.giua.app.GlobalVariables;
 import com.giua.app.R;
 import com.giua.objects.Vote;
-import com.giua.webscraper.GiuaScraper;
+import com.giua.webscraper.GiuaScraperExceptions;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -48,7 +49,6 @@ import java.util.Map;
 
 public class VotiFragment extends Fragment {
 
-    GiuaScraper gS;
     ProgressBar progressBar;
     VoteView voteView;
     TextView tvNoElements;
@@ -63,8 +63,6 @@ public class VotiFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_voti, container, false);
 
-        Intent intent = getActivity().getIntent();
-        gS = (GiuaScraper) intent.getSerializableExtra("giuascraper");
         mainLayout = root.findViewById(R.id.vote_fragment_linear_layout);
         obscureLayoutButton = root.findViewById(R.id.obscure_layout_image_button);
         detailVoteLayout = root.findViewById(R.id.attachment_layout);
@@ -80,8 +78,14 @@ public class VotiFragment extends Fragment {
 
     private void generateAllViewsAsync() {
         new Thread(() -> {
-            allVotes = gS.getAllVotes(false);
-            requireActivity().runOnUiThread(this::generateAllViews);
+            try {
+                allVotes = GlobalVariables.gS.getAllVotes(false);
+                requireActivity().runOnUiThread(this::generateAllViews);
+            } catch (GiuaScraperExceptions.InternetProblems e) {
+                DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), mainLayout);
+            } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
+                DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), mainLayout);
+            }
         }).start();
     }
 
@@ -198,7 +202,7 @@ public class VotiFragment extends Fragment {
 
     @SuppressLint("ClickableViewAccessibility")
     private void addVoteView(String subject, String voteFirstQuart, float rawVoteFirstQuart, String voteSecondQuart, float rawVoteSecondQuart){
-        voteView = new VoteView(getContext(), null, subject, voteFirstQuart, rawVoteFirstQuart, voteSecondQuart, rawVoteSecondQuart, gS.getAllVotes(false).get(subject), this::onClickSingleVote);
+        voteView = new VoteView(getContext(), null, subject, voteFirstQuart, rawVoteFirstQuart, voteSecondQuart, rawVoteSecondQuart, GlobalVariables.gS.getAllVotes(false).get(subject), this::onClickSingleVote);
         voteView.setId(View.generateViewId());
 
         voteView.setLayoutParams(params);

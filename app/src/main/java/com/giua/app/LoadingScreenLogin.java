@@ -30,7 +30,6 @@ import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
 
 public class LoadingScreenLogin extends AppCompatActivity {
-    GiuaScraper gS;
     int waitToReLogin = 5;
 
     @Override
@@ -45,15 +44,15 @@ public class LoadingScreenLogin extends AppCompatActivity {
     private void loginWithPreviousCredentials() {
         new Thread(() -> {
             try {
-                gS = new GiuaScraper(LoginData.getUser(this), LoginData.getPassword(this), LoginData.getCookie(this), true);
-                gS.login();
-                LoginData.setCredentials(this, LoginData.getUser(this), LoginData.getPassword(this), gS.getSessionCookie());
+                GlobalVariables.gS = new GiuaScraper(LoginData.getUser(this), LoginData.getPassword(this), LoginData.getCookie(this), true);
+                GlobalVariables.gS.login();
+                LoginData.setCredentials(this, LoginData.getUser(this), LoginData.getPassword(this), GlobalVariables.gS.getCookie());
                 startDrawerActivity();
             } catch (GiuaScraperExceptions.InternetProblems | GiuaScraperExceptions.SiteConnectionProblems e) {
                 if (!GiuaScraper.isMyInternetWorking()) {
-                    setErrorMessage("Sono stati riscontrati problemi con la tua rete");
+                    setErrorMessage(getString(R.string.your_connection_error));
                 } else if (!GiuaScraper.isSiteWorking()) {
-                    setErrorMessage("Il sito non sta funzionando, riprova tra poco!");
+                    setErrorMessage(getString(R.string.site_connection_error));
                 } else {
                     setErrorMessage("E' stato riscontrato qualche problema sconosciuto riguardo la rete");
                 }
@@ -81,7 +80,6 @@ public class LoadingScreenLogin extends AppCompatActivity {
 
     private void startDrawerActivity() {
         Intent intent = new Intent(LoadingScreenLogin.this, DrawerActivity.class);
-        intent.putExtra("giuascraper", gS);
         startActivity(intent);
     }
 

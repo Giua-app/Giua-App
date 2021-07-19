@@ -42,7 +42,6 @@ public class MainLogin extends AppCompatActivity {
     ImageButton btnShowPassword;
     Button btnLogin;
     boolean btnShowActivated = false;
-    GiuaScraper gS;
     CheckBox chRememberCredentials;
 
     @Override
@@ -68,8 +67,8 @@ public class MainLogin extends AppCompatActivity {
     private void login() {
         new Thread(() -> {
             try {
-                gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString(), LoginData.getCookie(this), true);
-                gS.login();
+                GlobalVariables.gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString(), LoginData.getCookie(this), true);
+                GlobalVariables.gS.login();
             } catch (GiuaScraperExceptions.SessionCookieEmpty sce) {
                 setErrorMessage("Informazioni di login errate!");
                 etPassword.setText("");
@@ -88,10 +87,10 @@ public class MainLogin extends AppCompatActivity {
                 return;
             }
 
-            if (gS.checkLogin()) {
+            if (GlobalVariables.gS.checkLogin()) {
                 System.out.println("login ok");
                 if (chRememberCredentials.isChecked()) {
-                    String c = gS.getSessionCookie();
+                    String c = GlobalVariables.gS.getCookie();
                     LoginData.setCredentials(this, etUsername.getText().toString(), etPassword.getText().toString(), c);
                 }
 
@@ -106,7 +105,6 @@ public class MainLogin extends AppCompatActivity {
 
     private void startDrawerActivity() {
         Intent intent = new Intent(MainLogin.this, DrawerActivity.class);
-        intent.putExtra("giuascraper", gS);
         startActivity(intent);
     }
 

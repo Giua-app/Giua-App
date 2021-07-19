@@ -45,9 +45,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.giua.app.DrawerActivity;
+import com.giua.app.GlobalVariables;
 import com.giua.app.R;
 import com.giua.objects.Newsletter;
-import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
 
 import java.io.File;
@@ -61,7 +61,6 @@ public class CircolariFragment extends Fragment {
     //TODO: aggiungere la ricerca delle circolari per oggetto e anche i filtri per i mesi come nel sito
     //TODO: Rivedere un po la UI perchè non è il massimo
 
-    GiuaScraper gS;
     LinearLayout layout;
     Context context;
     List<Newsletter> allNewsletter = new Vector<>();
@@ -79,9 +78,6 @@ public class CircolariFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_circolari, container, false);
-
-        Intent intent = requireActivity().getIntent();
-        gS = (GiuaScraper) intent.getSerializableExtra("giuascraper");
 
         context = getContext();
         layout = root.findViewById(R.id.newsletter_linear_layout);
@@ -119,7 +115,7 @@ public class CircolariFragment extends Fragment {
         new Thread(() -> {
             if (!loadedAllPages) {
                 try {
-                    allNewsletter = gS.getAllNewsletters(currentPage, true);
+                    allNewsletter = GlobalVariables.gS.getAllNewsletters(currentPage, true);
                     if (allNewsletter.isEmpty() && currentPage == 1)
                         tvNoElements.setVisibility(View.VISIBLE);
                     else if (allNewsletter.isEmpty())
@@ -127,14 +123,14 @@ public class CircolariFragment extends Fragment {
                     activity.runOnUiThread(this::addNewslettersToView);
                     currentPage++;
                 } catch (GiuaScraperExceptions.InternetProblems e) {
-                    DrawerActivity.setErrorMessage("E' stato riscontrato qualche problema con la tua connessione", layout);
+                    DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), layout);
                     activity.runOnUiThread(() -> {
                         tvNoElements.setVisibility(View.VISIBLE);
                         progressBarLoadingPage.setVisibility(View.GONE);
                     });
                     allNewsletter = new Vector<>();
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
-                    DrawerActivity.setErrorMessage("E' stato riscontrato qualche problema con la connessione del registro", layout);
+                    DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), layout);
                     activity.runOnUiThread(() -> {
                         tvNoElements.setVisibility(View.VISIBLE);
                         progressBarLoadingPage.setVisibility(View.GONE);
@@ -171,18 +167,22 @@ public class CircolariFragment extends Fragment {
         progressBarLoadingPage.setZ(10f);
         progressBarLoadingPage.setVisibility(View.VISIBLE);
         new Thread(() -> {
-            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 try {
                     FileOutputStream out = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/circolare.pdf");
-                    out.write(gS.download(url));
+                    out.write(GlobalVariables.gS.download(url));
                     out.close();
+                    openFile();
+                } catch (GiuaScraperExceptions.InternetProblems e) {
+                    DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), attachmentLayout);
+                } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
+                    DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), attachmentLayout);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else {
                 DrawerActivity.setErrorMessage("Impossibile salvare il file: permesso negato", layout);
             }
-            openFile();
             isDownloading = false;
             activity.runOnUiThread(() -> progressBarLoadingPage.setVisibility(View.GONE));
         }).start();
@@ -192,9 +192,9 @@ public class CircolariFragment extends Fragment {
      * Apre il pdf col nome di circolare.pdf nella cartella Download
      */
     private void openFile() {
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             Intent target = new Intent(Intent.ACTION_VIEW);
-            target.setDataAndType(FileProvider.getUriForFile(getContext(), "com.giua.app.provider", new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/circolare.pdf")), "application/pdf");
+            target.setDataAndType(FileProvider.getUriForFile(requireContext(), "com.giua.app.provider", new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/circolare.pdf")), "application/pdf");
             target.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
             Intent intent = Intent.createChooser(target, "Apri la circolare con:");
@@ -225,7 +225,7 @@ public class CircolariFragment extends Fragment {
             tvAttachment.setOnClickListener((view) -> onClickSingleAttachment(attachment));
             tvAttachment.setId(View.generateViewId());
             tvAttachment.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.corner_radius_10dp, context.getTheme()));
-            tvAttachment.setTypeface(ResourcesCompat.getFont(getContext(), R.font.varelaroundregular));
+            tvAttachment.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.varelaroundregular));
             tvAttachment.setGravity(Gravity.CENTER);
             tvAttachment.setTextSize(16f);
 

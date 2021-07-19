@@ -39,7 +39,6 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.giua.webscraper.GiuaScraper;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -49,10 +48,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
     private AppBarConfiguration mAppBarConfiguration;
 
-    GiuaScraper gS;
     TextView tvUsername;
     TextView tvUserType;
-    Bundle bundle;
     DrawerLayout drawerLayout;
     NavigationView navigationView;     //Il navigation drawer vero e proprio
     NavController navController;     //Si puo intendere come il manager dei fragments
@@ -80,17 +77,13 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
 
         navigationView.setNavigationItemSelectedListener(this);
-        Intent intent = getIntent();
-        gS = (GiuaScraper) intent.getSerializableExtra("giuascraper");
 
         tvUsername = navigationView.getHeaderView(0).findViewById(R.id.txtUsername);
         tvUserType = navigationView.getHeaderView(0).findViewById(R.id.txtUserType);
 
-        tvUsername.setText(gS.getUser());
-        tvUserType.setText(gS.getUserType());
+        tvUsername.setText(GlobalVariables.gS.getUser());
+        tvUserType.setText(GlobalVariables.gS.getUserType());
 
-        bundle = new Bundle();
-        bundle.putSerializable("giuascraper", gS);
         navigationView.setCheckedItem(R.id.nav_voti);
 
         btnLogout.setOnClickListener(this::logoutButtonClick);
@@ -139,7 +132,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     }
 
     private void startNewsLetterFragment() {
-        handler.post(() -> navController.navigate(R.id.nav_circolari, bundle));
+        handler.post(() -> navController.navigate(R.id.nav_circolari, null));
         closeNavDrawer();
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
@@ -147,17 +140,17 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     }
 
     private void startVotesFragment() {
-        handler.post(() -> navController.navigate(R.id.nav_voti, bundle));
+        handler.post(() -> navController.navigate(R.id.nav_voti, null));
         closeNavDrawer();
     }
 
     private void startLessonsFragment() {
-        handler.post(() -> navController.navigate(R.id.nav_lezioni, bundle));
+        handler.post(() -> navController.navigate(R.id.nav_lezioni, null));
         closeNavDrawer();
     }
 
     private void startAgendaFragment() {
-        handler.post(() -> navController.navigate(R.id.nav_agenda, bundle));
+        handler.post(() -> navController.navigate(R.id.nav_agenda, null));
         closeNavDrawer();
     }
 

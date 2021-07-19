@@ -19,7 +19,6 @@
 
 package com.giua.app.ui.lezioni;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -37,9 +36,11 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.giua.app.DrawerActivity;
+import com.giua.app.GlobalVariables;
 import com.giua.app.R;
 import com.giua.objects.Lesson;
-import com.giua.webscraper.GiuaScraper;
+import com.giua.webscraper.GiuaScraperExceptions;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,8 +50,6 @@ import java.util.List;
 import java.util.Locale;
 
 public class LezioniFragment extends Fragment {
-
-    GiuaScraper gS;
     TextView tvPrevDate;
     TextView tvCurrentDate;
     TextView tvNextDate;
@@ -75,9 +74,6 @@ public class LezioniFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_lezioni, container, false);
-
-        Intent intent = requireActivity().getIntent();
-        gS = (GiuaScraper) intent.getSerializableExtra("giuascraper");
 
         tvPrevDate = root.findViewById(R.id.lezioni_fragment_prev_date);
         tvCurrentDate = root.findViewById(R.id.lezioni_fragment_current_date);
@@ -119,11 +115,19 @@ public class LezioniFragment extends Fragment {
         if (System.nanoTime() - lastCallTime > 700000000) {     //Anti click spam
             new Thread(() -> {
                 lastCallTime = System.nanoTime();
-                allLessons = gS.getAllLessons(formatterForScraping.format(currentDate), true);
-                activity.runOnUiThread(() -> {
-                    addLessonViews();
-                    pbLoadingContent.setVisibility(View.GONE);
-                });
+                try {
+                    allLessons = GlobalVariables.gS.getAllLessons(formatterForScraping.format(currentDate), true);
+                    activity.runOnUiThread(() -> {
+                        addLessonViews();
+                        pbLoadingContent.setVisibility(View.GONE);
+                    });
+                } catch (GiuaScraperExceptions.InternetProblems e) {
+                    DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), lessonDetailLayout);
+                    activity.runOnUiThread(() -> pbLoadingContent.setVisibility(View.GONE));
+                } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
+                    DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), lessonDetailLayout);
+                    activity.runOnUiThread(() -> pbLoadingContent.setVisibility(View.GONE));
+                }
             }).start();
         } else
             lastCallTime = System.nanoTime();
