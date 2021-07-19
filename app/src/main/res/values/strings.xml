@@ -40,7 +40,7 @@
     <string name="site_url_text_view">Imposta l\'url del sito:</string>
     <string name="no_elements">Non ci sono elementi da visualizzare</string>
     <string name="your_connection_error">Sono stati riscontrati problemi con la tua connessione</string>
-    <string name="site_connection_error">Sono stati riscontrati problemi con la connessione del sito</string>
+    <string name="site_connection_error">Il sito non sta funzionando, riprova tra poco!"</string>
 
     <!-- Error activity strings -->
     <string name="customactivityoncrash_error_activity_error_occurred_explanation">C\'è stato un errore inaspettato.\nCi scusiamo per il disagio.</string>

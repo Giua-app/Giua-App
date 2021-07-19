@@ -50,10 +50,11 @@ import java.util.List;
 import java.util.Locale;
 
 public class LezioniFragment extends Fragment {
-    TextView tvPrevDate;
+
+    ImageView imgNextDate;
+    ImageView imgPrevDate;
     TextView tvCurrentDate;
-    TextView tvNextDate;
-    ImageView calendarBtn;
+    ImageView imgCalendar;
     ImageView obscureLayout;
     TextView tvNoElements;
     TextView tvDetailArgs;
@@ -69,17 +70,19 @@ public class LezioniFragment extends Fragment {
     Date currentDate;
     Calendar calendar;
     long lastCallTime = 0;
+    Date todayDate;
+    Date yesterdayDate;
+    Date tomorrowDate;
+    Thread threadWaiter;
     SimpleDateFormat formatterForScraping = new SimpleDateFormat("yyyy-MM-dd", Locale.ITALIAN);
     SimpleDateFormat formatterForVisualize = new SimpleDateFormat("dd-MM-yyyy", Locale.ITALIAN);
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_lezioni, container, false);
 
-        tvPrevDate = root.findViewById(R.id.lezioni_fragment_prev_date);
         tvCurrentDate = root.findViewById(R.id.lezioni_fragment_current_date);
-        tvNextDate = root.findViewById(R.id.lezioni_fragment_next_date);
         lessonsLayout = root.findViewById(R.id.lezioni_fragment_lessons_layout);
-        calendarBtn = root.findViewById(R.id.lezioni_fragment_image_view);
+        imgCalendar = root.findViewById(R.id.lezioni_fragment_calendar_img);
         calendarView = root.findViewById(R.id.lezioni_fragment_calendar_view);
         obscureLayout = root.findViewById(R.id.obscure_layout_image_button3);
         frameLayout = root.findViewById(R.id.lezioni_fragment_frame_layout);
@@ -89,18 +92,23 @@ public class LezioniFragment extends Fragment {
         lessonDetailLayout = root.findViewById(R.id.lezioni_fragment_lesson_detail);
         tvDetailArgs = root.findViewById(R.id.lezioni_fragment_lesson_detail_args);
         tvDetailActs = root.findViewById(R.id.lezioni_fragment_lesson_detail_acts);
+        imgNextDate = root.findViewById(R.id.lezioni_fragment_img_next_date);
+        imgPrevDate = root.findViewById(R.id.lezioni_fragment_img_prev_date);
 
         activity = requireActivity();
         calendar = Calendar.getInstance();
         currentDate = new Date();
 
-        tvPrevDate.setText(formatterForVisualize.format(getPrevDate(currentDate)));
-        tvCurrentDate.setText(formatterForVisualize.format(currentDate));
-        tvNextDate.setText(formatterForVisualize.format(getNextDate(currentDate)));
+        todayDate = currentDate;
+        yesterdayDate = getPrevDate(currentDate);
+        tomorrowDate = getNextDate(currentDate);
 
-        tvPrevDate.setOnClickListener(this::prevDateOnClick);
-        tvNextDate.setOnClickListener(this::nextDateOnClick);
-        calendarBtn.setOnClickListener(this::calendarBtnOnClick);
+        tvCurrentDate.setText("Oggi");
+
+        imgPrevDate.setOnClickListener(this::prevDateOnClick);
+        imgNextDate.setOnClickListener(this::nextDateOnClick);
+        imgCalendar.setOnClickListener(this::calendarBtnOnClick);
+        tvCurrentDate.setOnClickListener(this::calendarBtnOnClick);
         obscureLayout.setOnClickListener(this::obscureLayoutOnClick);
         calendarView.setOnDateChangeListener(this::calendarOnChangeDateListener);
 
@@ -124,13 +132,16 @@ public class LezioniFragment extends Fragment {
                 } catch (GiuaScraperExceptions.InternetProblems e) {
                     DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), lessonDetailLayout);
                     activity.runOnUiThread(() -> pbLoadingContent.setVisibility(View.GONE));
+                    activity.runOnUiThread(() -> tvNoElements.setVisibility(View.VISIBLE));
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), lessonDetailLayout);
                     activity.runOnUiThread(() -> pbLoadingContent.setVisibility(View.GONE));
+                    activity.runOnUiThread(() -> tvNoElements.setVisibility(View.VISIBLE));
                 }
             }).start();
-        } else
+        } else {
             lastCallTime = System.nanoTime();
+        }
     }
 
 
@@ -176,9 +187,7 @@ public class LezioniFragment extends Fragment {
     private void calendarOnChangeDateListener(CalendarView view, int year, int month, int dayOfMonth) {
         try {
             currentDate = getCurrentDate(formatterForScraping.parse(year + "-" + (month + 1) + "-" + dayOfMonth));
-            tvCurrentDate.setText(formatterForVisualize.format(currentDate));
-            tvPrevDate.setText(formatterForVisualize.format(getPrevDate(currentDate)));
-            tvNextDate.setText(formatterForVisualize.format(getNextDate(currentDate)));
+            setTextWithNames();
             addLessonViewsAsync();
             obscureLayout.callOnClick();
         } catch (ParseException e) {
@@ -197,21 +206,28 @@ public class LezioniFragment extends Fragment {
         obscureLayout.setVisibility(View.VISIBLE);
     }
 
+    private void setTextWithNames() {
+        if (currentDate.compareTo(todayDate) == 0)
+            tvCurrentDate.setText("Oggi");
+        else if (currentDate.compareTo(yesterdayDate) == 0)
+            tvCurrentDate.setText("Ieri");
+        else if (currentDate.compareTo(tomorrowDate) == 0)
+            tvCurrentDate.setText("Domani");
+        else
+            tvCurrentDate.setText(formatterForVisualize.format(currentDate));
+    }
+
     private void prevDateOnClick(View view) {
         currentDate = getPrevDate(currentDate);
         calendarView.setDate(currentDate.getTime());
-        tvNextDate.setText(tvCurrentDate.getText());
-        tvCurrentDate.setText(tvPrevDate.getText());
-        tvPrevDate.setText(formatterForVisualize.format(getPrevDate(currentDate)));
+        setTextWithNames();
         addLessonViewsAsync();
     }
 
     private void nextDateOnClick(View view) {
         currentDate = getNextDate(currentDate);
         calendarView.setDate(currentDate.getTime());
-        tvPrevDate.setText(tvCurrentDate.getText());
-        tvCurrentDate.setText(tvNextDate.getText());
-        tvNextDate.setText(formatterForVisualize.format(getNextDate(currentDate)));
+        setTextWithNames();
         addLessonViewsAsync();
     }
 

@@ -134,9 +134,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     private void startNewsLetterFragment() {
         handler.post(() -> navController.navigate(R.id.nav_circolari, null));
         closeNavDrawer();
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
-                0);
     }
 
     private void startVotesFragment() {

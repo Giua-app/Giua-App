@@ -19,14 +19,11 @@
 
 package com.giua.app.ui.circolari;
 
-import android.Manifest;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +35,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
@@ -125,14 +121,16 @@ public class CircolariFragment extends Fragment {
                 } catch (GiuaScraperExceptions.InternetProblems e) {
                     DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), layout);
                     activity.runOnUiThread(() -> {
-                        tvNoElements.setVisibility(View.VISIBLE);
+                        if (currentPage == 1)
+                            tvNoElements.setVisibility(View.VISIBLE);
                         progressBarLoadingPage.setVisibility(View.GONE);
                     });
                     allNewsletter = new Vector<>();
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), layout);
                     activity.runOnUiThread(() -> {
-                        tvNoElements.setVisibility(View.VISIBLE);
+                        if (currentPage == 1)
+                            tvNoElements.setVisibility(View.VISIBLE);
                         progressBarLoadingPage.setVisibility(View.GONE);
                     });
                     allNewsletter = new Vector<>();
@@ -167,21 +165,17 @@ public class CircolariFragment extends Fragment {
         progressBarLoadingPage.setZ(10f);
         progressBarLoadingPage.setVisibility(View.VISIBLE);
         new Thread(() -> {
-            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                try {
-                    FileOutputStream out = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/circolare.pdf");
-                    out.write(GlobalVariables.gS.download(url));
-                    out.close();
-                    openFile();
-                } catch (GiuaScraperExceptions.InternetProblems e) {
-                    DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), attachmentLayout);
-                } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
-                    DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), attachmentLayout);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                DrawerActivity.setErrorMessage("Impossibile salvare il file: permesso negato", layout);
+            try {
+                FileOutputStream out = new FileOutputStream(requireContext().getFilesDir() + "/circolare.pdf");
+                out.write(GlobalVariables.gS.download(url));
+                out.close();
+                openFile();
+            } catch (GiuaScraperExceptions.InternetProblems e) {
+                DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), attachmentLayout);
+            } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
+                DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), attachmentLayout);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
             isDownloading = false;
             activity.runOnUiThread(() -> progressBarLoadingPage.setVisibility(View.GONE));
@@ -192,19 +186,15 @@ public class CircolariFragment extends Fragment {
      * Apre il pdf col nome di circolare.pdf nella cartella Download
      */
     private void openFile() {
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            Intent target = new Intent(Intent.ACTION_VIEW);
-            target.setDataAndType(FileProvider.getUriForFile(requireContext(), "com.giua.app.provider", new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/circolare.pdf")), "application/pdf");
-            target.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        Intent target = new Intent(Intent.ACTION_VIEW);
+        target.setDataAndType(FileProvider.getUriForFile(requireContext(), "com.giua.app.provider", new File(requireContext().getFilesDir() + "/circolare.pdf")), "application/pdf");
+        target.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-            Intent intent = Intent.createChooser(target, "Apri la circolare con:");
-            try {
-                startActivity(intent);
-            } catch (ActivityNotFoundException e) {
-                e.printStackTrace();
-            }
-        } else {
-            DrawerActivity.setErrorMessage("Impossibile leggere i file: permesso negato", layout);
+        Intent intent = Intent.createChooser(target, "Apri con:");
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
         }
     }
 

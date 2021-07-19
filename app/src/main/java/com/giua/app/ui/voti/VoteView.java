@@ -90,7 +90,7 @@ public class VoteView extends ConstraintLayout {
     }
 
     private void createSingleVotes(){
-        LinearLayout.LayoutParams singleVoteParams = new LinearLayout.LayoutParams(95, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams singleVoteParams = new LinearLayout.LayoutParams(120, ViewGroup.LayoutParams.WRAP_CONTENT);
         singleVoteParams.setMargins(20,0,0,0);
 
         for(Vote vote : allVotes){
