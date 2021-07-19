@@ -80,25 +80,33 @@ public class MainLogin extends AppCompatActivity {
                 } else {
                     setErrorMessage("Qualcosa e' andato storto!");
                     etPassword.setText("");
-                    pgProgressBar.setVisibility(View.INVISIBLE);
+                    this.runOnUiThread(() -> pgProgressBar.setVisibility(View.INVISIBLE));
                 }
 
             } catch (GiuaScraperExceptions.SessionCookieEmpty sce) {
                 setErrorMessage("Informazioni di login errate!");
-                etPassword.setText("");
-                pgProgressBar.setVisibility(View.INVISIBLE);
+                this.runOnUiThread(() -> {
+                    etPassword.setText("");
+                    pgProgressBar.setVisibility(View.INVISIBLE);
+                });
             } catch (GiuaScraperExceptions.UnableToLogin utl) {
                 setErrorMessage("E' stato riscontrato qualche problema sconosciuto");
-                etPassword.setText("");
-                pgProgressBar.setVisibility(View.INVISIBLE);
+                this.runOnUiThread(() -> {
+                    etPassword.setText("");
+                    pgProgressBar.setVisibility(View.INVISIBLE);
+                });
             } catch (GiuaScraperExceptions.InternetProblems e) {
                 setErrorMessage(getString(R.string.your_connection_error));
-                etPassword.setText("");
-                pgProgressBar.setVisibility(View.INVISIBLE);
+                this.runOnUiThread(() -> {
+                    etPassword.setText("");
+                    pgProgressBar.setVisibility(View.INVISIBLE);
+                });
             } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                 setErrorMessage(getString(R.string.site_connection_error));
-                etPassword.setText("");
-                pgProgressBar.setVisibility(View.INVISIBLE);
+                this.runOnUiThread(() -> {
+                    etPassword.setText("");
+                    pgProgressBar.setVisibility(View.INVISIBLE);
+                });
             }
         }).start();
     }

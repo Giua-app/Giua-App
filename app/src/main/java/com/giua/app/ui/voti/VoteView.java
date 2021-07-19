@@ -90,7 +90,7 @@ public class VoteView extends ConstraintLayout {
     }
 
     private void createSingleVotes(){
-        LinearLayout.LayoutParams singleVoteParams = new LinearLayout.LayoutParams(120, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams singleVoteParams = new LinearLayout.LayoutParams(95, ViewGroup.LayoutParams.WRAP_CONTENT);
         singleVoteParams.setMargins(20,0,0,0);
 
         for(Vote vote : allVotes){
@@ -100,7 +100,7 @@ public class VoteView extends ConstraintLayout {
             tvVote.setId(View.generateViewId());
             tvVote.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.corner_radius_10dp));
 
-            tvVote.setTextSize(18f);
+            tvVote.setTextSize(17f);
             tvVote.setLayoutParams(singleVoteParams);
             tvVote.setPadding(5,5,5,5);
             tvVote.setOnClickListener(onClick);
