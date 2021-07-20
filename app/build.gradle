@@ -22,6 +22,10 @@ plugins {
     id 'com.supercilex.gradle.versions' version '0.9.0'
 }
 
+versionOrchestrator {
+    configureDebugBuilds.set(true)
+}
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
