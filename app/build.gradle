@@ -19,6 +19,7 @@
 
 plugins {
     id 'com.android.application'
+    id 'com.supercilex.gradle.versions' version '0.9.0'
 }
 
 android {
