@@ -38,7 +38,7 @@ public class ActivityManager extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
 
         //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
-        //GiuaScraper.setDebugMode(true);
+        GiuaScraper.setDebugMode(true);
 
         final String defaultUrl = SettingsData.getSettingString(this, "defaultUrl");
 

@@ -42,7 +42,6 @@ public class MainLogin extends AppCompatActivity {
     ImageButton btnShowPassword;
     Button btnLogin;
     boolean btnShowActivated = false;
-    GiuaScraper gS;
     CheckBox chRememberCredentials;
 
     @Override
@@ -68,45 +67,52 @@ public class MainLogin extends AppCompatActivity {
     private void login() {
         new Thread(() -> {
             try {
-                gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString(), LoginData.getCookie(this), true);
-                gS.login();
+                GlobalVariables.gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString(), LoginData.getCookie(this), true);
+                GlobalVariables.gS.login();
+
+                if (GlobalVariables.gS.checkLogin()) {
+                    System.out.println("login ok");
+                    if (chRememberCredentials.isChecked()) {
+                        String c = GlobalVariables.gS.getCookie();
+                        LoginData.setCredentials(this, etUsername.getText().toString(), etPassword.getText().toString(), c);
+                    }
+                    startDrawerActivity();
+                } else {
+                    setErrorMessage("Qualcosa e' andato storto!");
+                    etPassword.setText("");
+                    this.runOnUiThread(() -> pgProgressBar.setVisibility(View.INVISIBLE));
+                }
+
             } catch (GiuaScraperExceptions.SessionCookieEmpty sce) {
                 setErrorMessage("Informazioni di login errate!");
-                etPassword.setText("");
-                pgProgressBar.setVisibility(View.INVISIBLE);
-                return;
+                this.runOnUiThread(() -> {
+                    etPassword.setText("");
+                    pgProgressBar.setVisibility(View.INVISIBLE);
+                });
             } catch (GiuaScraperExceptions.UnableToLogin utl) {
-                if (!GiuaScraper.isMyInternetWorking()) {
-                    setErrorMessage("Sono stati riscontrati problemi con la tua rete");
-                } else if (!GiuaScraper.isSiteWorking()) {
-                    setErrorMessage("Il sito non sta funzionando, riprova tra poco!");
-                } else {
-                    setErrorMessage("E' stato riscontrato qualche problema sconosciuto riguardo la rete");
-                }
-                etPassword.setText("");
-                pgProgressBar.setVisibility(View.INVISIBLE);
-                return;
-            }
-
-            if (gS.checkLogin()) {
-                System.out.println("login ok");
-                if (chRememberCredentials.isChecked()) {
-                    String c = gS.getSessionCookie();
-                    LoginData.setCredentials(this, etUsername.getText().toString(), etPassword.getText().toString(), c);
-                }
-
-                startDrawerActivity();
-            } else {
-                setErrorMessage("Qualcosa e' andato storto!");
-                etPassword.setText("");
-                pgProgressBar.setVisibility(View.INVISIBLE);
+                setErrorMessage("E' stato riscontrato qualche problema sconosciuto");
+                this.runOnUiThread(() -> {
+                    etPassword.setText("");
+                    pgProgressBar.setVisibility(View.INVISIBLE);
+                });
+            } catch (GiuaScraperExceptions.InternetProblems e) {
+                setErrorMessage(getString(R.string.your_connection_error));
+                this.runOnUiThread(() -> {
+                    etPassword.setText("");
+                    pgProgressBar.setVisibility(View.INVISIBLE);
+                });
+            } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
+                setErrorMessage(getString(R.string.site_connection_error));
+                this.runOnUiThread(() -> {
+                    etPassword.setText("");
+                    pgProgressBar.setVisibility(View.INVISIBLE);
+                });
             }
         }).start();
     }
 
     private void startDrawerActivity() {
         Intent intent = new Intent(MainLogin.this, DrawerActivity.class);
-        intent.putExtra("giuascraper", gS);
         startActivity(intent);
     }
 

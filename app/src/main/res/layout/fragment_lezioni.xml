@@ -26,54 +26,6 @@
     android:background="@color/background_light"
     tools:context=".ui.lezioni.LezioniFragment">
 
-    <TextView
-        android:id="@+id/lezioni_fragment_current_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:fontFamily="@font/varelaroundregular"
-        android:text="Data attuale"
-        android:textAlignment="center"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/lezioni_fragment_prev_date"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="48dp"
-        android:fontFamily="@font/varelaroundregular"
-        android:gravity="center|center_horizontal|center_vertical"
-        android:text="Data precedente"
-        android:textAlignment="center"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toStartOf="@+id/lezioni_fragment_loading_content"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/lezioni_fragment_current_date" />
-
-
-    <TextView
-        android:id="@+id/lezioni_fragment_next_date"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_marginTop="44dp"
-        android:layout_marginEnd="24dp"
-        android:fontFamily="@font/varelaroundregular"
-        android:gravity="center|center_horizontal|center_vertical"
-        android:text="Data successiva"
-        android:textAlignment="center"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/lezioni_fragment_prev_date"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/lezioni_fragment_loading_content"
-        app:layout_constraintTop_toTopOf="@+id/lezioni_fragment_current_date"
-        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/lezioni_fragment_no_elements_view"
@@ -91,43 +43,27 @@
         app:layout_constraintVertical_bias="0.396" />
 
     <ImageView
-        android:id="@+id/lezioni_fragment_image_view"
+        android:id="@+id/lezioni_fragment_calendar_img"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
         android:src="@drawable/ic_baseline_calendar_today_24"
-        app:layout_constraintBottom_toTopOf="@+id/lezioni_fragment_prev_date"
-        app:layout_constraintEnd_toStartOf="@+id/lezioni_fragment_current_date"
-        app:layout_constraintHorizontal_bias="0.02"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_baseline_arrow_left_24"
-        app:layout_constraintBottom_toBottomOf="@+id/lezioni_fragment_prev_date"
-        app:layout_constraintEnd_toStartOf="@+id/lezioni_fragment_prev_date"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/lezioni_fragment_prev_date"
-        app:layout_constraintVertical_bias="0.5" />
+        android:visibility="gone"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="16dp" />
 
     <ScrollView
         android:id="@+id/lezioni_fragment_scroll_lessons_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="115dp"
         android:overScrollMode="never"
         android:padding="5dp"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0">
 
         <LinearLayout
             android:id="@+id/lezioni_fragment_lessons_layout"
@@ -142,12 +78,52 @@
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
         android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="@+id/lezioni_fragment_current_date"
-        app:layout_constraintHorizontal_bias="0.487"
-        app:layout_constraintStart_toStartOf="@+id/lezioni_fragment_current_date"
-        app:layout_constraintTop_toBottomOf="@+id/lezioni_fragment_current_date" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/lezioni_fragment_scroll_lessons_view" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/lezioni_fragment_bottom_card_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        app:cardCornerRadius="15dp"
+        app:contentPadding="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.957">
+
+        <TextView
+            android:id="@+id/lezioni_fragment_current_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|center_horizontal|center_vertical"
+            android:fontFamily="@font/varelaroundregular"
+            android:text="Data attuale"
+            android:textAlignment="center"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/lezioni_fragment_img_next_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:src="@drawable/ic_baseline_arrow_right_24" />
+
+        <ImageView
+            android:id="@+id/lezioni_fragment_img_prev_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center_vertical"
+            android:src="@drawable/ic_baseline_arrow_left_24" />
+    </androidx.cardview.widget.CardView>
 
     <ImageButton
         android:id="@+id/obscure_layout_image_button3"
@@ -170,8 +146,7 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.445"
-        tools:visibility="visible">
+        app:layout_constraintVertical_bias="0.445">
 
         <TextView
             android:id="@+id/lezioni_fragment_lesson_detail_args"
@@ -209,19 +184,7 @@
             android:id="@+id/lezioni_fragment_calendar_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/white" />
+            android:background="@drawable/corner_radius_10dp" />
     </FrameLayout>
-
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_baseline_arrow_right_24"
-        app:layout_constraintBottom_toBottomOf="@+id/lezioni_fragment_next_date"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/lezioni_fragment_next_date"
-        app:layout_constraintTop_toTopOf="@+id/lezioni_fragment_next_date"
-        app:layout_constraintVertical_bias="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

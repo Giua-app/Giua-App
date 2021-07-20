@@ -100,7 +100,7 @@ public class VoteView extends ConstraintLayout {
             tvVote.setId(View.generateViewId());
             tvVote.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.corner_radius_10dp));
 
-            tvVote.setTextSize(18f);
+            tvVote.setTextSize(17f);
             tvVote.setLayoutParams(singleVoteParams);
             tvVote.setPadding(5,5,5,5);
             tvVote.setOnClickListener(onClick);
