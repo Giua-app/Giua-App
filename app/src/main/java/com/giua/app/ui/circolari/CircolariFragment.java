@@ -54,9 +54,6 @@ import java.util.Vector;
 
 public class CircolariFragment extends Fragment {
 
-    //TODO: aggiungere la ricerca delle circolari per oggetto e anche i filtri per i mesi come nel sito
-    //TODO: Rivedere un po la UI perchè non è il massimo
-
     LinearLayout layout;
     Context context;
     List<Newsletter> allNewsletter = new Vector<>();
@@ -71,6 +68,7 @@ public class CircolariFragment extends Fragment {
     int currentPage = 1;
     boolean loadedAllPages = false;
     boolean loadingPage = false;
+    boolean hasCompletedLoading = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_circolari, container, false);
@@ -105,13 +103,18 @@ public class CircolariFragment extends Fragment {
 
     private void addNewslettersToViewAsync() {
         loadingPage = true;
+        hasCompletedLoading = false;
         if (progressBarLoadingPage.getVisibility() == View.GONE && progressBarLoadingNewsletters.getParent() == null)
             layout.addView(progressBarLoadingNewsletters);
 
         new Thread(() -> {
             if (!loadedAllPages) {
                 try {
+                    preventInfiniteLoading(System.nanoTime());
                     allNewsletter = GlobalVariables.gS.getAllNewsletters(currentPage, true);
+                    if (allNewsletter == null)
+                        return;
+                    hasCompletedLoading = true;
                     if (allNewsletter.isEmpty() && currentPage == 1)
                         tvNoElements.setVisibility(View.VISIBLE);
                     else if (allNewsletter.isEmpty())
@@ -153,6 +156,26 @@ public class CircolariFragment extends Fragment {
         }
 
         progressBarLoadingPage.setVisibility(View.GONE);
+    }
+
+    private void preventInfiniteLoading(long firstTime) {
+        new Thread(() -> {
+            while (!hasCompletedLoading) {
+                if (hasCompletedLoading)
+                    return;
+                else {
+                    if (System.nanoTime() - firstTime > 5000000000L) {
+                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), layout);
+                        activity.runOnUiThread(() -> {
+                            if (currentPage == 1)
+                                tvNoElements.setVisibility(View.VISIBLE);
+                            progressBarLoadingPage.setVisibility(View.GONE);
+                        });
+                        return;
+                    }
+                }
+            }
+        }).start();
     }
 
     /**

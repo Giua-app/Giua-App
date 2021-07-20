@@ -42,15 +42,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.396" />
 
-    <ImageView
-        android:id="@+id/lezioni_fragment_calendar_img"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_baseline_calendar_today_24"
-        android:visibility="gone"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="16dp" />
-
     <ScrollView
         android:id="@+id/lezioni_fragment_scroll_lessons_view"
         android:layout_width="match_parent"
@@ -84,6 +75,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/lezioni_fragment_scroll_lessons_view" />
 
+    <ImageButton
+        android:id="@+id/obscure_layout_image_button3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/obscure_style"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.cardview.widget.CardView
         android:id="@+id/lezioni_fragment_bottom_card_view"
         android:layout_width="0dp"
@@ -91,6 +93,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         app:cardCornerRadius="15dp"
+        app:cardElevation="5dp"
         app:contentPadding="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -125,18 +128,25 @@
             android:src="@drawable/ic_baseline_arrow_left_24" />
     </androidx.cardview.widget.CardView>
 
-    <ImageButton
-        android:id="@+id/obscure_layout_image_button3"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/obscure_style"
+    <Button
+        android:id="@+id/lezioni_fragment_btn_confirm_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/varelaroundregular"
+        android:text="Conferma data"
         android:visibility="gone"
-        tools:layout_editor_absoluteY="180dp" />
+        app:layout_constraintBottom_toTopOf="@+id/lezioni_fragment_bottom_card_view"
+        app:layout_constraintEnd_toEndOf="@+id/lezioni_fragment_bottom_card_view"
+        app:layout_constraintStart_toStartOf="@+id/lezioni_fragment_bottom_card_view" />
 
     <LinearLayout
         android:id="@+id/lezioni_fragment_lesson_detail"
-        android:layout_width="247dp"
-        android:layout_height="163dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="100dp"
         android:background="@drawable/corner_radius_10dp"
         android:orientation="vertical"
         android:padding="10dp"
@@ -146,26 +156,26 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.445">
+        app:layout_constraintVertical_bias="0.35000002">
 
         <TextView
             android:id="@+id/lezioni_fragment_lesson_detail_args"
-            android:layout_width="231dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:fontFamily="@font/varelaroundregular"
             android:text="Argomenti"
-            android:textSize="16sp" />
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/lezioni_fragment_lesson_detail_acts"
-            android:layout_width="231dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:layout_weight="1"
             android:fontFamily="@font/varelaroundregular"
             android:text="Attivita"
-            android:textSize="16sp" />
+            android:textSize="15sp" />
     </LinearLayout>
 
     <FrameLayout

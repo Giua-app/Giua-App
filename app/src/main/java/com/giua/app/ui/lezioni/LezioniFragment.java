@@ -24,15 +24,16 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
@@ -54,18 +55,18 @@ public class LezioniFragment extends Fragment {
     ImageView imgNextDate;
     ImageView imgPrevDate;
     TextView tvCurrentDate;
-    ImageView imgCalendar;
     ImageView obscureLayout;
     TextView tvNoElements;
     TextView tvDetailArgs;
     TextView tvDetailActs;
     ProgressBar pbLoadingContent;
     FrameLayout frameLayout;
+    Button btnConfirmDate;
     CalendarView calendarView;
     FragmentActivity activity;
     LinearLayout lessonsLayout;
     LinearLayout lessonDetailLayout;
-    ScrollView scrollView;
+    CardView bottomCardView;
     List<Lesson> allLessons;
     Date currentDate;
     Calendar calendar;
@@ -76,24 +77,25 @@ public class LezioniFragment extends Fragment {
     SimpleDateFormat formatterForScraping = new SimpleDateFormat("yyyy-MM-dd", Locale.ITALIAN);
     SimpleDateFormat formatterForVisualize = new SimpleDateFormat("dd-MM-yyyy", Locale.ITALIAN);
     boolean hasCompletedLoading = false;
+    boolean isSpammingClick = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_lezioni, container, false);
 
         tvCurrentDate = root.findViewById(R.id.lezioni_fragment_current_date);
         lessonsLayout = root.findViewById(R.id.lezioni_fragment_lessons_layout);
-        imgCalendar = root.findViewById(R.id.lezioni_fragment_calendar_img);
         calendarView = root.findViewById(R.id.lezioni_fragment_calendar_view);
         obscureLayout = root.findViewById(R.id.obscure_layout_image_button3);
         frameLayout = root.findViewById(R.id.lezioni_fragment_frame_layout);
         tvNoElements = root.findViewById(R.id.lezioni_fragment_no_elements_view);
         pbLoadingContent = root.findViewById(R.id.lezioni_fragment_loading_content);
-        scrollView = root.findViewById(R.id.lezioni_fragment_scroll_lessons_view);
         lessonDetailLayout = root.findViewById(R.id.lezioni_fragment_lesson_detail);
         tvDetailArgs = root.findViewById(R.id.lezioni_fragment_lesson_detail_args);
         tvDetailActs = root.findViewById(R.id.lezioni_fragment_lesson_detail_acts);
         imgNextDate = root.findViewById(R.id.lezioni_fragment_img_next_date);
         imgPrevDate = root.findViewById(R.id.lezioni_fragment_img_prev_date);
+        bottomCardView = root.findViewById(R.id.lezioni_fragment_bottom_card_view);
+        btnConfirmDate = root.findViewById(R.id.lezioni_fragment_btn_confirm_date);
 
         activity = requireActivity();
         calendar = Calendar.getInstance();
@@ -107,10 +109,10 @@ public class LezioniFragment extends Fragment {
 
         imgPrevDate.setOnClickListener(this::prevDateOnClick);
         imgNextDate.setOnClickListener(this::nextDateOnClick);
-        imgCalendar.setOnClickListener(this::calendarBtnOnClick);
-        tvCurrentDate.setOnClickListener(this::calendarBtnOnClick);
+        tvCurrentDate.setOnClickListener(this::tvCurrentDateOnClick);
         obscureLayout.setOnClickListener(this::obscureLayoutOnClick);
         calendarView.setOnDateChangeListener(this::calendarOnChangeDateListener);
+        btnConfirmDate.setOnClickListener(this::btnConfirmDateOnClick);
 
         addLessonViewsAsync();
 
@@ -119,17 +121,19 @@ public class LezioniFragment extends Fragment {
 
     private void addLessonViewsAsync() {
         pbLoadingContent.setVisibility(View.VISIBLE);
-        lessonsLayout.removeAllViews();
         hasCompletedLoading = false;
 
-        if (System.nanoTime() - lastCallTime > 700000000) {     //Anti click spam
+        if (!isSpammingClick && System.nanoTime() - lastCallTime > 500000000) {     //Anti click spam
             new Thread(() -> {
                 lastCallTime = System.nanoTime();
                 try {
                     preventInfiniteLoading(System.nanoTime());
                     allLessons = GlobalVariables.gS.getAllLessons(formatterForScraping.format(currentDate), true);
+                    if (allLessons == null)
+                        return;
                     hasCompletedLoading = true;
                     activity.runOnUiThread(() -> {
+                        lessonsLayout.removeAllViews();
                         addLessonViews();
                         pbLoadingContent.setVisibility(View.GONE);
                     });
@@ -148,7 +152,10 @@ public class LezioniFragment extends Fragment {
                 }
             }).start();
         } else {
-            lastCallTime = System.nanoTime();
+            isSpammingClick = true;
+            btnConfirmDate.setVisibility(View.VISIBLE);
+            pbLoadingContent.setVisibility(View.GONE);
+            tvNoElements.setVisibility(View.VISIBLE);
         }
     }
 
@@ -176,7 +183,13 @@ public class LezioniFragment extends Fragment {
         }
     }
 
-    private void preventInfiniteLoading(long firstTime) throws GiuaScraperExceptions.InternetProblems {
+    private void btnConfirmDateOnClick(View view) {
+        btnConfirmDate.setVisibility(View.GONE);
+        isSpammingClick = false;
+        addLessonViewsAsync();
+    }
+
+    private void preventInfiniteLoading(long firstTime) {
         new Thread(() -> {
             while (!hasCompletedLoading) {
                 if (hasCompletedLoading)
@@ -192,13 +205,14 @@ public class LezioniFragment extends Fragment {
                     }
                 }
             }
-            return;
         }).start();
     }
 
     private void lessonViewOnClick(View view) {
         lessonDetailLayout.setVisibility(View.VISIBLE);
         obscureLayout.setVisibility(View.VISIBLE);
+        bottomCardView.setZ(-10f);
+        btnConfirmDate.setZ(-10f);
 
         if (!((LessonView) view).lesson.arguments.equals(""))
             tvDetailArgs.setText(Html.fromHtml("<b>Argomenti:</b> " + ((LessonView) view).lesson.arguments, Html.FROM_HTML_MODE_COMPACT));
@@ -226,11 +240,15 @@ public class LezioniFragment extends Fragment {
         frameLayout.setVisibility(View.GONE);
         obscureLayout.setVisibility(View.GONE);
         lessonDetailLayout.setVisibility(View.GONE);
+        bottomCardView.setZ(13.75f);
+        btnConfirmDate.setZ(13.75f);
     }
 
-    private void calendarBtnOnClick(View view) {
+    private void tvCurrentDateOnClick(View view) {
         frameLayout.setVisibility(View.VISIBLE);
         obscureLayout.setVisibility(View.VISIBLE);
+        bottomCardView.setZ(-10f);
+        btnConfirmDate.setZ(-10f);
     }
 
     private void setTextWithNames() {
@@ -247,6 +265,7 @@ public class LezioniFragment extends Fragment {
     private void prevDateOnClick(View view) {
         currentDate = getPrevDate(currentDate);
         calendarView.setDate(currentDate.getTime());
+        lessonsLayout.removeAllViews();
         setTextWithNames();
         addLessonViewsAsync();
     }
@@ -254,6 +273,7 @@ public class LezioniFragment extends Fragment {
     private void nextDateOnClick(View view) {
         currentDate = getNextDate(currentDate);
         calendarView.setDate(currentDate.getTime());
+        lessonsLayout.removeAllViews();
         setTextWithNames();
         addLessonViewsAsync();
     }
