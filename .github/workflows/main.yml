@@ -16,7 +16,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  release_apk_build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -32,12 +32,14 @@ jobs:
           
       - name: Permission to gradle File
         run: chmod +x gradlew
-      - name: Build with Gradle
-        run: ./gradlew assemble
+      - name: Build release with Gradle
+        run: ./gradlew assembleRelease
+        
+      - run: ls app/build/outputs/apk/release
         
       - uses: actions/upload-artifact@v2
         with:
           name: apk-output
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/release/app-release.apk
 
 
