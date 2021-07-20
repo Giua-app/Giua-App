@@ -34,12 +34,10 @@ jobs:
         run: chmod +x gradlew
       - name: Build release with Gradle
         run: ./gradlew assembleRelease
-        
-      - run: ls app/build/outputs/apk/release
-        
+
       - uses: actions/upload-artifact@v2
         with:
           name: apk-output
-          path: app/build/outputs/apk/release/app-release.apk
+          path: app/build/outputs/apk/release/*.apk
 
 
