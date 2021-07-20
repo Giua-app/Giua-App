@@ -35,9 +35,11 @@ jobs:
       - name: Build release with Gradle
         run: ./gradlew assembleRelease
         
+      - run: ls app/build/outputs/apk/release
+        
       - uses: actions/upload-artifact@v2
         with:
           name: apk-output
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/release/app-release.apk
 
 
