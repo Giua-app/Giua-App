@@ -35,6 +35,9 @@
         <item
             android:id="@+id/nav_circolari"
             android:title="Circolari" />
+        <item
+            android:id="@+id/nav_pagella"
+            android:title="Pagella" />
     </group>
 
 </menu>

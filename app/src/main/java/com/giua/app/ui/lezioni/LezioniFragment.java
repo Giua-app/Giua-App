@@ -73,9 +73,9 @@ public class LezioniFragment extends Fragment {
     Date todayDate;
     Date yesterdayDate;
     Date tomorrowDate;
-    Thread threadWaiter;
     SimpleDateFormat formatterForScraping = new SimpleDateFormat("yyyy-MM-dd", Locale.ITALIAN);
     SimpleDateFormat formatterForVisualize = new SimpleDateFormat("dd-MM-yyyy", Locale.ITALIAN);
+    boolean hasCompletedLoading = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_lezioni, container, false);
@@ -119,24 +119,32 @@ public class LezioniFragment extends Fragment {
 
     private void addLessonViewsAsync() {
         pbLoadingContent.setVisibility(View.VISIBLE);
+        lessonsLayout.removeAllViews();
+        hasCompletedLoading = false;
 
         if (System.nanoTime() - lastCallTime > 700000000) {     //Anti click spam
             new Thread(() -> {
                 lastCallTime = System.nanoTime();
                 try {
+                    preventInfiniteLoading(System.nanoTime());
                     allLessons = GlobalVariables.gS.getAllLessons(formatterForScraping.format(currentDate), true);
+                    hasCompletedLoading = true;
                     activity.runOnUiThread(() -> {
                         addLessonViews();
                         pbLoadingContent.setVisibility(View.GONE);
                     });
                 } catch (GiuaScraperExceptions.InternetProblems e) {
-                    DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), lessonDetailLayout);
-                    activity.runOnUiThread(() -> pbLoadingContent.setVisibility(View.GONE));
-                    activity.runOnUiThread(() -> tvNoElements.setVisibility(View.VISIBLE));
+                    DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), tvCurrentDate);
+                    activity.runOnUiThread(() -> {
+                        pbLoadingContent.setVisibility(View.GONE);
+                        tvNoElements.setVisibility(View.VISIBLE);
+                    });
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
-                    DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), lessonDetailLayout);
-                    activity.runOnUiThread(() -> pbLoadingContent.setVisibility(View.GONE));
-                    activity.runOnUiThread(() -> tvNoElements.setVisibility(View.VISIBLE));
+                    DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), tvCurrentDate);
+                    activity.runOnUiThread(() -> {
+                        pbLoadingContent.setVisibility(View.GONE);
+                        tvNoElements.setVisibility(View.VISIBLE);
+                    });
                 }
             }).start();
         } else {
@@ -150,7 +158,6 @@ public class LezioniFragment extends Fragment {
      */
     private void addLessonViews() {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lessonsLayout.removeAllViews();
 
         params.setMargins(20, 40, 20, 0);
         tvNoElements.setVisibility(View.GONE);
@@ -167,6 +174,26 @@ public class LezioniFragment extends Fragment {
                 lessonsLayout.addView(lessonView);
             }
         }
+    }
+
+    private void preventInfiniteLoading(long firstTime) throws GiuaScraperExceptions.InternetProblems {
+        new Thread(() -> {
+            while (!hasCompletedLoading) {
+                if (hasCompletedLoading)
+                    return;
+                else {
+                    if (System.nanoTime() - firstTime > 5000000000L) {
+                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), tvCurrentDate);
+                        activity.runOnUiThread(() -> {
+                            pbLoadingContent.setVisibility(View.GONE);
+                            tvNoElements.setVisibility(View.VISIBLE);
+                        });
+                        return;
+                    }
+                }
+            }
+            return;
+        }).start();
     }
 
     private void lessonViewOnClick(View view) {
