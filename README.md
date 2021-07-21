@@ -1,7 +1,7 @@
 # Giua-App
 [![Gradle assemble apk](https://github.com/Giua-app/Giua-App/actions/workflows/main.yml/badge.svg)](https://github.com/Giua-app/Giua-App/actions/workflows/main.yml)
 ---
-ver. 0.2.x-alpha
+ver. 0.3.x-alpha
 
 Based on giua-webscraper ver. 0.9.x-alpha
 
