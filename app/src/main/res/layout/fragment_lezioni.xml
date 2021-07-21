@@ -84,7 +84,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/lezioni_fragment_bottom_card_view"
@@ -108,7 +109,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center|center_horizontal|center_vertical"
             android:fontFamily="@font/varelaroundregular"
-            android:text="Data attuale"
+            android:text="@string/fragmentlezioni_textview_currentdate"
             android:textAlignment="center"
             android:textSize="22sp"
             android:textStyle="bold" />
@@ -133,7 +134,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/varelaroundregular"
-        android:text="Conferma data"
+        android:text="@string/fragmentlezioni_btn_confirmdate"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/lezioni_fragment_bottom_card_view"
         app:layout_constraintEnd_toEndOf="@+id/lezioni_fragment_bottom_card_view"
@@ -164,7 +165,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:fontFamily="@font/varelaroundregular"
-            android:text="Argomenti"
+            android:text="@string/fragmentlezioni_textview_lesson_detail_args"
             android:textSize="15sp" />
 
         <TextView
@@ -174,7 +175,7 @@
             android:layout_marginTop="20dp"
             android:layout_weight="1"
             android:fontFamily="@font/varelaroundregular"
-            android:text="Attivita"
+            android:text="@string/fragmentlezioni_textview_lesson_detail_acts"
             android:textSize="15sp" />
     </LinearLayout>
 

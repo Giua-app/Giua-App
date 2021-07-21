@@ -28,7 +28,7 @@
         android:id="@+id/loading_screen_minor_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Accesso automatico\n   Attendere prego..."
+        android:text="@string/loadingscreen_textview_automaticlogin"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

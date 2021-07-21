@@ -87,7 +87,8 @@
         androd:layout_constraintBottom_toBottomOf="parent"
         androd:layout_constraintEnd_toEndOf="parent"
         androd:layout_constraintStart_toStartOf="parent"
-        androd:layout_constraintTop_toTopOf="parent" />
+        androd:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
     <LinearLayout
         android:id="@+id/attachment_layout"

@@ -79,10 +79,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/varelaroundregular"
-                android:hint="URL"
+                android:hint="@string/activitysettings_textbox_siteurl_hint"
                 android:inputType="textUri"
                 android:labelFor="@id/settings_url_text_view"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:importantForAutofill="no" />
 
             <TextView
                 android:id="@+id/settings_crash_text_view"
@@ -92,7 +93,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="5dp"
                 android:fontFamily="@font/varelaroundregular"
-                android:text="Clicca per far crashare l\'app"
+                android:text="@string/activitysettings_text_crash"
                 android:textSize="15sp" />
 
             <Button
@@ -100,7 +101,7 @@
                 android:layout_width="157dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:text="destroy the world" />
+                android:text="@string/activitysettings_btn_crash" />
 
         </LinearLayout>
     </ScrollView>
@@ -111,7 +112,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginBottom="4dp"
-        android:text="Salva"
+        android:text="@string/activitysettings_btn_savesettings"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.947"

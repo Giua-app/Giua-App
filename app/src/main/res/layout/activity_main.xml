@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="216dp"
         android:backgroundTint="@color/main_color"
-        android:text="LOGIN"
+        android:text="@string/activitymain_button_login"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -43,8 +43,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="Ricorda credenziali"
         android:checked="true"
+        android:text="@string/activitymain_checkbox_remember_credentials"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/login_button" />
@@ -55,12 +55,13 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="52dp"
         android:fontFamily="sans-serif"
-        android:hint="password"
+        android:hint="@string/activitymain_pwdtextbox_hint"
         android:inputType="textPassword"
         app:layout_constraintBottom_toTopOf="@+id/login_button"
         app:layout_constraintEnd_toEndOf="@+id/textUser"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textUser" />
+        app:layout_constraintStart_toStartOf="@+id/textUser"
+        android:autofillHints="" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -82,7 +83,7 @@
         android:layout_height="0dp"
         android:layout_marginEnd="16dp"
         android:backgroundTint="#00000000"
-        android:contentDescription="Mostra password"
+        android:contentDescription="@string/activitymain_btn_showpassword"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="@+id/textPassword"
         app:layout_constraintEnd_toEndOf="parent"
@@ -99,19 +100,20 @@
         android:layout_marginBottom="12dp"
         android:ems="10"
         android:fontFamily="sans-serif"
-        android:hint="nome.cognome.f1"
+        android:hint="@string/activitymain_usertextbox_hint"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:autofillHints="" />
 
     <TextView
-        android:id="@+id/txtUsername"
+        android:id="@+id/txtTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/roboto_light"
-        android:text="Accedi al Registro Elettronico"
+        android:text="@string/activitymain_textbox_screentitle"
         android:textAlignment="center"
         android:textSize="36sp"
         app:layout_constraintBottom_toTopOf="@+id/textUser"

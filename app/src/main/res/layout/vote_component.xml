@@ -20,6 +20,7 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/vote_view_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -43,7 +44,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.041" />
+        app:layout_constraintVertical_bias="0.041"
+        tools:ignore="HardcodedText" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/list_vote_layout"
@@ -69,7 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
             android:fontFamily="@font/varelaroundregular"
-            android:text="1° Quadrimestre"
+            android:text="@string/votecomponent_textview_firstperiod"
             android:textSize="15sp" />
 
         <HorizontalScrollView
@@ -98,7 +100,7 @@
             android:layout_marginTop="60dp"
             android:layout_weight="1"
             android:fontFamily="@font/varelaroundregular"
-            android:text="2° Quadrimestre"
+            android:text="@string/votecomponent_textview_secondperiod"
             android:textSize="15sp" />
 
         <HorizontalScrollView
@@ -141,7 +143,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top|center_vertical"
             android:fontFamily="@font/varelaroundregular"
-            android:text="Medie:"
+            android:text="@string/votecomponent_textview_mean"
             android:textSize="15sp" />
 
         <TextView
@@ -158,7 +160,8 @@
             android:paddingBottom="5dp"
             android:text="7.3"
             android:textAlignment="center"
-            android:textSize="17sp" />
+            android:textSize="17sp"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/text_view_vote_secondo_quadrimestre"
@@ -173,7 +176,8 @@
             android:paddingBottom="5dp"
             android:text="7.3"
             android:textAlignment="center"
-            android:textSize="17sp" />
+            android:textSize="17sp"
+            tools:ignore="HardcodedText" />
 
     </androidx.cardview.widget.CardView>
 

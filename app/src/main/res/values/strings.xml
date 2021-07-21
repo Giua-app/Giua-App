@@ -17,7 +17,7 @@
   ~     along with this program.  If not, see https://www.gnu.org/licenses/.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Giua App</string>
     <string name="action_settings">Settings</string>
     <string name="next">Next</string>
@@ -52,4 +52,43 @@
     <string name="customactivityoncrash_error_activity_error_details_close">OK</string>
     <string name="customactivityoncrash_error_activity_error_details_copy">Copia</string>
     <string name="customactivityoncrash_error_activity_error_details_copied">Copiato negli appunti</string>
+
+    <!-- Activity Main (login screen) -->
+    <string name="activitymain_button_login">LOGIN</string>
+    <string name="activitymain_checkbox_remember_credentials">Ricorda credenziali</string>
+    <string name="activitymain_pwdtextbox_hint">password</string>
+    <string name="activitymain_btn_showpassword">Mostra password</string>
+    <string name="activitymain_usertextbox_hint">nome.cognome.f1</string>
+    <string name="activitymain_textbox_screentitle">Accedi al Registro Elettronico</string>
+
+    <!-- Activity Settings (settings screen) -->
+    <string name="activitysettings_textbox_siteurl_hint">URL</string>
+    <string name="activitysettings_btn_crash">destroy the world</string>
+    <string name="activitysettings_btn_savesettings">Salva</string>
+    <string name="activitysettings_text_crash">Clicca per far crashare l\'app</string>
+
+    <!-- Fragment lezioni -->
+    <string name="fragmentlezioni_textview_currentdate">Data attuale</string>
+    <string name="fragmentlezioni_btn_confirmdate">Conferma data</string>
+    <string name="fragmentlezioni_textview_lesson_detail_args">Argomenti</string>
+    <string name="fragmentlezioni_textview_lesson_detail_acts">Attivita</string>
+
+    <!-- Loading Screen -->
+    <string name="loadingscreen_textview_automaticlogin" tools:ignore="TypographyEllipsis">Accesso automatico\n Attendere prego...</string>
+
+    <!-- Newsletter view -->
+    <string name="newsletterview_imagebutton_viewdocument_contentdescription">Visualizza documento circolare</string>
+    <string name="newsletterview_imagebutton_viewattachment_contentdescription">Visualizza allegati della circolare</string>
+
+    <!-- Vote component -->
+    <string name="votecomponent_textview_firstperiod">1° Quadrimestre</string>
+    <string name="votecomponent_textview_secondperiod">2° Quadrimestre</string>
+    <string name="votecomponent_textview_mean">Medie:</string>
+
+    <!-- Activity main drawer -->
+    <string name="activitymaindrawer_nav_voti">Voti</string>
+    <string name="activitymaindrawer_nav_agenda">Agenda</string>
+    <string name="activitymaindrawer_nav_lezioni">Lezioni</string>
+    <string name="activitymaindrawer_nav_circolari">Circolari</string>
+    <string name="activitymaindrawer_nav_pagella">Pagella</string>
 </resources>

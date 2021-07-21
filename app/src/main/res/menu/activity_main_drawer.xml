@@ -25,19 +25,19 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_voti"
-            android:title="Voti" />
+            android:title="@string/activitymaindrawer_nav_voti" />
         <item
             android:id="@+id/nav_agenda"
-            android:title="Agenda" />
+            android:title="@string/activitymaindrawer_nav_agenda" />
         <item
             android:id="@+id/nav_lezioni"
-            android:title="Lezioni" />
+            android:title="@string/activitymaindrawer_nav_lezioni" />
         <item
             android:id="@+id/nav_circolari"
-            android:title="Circolari" />
+            android:title="@string/activitymaindrawer_nav_circolari" />
         <item
             android:id="@+id/nav_pagella"
-            android:title="Pagella" />
+            android:title="@string/activitymaindrawer_nav_pagella" />
     </group>
 
 </menu>
