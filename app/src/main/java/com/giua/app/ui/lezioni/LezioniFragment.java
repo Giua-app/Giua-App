@@ -52,8 +52,6 @@ import java.util.Locale;
 
 public class LezioniFragment extends Fragment {
 
-    ImageView imgNextDate;
-    ImageView imgPrevDate;
     TextView tvCurrentDate;
     ImageView obscureLayout;
     TextView tvNoElements;
@@ -70,17 +68,18 @@ public class LezioniFragment extends Fragment {
     List<Lesson> allLessons;
     Date currentDate;
     Calendar calendar;
-    long lastCallTime = 0;
     Date todayDate;
     Date yesterdayDate;
     Date tomorrowDate;
+    View root;
     SimpleDateFormat formatterForScraping = new SimpleDateFormat("yyyy-MM-dd", Locale.ITALIAN);
     SimpleDateFormat formatterForVisualize = new SimpleDateFormat("dd-MM-yyyy", Locale.ITALIAN);
+    long lastCallTime = 0;
     boolean hasCompletedLoading = false;
     boolean isSpammingClick = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_lezioni, container, false);
+        root = inflater.inflate(R.layout.fragment_lezioni, container, false);
 
         tvCurrentDate = root.findViewById(R.id.lezioni_fragment_current_date);
         lessonsLayout = root.findViewById(R.id.lezioni_fragment_lessons_layout);
@@ -92,8 +91,8 @@ public class LezioniFragment extends Fragment {
         lessonDetailLayout = root.findViewById(R.id.lezioni_fragment_lesson_detail);
         tvDetailArgs = root.findViewById(R.id.lezioni_fragment_lesson_detail_args);
         tvDetailActs = root.findViewById(R.id.lezioni_fragment_lesson_detail_acts);
-        imgNextDate = root.findViewById(R.id.lezioni_fragment_img_next_date);
-        imgPrevDate = root.findViewById(R.id.lezioni_fragment_img_prev_date);
+        ImageView imgNextDate = root.findViewById(R.id.lezioni_fragment_img_next_date);
+        ImageView imgPrevDate = root.findViewById(R.id.lezioni_fragment_img_prev_date);
         bottomCardView = root.findViewById(R.id.lezioni_fragment_bottom_card_view);
         btnConfirmDate = root.findViewById(R.id.lezioni_fragment_btn_confirm_date);
 
@@ -127,7 +126,6 @@ public class LezioniFragment extends Fragment {
             new Thread(() -> {
                 lastCallTime = System.nanoTime();
                 try {
-                    preventInfiniteLoading(System.nanoTime());
                     allLessons = GlobalVariables.gS.getAllLessons(formatterForScraping.format(currentDate), true);
                     if (allLessons == null)
                         return;
@@ -138,13 +136,13 @@ public class LezioniFragment extends Fragment {
                         pbLoadingContent.setVisibility(View.GONE);
                     });
                 } catch (GiuaScraperExceptions.InternetProblems e) {
-                    DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), tvCurrentDate);
+                    DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);
                     activity.runOnUiThread(() -> {
                         pbLoadingContent.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                     });
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
-                    DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), tvCurrentDate);
+                    DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root);
                     activity.runOnUiThread(() -> {
                         pbLoadingContent.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
@@ -158,7 +156,6 @@ public class LezioniFragment extends Fragment {
             tvNoElements.setVisibility(View.VISIBLE);
         }
     }
-
 
     /**
      * Aggiunge le lezioni nella UI
@@ -187,25 +184,6 @@ public class LezioniFragment extends Fragment {
         btnConfirmDate.setVisibility(View.GONE);
         isSpammingClick = false;
         addLessonViewsAsync();
-    }
-
-    private void preventInfiniteLoading(long firstTime) {
-        new Thread(() -> {
-            while (!hasCompletedLoading) {
-                if (hasCompletedLoading)
-                    return;
-                else {
-                    if (System.nanoTime() - firstTime > 5000000000L) {
-                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), tvCurrentDate);
-                        activity.runOnUiThread(() -> {
-                            pbLoadingContent.setVisibility(View.GONE);
-                            tvNoElements.setVisibility(View.VISIBLE);
-                        });
-                        return;
-                    }
-                }
-            }
-        }).start();
     }
 
     private void lessonViewOnClick(View view) {

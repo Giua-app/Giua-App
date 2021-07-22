@@ -64,6 +64,7 @@ public class CircolariFragment extends Fragment {
     ProgressBar progressBarLoadingNewsletters;
     TextView tvNoElements;
     FragmentActivity activity;
+    View root;
     boolean isDownloading = false;
     int currentPage = 1;
     boolean loadedAllPages = false;
@@ -71,7 +72,7 @@ public class CircolariFragment extends Fragment {
     boolean hasCompletedLoading = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_circolari, container, false);
+        root = inflater.inflate(R.layout.fragment_circolari, container, false);
 
         context = getContext();
         layout = root.findViewById(R.id.newsletter_linear_layout);
@@ -110,7 +111,6 @@ public class CircolariFragment extends Fragment {
         new Thread(() -> {
             if (!loadedAllPages) {
                 try {
-                    preventInfiniteLoading(System.nanoTime());
                     allNewsletter = GlobalVariables.gS.getAllNewsletters(currentPage, true);
                     if (allNewsletter == null)
                         return;
@@ -122,16 +122,16 @@ public class CircolariFragment extends Fragment {
                     activity.runOnUiThread(this::addNewslettersToView);
                     currentPage++;
                 } catch (GiuaScraperExceptions.InternetProblems e) {
-                    DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), layout);
                     activity.runOnUiThread(() -> {
+                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);
                         if (currentPage == 1)
                             tvNoElements.setVisibility(View.VISIBLE);
                         progressBarLoadingPage.setVisibility(View.GONE);
                     });
                     allNewsletter = new Vector<>();
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
-                    DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), layout);
                     activity.runOnUiThread(() -> {
+                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root);
                         if (currentPage == 1)
                             tvNoElements.setVisibility(View.VISIBLE);
                         progressBarLoadingPage.setVisibility(View.GONE);
@@ -158,26 +158,6 @@ public class CircolariFragment extends Fragment {
         progressBarLoadingPage.setVisibility(View.GONE);
     }
 
-    private void preventInfiniteLoading(long firstTime) {
-        new Thread(() -> {
-            while (!hasCompletedLoading) {
-                if (hasCompletedLoading)
-                    return;
-                else {
-                    if (System.nanoTime() - firstTime > 5000000000L) {
-                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), layout);
-                        activity.runOnUiThread(() -> {
-                            if (currentPage == 1)
-                                tvNoElements.setVisibility(View.VISIBLE);
-                            progressBarLoadingPage.setVisibility(View.GONE);
-                        });
-                        return;
-                    }
-                }
-            }
-        }).start();
-    }
-
     /**
      * Scarica e salva dall'url un pdf col nome di circolare.pdf e lo mette nella cartella Download
      *
@@ -190,13 +170,18 @@ public class CircolariFragment extends Fragment {
         new Thread(() -> {
             try {
                 FileOutputStream out = new FileOutputStream(requireContext().getFilesDir() + "/circolare.pdf");
-                out.write(GlobalVariables.gS.download(url));
-                out.close();
-                openFile();
+                byte[] downloadedBinary = GlobalVariables.gS.download(url);
+                if (downloadedBinary != null && downloadedBinary.length > 0) {
+                    out.write(downloadedBinary);
+                    out.close();
+                    openFile();
+                } else {
+                    activity.runOnUiThread(() -> DrawerActivity.setErrorMessage("E' stato incontrato un errore di rete durante il download: riprovare", root));
+                }
             } catch (GiuaScraperExceptions.InternetProblems e) {
-                DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), attachmentLayout);
+                activity.runOnUiThread(() -> DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root));
             } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
-                DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), attachmentLayout);
+                activity.runOnUiThread(() -> DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root));
             } catch (IOException e) {
                 e.printStackTrace();
             }

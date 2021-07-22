@@ -151,8 +151,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         closeNavDrawer();
     }
 
-    public static void setErrorMessage(String message, View view) {
-        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+    public static void setErrorMessage(String message, View root) {
+        Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
 
 

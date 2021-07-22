@@ -20,6 +20,7 @@
 package com.giua.app.ui.voti;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -58,16 +59,20 @@ public class VotiFragment extends Fragment {
     ImageButton obscureLayoutButton;    //Questo bottone viene visualizzato dietro al detail layout e se viene cliccato si esce dai dettaglii
     DecimalFormat df = new DecimalFormat("0.0");
     Map<String, List<Vote>> allVotes;
+    Activity activity;
+    View root;
 
     @SuppressLint("ClickableViewAccessibility")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_voti, container, false);
+        root = inflater.inflate(R.layout.fragment_voti, container, false);
 
         mainLayout = root.findViewById(R.id.vote_fragment_linear_layout);
         obscureLayoutButton = root.findViewById(R.id.obscure_layout_image_button);
         detailVoteLayout = root.findViewById(R.id.attachment_layout);
         progressBar = root.findViewById(R.id.vote_loading_page_bar);
         tvNoElements = root.findViewById(R.id.vote_fragment_no_elements_view);
+
+        activity = requireActivity();
 
         obscureLayoutButton.setOnClickListener(this::obscureButtonClick);
 
@@ -80,11 +85,19 @@ public class VotiFragment extends Fragment {
         new Thread(() -> {
             try {
                 allVotes = GlobalVariables.gS.getAllVotes(false);
-                requireActivity().runOnUiThread(this::generateAllViews);
+                activity.runOnUiThread(this::generateAllViews);
             } catch (GiuaScraperExceptions.InternetProblems e) {
-                DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), mainLayout);
+                activity.runOnUiThread(() -> {
+                    DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);
+                    progressBar.setVisibility(View.GONE);
+                    tvNoElements.setVisibility(View.VISIBLE);
+                });
             } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
-                DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), mainLayout);
+                activity.runOnUiThread(() -> {
+                    DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root);
+                    progressBar.setVisibility(View.GONE);
+                    tvNoElements.setVisibility(View.VISIBLE);
+                });
             }
         }).start();
     }
