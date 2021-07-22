@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Giua App
   ~ Android app to view data from the giua@school workbook
   ~ Copyright (C) 2021 - 2021 Hiem, Franck1421 and contributors
@@ -19,27 +18,27 @@
   -->
 
 <resources>
-    <color name="main_color">#0066cc</color>
-    <color name="background">#E1E0E0</color>
+    <color name="main_color">#283593</color>
+    <color name="background">#121212</color>
     <color name="error_message">#F84141</color>
     <color name="error_edit_text_input">#FF0000</color>
-    <color name="good_vote">#3EDC3E</color>
-    <color name="bad_vote">#D8201C</color>
-    <color name="middle_vote">#eb951a</color>
+    <color name="good_vote">#2E9F2E</color>
+    <color name="bad_vote">#9E1815</color>
+    <color name="middle_vote">#AA6C14</color>
     <color name="non_vote">#878787</color>
     <color name="good_vote_lighter">#7BDF7B</color>
     <color name="bad_vote_lighter">#E4605D</color>
     <color name="middle_vote_lighter">#EAB365</color>
     <color name="non_vote_lighter">#878787</color>
-    <color name="placeholder">#FFFFFF</color>
-    <color name="general_view_color">#FAFAFA</color>
+    <color name="placeholder">#323232</color>
+    <color name="general_view_color">#323232</color>
     <color name="white">#FAFAFA</color>
     <color name="black">#090909</color>
-    <color name="list_vote">#FAFAFA</color>
-    <color name="mean_vote_layout">#FAFAFA</color>
-    <color name="adaptive_color_text">#090909</color>
-    <color name="newsletter_layout">#FAFAFA</color>
-    <color name="newsletter_img">#0066cc</color>
+    <color name="list_vote">#3E3E3E</color>
+    <color name="mean_vote_layout">#3E3E3E</color>
+    <color name="adaptive_color_text">#FAFAFA</color>
+    <color name="newsletter_layout">#3E3E3E</color>
+    <color name="newsletter_img">#0080FF</color>
     <color name="nav_drawer_selected_background">#650066CC</color>
     <color name="nav_drawer_selected_text">#0066CC</color>
     <color name="nav_drawer_item_text">#0066CC</color>

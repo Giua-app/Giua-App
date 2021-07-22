@@ -94,7 +94,7 @@
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/corner_radius_10dp"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="@color/newsletter_layout"
         android:elevation="4dp"
         android:orientation="horizontal"
         android:paddingStart="5dp"
@@ -111,9 +111,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="#00FFFFFF"
+            android:contentDescription="@string/newsletterview_imagebutton_viewdocument_contentdescription"
             android:scaleType="centerInside"
-            app:srcCompat="@drawable/ic_baseline_pageview_24"
-            android:contentDescription="@string/newsletterview_imagebutton_viewdocument_contentdescription" />
+            app:srcCompat="@drawable/ic_baseline_pageview_24" />
 
         <ImageButton
             android:id="@+id/newsletter_view_btn_attachment"
@@ -121,9 +121,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="#00000000"
+            android:contentDescription="@string/newsletterview_imagebutton_viewattachment_contentdescription"
             android:scaleType="centerInside"
-            app:srcCompat="@drawable/ic_baseline_attachment_24"
-            android:contentDescription="@string/newsletterview_imagebutton_viewattachment_contentdescription" />
+            app:srcCompat="@drawable/ic_baseline_attachment_24" />
 
     </LinearLayout>
 

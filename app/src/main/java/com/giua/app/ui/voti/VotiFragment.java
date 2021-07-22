@@ -109,7 +109,7 @@ public class VotiFragment extends Fragment {
         int voteCounterSecondQuarter;
 
         params = new LinearLayout.LayoutParams(mainLayout.getLayoutParams().width, mainLayout.getLayoutParams().height);
-        params.setMargins(10, 20, 0, 30);
+        params.setMargins(10, 20, 10, 30);
 
         if (allVotes.isEmpty()) {
             tvNoElements.setVisibility(View.VISIBLE);

@@ -46,6 +46,8 @@
         android:fitsSystemWindows="true"
         app:itemTextAppearance="@style/NavDrawerItemStyle"
         app:headerLayout="@layout/nav_header_main"
+        app:itemBackground="@drawable/selector_nav_drawer_item_selected"
+        app:itemTextColor="@drawable/selector_nav_drawer_item_text"
         app:menu="@menu/activity_main_drawer">
 
         <Button
@@ -60,7 +62,7 @@
             android:text="Logout"
             android:textAlignment="viewStart"
             android:textAllCaps="false"
-            android:textColor="@color/black"
+            android:textColor="@color/adaptive_color_text"
             android:textSize="14sp" />
 
     </com.google.android.material.navigation.NavigationView>
