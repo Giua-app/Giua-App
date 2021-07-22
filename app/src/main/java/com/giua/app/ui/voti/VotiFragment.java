@@ -21,9 +21,7 @@ package com.giua.app.ui.voti;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -35,7 +33,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import com.giua.app.DrawerActivity;
@@ -47,6 +44,7 @@ import com.giua.webscraper.GiuaScraperExceptions;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class VotiFragment extends Fragment {
 
@@ -121,7 +119,7 @@ public class VotiFragment extends Fragment {
             voteCounterFirstQuarter = 0;     //Conta solamente i voti che ci sono e non gli asterischi
             voteCounterSecondQuarter = 0;
 
-            for (Vote vote : allVotes.get(subject)) {      //Cicla ogni voto della materia
+            for (Vote vote : Objects.requireNonNull(allVotes.get(subject))) {      //Cicla ogni voto della materia
                 if (vote.value.length() > 0 && vote.isFirstQuarterly) {
                     meanFirstQuarter += getNumberFromVote(vote);
                     voteCounterFirstQuarter++;
@@ -173,14 +171,6 @@ public class VotiFragment extends Fragment {
         obscureLayoutButton.setVisibility(View.GONE);
     }
 
-    private Drawable getDrawable(int id){
-        return ResourcesCompat.getDrawable(getResources(), id, getContext().getTheme());
-    }
-
-    private ColorStateList getColorStateList(int id){
-        return ResourcesCompat.getColorStateList(getResources(), id, getContext().getTheme());
-    }
-
     private void onClickSingleVote(View view){
         Resources res = getResources();
         SingleVoteView _view = (SingleVoteView) view;
@@ -215,7 +205,7 @@ public class VotiFragment extends Fragment {
 
     @SuppressLint("ClickableViewAccessibility")
     private void addVoteView(String subject, String voteFirstQuart, float rawVoteFirstQuart, String voteSecondQuart, float rawVoteSecondQuart){
-        voteView = new VoteView(getContext(), null, subject, voteFirstQuart, rawVoteFirstQuart, voteSecondQuart, rawVoteSecondQuart, GlobalVariables.gS.getAllVotes(false).get(subject), this::onClickSingleVote);
+        voteView = new VoteView(requireContext(), null, subject, voteFirstQuart, rawVoteFirstQuart, voteSecondQuart, rawVoteSecondQuart, GlobalVariables.gS.getAllVotes(false).get(subject), this::onClickSingleVote);
         voteView.setId(View.generateViewId());
 
         voteView.setLayoutParams(params);

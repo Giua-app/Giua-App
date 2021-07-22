@@ -18,13 +18,11 @@
   -->
 
 <resources>
-    <color name="main_color">#283593</color>
+    <color name="main_color">#003C80</color>
     <color name="background">#121212</color>
-    <color name="error_message">#F84141</color>
-    <color name="error_edit_text_input">#FF0000</color>
-    <color name="good_vote">#2E9F2E</color>
-    <color name="bad_vote">#9E1815</color>
-    <color name="middle_vote">#AA6C14</color>
+    <color name="good_vote">#21A621</color>
+    <color name="bad_vote">#A62321</color>
+    <color name="middle_vote">#A66F21</color>
     <color name="non_vote">#878787</color>
     <color name="good_vote_lighter">#7BDF7B</color>
     <color name="bad_vote_lighter">#E4605D</color>
@@ -39,7 +37,8 @@
     <color name="adaptive_color_text">#FAFAFA</color>
     <color name="newsletter_layout">#3E3E3E</color>
     <color name="newsletter_img">#0080FF</color>
-    <color name="nav_drawer_selected_background">#650066CC</color>
+    <color name="nav_drawer_selected_background">#4D004D99</color>
     <color name="nav_drawer_selected_text">#0066CC</color>
     <color name="nav_drawer_item_text">#0066CC</color>
+    <color name="obscure_layout">#CD000000</color>
 </resources>
