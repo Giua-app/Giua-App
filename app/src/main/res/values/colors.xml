@@ -19,6 +19,7 @@
   -->
 
 <resources>
+    <color name="relative_main_color">#0066cc</color>
     <color name="main_color">#0066cc</color>
     <color name="background">#E1E0E0</color>
     <color name="good_vote">#3EDC3E</color>

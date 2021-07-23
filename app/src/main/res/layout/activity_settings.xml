@@ -36,7 +36,7 @@
             android:id="@+id/settings_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/main_color"
+            android:background="@color/relative_main_color"
             app:popupTheme="@style/Theme.GiuaApp.PopupOverlay"
             app:title="Impostazioni"
             app:titleTextAppearance="@style/ToolbarTextStyle"
@@ -96,9 +96,11 @@
                 android:text="@string/activitysettings_text_crash"
                 android:textSize="15sp" />
 
+            <!--DEBUG DELETEME-->
             <Button
                 android:id="@+id/settings_crash_button"
                 android:layout_width="157dp"
+                android:textColor="@color/adaptive_color_text"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:text="@string/activitysettings_btn_crash" />
@@ -113,6 +115,7 @@
         android:layout_gravity="bottom"
         android:layout_marginBottom="4dp"
         android:text="@string/activitysettings_btn_savesettings"
+        android:textColor="@color/adaptive_color_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.947"

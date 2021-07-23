@@ -54,6 +54,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     NavigationView navigationView;     //Il navigation drawer vero e proprio
     NavController navController;     //Si puo intendere come il manager dei fragments
     Button btnLogout;
+    Button btnSettings;
     Handler handler = new Handler();
 
     @Override
@@ -65,7 +66,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         setSupportActionBar(toolbar);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
-        btnLogout = findViewById(R.id.logout_button);
+        btnLogout = findViewById(R.id.nav_drawer_logout_button);
+        btnSettings = findViewById(R.id.nav_drawer_settings_button);
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_voti, R.id.nav_agenda, R.id.nav_lezioni, R.id.nav_circolari)
@@ -87,13 +89,13 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         navigationView.setCheckedItem(R.id.nav_voti);
 
         btnLogout.setOnClickListener(this::logoutButtonClick);
+        btnSettings.setOnClickListener(this::settingsButtonClick);
 
         if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
         }
     }
-
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -129,6 +131,10 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         LoginData.clearAll(this);
         startActivity(intent);
         finish();
+    }
+
+    private void settingsButtonClick(View view) {
+        startActivity(new Intent(this, SettingsActivity.class));
     }
 
     private void startNewsLetterFragment() {

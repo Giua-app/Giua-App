@@ -91,4 +91,6 @@
     <string name="activitymaindrawer_nav_lezioni">Lezioni</string>
     <string name="activitymaindrawer_nav_circolari">Circolari</string>
     <string name="activitymaindrawer_nav_pagella">Pagella</string>
+    <string name="logout_text">Logout</string>
+    <string name="impostazioni_text">Impostazioni</string>
 </resources>

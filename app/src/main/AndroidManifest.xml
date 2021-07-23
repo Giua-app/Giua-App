@@ -64,7 +64,7 @@
                 android:value=".ActivityManager" />
         </activity>
         <activity
-            android:name=".LoadingScreenLogin"
+            android:name=".AutomaticLogin"
             android:label="@string/app_name"
             android:theme="@style/Theme.GiuaApp.NoActionBar">
 

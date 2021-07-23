@@ -64,7 +64,7 @@ public class ActivityManager extends AppCompatActivity {
             Intent intent = new Intent(ActivityManager.this, MainLogin.class);
             startActivity(intent);
         } else {
-            Intent intent = new Intent(ActivityManager.this, LoadingScreenLogin.class);
+            Intent intent = new Intent(ActivityManager.this, AutomaticLogin.class);
             startActivity(intent);
         }
     }

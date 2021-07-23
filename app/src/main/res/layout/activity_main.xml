@@ -32,6 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="216dp"
         android:backgroundTint="@color/main_color"
+        android:textColor="@color/adaptive_color_text"
         android:text="@string/activitymain_button_login"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

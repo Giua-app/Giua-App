@@ -21,12 +21,12 @@
     <!-- Base application theme. -->
     <style name="Theme.GiuaApp" parent="Theme.MaterialComponents.Light">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/main_color</item>
-        <item name="colorPrimaryVariant">@color/main_color</item>
+        <item name="colorPrimary">@color/relative_main_color</item>
+        <item name="colorPrimaryVariant">@color/relative_main_color</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/main_color</item>
-        <item name="colorSecondaryVariant">@color/main_color</item>
+        <item name="colorSecondary">@color/relative_main_color</item>
+        <item name="colorSecondaryVariant">@color/relative_main_color</item>
         <item name="colorOnSecondary">@color/white</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
@@ -49,7 +49,6 @@
     </style>
 
     <style name="NavDrawerItemStyle" parent="android:Widget.TextView">
-        <item name="android:textColor">@color/black</item>
         <item name="android:textSize">15sp</item>
         <item name="fontFamily">@font/varelaroundregular</item>
     </style>

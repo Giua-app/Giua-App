@@ -29,7 +29,7 @@ import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
 
-public class LoadingScreenLogin extends AppCompatActivity {
+public class AutomaticLogin extends AppCompatActivity {
     int waitToReLogin = 5;
 
     @Override
@@ -73,13 +73,13 @@ public class LoadingScreenLogin extends AppCompatActivity {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
                 }
-                startActivity(new Intent(LoadingScreenLogin.this, MainLogin.class));
+                startActivity(new Intent(AutomaticLogin.this, MainLogin.class));
             }
         }).start();
     }
 
     private void startDrawerActivity() {
-        Intent intent = new Intent(LoadingScreenLogin.this, DrawerActivity.class);
+        Intent intent = new Intent(AutomaticLogin.this, DrawerActivity.class);
         startActivity(intent);
     }
 

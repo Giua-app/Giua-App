@@ -18,7 +18,8 @@
   -->
 
 <resources>
-    <color name="main_color">#003C80</color>
+    <color name="relative_main_color">#003C80</color>
+    <color name="main_color">#0066cc</color>
     <color name="background">#121212</color>
     <color name="good_vote">#21A621</color>
     <color name="bad_vote">#A62321</color>
