@@ -27,6 +27,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.giua.webscraper.GiuaScraper;
 
+import cat.ereza.customactivityoncrash.config.CaocConfig;
+
 public class ActivityManager extends AppCompatActivity {
 
     @Override
@@ -36,6 +38,19 @@ public class ActivityManager extends AppCompatActivity {
         //TODO: da togliere in futuro
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+
+        CaocConfig.Builder.create()
+                .backgroundMode(CaocConfig.BACKGROUND_MODE_SILENT) //crash silently when the app is in background
+                .enabled(true)
+                .showErrorDetails(true)
+                .showRestartButton(true)
+                .trackActivities(true)
+                //This shows a different image on the error activity, instead of the default upside-down bug.
+                //You may use a drawable or a mipmap.
+                .errorDrawable(R.drawable.ic_giuaschool_logo1)
+                //.errorActivity(ErrorActivity.class)
+                .apply();
+
 
         //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
         GiuaScraper.setDebugMode(true);
