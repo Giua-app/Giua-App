@@ -42,4 +42,5 @@
     <color name="nav_drawer_selected_text">#0066CC</color>
     <color name="nav_drawer_item_text">#0066CC</color>
     <color name="obscure_layout">#B2000000</color>
+    <color name="newsletter_to_read_img">#eb951a</color>
 </resources>
