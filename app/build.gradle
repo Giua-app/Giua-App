@@ -19,7 +19,7 @@
 
 plugins {
     id 'com.android.application'
-    id 'io.github.reactivecircus.app-versioning' version "0.9.1"
+    id 'io.github.reactivecircus.app-versioning' version "0.10.0"
 }
 
 
