@@ -1,19 +1,22 @@
 # Giua-App
-[![Gradle assemble apk](https://github.com/Giua-app/Giua-App/actions/workflows/main.yml/badge.svg)](https://github.com/Giua-app/Giua-App/actions/workflows/main.yml)
-[![](https://jitpack.io/v/Giua-app/Giua-App.svg)](https://jitpack.io/#Giua-app/Giua-App)
----
-ver. 0.3.x-alpha
 
-Based on giua-webscraper ver. 0.9.x-alpha
+<p align='center'>
+  <a href='https://github.com/Giua-app/Giua-App/blob/master/LICENSE'><img src='https://img.shields.io/github/license/Giua-app/Giua-App'/></a>
+  <img src='https://img.shields.io/github/v/tag/Giua-app/Giua-App?label=version&include_prereleases&color=success'/>
+  <a href='https://github.com/Giua-app/Giua-App/actions/workflows/main.yml'><img src='https://github.com/Giua-app/Giua-App/actions/workflows/main.yml/badge.svg'/></a>
+</p>
 
-questo readme è una bozza
+<p align='center'>
+  <img src='https://img.shields.io/badge/In--app%20giua--webscraper-v0.9.13--alpha-important'/>
+  <a href='https://github.com/Giua-app/Giua-Webscraper'><img src='https://img.shields.io/github/v/release/Giua-app/Giua-Webscraper?color=success&include_prereleases&label=Github%20giua-webscraper'/></a>
+</p>
 
 ## Che cos'è?
 Giua-App è una applicazione per Android che permette di visualizzare voti, assenze, lezioni e tutte le altre informazioni ottenibili da un sito con il registro elettronico [giua@school](https://github.com/trinko/giuaschool#giuaschool).
 Questa app usa la libreria [Giua-Webscraper](https://github.com/Giua-app/Giua-Webscraper) per ottenere le informazioni dal sito
 
 ## Come si scarica?
-Vai nella scheda [Actions](https://github.com/Giua-app/Giua-App/actions) e clicca sull'ultimo workflow, poi scarica l'artifact "apk-output". Dentro lo zip ci sarà il file apk da installare su Android.
+Vai nella scheda [Actions](https://github.com/Giua-app/Giua-App/actions) e clicca sull'ultimo workflow, poi scarica l'artifact "debug-apk". Dentro lo zip ci sarà il file apk da installare su Android.
 
 ## Funzioni da implementare
 
