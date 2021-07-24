@@ -48,7 +48,7 @@ public class AutomaticLogin extends AppCompatActivity {
                 GlobalVariables.gS.login();
                 LoginData.setCredentials(this, LoginData.getUser(this), LoginData.getPassword(this), GlobalVariables.gS.getCookie());
                 startDrawerActivity();
-            } catch (GiuaScraperExceptions.InternetProblems | GiuaScraperExceptions.SiteConnectionProblems e) {
+            } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.SiteConnectionProblems e) {
                 if (!GiuaScraper.isMyInternetWorking()) {
                     setErrorMessage(getString(R.string.your_connection_error));
                 } else if (!GiuaScraper.isSiteWorking()) {

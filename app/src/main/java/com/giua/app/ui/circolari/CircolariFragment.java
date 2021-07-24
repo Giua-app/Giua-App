@@ -121,7 +121,7 @@ public class CircolariFragment extends Fragment {
                         loadedAllPages = true;
                     activity.runOnUiThread(this::addNewslettersToView);
                     currentPage++;
-                } catch (GiuaScraperExceptions.InternetProblems e) {
+                } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
                         DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);
                         if (currentPage == 1)
@@ -178,7 +178,7 @@ public class CircolariFragment extends Fragment {
                 } else {
                     activity.runOnUiThread(() -> DrawerActivity.setErrorMessage("E' stato incontrato un errore di rete durante il download: riprovare", root));
                 }
-            } catch (GiuaScraperExceptions.InternetProblems e) {
+            } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                 activity.runOnUiThread(() -> DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root));
             } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                 activity.runOnUiThread(() -> DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root));

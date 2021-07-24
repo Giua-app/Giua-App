@@ -135,7 +135,7 @@ public class LezioniFragment extends Fragment {
                         addLessonViews();
                         pbLoadingContent.setVisibility(View.GONE);
                     });
-                } catch (GiuaScraperExceptions.InternetProblems e) {
+                } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);
                     activity.runOnUiThread(() -> {
                         pbLoadingContent.setVisibility(View.GONE);

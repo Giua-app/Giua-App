@@ -84,7 +84,7 @@ public class VotiFragment extends Fragment {
             try {
                 allVotes = GlobalVariables.gS.getAllVotes(false);
                 activity.runOnUiThread(this::generateAllViews);
-            } catch (GiuaScraperExceptions.InternetProblems e) {
+            } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                 activity.runOnUiThread(() -> {
                     DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);
                     progressBar.setVisibility(View.GONE);

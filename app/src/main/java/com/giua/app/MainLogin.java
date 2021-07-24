@@ -95,7 +95,7 @@ public class MainLogin extends AppCompatActivity {
                     etPassword.setText("");
                     pgProgressBar.setVisibility(View.INVISIBLE);
                 });
-            } catch (GiuaScraperExceptions.InternetProblems e) {
+            } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                 setErrorMessage(getString(R.string.your_connection_error));
                 this.runOnUiThread(() -> {
                     etPassword.setText("");
