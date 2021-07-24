@@ -1,5 +1,6 @@
 # Giua-App
 [![Gradle assemble apk](https://github.com/Giua-app/Giua-App/actions/workflows/main.yml/badge.svg)](https://github.com/Giua-app/Giua-App/actions/workflows/main.yml)
+[![](https://jitpack.io/v/Giua-app/Giua-App.svg)](https://jitpack.io/#Giua-app/Giua-App)
 ---
 ver. 0.3.x-alpha
 
