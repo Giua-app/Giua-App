@@ -230,11 +230,12 @@ public class LezioniFragment extends Fragment {
     }
 
     private void setTextWithNames() {
-        if (currentDate.compareTo(todayDate) == 0)
+        String s = formatterForVisualize.format(currentDate);
+        if (s.equals(formatterForVisualize.format(todayDate)))
             tvCurrentDate.setText("Oggi");
-        else if (currentDate.compareTo(yesterdayDate) == 0)
+        else if (s.equals(formatterForVisualize.format(yesterdayDate)))
             tvCurrentDate.setText("Ieri");
-        else if (currentDate.compareTo(tomorrowDate) == 0)
+        else if (s.equals(formatterForVisualize.format(tomorrowDate)))
             tvCurrentDate.setText("Domani");
         else
             tvCurrentDate.setText(formatterForVisualize.format(currentDate));
