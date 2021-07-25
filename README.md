@@ -7,7 +7,7 @@
 </p>
 
 <p align='center'>
-  <img src='https://img.shields.io/badge/In--app%20giua--webscraper-v0.9.14--alpha-warning'/>
+  <img src='https://img.shields.io/badge/In--app%20giua--webscraper-v0.9.14--alpha-orange'/>
   <a href='https://github.com/Giua-app/Giua-Webscraper'><img src='https://img.shields.io/github/v/release/Giua-app/Giua-Webscraper?color=success&include_prereleases&label=Github%20giua-webscraper'/></a>
 </p>
 
