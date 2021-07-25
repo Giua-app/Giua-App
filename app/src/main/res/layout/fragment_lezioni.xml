@@ -75,11 +75,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/lezioni_fragment_scroll_lessons_view" />
 
-    <ImageButton
-        android:id="@+id/obscure_layout_image_button3"
+    <com.giua.app.ui.ObscureLayoutView
+        android:id="@+id/lezioni_obscure_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/obscure_style"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -183,6 +182,8 @@
         android:id="@+id/lezioni_fragment_frame_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

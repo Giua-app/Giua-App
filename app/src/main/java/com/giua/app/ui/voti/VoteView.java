@@ -22,6 +22,7 @@ package com.giua.app.ui.voti;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,7 +91,7 @@ public class VoteView extends ConstraintLayout {
     }
 
     private void createSingleVotes(){
-        LinearLayout.LayoutParams singleVoteParams = new LinearLayout.LayoutParams(95, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams singleVoteParams = new LinearLayout.LayoutParams(convertDpToPx(35f), ViewGroup.LayoutParams.WRAP_CONTENT);
         singleVoteParams.setMargins(20,0,0,0);
 
         for(Vote vote : allVotes){
@@ -99,10 +100,11 @@ public class VoteView extends ConstraintLayout {
             tvVote.setTypeface(ResourcesCompat.getFont(getContext(), R.font.varelaroundregular));
             tvVote.setId(View.generateViewId());
             tvVote.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.corner_radius_10dp));
+            tvVote.setMaxLines(1);
 
             tvVote.setTextSize(17f);
             tvVote.setLayoutParams(singleVoteParams);
-            tvVote.setPadding(5,5,5,5);
+            tvVote.setPadding(5, 10, 5, 10);
             tvVote.setOnClickListener(onClick);
 
             if(!vote.isAsterisk)
@@ -138,13 +140,18 @@ public class VoteView extends ConstraintLayout {
     private ColorStateList getColorFromVote(float vote){
         if(vote == -1f){
             return getResources().getColorStateList(R.color.non_vote, getContext().getTheme());
-        } else if(vote >= 6f){
+        } else if (vote >= 6f) {
             return getResources().getColorStateList(R.color.good_vote, getContext().getTheme());
-        } else if(vote < 6f && vote >= 5){
+        } else if (vote < 6f && vote >= 5) {
             return getResources().getColorStateList(R.color.middle_vote, getContext().getTheme());
-        } else if(vote < 5){
+        } else if (vote < 5) {
             return getResources().getColorStateList(R.color.bad_vote, getContext().getTheme());
         }
         return getResources().getColorStateList(R.color.non_vote, getContext().getTheme()); //Non si dovrebbe mai verificare
+    }
+
+    private int convertDpToPx(float dp) {
+        //https://stackoverflow.com/questions/4605527/converting-pixels-to-dp
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
     }
 }

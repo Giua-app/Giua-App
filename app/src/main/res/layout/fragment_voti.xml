@@ -78,11 +78,10 @@
 
     </ScrollView>
 
-    <ImageButton
-        android:id="@+id/obscure_layout_image_button"
+    <com.giua.app.ui.ObscureLayoutView
+        android:id="@+id/vote_obscure_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/obscure_style"
         android:visibility="gone"
         androd:layout_constraintBottom_toBottomOf="parent"
         androd:layout_constraintEnd_toEndOf="parent"

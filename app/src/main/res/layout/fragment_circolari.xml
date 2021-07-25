@@ -71,14 +71,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="10dp" />
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/newsletter_filter_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/corner_radius_10dp"
+                android:padding="5dp"
+                android:layout_gravity="end"
+                android:backgroundTint="#43FFFFFF"
+                android:src="@drawable/ic_baseline_filter_alt_24" />
+        </LinearLayout>
     </ScrollView>
 
-    <ImageButton
-        android:id="@+id/obscure_layout_image_button2"
+    <com.giua.app.ui.ObscureLayoutView
+        android:id="@+id/newsletter_obscure_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/obscure_style"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -100,5 +111,67 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.398" />
+
+    <LinearLayout
+        android:id="@+id/newsletter_filter_layout"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/corner_radius_10dp"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.398">
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/newsletter_filter_checkbox"
+            android:text="Solo da leggere"
+            android:fontFamily="@font/varelaroundregular"
+            android:textSize="14sp" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/newsletter_filter_date"
+            android:inputType="date"
+            android:maxLength="7"
+            android:hint="Anno-Mese"
+            android:layout_marginEnd="100dp"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/varelaroundregular"
+            android:importantForAutofill="no" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/newsletter_filter_text"
+            android:inputType="text"
+            android:maxLength="200"
+            android:hint="Testo"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/varelaroundregular"
+            android:importantForAutofill="no" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/newsletter_filter_btn_confirm"
+            android:text="Applica"
+            android:textAllCaps="false"
+            android:layout_marginTop="30dp"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="@font/varelaroundregular"
+            android:theme="@style/Theme.GiuaApp.Light"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

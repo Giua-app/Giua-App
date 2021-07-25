@@ -27,7 +27,6 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -38,6 +37,7 @@ import androidx.fragment.app.Fragment;
 import com.giua.app.DrawerActivity;
 import com.giua.app.GlobalVariables;
 import com.giua.app.R;
+import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Vote;
 import com.giua.webscraper.GiuaScraperExceptions;
 
@@ -54,7 +54,7 @@ public class VotiFragment extends Fragment {
     LinearLayout mainLayout;
     LinearLayout detailVoteLayout;
     LinearLayout.LayoutParams params;
-    ImageButton obscureLayoutButton;    //Questo bottone viene visualizzato dietro al detail layout e se viene cliccato si esce dai dettaglii
+    ObscureLayoutView obscureLayoutButton;    //Questo bottone viene visualizzato dietro al detail layout e se viene cliccato si esce dai dettaglii
     DecimalFormat df = new DecimalFormat("0.0");
     Map<String, List<Vote>> allVotes;
     Activity activity;
@@ -65,7 +65,7 @@ public class VotiFragment extends Fragment {
         root = inflater.inflate(R.layout.fragment_voti, container, false);
 
         mainLayout = root.findViewById(R.id.vote_fragment_linear_layout);
-        obscureLayoutButton = root.findViewById(R.id.obscure_layout_image_button);
+        obscureLayoutButton = root.findViewById(R.id.vote_obscure_view);
         detailVoteLayout = root.findViewById(R.id.attachment_layout);
         progressBar = root.findViewById(R.id.vote_loading_page_bar);
         tvNoElements = root.findViewById(R.id.vote_fragment_no_elements_view);

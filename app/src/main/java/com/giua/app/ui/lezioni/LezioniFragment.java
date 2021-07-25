@@ -40,6 +40,7 @@ import androidx.fragment.app.FragmentActivity;
 import com.giua.app.DrawerActivity;
 import com.giua.app.GlobalVariables;
 import com.giua.app.R;
+import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Lesson;
 import com.giua.webscraper.GiuaScraperExceptions;
 
@@ -53,7 +54,7 @@ import java.util.Locale;
 public class LezioniFragment extends Fragment {
 
     TextView tvCurrentDate;
-    ImageView obscureLayout;
+    ObscureLayoutView obscureLayout;
     TextView tvNoElements;
     TextView tvDetailArgs;
     TextView tvDetailActs;
@@ -84,7 +85,7 @@ public class LezioniFragment extends Fragment {
         tvCurrentDate = root.findViewById(R.id.lezioni_fragment_current_date);
         lessonsLayout = root.findViewById(R.id.lezioni_fragment_lessons_layout);
         calendarView = root.findViewById(R.id.lezioni_fragment_calendar_view);
-        obscureLayout = root.findViewById(R.id.obscure_layout_image_button3);
+        obscureLayout = root.findViewById(R.id.lezioni_obscure_view);
         frameLayout = root.findViewById(R.id.lezioni_fragment_frame_layout);
         tvNoElements = root.findViewById(R.id.lezioni_fragment_no_elements_view);
         pbLoadingContent = root.findViewById(R.id.lezioni_fragment_loading_content);

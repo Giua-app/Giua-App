@@ -28,7 +28,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -43,6 +44,7 @@ import androidx.fragment.app.FragmentActivity;
 import com.giua.app.DrawerActivity;
 import com.giua.app.GlobalVariables;
 import com.giua.app.R;
+import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Newsletter;
 import com.giua.webscraper.GiuaScraperExceptions;
 
@@ -60,7 +62,9 @@ public class CircolariFragment extends Fragment {
     ProgressBar progressBarLoadingPage;
     ScrollView scrollView;
     LinearLayout attachmentLayout;
-    ImageButton obscureButton;
+    ObscureLayoutView obscureButton;
+    ImageView btnFilter;
+    LinearLayout filterLayout;
     ProgressBar progressBarLoadingNewsletters;
     TextView tvNoElements;
     FragmentActivity activity;
@@ -70,6 +74,10 @@ public class CircolariFragment extends Fragment {
     boolean loadedAllPages = false;
     boolean loadingPage = false;
     boolean hasCompletedLoading = false;
+    boolean isFilterApplied = true;
+    boolean onlyNotRead = false;
+    String filterDate = "";
+    String filterText = "";
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_circolari, container, false);
@@ -79,8 +87,11 @@ public class CircolariFragment extends Fragment {
         progressBarLoadingPage = root.findViewById(R.id.circolari_loading_page_bar);
         scrollView = root.findViewById(R.id.newsletter_scroll_view);
         attachmentLayout = root.findViewById(R.id.attachment_layout);
-        obscureButton = root.findViewById(R.id.obscure_layout_image_button2);
+        obscureButton = root.findViewById(R.id.newsletter_obscure_layout);
         tvNoElements = root.findViewById(R.id.newsletter_fragment_no_elements_view);
+        btnFilter = root.findViewById(R.id.newsletter_filter_button);
+        filterLayout = root.findViewById(R.id.newsletter_filter_layout);
+
         activity = requireActivity();
 
         progressBarLoadingNewsletters = new ProgressBar(getContext());
@@ -90,16 +101,37 @@ public class CircolariFragment extends Fragment {
 
         attachmentLayout.setOnClickListener((view) -> {
         });
-
+        btnFilter.setOnClickListener(this::btnFilterOnClick);
         obscureButton.setOnClickListener((view) -> {
             view.setVisibility(View.GONE);
             attachmentLayout.setVisibility(View.GONE);
+            filterLayout.setVisibility(View.GONE);
             attachmentLayout.removeAllViews();
         });
+
+        root.findViewById(R.id.newsletter_filter_btn_confirm).setOnClickListener(this::btnFilterConfirmOnClick);
 
         addNewslettersToViewAsync();
 
         return root;
+    }
+
+    private void btnFilterConfirmOnClick(View view) {
+        onlyNotRead = ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).isChecked();
+        filterDate = ((TextView) root.findViewById(R.id.newsletter_filter_date)).getText().toString();
+        filterText = ((TextView) root.findViewById(R.id.newsletter_filter_text)).getText().toString();
+        layout.removeViews(1, layout.getChildCount() - 1);
+        filterLayout.setVisibility(View.GONE);
+        obscureButton.setVisibility(View.GONE);
+        isFilterApplied = false;
+        currentPage = 1;
+        loadedAllPages = false;
+        addNewslettersToViewAsync();
+    }
+
+    private void btnFilterOnClick(View view) {
+        obscureButton.setVisibility(View.VISIBLE);
+        filterLayout.setVisibility(View.VISIBLE);
     }
 
     private void addNewslettersToViewAsync() {
@@ -111,16 +143,24 @@ public class CircolariFragment extends Fragment {
         new Thread(() -> {
             if (!loadedAllPages) {
                 try {
-                    allNewsletter = GlobalVariables.gS.getAllNewsletters(currentPage, true);
-                    if (allNewsletter == null)
-                        return;
-                    hasCompletedLoading = true;
-                    if (allNewsletter.isEmpty() && currentPage == 1)
-                        tvNoElements.setVisibility(View.VISIBLE);
-                    else if (allNewsletter.isEmpty())
-                        loadedAllPages = true;
-                    activity.runOnUiThread(this::addNewslettersToView);
-                    currentPage++;
+                    if (!onlyNotRead && filterDate.equals("") && filterText.equals("") && !isFilterApplied) {
+                        allNewsletter = GlobalVariables.gS.getAllNewslettersWithFilter(false, "", "", currentPage, true);
+                        isFilterApplied = true;
+                    } else if ((!onlyNotRead && filterDate.equals("") && filterText.equals("")) || isFilterApplied)
+                        allNewsletter = GlobalVariables.gS.getAllNewsletters(currentPage, true);
+                    else {
+                        allNewsletter = GlobalVariables.gS.getAllNewslettersWithFilter(onlyNotRead, filterDate, filterText, currentPage, true);
+                        isFilterApplied = true;
+                    }
+                    if (allNewsletter != null) {
+                        hasCompletedLoading = true;
+                        if (allNewsletter.isEmpty() && currentPage == 1)
+                            tvNoElements.setVisibility(View.VISIBLE);
+                        else if (allNewsletter.isEmpty())
+                            loadedAllPages = true;
+                        activity.runOnUiThread(this::addNewslettersToView);
+                        currentPage++;
+                    }
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
                         DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);

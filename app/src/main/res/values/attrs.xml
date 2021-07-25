@@ -1,4 +1,4 @@
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Giua App
   ~ Android app to view data from the giua@school workbook
   ~ Copyright (C) 2021 - 2021 Hiem, Franck1421 and contributors
@@ -17,19 +17,8 @@
   ~     along with this program.  If not, see https://www.gnu.org/licenses/.
   -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.GiuaApp" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/relative_main_color</item>
-        <item name="colorPrimaryVariant">@color/relative_main_color</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/main_color</item>
-        <item name="colorSecondaryVariant">@color/main_color</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
-    </style>
+<resources>
+    <declare-styleable name="ObscureLayoutView">
+        <attr name="hasCancelText" format="boolean" />
+    </declare-styleable>
 </resources>
