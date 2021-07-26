@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Gradle assemble apk
+name: Assemble app on commit
 
 # Controls when the action will run. 
 on:
@@ -47,10 +47,7 @@ jobs:
       - name: Permission to gradle File
         run: chmod +x gradlew
         
-      - name: Check app version
-        run: ./gradlew printAppVersionInfoForRelease
-        
-      - name: Build release with Gradle
+      - name: Build release and debug with Gradle
         run: ./gradlew assemble
 
       - uses: actions/upload-artifact@v2
