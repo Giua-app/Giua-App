@@ -44,7 +44,6 @@
 
     <fragment
         android:id="@+id/nav_circolari"
-        android:name="com.giua.app.ui.circolari.CircolariFragment"
-        android:label="@string/menu_circolari"
-        tools:layout="@layout/fragment_circolari" />
+        android:name="com.giua.app.ui.bacheca.BachecaFragment"
+        android:label="@string/menu_circolari" />
 </navigation>
