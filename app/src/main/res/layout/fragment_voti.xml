@@ -90,7 +90,7 @@
         tools:ignore="ContentDescription" />
 
     <LinearLayout
-        android:id="@+id/avvisi_attachment_layout"
+        android:id="@+id/vote_attachment_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
