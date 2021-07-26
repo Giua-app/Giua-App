@@ -74,7 +74,7 @@ public class CircolariFragment extends Fragment {
     boolean loadedAllPages = false;
     boolean loadingPage = false;
     boolean hasCompletedLoading = false;
-    boolean isFilterApplied = true;
+    boolean isFilterApplied = false;
     boolean onlyNotRead = false;
     String filterDate = "";
     String filterText = "";
@@ -102,12 +102,20 @@ public class CircolariFragment extends Fragment {
         attachmentLayout.setOnClickListener((view) -> {
         });
         btnFilter.setOnClickListener(this::btnFilterOnClick);
+
         obscureButton.setOnClickListener((view) -> {
             view.setVisibility(View.GONE);
             attachmentLayout.setVisibility(View.GONE);
             filterLayout.setVisibility(View.GONE);
             attachmentLayout.removeAllViews();
+            ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).setChecked(onlyNotRead);
+            ((TextView) root.findViewById(R.id.newsletter_filter_date)).setText(filterDate);
+            ((TextView) root.findViewById(R.id.newsletter_filter_text)).setText(filterText);
         });
+
+        root.findViewById(R.id.newsletter_fragment_btn_go_up).setOnClickListener((view -> {
+            scrollView.smoothScrollTo(0, 0);
+        }));
 
         root.findViewById(R.id.newsletter_filter_btn_confirm).setOnClickListener(this::btnFilterConfirmOnClick);
 
@@ -126,12 +134,16 @@ public class CircolariFragment extends Fragment {
         isFilterApplied = false;
         currentPage = 1;
         loadedAllPages = false;
+        tvNoElements.setVisibility(View.GONE);
         addNewslettersToViewAsync();
     }
 
     private void btnFilterOnClick(View view) {
         obscureButton.setVisibility(View.VISIBLE);
         filterLayout.setVisibility(View.VISIBLE);
+        ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).setChecked(onlyNotRead);
+        ((TextView) root.findViewById(R.id.newsletter_filter_date)).setText(filterDate);
+        ((TextView) root.findViewById(R.id.newsletter_filter_text)).setText(filterText);
     }
 
     private void addNewslettersToViewAsync() {
@@ -146,7 +158,7 @@ public class CircolariFragment extends Fragment {
                     if (!onlyNotRead && filterDate.equals("") && filterText.equals("") && !isFilterApplied) {
                         allNewsletter = GlobalVariables.gS.getAllNewslettersWithFilter(false, "", "", currentPage, true);
                         isFilterApplied = true;
-                    } else if ((!onlyNotRead && filterDate.equals("") && filterText.equals("")) || isFilterApplied)
+                    } else if (isFilterApplied || (!onlyNotRead && filterDate.equals("") && filterText.equals("")))
                         allNewsletter = GlobalVariables.gS.getAllNewsletters(currentPage, true);
                     else {
                         allNewsletter = GlobalVariables.gS.getAllNewslettersWithFilter(onlyNotRead, filterDate, filterText, currentPage, true);
@@ -155,7 +167,7 @@ public class CircolariFragment extends Fragment {
                     if (allNewsletter != null) {
                         hasCompletedLoading = true;
                         if (allNewsletter.isEmpty() && currentPage == 1)
-                            tvNoElements.setVisibility(View.VISIBLE);
+                            activity.runOnUiThread(() -> tvNoElements.setVisibility(View.VISIBLE));
                         else if (allNewsletter.isEmpty())
                             loadedAllPages = true;
                         activity.runOnUiThread(this::addNewslettersToView);
@@ -291,5 +303,9 @@ public class CircolariFragment extends Fragment {
         if (!loadedAllPages && !loadingPage && !view.canScrollVertically(100) && scrollY - oldScrollY > 10) {
             addNewslettersToViewAsync();
         }
+        if (scrollY - oldScrollY > 0)
+            root.findViewById(R.id.newsletter_fragment_btn_go_up).setVisibility(View.VISIBLE);
+        if (!view.canScrollVertically(-500))
+            root.findViewById(R.id.newsletter_fragment_btn_go_up).setVisibility(View.GONE);
     }
 }

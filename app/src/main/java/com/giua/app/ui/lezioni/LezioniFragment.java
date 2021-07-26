@@ -27,7 +27,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -92,8 +91,6 @@ public class LezioniFragment extends Fragment {
         lessonDetailLayout = root.findViewById(R.id.lezioni_fragment_lesson_detail);
         tvDetailArgs = root.findViewById(R.id.lezioni_fragment_lesson_detail_args);
         tvDetailActs = root.findViewById(R.id.lezioni_fragment_lesson_detail_acts);
-        ImageView imgNextDate = root.findViewById(R.id.lezioni_fragment_img_next_date);
-        ImageView imgPrevDate = root.findViewById(R.id.lezioni_fragment_img_prev_date);
         bottomCardView = root.findViewById(R.id.lezioni_fragment_bottom_card_view);
         btnConfirmDate = root.findViewById(R.id.lezioni_fragment_btn_confirm_date);
 
@@ -107,8 +104,8 @@ public class LezioniFragment extends Fragment {
 
         tvCurrentDate.setText("Oggi");
 
-        imgPrevDate.setOnClickListener(this::prevDateOnClick);
-        imgNextDate.setOnClickListener(this::nextDateOnClick);
+        root.findViewById(R.id.lezioni_fragment_img_next_date).setOnClickListener(this::prevDateOnClick);
+        root.findViewById(R.id.lezioni_fragment_img_prev_date).setOnClickListener(this::nextDateOnClick);
         tvCurrentDate.setOnClickListener(this::tvCurrentDateOnClick);
         obscureLayout.setOnClickListener(this::obscureLayoutOnClick);
         calendarView.setOnDateChangeListener(this::calendarOnChangeDateListener);
