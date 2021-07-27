@@ -33,8 +33,8 @@
             android:id="@+id/nav_lezioni"
             android:title="@string/activitymaindrawer_nav_lezioni" />
         <item
-            android:id="@+id/nav_circolari"
-            android:title="@string/activitymaindrawer_nav_circolari" />
+            android:id="@+id/nav_bacheca"
+            android:title="@string/activitymaindrawer_nav_bacheca" />
         <item
             android:id="@+id/nav_pagella"
             android:title="@string/activitymaindrawer_nav_pagella" />
