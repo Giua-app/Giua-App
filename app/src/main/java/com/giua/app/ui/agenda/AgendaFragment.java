@@ -19,25 +19,57 @@
 
 package com.giua.app.ui.agenda;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 
+import com.giua.app.GlobalVariables;
 import com.giua.app.R;
+import com.giua.objects.Homework;
+import com.giua.objects.Test;
+
+import java.util.List;
 
 public class AgendaFragment extends Fragment {
 
+    LinearLayout mainLayout;
+    List<Test> allTests;
+    List<Homework> allHomeworks;
+    Activity activity;
+    View root;
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_agenda, container, false);
+        root = inflater.inflate(R.layout.fragment_agenda, container, false);
+
+        mainLayout = root.findViewById(R.id.agenda_linear_layout);
+        activity = requireActivity();
+
+        addDateViewsAsync();
 
         return root;
+    }
+
+    private void addDateViewsAsync() {
+
+        new Thread(() -> {
+            allTests = GlobalVariables.gS.getAllTestsWithoutDetails(null, true);
+            allHomeworks = GlobalVariables.gS.getAllHomeworksWithoutDetails(null, true);
+            activity.runOnUiThread(this::addDateViews);
+        }).start();
+
+    }
+
+    private void addDateViews() {
+        for (int i = 0; i < 10; i++) {
+            DateView view = new DateView(requireContext(), null);
+            view.setId(View.generateViewId());
+            mainLayout.addView(view);
+        }
     }
 }

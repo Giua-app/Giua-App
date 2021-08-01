@@ -104,8 +104,8 @@ public class LezioniFragment extends Fragment {
 
         tvCurrentDate.setText("Oggi");
 
-        root.findViewById(R.id.lezioni_fragment_img_next_date).setOnClickListener(this::prevDateOnClick);
-        root.findViewById(R.id.lezioni_fragment_img_prev_date).setOnClickListener(this::nextDateOnClick);
+        root.findViewById(R.id.lezioni_fragment_img_next_date).setOnClickListener(this::nextDateOnClick);
+        root.findViewById(R.id.lezioni_fragment_img_prev_date).setOnClickListener(this::prevDateOnClick);
         tvCurrentDate.setOnClickListener(this::tvCurrentDateOnClick);
         obscureLayout.setOnClickListener(this::obscureLayoutOnClick);
         calendarView.setOnDateChangeListener(this::calendarOnChangeDateListener);
@@ -134,14 +134,14 @@ public class LezioniFragment extends Fragment {
                         pbLoadingContent.setVisibility(View.GONE);
                     });
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
-                    DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);
                     activity.runOnUiThread(() -> {
+                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);
                         pbLoadingContent.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                     });
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
-                    DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root);
                     activity.runOnUiThread(() -> {
+                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root);
                         pbLoadingContent.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                     });

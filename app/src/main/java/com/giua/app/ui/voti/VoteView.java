@@ -71,7 +71,7 @@ public class VoteView extends ConstraintLayout {
 
     private void initializeComponent(Context context){
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        layoutInflater.inflate(R.layout.vote_component, this);
+        layoutInflater.inflate(R.layout.vote_view, this);
 
         tvSubject = findViewById(R.id.text_view_subject);
         tvVoteFisrtQuarter = findViewById(R.id.text_view_vote_primo_quadrimestre);

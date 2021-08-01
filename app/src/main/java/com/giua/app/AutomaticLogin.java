@@ -22,6 +22,8 @@ package com.giua.app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -31,11 +33,18 @@ import com.google.android.material.snackbar.Snackbar;
 
 public class AutomaticLogin extends AppCompatActivity {
     int waitToReLogin = 5;
+    Button logoutButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.loading_screen);
+
+        logoutButton = findViewById(R.id.loading_screen_logout_btn);
+        logoutButton.setOnClickListener((view) -> {
+            LoginData.clearAll(this);
+            startActivity(new Intent(AutomaticLogin.this, MainLogin.class));
+        });
 
         GiuaScraper.setDebugMode(true);
         loginWithPreviousCredentials();
@@ -49,16 +58,17 @@ public class AutomaticLogin extends AppCompatActivity {
                 LoginData.setCredentials(this, LoginData.getUser(this), LoginData.getPassword(this), GlobalVariables.gS.getCookie());
                 startDrawerActivity();
             } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.SiteConnectionProblems e) {
+                runOnUiThread(() -> logoutButton.setVisibility(View.VISIBLE));
                 if (!GiuaScraper.isMyInternetWorking()) {
-                    setErrorMessage(getString(R.string.your_connection_error));
+                    runOnUiThread(() -> setErrorMessage(getString(R.string.your_connection_error)));
                 } else if (!GiuaScraper.isSiteWorking()) {
-                    setErrorMessage(getString(R.string.site_connection_error));
+                    runOnUiThread(() -> setErrorMessage(getString(R.string.site_connection_error)));
                 } else {
-                    setErrorMessage("E' stato riscontrato qualche problema sconosciuto riguardo la rete");
+                    runOnUiThread(() -> setErrorMessage("E' stato riscontrato qualche problema sconosciuto riguardo la rete"));
                 }
                 try {
                     Thread.sleep(2000);
-                    setErrorMessage("Riprovo automaticamente tra " + waitToReLogin + " secondi");
+                    runOnUiThread(() -> setErrorMessage("Riprovo automaticamente tra " + waitToReLogin + " secondi"));
                     Thread.sleep(waitToReLogin * 1000);
                     if (waitToReLogin < 30)
                         waitToReLogin += 5;
