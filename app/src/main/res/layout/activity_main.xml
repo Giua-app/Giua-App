@@ -32,12 +32,12 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="216dp"
         android:backgroundTint="@color/main_color"
-        android:textColor="@color/white"
-        android:text="@string/activitymain_button_login"
         android:paddingStart="30dp"
-        android:paddingEnd="30dp"
         android:paddingTop="15dp"
+        android:paddingEnd="30dp"
         android:paddingBottom="15dp"
+        android:text="@string/activitymain_button_login"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -59,14 +59,14 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="52dp"
+        android:autofillHints="password"
         android:fontFamily="sans-serif"
         android:hint="@string/activitymain_pwdtextbox_hint"
         android:inputType="textPassword"
         app:layout_constraintBottom_toTopOf="@+id/login_button"
         app:layout_constraintEnd_toEndOf="@+id/textUser"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textUser"
-        android:autofillHints="" />
+        app:layout_constraintStart_toStartOf="@+id/textUser" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -102,6 +102,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
+        android:autofillHints="username"
         android:ems="10"
         android:fontFamily="sans-serif"
         android:hint="@string/activitymain_usertextbox_hint"
@@ -109,8 +110,7 @@
         app:layout_constraintBottom_toTopOf="@+id/textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        android:autofillHints="" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/txtTitle"
@@ -134,13 +134,13 @@
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
         android:layout_marginBottom="16dp"
+        android:contentDescription="@string/impostazioni"
         android:src="@drawable/ic_baseline_settings_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/checkbox_remember_credentials"
-        app:layout_constraintVertical_bias="1.0"
-        android:contentDescription="@string/impostazioni" />
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -65,6 +65,7 @@ public class MainLogin extends AppCompatActivity {
     }
 
     private void login() {
+        btnLogin.setEnabled(false);
         new Thread(() -> {
             try {
                 GlobalVariables.gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString(), LoginData.getCookie(this), true);
@@ -117,6 +118,7 @@ public class MainLogin extends AppCompatActivity {
     }
 
     private void setErrorMessage(String message) {
+        btnLogin.setEnabled(true);
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
     }
 

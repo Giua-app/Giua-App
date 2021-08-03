@@ -24,6 +24,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -34,6 +36,8 @@ import com.google.android.material.snackbar.Snackbar;
 public class AutomaticLogin extends AppCompatActivity {
     int waitToReLogin = 5;
     Button logoutButton;
+    ProgressBar progressBar;
+    TextView textAutoLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +45,8 @@ public class AutomaticLogin extends AppCompatActivity {
         setContentView(R.layout.loading_screen);
 
         logoutButton = findViewById(R.id.loading_screen_logout_btn);
+        textAutoLogin = findViewById(R.id.loading_screen_minor_text_view);
+        progressBar = findViewById(R.id.loading_screen_progressbar);
         logoutButton.setOnClickListener((view) -> {
             LoginData.clearAll(this);
             startActivity(new Intent(AutomaticLogin.this, MainLogin.class));
@@ -52,6 +58,7 @@ public class AutomaticLogin extends AppCompatActivity {
 
     private void loginWithPreviousCredentials() {
         new Thread(() -> {
+            runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
             try {
                 GlobalVariables.gS = new GiuaScraper(LoginData.getUser(this), LoginData.getPassword(this), LoginData.getCookie(this), true);
                 GlobalVariables.gS.login();
@@ -67,11 +74,14 @@ public class AutomaticLogin extends AppCompatActivity {
                     runOnUiThread(() -> setErrorMessage("E' stato riscontrato qualche problema sconosciuto riguardo la rete"));
                 }
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
+                    runOnUiThread(() -> progressBar.setVisibility(View.INVISIBLE));
                     runOnUiThread(() -> setErrorMessage("Riprovo automaticamente tra " + waitToReLogin + " secondi"));
-                    Thread.sleep(waitToReLogin * 1000);
+                    threadSleepWithTextUpdates(waitToReLogin * 1000); //Si lo so che dovrebbe essere 1000 ma va troppo lento
+
                     if (waitToReLogin < 30)
                         waitToReLogin += 5;
+
                     loginWithPreviousCredentials();
                 } catch (InterruptedException e2) {
                     e2.printStackTrace();
@@ -82,10 +92,20 @@ public class AutomaticLogin extends AppCompatActivity {
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
                 startActivity(new Intent(AutomaticLogin.this, MainLogin.class));
             }
         }).start();
+    }
+
+    private void threadSleepWithTextUpdates(int millis) throws InterruptedException {
+        for(int i = 0; i < waitToReLogin ; i++){
+            int finalI = i;
+            runOnUiThread(() -> textAutoLogin.setText("Login fallito\nRiprovo tra " + (waitToReLogin - finalI) + " secondi"));
+            Thread.sleep(1000);
+        }
+        runOnUiThread(() -> textAutoLogin.setText("Riprovo..."));
     }
 
     private void startDrawerActivity() {
