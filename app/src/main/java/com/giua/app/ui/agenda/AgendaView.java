@@ -42,10 +42,8 @@ public class AgendaView extends RelativeLayout {
     TextView tvTime;
     TextView tvDate;
     TextView tvType;
-    TextView tvDay;
     Homework homework = null;
     Test test = null;
-    Runnable onClick;
 
     public AgendaView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, Test test) {
         super(context, attrs);

@@ -48,6 +48,8 @@ import java.util.Vector;
 
 public class AgendaFragment extends Fragment {
 
+    //TODO: modificare la barra in alto in modo da farla più carina
+
     LinearLayout viewsLayout;
     List<Test> allTests;
     List<Homework> allHomeworks;
@@ -66,11 +68,13 @@ public class AgendaFragment extends Fragment {
     SimpleDateFormat formatterForYear = new SimpleDateFormat("yyyy", Locale.ITALIAN);
     ObscureLayoutView obscureLayoutView;
     LinearLayout visualizerLayout;
-    TextView visualizerType;
-    TextView visualizerSubject;
-    TextView visualizerCreator;
-    TextView visualizerText;
-    TextView visualizerDate;
+    TextView tvVisualizerType;
+    TextView tvVisualizerSubject;
+    TextView tvVisualizerCreator;
+    TextView tvVisualizerText;
+    TextView tvVisualizerDate;
+    ImageView ivVisualizerPrevBtn;
+    ImageView ivVisualizerNextBtn;
     int visualizerCounter = 0;
     boolean loadingData = false;
 
@@ -83,12 +87,14 @@ public class AgendaFragment extends Fragment {
         btnNextMonth = root.findViewById(R.id.agenda_month_next_btn);
         btnPrevMonth = root.findViewById(R.id.agenda_month_prev_btn);
         visualizerLayout = root.findViewById(R.id.agenda_object_visualizer_layout);
-        visualizerType = root.findViewById(R.id.agenda_visualizer_type);
-        visualizerSubject = root.findViewById(R.id.agenda_visualizer_subject);
-        visualizerCreator = root.findViewById(R.id.agenda_visualizer_creator);
-        visualizerText = root.findViewById(R.id.agenda_visualizer_text);
-        visualizerDate = root.findViewById(R.id.agenda_visualizer_date);
+        tvVisualizerType = root.findViewById(R.id.agenda_visualizer_type);
+        tvVisualizerSubject = root.findViewById(R.id.agenda_visualizer_subject);
+        tvVisualizerCreator = root.findViewById(R.id.agenda_visualizer_creator);
+        tvVisualizerText = root.findViewById(R.id.agenda_visualizer_text);
+        tvVisualizerDate = root.findViewById(R.id.agenda_visualizer_date);
         obscureLayoutView = root.findViewById(R.id.agenda_obscure_layout);
+        ivVisualizerPrevBtn = root.findViewById(R.id.agenda_visualizer_prev_btn);
+        ivVisualizerNextBtn = root.findViewById(R.id.agenda_visualizer_next_btn);
 
         activity = requireActivity();
 
@@ -101,6 +107,10 @@ public class AgendaFragment extends Fragment {
 
         btnNextMonth.setOnClickListener(this::btnNextMonthOnClick);
         btnPrevMonth.setOnClickListener(this::btnPrevMonthOnClick);
+        ivVisualizerPrevBtn.setOnClickListener(this::ivVisualizerPrevBtnOnClick);
+        ivVisualizerNextBtn.setOnClickListener(this::ivVisualizerNextBtnOnClick);
+        visualizerLayout.setOnClickListener((view) -> {
+        });
         obscureLayoutView.setOnClickListener((view) -> {
             visualizerLayout.setVisibility(View.GONE);
             obscureLayoutView.setVisibility(View.GONE);
@@ -114,26 +124,6 @@ public class AgendaFragment extends Fragment {
         addDateViewsAsync();
 
         return root;
-    }
-
-    private Date getNextMonth(Date date) {
-        calendar.setTime(date);
-        calendar.add(Calendar.MONTH, 1);
-        return calendar.getTime();
-    }
-
-    private Date getPrevMonth(Date date) {
-        calendar.setTime(date);
-        calendar.add(Calendar.MONTH, -1);
-        return calendar.getTime();
-    }
-
-    private String getCurrentMonth() {
-        return formatterForMonth.format(currentDate);
-    }
-
-    private String getCurrentYear() {
-        return formatterForYear.format(currentDate);
     }
 
     private void btnPrevMonthOnClick(View view) {
@@ -157,6 +147,90 @@ public class AgendaFragment extends Fragment {
             tvTodayText.setText(getMonthFromNumber(Integer.parseInt(getCurrentMonth())) + " " + getCurrentYear());
             addDateViewsAsync();
         }
+    }
+
+    private void ivVisualizerNextBtnOnClick(View view) {
+        if (visualizerCounter < visualizerTests.size() + visualizerHomeworks.size() - 1)
+            visualizerCounter++;
+        if (visualizerCounter < visualizerTests.size()) {
+            tvVisualizerType.setText("Verifica");
+            tvVisualizerSubject.setText(visualizerTests.get(visualizerCounter).subject);
+            tvVisualizerCreator.setText(visualizerTests.get(visualizerCounter).creator);
+            tvVisualizerText.setText(visualizerTests.get(visualizerCounter).details);
+            tvVisualizerDate.setText(visualizerTests.get(visualizerCounter).date);
+            ivVisualizerPrevBtn.setVisibility(View.VISIBLE);
+        } else if (visualizerCounter - visualizerTests.size() < visualizerHomeworks.size()) {
+            int index = visualizerCounter - visualizerTests.size();
+
+            tvVisualizerType.setText("Compiti");
+            tvVisualizerSubject.setText(visualizerHomeworks.get(index).subject);
+            tvVisualizerCreator.setText(visualizerHomeworks.get(index).creator);
+            tvVisualizerText.setText(visualizerHomeworks.get(index).details);
+            tvVisualizerDate.setText(visualizerHomeworks.get(index).date);
+            ivVisualizerPrevBtn.setVisibility(View.VISIBLE);
+        }
+        if (visualizerCounter >= visualizerTests.size() + visualizerHomeworks.size() - 1)
+            ivVisualizerNextBtn.setVisibility(View.INVISIBLE);
+    }
+
+    private void ivVisualizerPrevBtnOnClick(View view) {
+        if (visualizerCounter > 0)
+            visualizerCounter--;
+        if (visualizerCounter >= 0 && !visualizerTests.isEmpty()) {
+            tvVisualizerType.setText("Verifica");
+            tvVisualizerSubject.setText(visualizerTests.get(visualizerCounter).subject);
+            tvVisualizerCreator.setText(visualizerTests.get(visualizerCounter).creator);
+            tvVisualizerText.setText(visualizerTests.get(visualizerCounter).details);
+            tvVisualizerDate.setText(visualizerTests.get(visualizerCounter).date);
+            ivVisualizerNextBtn.setVisibility(View.VISIBLE);
+        } else if (visualizerCounter - visualizerTests.size() >= 0 && !visualizerHomeworks.isEmpty()) {
+            int index = visualizerCounter - visualizerTests.size();
+
+            tvVisualizerType.setText("Compito");
+            tvVisualizerSubject.setText(visualizerHomeworks.get(index).subject);
+            tvVisualizerCreator.setText(visualizerHomeworks.get(index).creator);
+            tvVisualizerText.setText(visualizerHomeworks.get(index).details);
+            tvVisualizerDate.setText(visualizerHomeworks.get(index).date);
+            ivVisualizerNextBtn.setVisibility(View.VISIBLE);
+        }
+        if (visualizerCounter == 0)
+            ivVisualizerPrevBtn.setVisibility(View.INVISIBLE);
+    }
+
+    private void agendaViewOnClick(View view) {
+        AgendaView agendaView = (AgendaView) view;
+        visualizerHomeworks = new Vector<>();
+        visualizerTests = new Vector<>();
+        visualizerCounter = 0;
+
+
+        //TODO: Fare le richieste asincrone e aggiungere un caricamento
+        if (agendaView.test != null)
+            visualizerTests = GlobalVariables.gS.getTest(agendaView.test.date);
+        if (agendaView.homework != null)
+            visualizerHomeworks = GlobalVariables.gS.getHomework(agendaView.homework.date);
+
+        if (agendaView.test != null) {
+            tvVisualizerType.setText("Verifica");
+            tvVisualizerSubject.setText(visualizerTests.get(0).subject);
+            tvVisualizerCreator.setText(visualizerTests.get(0).creator);
+            tvVisualizerText.setText(visualizerTests.get(0).details);
+            tvVisualizerDate.setText(visualizerTests.get(0).date);
+        } else if (agendaView.homework != null) {
+            tvVisualizerType.setText("Compito");
+            tvVisualizerSubject.setText(visualizerHomeworks.get(0).subject);
+            tvVisualizerCreator.setText(visualizerHomeworks.get(0).creator);
+            tvVisualizerText.setText(visualizerHomeworks.get(0).details);
+            tvVisualizerDate.setText(visualizerHomeworks.get(0).date);
+        }
+
+        ivVisualizerPrevBtn.setVisibility(View.INVISIBLE);
+        if (visualizerHomeworks.size() + visualizerTests.size() == 1)
+            ivVisualizerNextBtn.setVisibility(View.INVISIBLE);
+        else
+            ivVisualizerNextBtn.setVisibility(View.VISIBLE);
+        visualizerLayout.setVisibility(View.VISIBLE);
+        obscureLayoutView.setVisibility(View.VISIBLE);
     }
 
     private void addDateViewsAsync() {
@@ -233,33 +307,24 @@ public class AgendaFragment extends Fragment {
         loadingData = false;
     }
 
-    private void agendaViewOnClick(View view) {
-        AgendaView agendaView = (AgendaView) view;
-        visualizerHomeworks = new Vector<>();
-        visualizerTests = new Vector<>();
-        visualizerCounter = 0;
+    private Date getNextMonth(Date date) {
+        calendar.setTime(date);
+        calendar.add(Calendar.MONTH, 1);
+        return calendar.getTime();
+    }
 
-        if (agendaView.test != null)
-            visualizerTests = GlobalVariables.gS.getTest(agendaView.test.date);
-        if (agendaView.homework != null)
-            visualizerHomeworks = GlobalVariables.gS.getHomework(agendaView.homework.date);
+    private Date getPrevMonth(Date date) {
+        calendar.setTime(date);
+        calendar.add(Calendar.MONTH, -1);
+        return calendar.getTime();
+    }
 
-        if (agendaView.test != null) {
-            visualizerType.setText("Verifica");
-            visualizerSubject.setText(visualizerTests.get(0).subject);
-            visualizerCreator.setText(visualizerTests.get(0).creator);
-            visualizerText.setText(visualizerTests.get(0).details);
-            visualizerDate.setText(visualizerTests.get(0).date);
-        } else if (agendaView.homework != null) {
-            visualizerType.setText("Compito");
-            visualizerSubject.setText(visualizerHomeworks.get(0).subject);
-            visualizerCreator.setText(visualizerHomeworks.get(0).creator);
-            visualizerText.setText(visualizerHomeworks.get(0).details);
-            visualizerDate.setText(visualizerHomeworks.get(0).date);
-        }
+    private String getCurrentMonth() {
+        return formatterForMonth.format(currentDate);
+    }
 
-        visualizerLayout.setVisibility(View.VISIBLE);
-        obscureLayoutView.setVisibility(View.VISIBLE);
+    private String getCurrentYear() {
+        return formatterForYear.format(currentDate);
     }
 
     private String getMonthFromNumber(int number) {
