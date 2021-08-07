@@ -22,6 +22,9 @@ plugins {
     id 'com.gladed.androidgitversion' version '0.4.14'
 }
 
+androidGitVersion {
+    baseCode 1
+}
 
 android {
     compileSdkVersion 30
