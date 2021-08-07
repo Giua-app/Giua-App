@@ -19,7 +19,7 @@
 
 plugins {
     id 'com.android.application'
-    id 'io.github.reactivecircus.app-versioning' version "0.9.1"
+    id 'com.gladed.androidgitversion' version '0.4.14'
 }
 
 
@@ -31,8 +31,8 @@ android {
         applicationId "com.giua.app"
         minSdkVersion 24
         targetSdkVersion 30
-        versionCode 404
-        versionName "H.E.L.P"
+        versionCode androidGitVersion.code()
+        versionName androidGitVersion.name()
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
