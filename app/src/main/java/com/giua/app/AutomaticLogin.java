@@ -74,10 +74,10 @@ public class AutomaticLogin extends AppCompatActivity {
                     runOnUiThread(() -> setErrorMessage("E' stato riscontrato qualche problema sconosciuto riguardo la rete"));
                 }
                 try {
-                    Thread.sleep(1000);
+                    //Thread.sleep(2000);
                     runOnUiThread(() -> progressBar.setVisibility(View.INVISIBLE));
-                    runOnUiThread(() -> setErrorMessage("Riprovo automaticamente tra " + waitToReLogin + " secondi"));
-                    threadSleepWithTextUpdates(waitToReLogin * 1000); //Si lo so che dovrebbe essere 1000 ma va troppo lento
+                    //runOnUiThread(() -> setErrorMessage("Riprovo automaticamente tra " + waitToReLogin + " secondi"));
+                    threadSleepWithTextUpdates();
 
                     if (waitToReLogin < 30)
                         waitToReLogin += 5;
@@ -99,7 +99,7 @@ public class AutomaticLogin extends AppCompatActivity {
         }).start();
     }
 
-    private void threadSleepWithTextUpdates(int millis) throws InterruptedException {
+    private void threadSleepWithTextUpdates() throws InterruptedException {
         for(int i = 0; i < waitToReLogin ; i++){
             int finalI = i;
             runOnUiThread(() -> textAutoLogin.setText("Login fallito\nRiprovo tra " + (waitToReLogin - finalI) + " secondi"));
@@ -114,7 +114,7 @@ public class AutomaticLogin extends AppCompatActivity {
     }
 
     private void setErrorMessage(String message) {
-        Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
     }
 
     /**
