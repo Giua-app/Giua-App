@@ -49,7 +49,7 @@
             android:textSize="18sp"
             android:layout_gravity="end"
             android:layout_marginTop="20dp"
-            android:textColor="@color/main_color"
+            android:textColor="@color/main_color_lighter"
             android:textStyle="bold" />
 
         <TextView

@@ -50,8 +50,6 @@ import java.util.Vector;
 
 public class AgendaFragment extends Fragment {
 
-    //TODO: modificare la barra in alto in modo da farla più carina
-
     LinearLayout viewsLayout;
     List<Test> allTests;
     List<Homework> allHomeworks;
@@ -139,6 +137,7 @@ public class AgendaFragment extends Fragment {
             if (Integer.parseInt(getCurrentMonth()) == 9)
                 btnPrevMonth.setVisibility(View.GONE);
             tvTodayText.setText(getMonthFromNumber(Integer.parseInt(getCurrentMonth())) + " " + getCurrentYear());
+            viewsLayout.removeAllViews();
             addDateViewsAsync();
         }
     }
@@ -150,6 +149,7 @@ public class AgendaFragment extends Fragment {
             if (Integer.parseInt(getCurrentMonth()) >= 6 && Integer.parseInt(getCurrentMonth()) <= 8)
                 btnNextMonth.setVisibility(View.GONE);
             tvTodayText.setText(getMonthFromNumber(Integer.parseInt(getCurrentMonth())) + " " + getCurrentYear());
+            viewsLayout.removeAllViews();
             addDateViewsAsync();
         }
     }
@@ -270,7 +270,8 @@ public class AgendaFragment extends Fragment {
 
     private void addDateViewsAsync() {
         if (!isLoadingData) {
-            viewsLayout.addView(progressBar, 0);
+            if (viewsLayout.indexOfChild(progressBar) == -1)
+                viewsLayout.addView(progressBar, 0);
             new Thread(() -> {
                 try {
                     isLoadingData = true;

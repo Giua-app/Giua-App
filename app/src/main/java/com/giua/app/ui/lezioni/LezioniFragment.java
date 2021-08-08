@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -57,6 +58,7 @@ public class LezioniFragment extends Fragment {
     TextView tvNoElements;
     TextView tvDetailArgs;
     TextView tvDetailActs;
+    ImageView ivCalendarImage;
     ProgressBar pbLoadingContent;
     FrameLayout frameLayout;
     Button btnConfirmDate;
@@ -81,18 +83,19 @@ public class LezioniFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_lezioni, container, false);
 
-        tvCurrentDate = root.findViewById(R.id.lezioni_fragment_current_date);
-        lessonsLayout = root.findViewById(R.id.lezioni_fragment_lessons_layout);
-        calendarView = root.findViewById(R.id.lezioni_fragment_calendar_view);
+        tvCurrentDate = root.findViewById(R.id.lezioni_current_date);
+        lessonsLayout = root.findViewById(R.id.lezioni_lessons_layout);
+        calendarView = root.findViewById(R.id.lezioni_calendar_view);
         obscureLayout = root.findViewById(R.id.lezioni_obscure_view);
-        frameLayout = root.findViewById(R.id.lezioni_fragment_frame_layout);
-        tvNoElements = root.findViewById(R.id.lezioni_fragment_no_elements_view);
-        pbLoadingContent = root.findViewById(R.id.lezioni_fragment_loading_content);
-        lessonDetailLayout = root.findViewById(R.id.lezioni_fragment_lesson_detail);
-        tvDetailArgs = root.findViewById(R.id.lezioni_fragment_lesson_detail_args);
-        tvDetailActs = root.findViewById(R.id.lezioni_fragment_lesson_detail_acts);
-        bottomCardView = root.findViewById(R.id.lezioni_fragment_bottom_card_view);
-        btnConfirmDate = root.findViewById(R.id.lezioni_fragment_btn_confirm_date);
+        frameLayout = root.findViewById(R.id.lezioni_frame_layout);
+        tvNoElements = root.findViewById(R.id.lezioni_no_elements_view);
+        pbLoadingContent = root.findViewById(R.id.lezioni_loading_content);
+        lessonDetailLayout = root.findViewById(R.id.lezioni_lesson_detail);
+        tvDetailArgs = root.findViewById(R.id.lezioni_lesson_detail_args);
+        tvDetailActs = root.findViewById(R.id.lezioni_lesson_detail_acts);
+        bottomCardView = root.findViewById(R.id.lezioni_bottom_card_view);
+        btnConfirmDate = root.findViewById(R.id.lezioni_btn_confirm_date);
+        ivCalendarImage = root.findViewById(R.id.lezioni_calendar_image_view);
 
         activity = requireActivity();
         calendar = Calendar.getInstance();
@@ -104,8 +107,9 @@ public class LezioniFragment extends Fragment {
 
         tvCurrentDate.setText("Oggi");
 
-        root.findViewById(R.id.lezioni_fragment_img_next_date).setOnClickListener(this::nextDateOnClick);
-        root.findViewById(R.id.lezioni_fragment_img_prev_date).setOnClickListener(this::prevDateOnClick);
+        root.findViewById(R.id.lezioni_img_next_date).setOnClickListener(this::nextDateOnClick);
+        root.findViewById(R.id.lezioni_img_prev_date).setOnClickListener(this::prevDateOnClick);
+        ivCalendarImage.setOnClickListener(this::tvCurrentDateOnClick);
         tvCurrentDate.setOnClickListener(this::tvCurrentDateOnClick);
         obscureLayout.setOnClickListener(this::obscureLayoutOnClick);
         calendarView.setOnDateChangeListener(this::calendarOnChangeDateListener);
@@ -189,6 +193,7 @@ public class LezioniFragment extends Fragment {
         obscureLayout.setVisibility(View.VISIBLE);
         bottomCardView.setZ(-10f);
         btnConfirmDate.setZ(-10f);
+        ivCalendarImage.setZ(-10f);
 
         if (!((LessonView) view).lesson.arguments.equals(""))
             tvDetailArgs.setText(Html.fromHtml("<b>Argomenti:</b> " + ((LessonView) view).lesson.arguments, Html.FROM_HTML_MODE_COMPACT));
@@ -216,6 +221,7 @@ public class LezioniFragment extends Fragment {
         frameLayout.setVisibility(View.GONE);
         obscureLayout.setVisibility(View.GONE);
         lessonDetailLayout.setVisibility(View.GONE);
+        ivCalendarImage.setZ(13.75f);
         bottomCardView.setZ(13.75f);
         btnConfirmDate.setZ(13.75f);
     }
@@ -223,6 +229,7 @@ public class LezioniFragment extends Fragment {
     private void tvCurrentDateOnClick(View view) {
         frameLayout.setVisibility(View.VISIBLE);
         obscureLayout.setVisibility(View.VISIBLE);
+        ivCalendarImage.setZ(-10f);
         bottomCardView.setZ(-10f);
         btnConfirmDate.setZ(-10f);
     }

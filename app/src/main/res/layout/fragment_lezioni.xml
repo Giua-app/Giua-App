@@ -28,7 +28,7 @@
 
 
     <TextView
-        android:id="@+id/lezioni_fragment_no_elements_view"
+        android:id="@+id/lezioni_no_elements_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/varelaroundregular"
@@ -43,12 +43,11 @@
         app:layout_constraintVertical_bias="0.396" />
 
     <ScrollView
-        android:id="@+id/lezioni_fragment_scroll_lessons_view"
+        android:id="@+id/lezioni_scroll_lessons_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:overScrollMode="never"
         android:padding="5dp"
-        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -57,7 +56,7 @@
         app:layout_constraintVertical_bias="1.0">
 
         <LinearLayout
-            android:id="@+id/lezioni_fragment_lessons_layout"
+            android:id="@+id/lezioni_lessons_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -65,7 +64,7 @@
     </ScrollView>
 
     <ProgressBar
-        android:id="@+id/lezioni_fragment_loading_content"
+        android:id="@+id/lezioni_loading_content"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -73,7 +72,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/lezioni_fragment_scroll_lessons_view" />
+        app:layout_constraintTop_toTopOf="@+id/lezioni_scroll_lessons_view" />
 
     <com.giua.app.ui.ObscureLayoutView
         android:id="@+id/lezioni_obscure_view"
@@ -84,10 +83,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription">
+
+    </com.giua.app.ui.ObscureLayoutView>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/lezioni_fragment_bottom_card_view"
+        android:id="@+id/lezioni_bottom_card_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -103,7 +104,7 @@
         app:layout_constraintVertical_bias="0.957">
 
         <TextView
-            android:id="@+id/lezioni_fragment_current_date"
+            android:id="@+id/lezioni_current_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center|center_horizontal|center_vertical"
@@ -114,33 +115,48 @@
             android:textStyle="bold" />
 
         <ImageView
-            android:id="@+id/lezioni_fragment_img_next_date"
+            android:id="@+id/lezioni_img_next_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|end"
             android:src="@drawable/ic_baseline_arrow_right_24" />
 
         <ImageView
-            android:id="@+id/lezioni_fragment_img_prev_date"
+            android:id="@+id/lezioni_img_prev_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start|center_vertical"
             android:src="@drawable/ic_baseline_arrow_left_24" />
     </androidx.cardview.widget.CardView>
 
+    <ImageView
+        android:id="@+id/lezioni_calendar_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/corner_radius_10dp"
+        android:elevation="5dp"
+        android:padding="5dp"
+        android:src="@drawable/ic_baseline_calendar_today_24"
+        app:layout_constraintBottom_toTopOf="@+id/lezioni_bottom_card_view"
+        app:layout_constraintEnd_toEndOf="@+id/lezioni_bottom_card_view"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="@+id/lezioni_bottom_card_view"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
     <Button
-        android:id="@+id/lezioni_fragment_btn_confirm_date"
+        android:id="@+id/lezioni_btn_confirm_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/varelaroundregular"
         android:text="@string/fragmentlezioni_btn_confirmdate"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/lezioni_fragment_bottom_card_view"
-        app:layout_constraintEnd_toEndOf="@+id/lezioni_fragment_bottom_card_view"
-        app:layout_constraintStart_toStartOf="@+id/lezioni_fragment_bottom_card_view" />
+        app:layout_constraintBottom_toTopOf="@+id/lezioni_bottom_card_view"
+        app:layout_constraintEnd_toEndOf="@+id/lezioni_bottom_card_view"
+        app:layout_constraintStart_toStartOf="@+id/lezioni_bottom_card_view" />
 
     <LinearLayout
-        android:id="@+id/lezioni_fragment_lesson_detail"
+        android:id="@+id/lezioni_lesson_detail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
@@ -159,7 +175,7 @@
         app:layout_constraintVertical_bias="0.35000002">
 
         <TextView
-            android:id="@+id/lezioni_fragment_lesson_detail_args"
+            android:id="@+id/lezioni_lesson_detail_args"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -168,7 +184,7 @@
             android:textSize="15sp" />
 
         <TextView
-            android:id="@+id/lezioni_fragment_lesson_detail_acts"
+            android:id="@+id/lezioni_lesson_detail_acts"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -179,7 +195,7 @@
     </LinearLayout>
 
     <FrameLayout
-        android:id="@+id/lezioni_fragment_frame_layout"
+        android:id="@+id/lezioni_frame_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -193,7 +209,7 @@
         app:layout_constraintVertical_bias="0.366">
 
         <CalendarView
-            android:id="@+id/lezioni_fragment_calendar_view"
+            android:id="@+id/lezioni_calendar_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/corner_radius_10dp" />
