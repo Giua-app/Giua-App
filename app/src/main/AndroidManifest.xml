@@ -92,6 +92,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ActivityManager" />
         </activity>
+        <activity
+            android:name="com.eggheadgames.aboutbox.activity.AboutActivity"
+            android:theme="@style/AppTheme.MaterialAboutActivity"/>
 
     </application>
 

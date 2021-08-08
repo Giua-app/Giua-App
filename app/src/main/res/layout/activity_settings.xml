@@ -80,10 +80,11 @@
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/varelaroundregular"
                 android:hint="@string/activitysettings_textbox_siteurl_hint"
+                android:importantForAutofill="no"
                 android:inputType="textUri"
                 android:labelFor="@id/settings_url_text_view"
-                android:textSize="16sp"
-                android:importantForAutofill="no" />
+                android:minHeight="48dp"
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/settings_crash_text_view"
@@ -104,6 +105,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:text="@string/activitysettings_btn_crash" />
+
+            <Button
+                android:id="@+id/settings_about_button"
+                android:layout_width="390dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="@string/egab_about_screen_title"
+                android:textColor="@color/adaptive_color_text" />
 
         </LinearLayout>
     </ScrollView>

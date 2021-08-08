@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.eggheadgames.aboutbox.activity.AboutActivity;
 import com.giua.webscraper.GiuaScraper;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -52,6 +53,8 @@ public class SettingsActivity extends AppCompatActivity {
         findViewById(R.id.settings_save_button).setOnClickListener(this::btnSaveClick);
 
         findViewById(R.id.settings_crash_button).setOnClickListener(this::btnCrashClick);
+
+        findViewById(R.id.settings_about_button).setOnClickListener(this::btnAboutClick);
     }
 
     private void setErrorMessage(String message) {
@@ -70,5 +73,9 @@ public class SettingsActivity extends AppCompatActivity {
     private void btnCrashClick(View view) {
         setErrorMessage("Goodbye");
         throw new RuntimeException("FATAL ERROR: World not found. What have you done?!?!");
+    }
+
+    private void btnAboutClick(View view){
+        AboutActivity.launch(SettingsActivity.this);
     }
 }

@@ -64,19 +64,43 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
     implementation 'androidx.navigation:navigation-fragment:2.3.5'
     implementation 'androidx.navigation:navigation-ui:2.3.5'
-
-    // jsoup HTML parser library @ https://jsoup.org/
-    implementation 'org.jsoup:jsoup:1.14.1'
-    // Giua scraper
-    implementation 'com.github.Giua-app:Giua-Webscraper:v1.0.3-beta'
-    // Error handler lib
-    implementation 'cat.ereza:customactivityoncrash:2.3.0'
-    //implementation fileTree(dir: 'libs', include: ['*.jar'])     //DEBUG
-
-
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
     implementation 'androidx.annotation:annotation:1.2.0'
+
+
+    // jsoup HTML parser library @ https://jsoup.org/
+    implementation 'org.jsoup:jsoup:1.14.1'
+
+    // Giua scraper
+    implementation 'com.github.Giua-app:Giua-Webscraper:v1.0.3-beta'
+
+    // Error handler lib
+    implementation 'cat.ereza:customactivityoncrash:2.3.0'
+
+    //implementation fileTree(dir: 'libs', include: ['*.jar'])     //DEBUG
+
+    // fancy About screen
+    //implementation 'com.github.daniel-stoneuk:material-about-library:3.1.2'
+
+    //ugly, stupid and terrible about screen
+    implementation 'com.github.eggheadgames:android-about-box:2.0.1'
+
+    /*Android-Iconics (in future versioni)
+    implementation "com.mikepenz:iconics-core:5.2.8"
+    //this adds all ui view widgets (IconicsButton, IconicsImageView, ...)
+    implementation "com.mikepenz:iconics-views:5.2.8"
+    //Fonts for Android-Iconics
+    implementation 'com.mikepenz:google-material-typeface:4.0.0.1-kotlin@aar'
+    implementation 'com.mikepenz:google-material-typeface-outlined:4.0.0.1-kotlin@aar'
+    implementation 'com.mikepenz:fontawesome-typeface:5.9.0.2-kotlin@aar'
+    implementation 'com.mikepenz:community-material-typeface:5.8.55.0-kotlin@aar' // note 5.3.45.1 alphabetically sorts, and merges in 3 sections
+     */
+
+
+
+
+
 
 
 
