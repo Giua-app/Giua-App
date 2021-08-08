@@ -49,10 +49,18 @@ public class ObscureLayoutView extends ConstraintLayout {
         final int N = a.getIndexCount();
 
         if (N > 0) {
-            if (a.getBoolean(0, true))
-                tvCancel.setVisibility(VISIBLE);
-            else
-                tvCancel.setVisibility(GONE);
+            for (int i = 0; i < N; ++i) {
+                int attr = a.getIndex(i);
+                if (attr == R.styleable.ObscureLayoutView_hasCancelText && a.getBoolean(attr, true))
+                    tvCancel.setVisibility(VISIBLE);
+                else
+                    tvCancel.setVisibility(GONE);
+                if (attr == R.styleable.ObscureLayoutView_cancelText)
+                    tvCancel.setText(a.getString(attr));
+                if (tvCancel.getText().equals(""))
+                    tvCancel.setText("Annulla");
+            }
         }
+        a.recycle();
     }
 }

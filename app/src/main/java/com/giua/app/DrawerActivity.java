@@ -39,10 +39,13 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.giua.webscraper.GiuaScraper;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public class DrawerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -84,7 +87,11 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         tvUserType = navigationView.getHeaderView(0).findViewById(R.id.txtUserType);
 
         tvUsername.setText(GlobalVariables.gS.getUser());
-        tvUserType.setText(GlobalVariables.gS.getUserType());
+        GiuaScraper.userTypes userType = GlobalVariables.gS.getUserType();
+        if (userType == GiuaScraper.userTypes.PARENT)
+            tvUserType.setText("Genitore");
+        else if (userType == GiuaScraper.userTypes.STUDENT)
+            tvUserType.setText("Studente");
 
         navigationView.setCheckedItem(R.id.nav_voti);
 
@@ -164,7 +171,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
     @Override
     public void onBackPressed() {
-        if (navController.getCurrentDestination().getId() != R.id.nav_voti) {
+        if (Objects.requireNonNull(navController.getCurrentDestination()).getId() != R.id.nav_voti) {
             navigationView.setCheckedItem(R.id.nav_voti);
             startVotesFragment();
         } else {

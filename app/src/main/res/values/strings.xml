@@ -94,4 +94,11 @@
     <string name="logout_text">Logout</string>
     <string name="impostazioni_text">Impostazioni</string>
     <string name="obscure_layout_text">Annulla</string>
+    <string name="homeworks">Compiti</string>
+    <string name="tests">Verifiche</string>
+
+    <!-- Agenda fragment -->
+    <string name="agenda_view_type_homeworks">Compiti</string>
+    <string name="agenda_view_type_homework_and_tests">Compiti e Verifiche</string>
+    <string name="agenda_view_type_tests">Verifiche</string>
 </resources>

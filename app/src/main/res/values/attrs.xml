@@ -20,5 +20,6 @@
 <resources>
     <declare-styleable name="ObscureLayoutView">
         <attr name="hasCancelText" format="boolean" />
+        <attr name="cancelText" format="string" />
     </declare-styleable>
 </resources>
