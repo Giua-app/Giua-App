@@ -32,11 +32,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.giua.app.DrawerActivity;
 import com.giua.app.GlobalVariables;
 import com.giua.app.R;
 import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Homework;
 import com.giua.objects.Test;
+import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
 
 import java.text.SimpleDateFormat;
@@ -63,6 +65,7 @@ public class AgendaFragment extends Fragment {
     View root;
     Date currentDate;
     ProgressBar progressBar;
+    ProgressBar progressBarForDetails;
     Calendar calendar;
     SimpleDateFormat formatterForMonth = new SimpleDateFormat("MM", Locale.ITALIAN);
     SimpleDateFormat formatterForYear = new SimpleDateFormat("yyyy", Locale.ITALIAN);
@@ -76,7 +79,8 @@ public class AgendaFragment extends Fragment {
     ImageView ivVisualizerPrevBtn;
     ImageView ivVisualizerNextBtn;
     int visualizerCounter = 0;
-    boolean loadingData = false;
+    boolean isLoadingData = false;
+    boolean isLoadingDetails = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_agenda, container, false);
@@ -95,6 +99,7 @@ public class AgendaFragment extends Fragment {
         obscureLayoutView = root.findViewById(R.id.agenda_obscure_layout);
         ivVisualizerPrevBtn = root.findViewById(R.id.agenda_visualizer_prev_btn);
         ivVisualizerNextBtn = root.findViewById(R.id.agenda_visualizer_next_btn);
+        progressBarForDetails = root.findViewById(R.id.agenda_progress_bar_details);
 
         activity = requireActivity();
 
@@ -127,7 +132,7 @@ public class AgendaFragment extends Fragment {
     }
 
     private void btnPrevMonthOnClick(View view) {
-        if (!loadingData) {
+        if (!isLoadingData) {
             currentDate = getPrevMonth(currentDate);
             if (Integer.parseInt(getCurrentMonth()) < 6 || Integer.parseInt(getCurrentMonth()) > 8)
                 btnNextMonth.setVisibility(View.VISIBLE);
@@ -139,7 +144,7 @@ public class AgendaFragment extends Fragment {
     }
 
     private void btnNextMonthOnClick(View view) {
-        if (!loadingData) {
+        if (!isLoadingData) {
             currentDate = getNextMonth(currentDate);
             btnPrevMonth.setVisibility(View.VISIBLE);
             if (Integer.parseInt(getCurrentMonth()) >= 6 && Integer.parseInt(getCurrentMonth()) <= 8)
@@ -198,59 +203,105 @@ public class AgendaFragment extends Fragment {
     }
 
     private void agendaViewOnClick(View view) {
-        AgendaView agendaView = (AgendaView) view;
-        visualizerHomeworks = new Vector<>();
-        visualizerTests = new Vector<>();
-        visualizerCounter = 0;
+        if (!isLoadingDetails) {
+            isLoadingDetails = true;
+            progressBarForDetails.setVisibility(View.VISIBLE);
+            new Thread(() -> {
+                AgendaView agendaView = (AgendaView) view;
+                visualizerHomeworks = new Vector<>();
+                visualizerTests = new Vector<>();
+                visualizerCounter = 0;
 
+                try {
+                    if (agendaView.test != null)
+                        visualizerTests = GlobalVariables.gS.getTest(agendaView.test.date);
+                    if (agendaView.homework != null)
+                        visualizerHomeworks = GlobalVariables.gS.getHomework(agendaView.homework.date);
+                } catch (GiuaScraperExceptions.YourConnectionProblems e) {
+                    activity.runOnUiThread(() -> {
+                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);
+                        progressBarForDetails.setVisibility(View.GONE);
+                    });
+                    return;
+                } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
+                    activity.runOnUiThread(() -> {
+                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root);
+                        progressBarForDetails.setVisibility(View.GONE);
+                    });
+                    return;
+                } catch (NullPointerException e) {
+                    activity.runOnUiThread(() -> {
+                        if (!GiuaScraper.isMyInternetWorking())
+                            DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);
+                        progressBarForDetails.setVisibility(View.GONE);
+                    });
+                    return;
+                }
 
-        //TODO: Fare le richieste asincrone e aggiungere un caricamento
-        if (agendaView.test != null)
-            visualizerTests = GlobalVariables.gS.getTest(agendaView.test.date);
-        if (agendaView.homework != null)
-            visualizerHomeworks = GlobalVariables.gS.getHomework(agendaView.homework.date);
+                activity.runOnUiThread(() -> {
+                    if (agendaView.test != null) {
+                        tvVisualizerType.setText("Verifica");
+                        tvVisualizerSubject.setText(visualizerTests.get(0).subject);
+                        tvVisualizerCreator.setText(visualizerTests.get(0).creator);
+                        tvVisualizerText.setText(visualizerTests.get(0).details);
+                        tvVisualizerDate.setText(visualizerTests.get(0).date);
+                    } else if (agendaView.homework != null) {
+                        tvVisualizerType.setText("Compito");
+                        tvVisualizerSubject.setText(visualizerHomeworks.get(0).subject);
+                        tvVisualizerCreator.setText(visualizerHomeworks.get(0).creator);
+                        tvVisualizerText.setText(visualizerHomeworks.get(0).details);
+                        tvVisualizerDate.setText(visualizerHomeworks.get(0).date);
+                    }
 
-        if (agendaView.test != null) {
-            tvVisualizerType.setText("Verifica");
-            tvVisualizerSubject.setText(visualizerTests.get(0).subject);
-            tvVisualizerCreator.setText(visualizerTests.get(0).creator);
-            tvVisualizerText.setText(visualizerTests.get(0).details);
-            tvVisualizerDate.setText(visualizerTests.get(0).date);
-        } else if (agendaView.homework != null) {
-            tvVisualizerType.setText("Compito");
-            tvVisualizerSubject.setText(visualizerHomeworks.get(0).subject);
-            tvVisualizerCreator.setText(visualizerHomeworks.get(0).creator);
-            tvVisualizerText.setText(visualizerHomeworks.get(0).details);
-            tvVisualizerDate.setText(visualizerHomeworks.get(0).date);
+                    ivVisualizerPrevBtn.setVisibility(View.INVISIBLE);
+                    if (visualizerHomeworks.size() + visualizerTests.size() == 1)
+                        ivVisualizerNextBtn.setVisibility(View.INVISIBLE);
+                    else
+                        ivVisualizerNextBtn.setVisibility(View.VISIBLE);
+                    visualizerLayout.setVisibility(View.VISIBLE);
+                    obscureLayoutView.setVisibility(View.VISIBLE);
+
+                    isLoadingDetails = false;
+                    progressBarForDetails.setVisibility(View.GONE);
+                });
+            }).start();
         }
-
-        ivVisualizerPrevBtn.setVisibility(View.INVISIBLE);
-        if (visualizerHomeworks.size() + visualizerTests.size() == 1)
-            ivVisualizerNextBtn.setVisibility(View.INVISIBLE);
-        else
-            ivVisualizerNextBtn.setVisibility(View.VISIBLE);
-        visualizerLayout.setVisibility(View.VISIBLE);
-        obscureLayoutView.setVisibility(View.VISIBLE);
     }
 
     private void addDateViewsAsync() {
-        if (!loadingData) {
+        if (!isLoadingData) {
             viewsLayout.addView(progressBar, 0);
             new Thread(() -> {
-                //TODO: Aggiungere blocchi try e catch
                 try {
-                    loadingData = true;
+                    isLoadingData = true;
                     allTests = GlobalVariables.gS.getAllTestsWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())), true);
                     allHomeworks = GlobalVariables.gS.getAllHomeworksWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())), true);
 
                     if (allTests.isEmpty() && allHomeworks.isEmpty()) {
                         activity.runOnUiThread(() -> viewsLayout.removeAllViews());
                         activity.runOnUiThread(() -> tvNoElements.setVisibility(View.VISIBLE));
-                        loadingData = false;
+                        isLoadingData = false;
                     } else
                         activity.runOnUiThread(this::addDateViews);
-                } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.SiteConnectionProblems e) {
-
+                } catch (GiuaScraperExceptions.YourConnectionProblems e) {
+                    activity.runOnUiThread(() -> {
+                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);
+                        progressBar.setVisibility(View.GONE);
+                        tvNoElements.setVisibility(View.VISIBLE);
+                    });
+                } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
+                    activity.runOnUiThread(() -> {
+                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root);
+                        progressBar.setVisibility(View.GONE);
+                        tvNoElements.setVisibility(View.VISIBLE);
+                    });
+                } catch (NullPointerException e) {
+                    activity.runOnUiThread(() -> {
+                        if (!GiuaScraper.isMyInternetWorking())
+                            DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);
+                        progressBar.setVisibility(View.GONE);
+                        tvNoElements.setVisibility(View.VISIBLE);
+                    });
                 }
 
             }).start();
@@ -304,7 +355,7 @@ public class AgendaFragment extends Fragment {
 
             testCounter++;
         }
-        loadingData = false;
+        isLoadingData = false;
     }
 
     private Date getNextMonth(Date date) {

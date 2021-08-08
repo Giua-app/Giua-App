@@ -21,7 +21,6 @@ package com.giua.app;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.StrictMode;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -34,10 +33,6 @@ public class ActivityManager extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //TODO: da togliere in futuro
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
 
         CaocConfig.Builder.create()
                 .backgroundMode(CaocConfig.BACKGROUND_MODE_SILENT) //crash silently when the app is in background
