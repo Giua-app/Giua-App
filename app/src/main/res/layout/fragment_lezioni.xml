@@ -53,7 +53,8 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="SpeakableTextPresentCheck">
 
         <LinearLayout
             android:id="@+id/lezioni_lessons_layout"
@@ -103,16 +104,31 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.957">
 
-        <TextView
-            android:id="@+id/lezioni_current_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|center_horizontal|center_vertical"
-            android:fontFamily="@font/varelaroundregular"
-            android:text="@string/fragmentlezioni_textview_currentdate"
-            android:textAlignment="center"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/lezioni_calendar_image_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:elevation="5dp"
+                android:padding="5dp"
+                android:src="@drawable/ic_baseline_calendar_today_24" />
+
+            <TextView
+                android:id="@+id/lezioni_current_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|center_horizontal|center_vertical"
+                android:fontFamily="@font/varelaroundregular"
+                android:text="@string/fragmentlezioni_textview_currentdate"
+                android:textAlignment="center"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/lezioni_img_next_date"
@@ -127,22 +143,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start|center_vertical"
             android:src="@drawable/ic_baseline_arrow_left_24" />
-    </androidx.cardview.widget.CardView>
 
-    <ImageView
-        android:id="@+id/lezioni_calendar_image_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/corner_radius_10dp"
-        android:elevation="5dp"
-        android:padding="5dp"
-        android:src="@drawable/ic_baseline_calendar_today_24"
-        app:layout_constraintBottom_toTopOf="@+id/lezioni_bottom_card_view"
-        app:layout_constraintEnd_toEndOf="@+id/lezioni_bottom_card_view"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="@+id/lezioni_bottom_card_view"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+    </androidx.cardview.widget.CardView>
 
     <Button
         android:id="@+id/lezioni_btn_confirm_date"

@@ -34,6 +34,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
@@ -128,6 +129,14 @@ public class CircolariFragment extends Fragment {
         onlyNotRead = ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).isChecked();
         filterDate = ((TextView) root.findViewById(R.id.newsletter_filter_date)).getText().toString();
         filterText = ((TextView) root.findViewById(R.id.newsletter_filter_text)).getText().toString();
+
+        //il regex funziona dal 2009 fino al 2039
+        if(!filterDate.matches("^((2009)|(20[1-3][0-9])-((0[1-9])|(1[0-2])))$") && !filterDate.equals("")){
+            DrawerActivity.setErrorMessage("Data non valida", root);
+            //btnFilterOnClick(view);
+            return;
+        }
+
         layout.removeViews(1, layout.getChildCount() - 1);
         filterLayout.setVisibility(View.GONE);
         obscureButton.setVisibility(View.GONE);
@@ -155,6 +164,7 @@ public class CircolariFragment extends Fragment {
         new Thread(() -> {
             if (!loadedAllPages) {
                 try {
+                    //TODO: semplificare questa parte di if
                     if (!onlyNotRead && filterDate.equals("") && filterText.equals("") && !isFilterApplied) {
                         allNewsletter = GlobalVariables.gS.getAllNewslettersWithFilter(false, "", "", currentPage, true);
                         isFilterApplied = true;
@@ -164,6 +174,7 @@ public class CircolariFragment extends Fragment {
                         allNewsletter = GlobalVariables.gS.getAllNewslettersWithFilter(onlyNotRead, filterDate, filterText, currentPage, true);
                         isFilterApplied = true;
                     }
+
                     if (allNewsletter != null) {
                         hasCompletedLoading = true;
                         if (allNewsletter.isEmpty() && currentPage == 1)
@@ -173,6 +184,7 @@ public class CircolariFragment extends Fragment {
                         activity.runOnUiThread(this::addNewslettersToView);
                         currentPage++;
                     }
+
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
                         DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);
@@ -181,6 +193,7 @@ public class CircolariFragment extends Fragment {
                         progressBarLoadingPage.setVisibility(View.GONE);
                     });
                     allNewsletter = new Vector<>();
+
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     activity.runOnUiThread(() -> {
                         DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root);
@@ -216,6 +229,9 @@ public class CircolariFragment extends Fragment {
      * @param url
      */
     private void downloadFile(String url) {
+        //Snackbar.make(root, "Il file verrà scaricato nella cartella Download", Snackbar.LENGTH_LONG).show();
+        Toast.makeText(context, "Il file verrà scaricato nella cartella Download", Toast.LENGTH_LONG).show();
+
         isDownloading = true;
         progressBarLoadingPage.setZ(10f);
         progressBarLoadingPage.setVisibility(View.VISIBLE);
