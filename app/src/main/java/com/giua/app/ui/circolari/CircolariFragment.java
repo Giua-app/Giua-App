@@ -29,12 +29,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
@@ -110,13 +110,11 @@ public class CircolariFragment extends Fragment {
             filterLayout.setVisibility(View.GONE);
             attachmentLayout.removeAllViews();
             ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).setChecked(onlyNotRead);
-            ((TextView) root.findViewById(R.id.newsletter_filter_date)).setText(filterDate);
-            ((TextView) root.findViewById(R.id.newsletter_filter_text)).setText(filterText);
+            ((EditText) root.findViewById(R.id.newsletter_filter_date)).setText(filterDate);
+            ((EditText) root.findViewById(R.id.newsletter_filter_text)).setText(filterText);
         });
 
-        root.findViewById(R.id.newsletter_fragment_btn_go_up).setOnClickListener((view -> {
-            scrollView.smoothScrollTo(0, 0);
-        }));
+        root.findViewById(R.id.newsletter_fragment_btn_go_up).setOnClickListener((view -> scrollView.smoothScrollTo(0, 0)));
 
         root.findViewById(R.id.newsletter_filter_btn_confirm).setOnClickListener(this::btnFilterConfirmOnClick);
 
@@ -151,8 +149,8 @@ public class CircolariFragment extends Fragment {
         obscureButton.setVisibility(View.VISIBLE);
         filterLayout.setVisibility(View.VISIBLE);
         ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).setChecked(onlyNotRead);
-        ((TextView) root.findViewById(R.id.newsletter_filter_date)).setText(filterDate);
-        ((TextView) root.findViewById(R.id.newsletter_filter_text)).setText(filterText);
+        ((EditText) root.findViewById(R.id.newsletter_filter_date)).setText(filterDate);
+        ((EditText) root.findViewById(R.id.newsletter_filter_text)).setText(filterText);
     }
 
     private void addNewslettersToViewAsync() {
@@ -164,16 +162,11 @@ public class CircolariFragment extends Fragment {
         new Thread(() -> {
             if (!loadedAllPages) {
                 try {
-                    //TODO: semplificare questa parte di if
-                    if (!onlyNotRead && filterDate.equals("") && filterText.equals("") && !isFilterApplied) {
-                        allNewsletter = GlobalVariables.gS.getAllNewslettersWithFilter(false, "", "", currentPage, true);
-                        isFilterApplied = true;
-                    } else if (isFilterApplied || (!onlyNotRead && filterDate.equals("") && filterText.equals("")))
-                        allNewsletter = GlobalVariables.gS.getAllNewsletters(currentPage, true);
-                    else {
+                    if (!isFilterApplied) {
                         allNewsletter = GlobalVariables.gS.getAllNewslettersWithFilter(onlyNotRead, filterDate, filterText, currentPage, true);
                         isFilterApplied = true;
-                    }
+                    } else
+                        allNewsletter = GlobalVariables.gS.getAllNewsletters(currentPage, true);
 
                     if (allNewsletter != null) {
                         hasCompletedLoading = true;
@@ -230,7 +223,8 @@ public class CircolariFragment extends Fragment {
      */
     private void downloadFile(String url) {
         //Snackbar.make(root, "Il file verrà scaricato nella cartella Download", Snackbar.LENGTH_LONG).show();
-        Toast.makeText(context, "Il file verrà scaricato nella cartella Download", Toast.LENGTH_LONG).show();
+        //Toast.makeText(context, "Il file verrà scaricato nella cartella Download", Toast.LENGTH_LONG).show();
+        //Il file viene scaricato in una cartella interna all'app
 
         isDownloading = true;
         progressBarLoadingPage.setZ(10f);
