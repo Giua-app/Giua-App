@@ -19,7 +19,6 @@
 
 package com.giua.app.ui.circolari;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -47,6 +46,7 @@ import com.giua.app.GlobalVariables;
 import com.giua.app.R;
 import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Newsletter;
+import com.giua.webscraper.DownloadedFile;
 import com.giua.webscraper.GiuaScraperExceptions;
 
 import java.io.File;
@@ -217,7 +217,7 @@ public class CircolariFragment extends Fragment {
     }
 
     /**
-     * Scarica e salva dall'url un pdf col nome di circolare.pdf e lo mette nella cartella Download
+     * Scarica e salva dall'url un file col nome di circolare e lo mette nella cartella Download
      *
      * @param url
      */
@@ -231,12 +231,12 @@ public class CircolariFragment extends Fragment {
         progressBarLoadingPage.setVisibility(View.VISIBLE);
         new Thread(() -> {
             try {
-                FileOutputStream out = new FileOutputStream(requireContext().getFilesDir() + "/circolare.pdf");
-                byte[] downloadedBinary = GlobalVariables.gS.download(url);
-                if (downloadedBinary != null && downloadedBinary.length > 0) {
-                    out.write(downloadedBinary);
+                DownloadedFile downloadedFile = GlobalVariables.gS.download(url);
+                FileOutputStream out = new FileOutputStream(requireContext().getFilesDir() + "/" + "circolare." + downloadedFile.fileExtension);
+                if (downloadedFile.data != null && downloadedFile.data.length > 0) {
+                    out.write(downloadedFile.data);
                     out.close();
-                    openFile();
+                    openFile("circolare." + downloadedFile.fileExtension, downloadedFile.fileExtension);
                 } else {
                     activity.runOnUiThread(() -> DrawerActivity.setErrorMessage("E' stato incontrato un errore di rete durante il download: riprovare", root));
                 }
@@ -255,16 +255,16 @@ public class CircolariFragment extends Fragment {
     /**
      * Apre il pdf col nome di circolare.pdf nella cartella Download
      */
-    private void openFile() {
+    private void openFile(String fileName, String fileExtension) {
         Intent target = new Intent(Intent.ACTION_VIEW);
-        target.setDataAndType(FileProvider.getUriForFile(requireContext(), "com.giua.app.provider", new File(requireContext().getFilesDir() + "/circolare.pdf")), "application/pdf");
+        target.setData(FileProvider.getUriForFile(activity, "com.giua.app.provider", new File(requireContext().getFilesDir() + "/" + fileName)));
         target.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         Intent intent = Intent.createChooser(target, "Apri con:");
         try {
             startActivity(intent);
-        } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            DrawerActivity.setErrorMessage("Non è stata trovata alcuna app compatibile con il tipo di file " + fileExtension, root);
         }
     }
 
