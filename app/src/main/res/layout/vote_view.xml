@@ -81,7 +81,8 @@
             android:layout_marginTop="20dp"
             android:overScrollMode="never"
             android:padding="5dp"
-            android:scrollbars="none">
+            android:scrollbars="none"
+            tools:ignore="SpeakableTextPresentCheck">
 
             <LinearLayout
                 android:id="@+id/list_vote_linear_layout_1"
@@ -110,7 +111,8 @@
             android:layout_marginTop="80dp"
             android:overScrollMode="never"
             android:padding="5dp"
-            android:scrollbars="none">
+            android:scrollbars="none"
+            tools:ignore="SpeakableTextPresentCheck">
 
             <LinearLayout
                 android:id="@+id/list_vote_linear_layout_2"
