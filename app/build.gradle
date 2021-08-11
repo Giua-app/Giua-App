@@ -85,6 +85,7 @@ dependencies {
 
     //ugly, stupid and terrible about screen
     implementation 'com.github.eggheadgames:android-about-box:2.0.1'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
     /*Android-Iconics (in future versioni)
     implementation "com.mikepenz:iconics-core:5.2.8"

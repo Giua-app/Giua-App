@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.giua.app.DrawerActivity;
 import com.giua.app.GlobalVariables;
@@ -54,7 +55,8 @@ public class VotiFragment extends Fragment {
     LinearLayout mainLayout;
     LinearLayout detailVoteLayout;
     LinearLayout.LayoutParams params;
-    ObscureLayoutView obscureLayoutButton;    //Questo bottone viene visualizzato dietro al detail layout e se viene cliccato si esce dai dettaglii
+    ObscureLayoutView obscureLayoutView;    //Questo bottone viene visualizzato dietro al detail layout e se viene cliccato si esce dai dettagli
+    SwipeRefreshLayout swipeRefreshLayout;
     DecimalFormat df = new DecimalFormat("0.0");
     Map<String, List<Vote>> allVotes;
     Activity activity;
@@ -65,36 +67,44 @@ public class VotiFragment extends Fragment {
         root = inflater.inflate(R.layout.fragment_voti, container, false);
 
         mainLayout = root.findViewById(R.id.vote_fragment_linear_layout);
-        obscureLayoutButton = root.findViewById(R.id.vote_obscure_view);
+        obscureLayoutView = root.findViewById(R.id.vote_obscure_view);
         detailVoteLayout = root.findViewById(R.id.vote_attachment_layout);
         progressBar = root.findViewById(R.id.vote_loading_page_bar);
         tvNoElements = root.findViewById(R.id.vote_fragment_no_elements_view);
+        swipeRefreshLayout = root.findViewById(R.id.vote_swipe_refresh_layout);
 
         activity = requireActivity();
 
-        obscureLayoutButton.setOnClickListener(this::obscureButtonClick);
+        swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
+        obscureLayoutView.setOnClickListener(this::obscureButtonClick);
 
-        generateAllViewsAsync();
+        generateAllViewsAsync(false);
 
         return root;
     }
 
-    private void generateAllViewsAsync() {
+    private void onRefresh() {
+        generateAllViewsAsync(true);
+    }
+
+    private void generateAllViewsAsync(boolean refresh) {
         new Thread(() -> {
             try {
-                allVotes = GlobalVariables.gS.getAllVotes(false);
+                allVotes = GlobalVariables.gS.getAllVotes(refresh);
                 activity.runOnUiThread(this::generateAllViews);
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                 activity.runOnUiThread(() -> {
-                    DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);
+                    DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_voti);
                     progressBar.setVisibility(View.GONE);
                     tvNoElements.setVisibility(View.VISIBLE);
+                    swipeRefreshLayout.setRefreshing(false);
                 });
             } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                 activity.runOnUiThread(() -> {
-                    DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root);
+                    DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_voti);
                     progressBar.setVisibility(View.GONE);
                     tvNoElements.setVisibility(View.VISIBLE);
+                    swipeRefreshLayout.setRefreshing(false);
                 });
             }
         }).start();
@@ -106,6 +116,7 @@ public class VotiFragment extends Fragment {
         int voteCounterFirstQuarter;     //Conta solamente i voti che ci sono e non gli asterischi
         int voteCounterSecondQuarter;
 
+        mainLayout.removeAllViews();
         params = new LinearLayout.LayoutParams(mainLayout.getLayoutParams().width, mainLayout.getLayoutParams().height);
         params.setMargins(10, 20, 10, 30);
 
@@ -146,6 +157,7 @@ public class VotiFragment extends Fragment {
             }
         }
         progressBar.setVisibility(View.GONE);
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     private float getNumberFromVote(Vote vote) {
@@ -168,7 +180,7 @@ public class VotiFragment extends Fragment {
 
     public void obscureButtonClick(View view){
         detailVoteLayout.setVisibility(View.GONE);
-        obscureLayoutButton.setVisibility(View.GONE);
+        obscureLayoutView.setVisibility(View.GONE);
     }
 
     private void onClickSingleVote(View view){
@@ -183,7 +195,7 @@ public class VotiFragment extends Fragment {
         detailVoteArguments.setVisibility(View.GONE);
         detailVoteJudge.setVisibility(View.GONE);
         detailVoteLayout.setVisibility(View.VISIBLE);
-        obscureLayoutButton.setVisibility(View.VISIBLE);
+        obscureLayoutView.setVisibility(View.VISIBLE);
 
         if(!_view.vote.date.equals("")) {
             detailVoteDate.setVisibility(View.VISIBLE);

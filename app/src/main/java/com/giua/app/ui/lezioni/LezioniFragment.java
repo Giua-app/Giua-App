@@ -36,6 +36,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.giua.app.DrawerActivity;
 import com.giua.app.GlobalVariables;
@@ -74,6 +75,7 @@ public class LezioniFragment extends Fragment {
     Date yesterdayDate;
     Date tomorrowDate;
     View root;
+    SwipeRefreshLayout swipeRefreshLayout;
     SimpleDateFormat formatterForScraping = new SimpleDateFormat("yyyy-MM-dd", Locale.ITALIAN);
     SimpleDateFormat formatterForVisualize = new SimpleDateFormat("dd-MM-yyyy", Locale.ITALIAN);
     long lastCallTime = 0;
@@ -96,6 +98,7 @@ public class LezioniFragment extends Fragment {
         bottomCardView = root.findViewById(R.id.lezioni_bottom_card_view);
         btnConfirmDate = root.findViewById(R.id.lezioni_btn_confirm_date);
         ivCalendarImage = root.findViewById(R.id.lezioni_calendar_image_view);
+        swipeRefreshLayout = root.findViewById(R.id.lezioni_swipe_refresh_layout);
 
         activity = requireActivity();
         calendar = Calendar.getInstance();
@@ -107,6 +110,7 @@ public class LezioniFragment extends Fragment {
 
         tvCurrentDate.setText("Oggi");
 
+        swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         root.findViewById(R.id.lezioni_img_next_date).setOnClickListener(this::nextDateOnClick);
         root.findViewById(R.id.lezioni_img_prev_date).setOnClickListener(this::prevDateOnClick);
         ivCalendarImage.setOnClickListener(this::tvCurrentDateOnClick);
@@ -118,6 +122,13 @@ public class LezioniFragment extends Fragment {
         addLessonViewsAsync();
 
         return root;
+    }
+
+    private void onRefresh() {
+        lastCallTime = 0;
+        hasCompletedLoading = false;
+        isSpammingClick = false;
+        addLessonViewsAsync();
     }
 
     private void addLessonViewsAsync() {
@@ -132,22 +143,20 @@ public class LezioniFragment extends Fragment {
                     if (allLessons == null)
                         return;
                     hasCompletedLoading = true;
-                    activity.runOnUiThread(() -> {
-                        lessonsLayout.removeAllViews();
-                        addLessonViews();
-                        pbLoadingContent.setVisibility(View.GONE);
-                    });
+                    activity.runOnUiThread(this::addLessonViews);
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);
+                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_lezioni);
                         pbLoadingContent.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
+                        swipeRefreshLayout.setRefreshing(false);
                     });
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root);
+                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_lezioni);
                         pbLoadingContent.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
+                        swipeRefreshLayout.setRefreshing(false);
                     });
                 }
             }).start();
@@ -156,6 +165,7 @@ public class LezioniFragment extends Fragment {
             btnConfirmDate.setVisibility(View.VISIBLE);
             pbLoadingContent.setVisibility(View.GONE);
             tvNoElements.setVisibility(View.VISIBLE);
+            swipeRefreshLayout.setRefreshing(false);
         }
     }
 
@@ -163,6 +173,7 @@ public class LezioniFragment extends Fragment {
      * Aggiunge le lezioni nella UI
      */
     private void addLessonViews() {
+        lessonsLayout.removeAllViews();
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         params.setMargins(20, 40, 20, 0);
@@ -180,6 +191,9 @@ public class LezioniFragment extends Fragment {
                 lessonsLayout.addView(lessonView);
             }
         }
+
+        pbLoadingContent.setVisibility(View.GONE);
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     private void btnConfirmDateOnClick(View view) {

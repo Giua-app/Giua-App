@@ -40,14 +40,15 @@ import androidx.core.content.FileProvider;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.giua.app.DrawerActivity;
 import com.giua.app.GlobalVariables;
 import com.giua.app.R;
 import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Newsletter;
 import com.giua.webscraper.DownloadedFile;
 import com.giua.webscraper.GiuaScraperExceptions;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -69,6 +70,7 @@ public class CircolariFragment extends Fragment {
     ProgressBar progressBarLoadingNewsletters;
     TextView tvNoElements;
     FragmentActivity activity;
+    SwipeRefreshLayout swipeRefreshLayout;
     View root;
     boolean isDownloading = false;
     int currentPage = 1;
@@ -77,6 +79,7 @@ public class CircolariFragment extends Fragment {
     boolean hasCompletedLoading = false;
     boolean isFilterApplied = false;
     boolean onlyNotRead = false;
+    boolean canSendErrorMessage = true;
     String filterDate = "";
     String filterText = "";
 
@@ -92,6 +95,7 @@ public class CircolariFragment extends Fragment {
         tvNoElements = root.findViewById(R.id.newsletter_fragment_no_elements_view);
         btnFilter = root.findViewById(R.id.newsletter_filter_button);
         filterLayout = root.findViewById(R.id.newsletter_filter_layout);
+        swipeRefreshLayout = root.findViewById(R.id.newsletter_swipe_refresh_layout);
 
         activity = requireActivity();
 
@@ -99,7 +103,7 @@ public class CircolariFragment extends Fragment {
         progressBarLoadingNewsletters.setId(View.generateViewId());
 
         scrollView.setOnScrollChangeListener(this::onScrollViewScrolled);
-
+        swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         attachmentLayout.setOnClickListener((view) -> {
         });
         btnFilter.setOnClickListener(this::btnFilterOnClick);
@@ -123,14 +127,22 @@ public class CircolariFragment extends Fragment {
         return root;
     }
 
+    private void onRefresh() {
+        layout.removeViews(1, layout.getChildCount() - 1);
+        loadedAllPages = false;
+        currentPage = 1;
+        isFilterApplied = false;
+        addNewslettersToViewAsync();
+    }
+
     private void btnFilterConfirmOnClick(View view) {
         onlyNotRead = ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).isChecked();
         filterDate = ((TextView) root.findViewById(R.id.newsletter_filter_date)).getText().toString();
         filterText = ((TextView) root.findViewById(R.id.newsletter_filter_text)).getText().toString();
 
         //il regex funziona dal 2009 fino al 2039
-        if(!filterDate.matches("^((2009)|(20[1-3][0-9])-((0[1-9])|(1[0-2])))$") && !filterDate.equals("")){
-            DrawerActivity.setErrorMessage("Data non valida", root);
+        if (!filterDate.matches("^((2009)|(20[1-3][0-9])-((0[1-9])|(1[0-2])))$") && !filterDate.equals("")) {
+            setErrorMessage("Data non valida", root);
             //btnFilterOnClick(view);
             return;
         }
@@ -159,8 +171,8 @@ public class CircolariFragment extends Fragment {
         if (progressBarLoadingPage.getVisibility() == View.GONE && progressBarLoadingNewsletters.getParent() == null)
             layout.addView(progressBarLoadingNewsletters);
 
-        new Thread(() -> {
-            if (!loadedAllPages) {
+        if (!loadedAllPages) {
+            new Thread(() -> {
                 try {
                     if (!isFilterApplied) {
                         allNewsletter = GlobalVariables.gS.getAllNewslettersWithFilter(onlyNotRead, filterDate, filterText, currentPage, true);
@@ -180,26 +192,34 @@ public class CircolariFragment extends Fragment {
 
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);
+                        setErrorMessage(getString(R.string.your_connection_error), root);
                         if (currentPage == 1)
                             tvNoElements.setVisibility(View.VISIBLE);
                         progressBarLoadingPage.setVisibility(View.GONE);
+                        swipeRefreshLayout.setRefreshing(false);
                     });
                     allNewsletter = new Vector<>();
 
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root);
+                        setErrorMessage(getString(R.string.site_connection_error), root);
                         if (currentPage == 1)
                             tvNoElements.setVisibility(View.VISIBLE);
                         progressBarLoadingPage.setVisibility(View.GONE);
+                        swipeRefreshLayout.setRefreshing(false);
                     });
                     allNewsletter = new Vector<>();
                 }
-            }
-            activity.runOnUiThread(() -> layout.removeView(progressBarLoadingNewsletters));
+                activity.runOnUiThread(() -> layout.removeView(progressBarLoadingNewsletters));
+                swipeRefreshLayout.setRefreshing(false);
+                loadingPage = false;
+            }).start();
+        } else {
+            layout.removeView(progressBarLoadingNewsletters);
+            swipeRefreshLayout.setRefreshing(false);
             loadingPage = false;
-        }).start();
+        }
+
     }
 
     private void addNewslettersToView() {
@@ -214,6 +234,7 @@ public class CircolariFragment extends Fragment {
         }
 
         progressBarLoadingPage.setVisibility(View.GONE);
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     /**
@@ -238,12 +259,12 @@ public class CircolariFragment extends Fragment {
                     out.close();
                     openFile("circolare." + downloadedFile.fileExtension, downloadedFile.fileExtension);
                 } else {
-                    activity.runOnUiThread(() -> DrawerActivity.setErrorMessage("E' stato incontrato un errore di rete durante il download: riprovare", root));
+                    activity.runOnUiThread(() -> setErrorMessage("E' stato incontrato un errore di rete durante il download: riprovare", root));
                 }
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
-                activity.runOnUiThread(() -> DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root));
+                activity.runOnUiThread(() -> setErrorMessage(getString(R.string.your_connection_error), root));
             } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
-                activity.runOnUiThread(() -> DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root));
+                activity.runOnUiThread(() -> setErrorMessage(getString(R.string.site_connection_error), root));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -264,7 +285,7 @@ public class CircolariFragment extends Fragment {
         try {
             startActivity(intent);
         } catch (Exception e) {
-            DrawerActivity.setErrorMessage("Non è stata trovata alcuna app compatibile con il tipo di file " + fileExtension, root);
+            setErrorMessage("Non è stata trovata alcuna app compatibile con il tipo di file " + fileExtension, root);
         }
     }
 
@@ -317,5 +338,22 @@ public class CircolariFragment extends Fragment {
             root.findViewById(R.id.newsletter_fragment_btn_go_up).setVisibility(View.VISIBLE);
         if (!view.canScrollVertically(-500))
             root.findViewById(R.id.newsletter_fragment_btn_go_up).setVisibility(View.GONE);
+    }
+
+    public void setErrorMessage(String message, View root) {
+        if (canSendErrorMessage)
+            Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onResume() {
+        canSendErrorMessage = true;
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        canSendErrorMessage = false;
+        super.onPause();
     }
 }

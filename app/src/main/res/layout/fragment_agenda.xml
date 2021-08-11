@@ -66,28 +66,34 @@
         app:layout_constraintTop_toTopOf="@+id/agenda_month_text"
         android:contentDescription="Precedente mese" />
 
-    <ScrollView
-        android:id="@+id/agenda_scroll_view"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/agenda_swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="vertical"
         android:layout_marginTop="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/agenda_month_text"
-        tools:ignore="SpeakableTextPresentCheck">
+        app:layout_constraintTop_toBottomOf="@+id/agenda_month_text">
 
-        <LinearLayout
-            android:id="@+id/agenda_views_layout"
+        <ScrollView
+            android:id="@+id/agenda_scroll_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:padding="10dp">
+            tools:ignore="SpeakableTextPresentCheck">
 
-        </LinearLayout>
+            <LinearLayout
+                android:id="@+id/agenda_views_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
 
-    </ScrollView>
+            </LinearLayout>
+
+        </ScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <ProgressBar
         android:id="@+id/agenda_progress_bar_details"

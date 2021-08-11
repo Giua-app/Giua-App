@@ -31,6 +31,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.giua.app.DrawerActivity;
 import com.giua.app.GlobalVariables;
@@ -67,6 +68,7 @@ public class AgendaFragment extends Fragment {
     Calendar calendar;
     SimpleDateFormat formatterForMonth = new SimpleDateFormat("MM", Locale.ITALIAN);
     SimpleDateFormat formatterForYear = new SimpleDateFormat("yyyy", Locale.ITALIAN);
+    SwipeRefreshLayout swipeRefreshLayout;
     ObscureLayoutView obscureLayoutView;
     LinearLayout visualizerLayout;
     TextView tvVisualizerType;
@@ -98,6 +100,7 @@ public class AgendaFragment extends Fragment {
         ivVisualizerPrevBtn = root.findViewById(R.id.agenda_visualizer_prev_btn);
         ivVisualizerNextBtn = root.findViewById(R.id.agenda_visualizer_next_btn);
         progressBarForDetails = root.findViewById(R.id.agenda_progress_bar_details);
+        swipeRefreshLayout = root.findViewById(R.id.agenda_swipe_refresh_layout);
 
         activity = requireActivity();
 
@@ -108,6 +111,7 @@ public class AgendaFragment extends Fragment {
 
         tvTodayText.setText(getMonthFromNumber(Integer.parseInt(getCurrentMonth())) + " " + getCurrentYear());
 
+        swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         btnNextMonth.setOnClickListener(this::btnNextMonthOnClick);
         btnPrevMonth.setOnClickListener(this::btnPrevMonthOnClick);
         ivVisualizerPrevBtn.setOnClickListener(this::ivVisualizerPrevBtnOnClick);
@@ -127,6 +131,10 @@ public class AgendaFragment extends Fragment {
         addDateViewsAsync();
 
         return root;
+    }
+
+    private void onRefresh() {
+        addDateViewsAsync();
     }
 
     private void btnPrevMonthOnClick(View view) {
@@ -219,20 +227,20 @@ public class AgendaFragment extends Fragment {
                         visualizerHomeworks = GlobalVariables.gS.getHomework(agendaView.homework.date);
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);
+                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda);
                         progressBarForDetails.setVisibility(View.GONE);
                     });
                     return;
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root);
+                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_agenda);
                         progressBarForDetails.setVisibility(View.GONE);
                     });
                     return;
                 } catch (NullPointerException e) {
                     activity.runOnUiThread(() -> {
                         if (!GiuaScraper.isMyInternetWorking())
-                            DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);
+                            DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda);
                         progressBarForDetails.setVisibility(View.GONE);
                     });
                     return;
@@ -279,32 +287,38 @@ public class AgendaFragment extends Fragment {
                     allHomeworks = GlobalVariables.gS.getAllHomeworksWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())), true);
 
                     if (allTests.isEmpty() && allHomeworks.isEmpty()) {
-                        activity.runOnUiThread(() -> viewsLayout.removeAllViews());
-                        activity.runOnUiThread(() -> tvNoElements.setVisibility(View.VISIBLE));
+                        activity.runOnUiThread(() -> {
+                            viewsLayout.removeAllViews();
+                            tvNoElements.setVisibility(View.VISIBLE);
+                            swipeRefreshLayout.setRefreshing(false);
+                        });
                         isLoadingData = false;
                     } else
                         activity.runOnUiThread(this::addDateViews);
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);
+                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda);
                         progressBar.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
+                        swipeRefreshLayout.setRefreshing(false);
                     });
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root);
+                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_agenda);
                         progressBar.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
+                        swipeRefreshLayout.setRefreshing(false);
                     });
                 } catch (NullPointerException e) {
                     activity.runOnUiThread(() -> {
                         if (!GiuaScraper.isMyInternetWorking())
-                            DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root);
+                            DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda);
                         progressBar.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
+                        swipeRefreshLayout.setRefreshing(false);
                     });
                 }
-
+                swipeRefreshLayout.setRefreshing(false);
             }).start();
         }
     }
