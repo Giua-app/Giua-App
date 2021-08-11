@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.giua.app.DrawerActivity;
@@ -94,14 +95,14 @@ public class VotiFragment extends Fragment {
                 activity.runOnUiThread(this::generateAllViews);
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                 activity.runOnUiThread(() -> {
-                    DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_voti);
+                    DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_voti, Navigation.findNavController(activity, R.id.nav_host_fragment));
                     progressBar.setVisibility(View.GONE);
                     tvNoElements.setVisibility(View.VISIBLE);
                     swipeRefreshLayout.setRefreshing(false);
                 });
             } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                 activity.runOnUiThread(() -> {
-                    DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_voti);
+                    DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_voti, Navigation.findNavController(activity, R.id.nav_host_fragment));
                     progressBar.setVisibility(View.GONE);
                     tvNoElements.setVisibility(View.VISIBLE);
                     swipeRefreshLayout.setRefreshing(false);

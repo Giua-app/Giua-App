@@ -31,6 +31,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.giua.app.DrawerActivity;
@@ -227,20 +228,20 @@ public class AgendaFragment extends Fragment {
                         visualizerHomeworks = GlobalVariables.gS.getHomework(agendaView.homework.date);
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda);
+                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
                         progressBarForDetails.setVisibility(View.GONE);
                     });
                     return;
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_agenda);
+                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
                         progressBarForDetails.setVisibility(View.GONE);
                     });
                     return;
                 } catch (NullPointerException e) {
                     activity.runOnUiThread(() -> {
                         if (!GiuaScraper.isMyInternetWorking())
-                            DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda);
+                            DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
                         progressBarForDetails.setVisibility(View.GONE);
                     });
                     return;
@@ -297,25 +298,28 @@ public class AgendaFragment extends Fragment {
                         activity.runOnUiThread(this::addDateViews);
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda);
+                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
                         progressBar.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
+                        isLoadingData = false;
                     });
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_agenda);
+                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
                         progressBar.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
+                        isLoadingData = false;
                     });
                 } catch (NullPointerException e) {
                     activity.runOnUiThread(() -> {
                         if (!GiuaScraper.isMyInternetWorking())
-                            DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda);
+                            DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
                         progressBar.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
+                        isLoadingData = false;
                     });
                 }
                 swipeRefreshLayout.setRefreshing(false);

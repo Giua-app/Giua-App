@@ -55,7 +55,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     TextView tvUserType;
     DrawerLayout drawerLayout;
     NavigationView navigationView;     //Il navigation drawer vero e proprio
-    static NavController navController;     //Si puo intendere come il manager dei fragments
+    NavController navController;     //Si puo intendere come il manager dei fragments
     Button btnLogout;
     Button btnSettings;
     Handler handler = new Handler();
@@ -164,8 +164,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         closeNavDrawer();
     }
 
-    public static void setErrorMessage(String message, View root, int layoutID) {
-        if (Objects.requireNonNull(navController.getCurrentDestination()).getId() == layoutID)
+    public static void setErrorMessage(String message, View root, int layoutID, NavController _navController) {
+        if (Objects.requireNonNull(_navController.getCurrentDestination()).getId() == layoutID)
             Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
 

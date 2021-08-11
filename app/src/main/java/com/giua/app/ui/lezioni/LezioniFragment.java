@@ -36,6 +36,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.navigation.Navigation;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.giua.app.DrawerActivity;
@@ -146,14 +147,14 @@ public class LezioniFragment extends Fragment {
                     activity.runOnUiThread(this::addLessonViews);
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_lezioni);
+                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_lezioni, Navigation.findNavController(activity, R.id.nav_host_fragment));
                         pbLoadingContent.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
                     });
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_lezioni);
+                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_lezioni, Navigation.findNavController(activity, R.id.nav_host_fragment));
                         pbLoadingContent.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
