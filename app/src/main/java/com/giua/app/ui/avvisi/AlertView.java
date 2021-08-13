@@ -41,7 +41,7 @@ public class AlertView extends ConstraintLayout {
     TextView tvDate;
     TextView tvObject;
     TextView tvReceivers;
-    ImageView imageView;
+    ImageView ivNotRead;
 
     public AlertView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, Alert alert) {
         super(context, attrs);
@@ -59,7 +59,7 @@ public class AlertView extends ConstraintLayout {
         tvDate = findViewById(R.id.alert_date_text_view);
         tvObject = findViewById(R.id.alert_object_text_view);
         tvReceivers = findViewById(R.id.alert_receivers_text_view);
-        imageView = findViewById(R.id.alert_view_left_image);
+        ivNotRead = findViewById(R.id.alert_view_left_image);
 
         if (!alert.isRead()) {
             tvStatus.setText("Da leggere");
@@ -67,7 +67,7 @@ public class AlertView extends ConstraintLayout {
             tvDate.setTypeface(tvDate.getTypeface(), Typeface.BOLD);
             tvObject.setTypeface(tvObject.getTypeface(), Typeface.BOLD);
             tvReceivers.setTypeface(tvObject.getTypeface(), Typeface.BOLD);
-            imageView.setVisibility(VISIBLE);
+            ivNotRead.setVisibility(VISIBLE);
         } else {
             tvStatus.setText("Letta");
         }

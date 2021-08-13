@@ -201,7 +201,7 @@ public class CircolariFragment extends Fragment {
 
     private void onClickSingleAttachment(String url) {
         if (!isDownloading) {
-            downloadFile(url);
+            downloadAndOpenFile(url);
         }
     }
 
@@ -236,7 +236,7 @@ public class CircolariFragment extends Fragment {
 
     private void onClickDocument(Newsletter newsletter) {
         if (!isDownloading) {
-            downloadFile(newsletter.detailsUrl);
+            downloadAndOpenFile(newsletter.detailsUrl);
         }
     }
 
@@ -289,15 +289,9 @@ public class CircolariFragment extends Fragment {
     }
 
     /**
-     * Scarica e salva dall'url un file col nome di circolare e lo mette nella cartella Download
-     *
-     * @param url
+     * Scarica e salva dall'url un file col nome di "circolare" e lo apre chiamando openFile
      */
-    private void downloadFile(String url) {
-        //Snackbar.make(root, "Il file verrà scaricato nella cartella Download", Snackbar.LENGTH_LONG).show();
-        //Toast.makeText(context, "Il file verrà scaricato nella cartella Download", Toast.LENGTH_LONG).show();
-        //Il file viene scaricato in una cartella interna all'app
-
+    private void downloadAndOpenFile(String url) {
         isDownloading = true;
         progressBarLoadingPage.setZ(10f);
         progressBarLoadingPage.setVisibility(View.VISIBLE);
@@ -325,7 +319,7 @@ public class CircolariFragment extends Fragment {
     }
 
     /**
-     * Apre il pdf col nome di circolare.pdf nella cartella Download
+     * Apre il file col nome di "circolare"
      */
     private void openFile(String fileName, String fileExtension) {
         Intent target = new Intent(Intent.ACTION_VIEW);

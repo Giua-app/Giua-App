@@ -29,7 +29,6 @@
     <color name="bad_vote_lighter">#E4605D</color>
     <color name="middle_vote_lighter">#EAB365</color>
     <color name="non_vote_lighter">#878787</color>
-    <color name="placeholder">#323232</color>
     <color name="general_view_color">#323232</color>
     <color name="white">#FAFAFA</color>
     <color name="black">#090909</color>

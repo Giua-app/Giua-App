@@ -25,21 +25,6 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <ProgressBar
-        android:id="@+id/alert_loading_page_bar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="67dp"
-        android:layout_height="67dp"
-        androd:layout_constraintBottom_toBottomOf="parent"
-        androd:layout_constraintEnd_toEndOf="parent"
-        androd:layout_constraintStart_toStartOf="parent"
-        androd:layout_constraintTop_toTopOf="parent"
-        androd:layout_constraintVertical_bias="0.425"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
         android:id="@+id/alert_no_elements_view"
         android:layout_width="wrap_content"
@@ -86,7 +71,8 @@
             android:id="@+id/alert_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="none">
+            android:scrollbars="none"
+            androd:ignore="SpeakableTextPresentCheck">
 
             <LinearLayout
                 android:id="@+id/alert_linear_layout"
@@ -97,6 +83,16 @@
         </ScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <ProgressBar
+        android:id="@+id/alert_loading_page_bar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="67dp"
+        android:layout_height="67dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.giua.app.ui.ObscureLayoutView
         android:id="@+id/alert_obscure_layout"
         android:layout_width="match_parent"
@@ -106,21 +102,62 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+    </com.giua.app.ui.ObscureLayoutView>
 
     <LinearLayout
-        android:id="@+id/alert_attachment_layout"
-        android:layout_width="120dp"
+        android:id="@+id/alert_details_layout"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:background="@drawable/corner_radius_10dp"
+        android:backgroundTint="@color/general_view_color"
         android:orientation="vertical"
         android:padding="10dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.398" />
+        app:layout_constraintVertical_bias="0.421">
+
+        <TextView
+            android:id="@+id/alert_type_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/varelaroundregular"
+            android:text="Tipo"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/alert_details_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/varelaroundregular"
+            android:text="Dettagli"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/alert_creator_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/varelaroundregular"
+            android:text="Creatore"
+            android:textAlignment="textEnd" />
+
+        <LinearLayout
+            android:id="@+id/alert_attachment_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"></LinearLayout>
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

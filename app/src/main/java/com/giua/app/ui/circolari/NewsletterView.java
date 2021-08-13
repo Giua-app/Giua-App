@@ -43,7 +43,7 @@ public class NewsletterView extends ConstraintLayout {
     TextView tvNumberID;
     TextView tvDate;
     TextView tvObject;
-    ImageView imageView;
+    ImageView ivNotRead;
     ImageButton btnDocument;
     ImageButton btnAttachments;
     Runnable clickDocument;
@@ -67,7 +67,7 @@ public class NewsletterView extends ConstraintLayout {
         tvNumberID = findViewById(R.id.newsletter_numberid_text_view);
         tvDate = findViewById(R.id.newsletter_date_text_view);
         tvObject = findViewById(R.id.newsletter_object_text_view);
-        imageView = findViewById(R.id.newsletter_view_left_image);
+        ivNotRead = findViewById(R.id.newsletter_view_left_image);
         btnDocument = findViewById(R.id.newsletter_view_btn_document);
         btnAttachments = findViewById(R.id.newsletter_view_btn_attachment);
 
@@ -86,7 +86,7 @@ public class NewsletterView extends ConstraintLayout {
             tvDate.setTypeface(tvDate.getTypeface(), Typeface.BOLD);
             tvNumberID.setTypeface(tvNumberID.getTypeface(), Typeface.BOLD);
             tvObject.setTypeface(tvObject.getTypeface(), Typeface.BOLD);
-            imageView.setVisibility(VISIBLE);
+            ivNotRead.setVisibility(VISIBLE);
         } else {
             tvStatus.setText("Letta");
         }
