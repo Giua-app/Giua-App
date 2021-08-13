@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Giua App
+  ~ Android app to view data from the giua@school workbook
+  ~ Copyright (C) 2021 - 2021 Hiem, Franck1421 and contributors
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see https://www.gnu.org/licenses/.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/general_view_style"
+    android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/alert_view_left_image"
+        android:layout_width="20dp"
+        android:layout_height="0dp"
+        android:background="@drawable/general_view_style"
+        android:backgroundTint="@color/middle_vote"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/alert_status_text_view"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/alert_date_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/varelaroundregular"
+        android:padding="5dp"
+        android:text="Data"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="@+id/newsletter_numberid_text_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.674"
+        app:layout_constraintStart_toEndOf="@+id/newsletter_numberid_text_view"
+        app:layout_constraintTop_toTopOf="@+id/newsletter_numberid_text_view"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/alert_receivers_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/varelaroundregular"
+        android:text="Destinatari"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/alert_object_text_view"
+        app:layout_constraintTop_toBottomOf="@+id/alert_object_text_view" />
+
+    <TextView
+        android:id="@+id/alert_object_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:fontFamily="@font/varelaroundregular"
+        android:text="Oggetto"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/alert_status_text_view"
+        app:layout_constraintTop_toBottomOf="@+id/alert_status_text_view"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/alert_status_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/varelaroundregular"
+        android:text="Stato"
+        android:textSize="15sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

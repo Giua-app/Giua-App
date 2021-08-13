@@ -31,7 +31,6 @@ import androidx.fragment.app.FragmentTransaction;
 import com.giua.app.R;
 import com.giua.app.ui.avvisi.AvvisiFragment;
 import com.giua.app.ui.circolari.CircolariFragment;
-import com.giua.app.ui.voti.VotiFragment;
 import com.google.android.material.tabs.TabLayout;
 
 public class BachecaFragment extends Fragment {

@@ -25,19 +25,8 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="7dp"
-        android:text="ancora nulla :)"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/avvisi_loading_page_bar" />
-
     <ProgressBar
-        android:id="@+id/avvisi_loading_page_bar"
+        android:id="@+id/alert_loading_page_bar"
         style="?android:attr/progressBarStyle"
         android:layout_width="67dp"
         android:layout_height="67dp"
@@ -49,10 +38,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/avvisi_scroll_view" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/avvisi_fragment_no_elements_view"
+        android:id="@+id/alert_no_elements_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/varelaroundregular"
@@ -67,7 +56,7 @@
         app:layout_constraintVertical_bias="0.43" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/avvisi_fragment_btn_go_up"
+        android:id="@+id/alert_btn_go_up"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/relative_main_color"
@@ -82,12 +71,10 @@
         app:layout_constraintVertical_bias="0.978"
         app:srcCompat="@drawable/ic_baseline_arrow_upward_24" />
 
-    <ScrollView
-        android:id="@+id/avvisi_scroll_view"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/alert_swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:overScrollMode="never"
-        android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -95,28 +82,23 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0">
 
-        <LinearLayout
-            android:id="@+id/avvisi_linear_layout"
+        <ScrollView
+            android:id="@+id/alert_scroll_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="10dp"
-            android:visibility="gone">
+            android:layout_height="match_parent"
+            android:scrollbars="none">
 
-            <ImageView
-                android:id="@+id/avvisi_filter_button"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/alert_linear_layout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:background="@drawable/corner_radius_10dp"
-                android:backgroundTint="@color/light_white_night_black"
-                android:padding="5dp"
-                android:src="@drawable/ic_baseline_filter_alt_24" />
-        </LinearLayout>
-    </ScrollView>
+                android:orientation="vertical"
+                android:padding="10dp" />
+        </ScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <com.giua.app.ui.ObscureLayoutView
-        android:id="@+id/avvisi_obscure_layout"
+        android:id="@+id/alert_obscure_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
@@ -127,7 +109,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/avvisi_attachment_layout"
+        android:id="@+id/alert_attachment_layout"
         android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:background="@drawable/corner_radius_10dp"

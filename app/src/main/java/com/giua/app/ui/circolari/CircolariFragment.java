@@ -127,48 +127,10 @@ public class CircolariFragment extends Fragment {
         return root;
     }
 
-    private void onRefresh() {
-        layout.removeViews(1, layout.getChildCount() - 1);
-        loadedAllPages = false;
-        currentPage = 1;
-        isFilterApplied = false;
-        addNewslettersToViewAsync();
-    }
-
-    private void btnFilterConfirmOnClick(View view) {
-        onlyNotRead = ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).isChecked();
-        filterDate = ((TextView) root.findViewById(R.id.newsletter_filter_date)).getText().toString();
-        filterText = ((TextView) root.findViewById(R.id.newsletter_filter_text)).getText().toString();
-
-        //il regex funziona dal 2009 fino al 2039
-        if (!filterDate.matches("^((2009)|(20[1-3][0-9])-((0[1-9])|(1[0-2])))$") && !filterDate.equals("")) {
-            setErrorMessage("Data non valida", root);
-            //btnFilterOnClick(view);
-            return;
-        }
-
-        layout.removeViews(1, layout.getChildCount() - 1);
-        filterLayout.setVisibility(View.GONE);
-        obscureButton.setVisibility(View.GONE);
-        isFilterApplied = false;
-        currentPage = 1;
-        loadedAllPages = false;
-        tvNoElements.setVisibility(View.GONE);
-        addNewslettersToViewAsync();
-    }
-
-    private void btnFilterOnClick(View view) {
-        obscureButton.setVisibility(View.VISIBLE);
-        filterLayout.setVisibility(View.VISIBLE);
-        ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).setChecked(onlyNotRead);
-        ((EditText) root.findViewById(R.id.newsletter_filter_date)).setText(filterDate);
-        ((EditText) root.findViewById(R.id.newsletter_filter_text)).setText(filterText);
-    }
-
     private void addNewslettersToViewAsync() {
         loadingPage = true;
         hasCompletedLoading = false;
-        if (progressBarLoadingPage.getVisibility() == View.GONE && progressBarLoadingNewsletters.getParent() == null)
+        if (currentPage > 1 && progressBarLoadingNewsletters.getParent() == null)
             layout.addView(progressBarLoadingNewsletters);
 
         if (!loadedAllPages) {
@@ -237,6 +199,95 @@ public class CircolariFragment extends Fragment {
         swipeRefreshLayout.setRefreshing(false);
     }
 
+    private void onClickSingleAttachment(String url) {
+        if (!isDownloading) {
+            downloadFile(url);
+        }
+    }
+
+    private void onClickAttachmentImage(Newsletter newsletter) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 130);
+        List<String> allAttachments = newsletter.attachments;
+
+        int counter = 0;
+        for (String attachment : allAttachments) {
+            TextView tvAttachment = new TextView(getContext());
+            tvAttachment.setText("Allegato " + (counter + 1));
+            tvAttachment.setOnClickListener((view) -> onClickSingleAttachment(attachment));
+            tvAttachment.setId(View.generateViewId());
+            tvAttachment.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.corner_radius_10dp, context.getTheme()));
+            tvAttachment.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.varelaroundregular));
+            tvAttachment.setGravity(Gravity.CENTER);
+            tvAttachment.setTextSize(16f);
+
+            if (counter % 2 != 0)
+                tvAttachment.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.black, context.getTheme())).withAlpha(40));
+
+            tvAttachment.setLayoutParams(params);
+
+            counter++;
+
+            attachmentLayout.addView(tvAttachment);
+        }
+
+        attachmentLayout.setVisibility(View.VISIBLE);
+        obscureButton.setVisibility(View.VISIBLE);
+    }
+
+    private void onClickDocument(Newsletter newsletter) {
+        if (!isDownloading) {
+            downloadFile(newsletter.detailsUrl);
+        }
+    }
+
+    private void onScrollViewScrolled(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+        if (!loadedAllPages && !loadingPage && !view.canScrollVertically(100) && scrollY - oldScrollY > 10) {
+            addNewslettersToViewAsync();
+        }
+        if (scrollY - oldScrollY > 0)
+            root.findViewById(R.id.newsletter_fragment_btn_go_up).setVisibility(View.VISIBLE);
+        if (!view.canScrollVertically(-500))
+            root.findViewById(R.id.newsletter_fragment_btn_go_up).setVisibility(View.GONE);
+    }
+
+    private void onRefresh() {
+        layout.removeViews(1, layout.getChildCount() - 1);
+        loadedAllPages = false;
+        currentPage = 1;
+        isFilterApplied = false;
+        addNewslettersToViewAsync();
+    }
+
+    private void btnFilterConfirmOnClick(View view) {
+        onlyNotRead = ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).isChecked();
+        filterDate = ((TextView) root.findViewById(R.id.newsletter_filter_date)).getText().toString();
+        filterText = ((TextView) root.findViewById(R.id.newsletter_filter_text)).getText().toString();
+
+        //il regex funziona dal 2009 fino al 2039
+        if (!filterDate.matches("^((2009)|(20[1-3][0-9])-((0[1-9])|(1[0-2])))$") && !filterDate.equals("")) {
+            setErrorMessage("Data non valida", root);
+            //btnFilterOnClick(view);
+            return;
+        }
+
+        layout.removeViews(1, layout.getChildCount() - 1);
+        filterLayout.setVisibility(View.GONE);
+        obscureButton.setVisibility(View.GONE);
+        isFilterApplied = false;
+        currentPage = 1;
+        loadedAllPages = false;
+        tvNoElements.setVisibility(View.GONE);
+        addNewslettersToViewAsync();
+    }
+
+    private void btnFilterOnClick(View view) {
+        obscureButton.setVisibility(View.VISIBLE);
+        filterLayout.setVisibility(View.VISIBLE);
+        ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).setChecked(onlyNotRead);
+        ((EditText) root.findViewById(R.id.newsletter_filter_date)).setText(filterDate);
+        ((EditText) root.findViewById(R.id.newsletter_filter_text)).setText(filterText);
+    }
+
     /**
      * Scarica e salva dall'url un file col nome di circolare e lo mette nella cartella Download
      *
@@ -287,57 +338,6 @@ public class CircolariFragment extends Fragment {
         } catch (Exception e) {
             setErrorMessage("Non è stata trovata alcuna app compatibile con il tipo di file " + fileExtension, root);
         }
-    }
-
-    private void onClickSingleAttachment(String url) {
-        if (!isDownloading) {
-            downloadFile(url);
-        }
-    }
-
-    private void onClickAttachmentImage(Newsletter newsletter) {
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 130);
-        List<String> allAttachments = newsletter.attachments;
-
-        int counter = 0;
-        for (String attachment : allAttachments) {
-            TextView tvAttachment = new TextView(getContext());
-            tvAttachment.setText("Allegato " + (counter + 1));
-            tvAttachment.setOnClickListener((view) -> onClickSingleAttachment(attachment));
-            tvAttachment.setId(View.generateViewId());
-            tvAttachment.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.corner_radius_10dp, context.getTheme()));
-            tvAttachment.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.varelaroundregular));
-            tvAttachment.setGravity(Gravity.CENTER);
-            tvAttachment.setTextSize(16f);
-
-            if (counter % 2 != 0)
-                tvAttachment.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.black, context.getTheme())).withAlpha(40));
-
-            tvAttachment.setLayoutParams(params);
-
-            counter++;
-
-            attachmentLayout.addView(tvAttachment);
-        }
-
-        attachmentLayout.setVisibility(View.VISIBLE);
-        obscureButton.setVisibility(View.VISIBLE);
-    }
-
-    private void onClickDocument(Newsletter newsletter) {
-        if (!isDownloading) {
-            downloadFile(newsletter.detailsUrl);
-        }
-    }
-
-    private void onScrollViewScrolled(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-        if (!loadedAllPages && !loadingPage && !view.canScrollVertically(100) && scrollY - oldScrollY > 10) {
-            addNewslettersToViewAsync();
-        }
-        if (scrollY - oldScrollY > 0)
-            root.findViewById(R.id.newsletter_fragment_btn_go_up).setVisibility(View.VISIBLE);
-        if (!view.canScrollVertically(-500))
-            root.findViewById(R.id.newsletter_fragment_btn_go_up).setVisibility(View.GONE);
     }
 
     public void setErrorMessage(String message, View root) {
