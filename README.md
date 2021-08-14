@@ -25,9 +25,10 @@ Vai nella scheda [Actions](https://github.com/Giua-app/Giua-App/actions) e clicc
 - [x] ~~visualizza voti e medie~~
 - [x] ~~visualizza lezioni~~
 - [x] ~~visualizza circolari~~
-- [ ] visualizza avvisi
+- [x] ~~visualizza avvisi~~
 - [ ] controlla in background per novità (nuovo voto, nuovo avviso, ecc)
 - [ ] invia notifica quando ci sono novità
+- [ ] memorizza informazioni per uso offline
 
 ## Come posso contribuire?
 Contatta HiemSword o Franck1421
