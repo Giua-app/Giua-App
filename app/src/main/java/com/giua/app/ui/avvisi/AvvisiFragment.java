@@ -218,7 +218,7 @@ public class AvvisiFragment extends Fragment {
                     Alert alert = ((AlertView) view).alert;
                     ((TextView) root.findViewById(R.id.alert_details_text_view)).setText(alert.details);
                     ((TextView) root.findViewById(R.id.alert_creator_text_view)).setText(alert.creator);
-                    ((TextView) root.findViewById(R.id.alert_type_text_view)).setText(alert.alertType);
+                    ((TextView) root.findViewById(R.id.alert_type_text_view)).setText(alert.type);
 
                     attachmentLayout.removeAllViews();
                     int urlsListLength = alert.attachmentUrls.size();
