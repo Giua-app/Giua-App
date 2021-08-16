@@ -70,7 +70,7 @@ dependencies {
 
 
     // jsoup HTML parser library @ https://jsoup.org/
-    implementation 'org.jsoup:jsoup:1.14.1'
+    implementation 'org.jsoup:jsoup:1.14.2'
 
     // Giua scraper
     implementation 'com.github.Giua-app:Giua-Webscraper:1.0.11-beta'
