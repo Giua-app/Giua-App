@@ -172,6 +172,7 @@
         android:layout_marginEnd="40dp"
         android:layout_marginBottom="100dp"
         android:background="@drawable/corner_radius_10dp"
+        android:backgroundTint="@color/general_view_color"
         android:orientation="vertical"
         android:padding="10dp"
         android:visibility="gone"
@@ -220,7 +221,8 @@
             android:id="@+id/lezioni_calendar_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/corner_radius_10dp" />
+            android:background="@drawable/corner_radius_10dp"
+            android:backgroundTint="@color/general_view_color" />
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

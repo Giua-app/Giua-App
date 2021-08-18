@@ -72,10 +72,9 @@ public class NewsletterView extends ConstraintLayout {
         btnAttachments = findViewById(R.id.newsletter_view_btn_attachment);
 
         btnDocument.setOnClickListener((view) -> clickDocument.run());
-
-        if (newsletter.attachments != null) {
+        if (newsletter.attachments != null) {   //Se cè almeno un allegato metti l'onlick nell'immagine
             btnAttachments.setOnClickListener((view) -> clickAttachment.run());
-        } else {
+        } else {    //Se non ce ne sono metti l'immagine un po trasparente e di colore grigio
             btnAttachments.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.non_vote, context.getTheme())));
             btnAttachments.setAlpha(0.3f);
         }

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Giua App
+  ~ Android app to view data from the giua@school workbook
+  ~ Copyright (C) 2021 - 2021 Hiem, Franck1421 and contributors
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see https://www.gnu.org/licenses/.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/corner_radius_10dp"
+    android:backgroundTint="@color/general_view_color"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/report_card_view_subject"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:fontFamily="@font/varelaroundregular"
+        android:text="Materia"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/report_card_view_vote"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/report_card_view_vote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="40dp"
+        android:background="@drawable/corner_radius_10dp"
+        android:fontFamily="@font/varelaroundregular"
+        android:padding="10dp"
+        android:text="Voto"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/report_card_view_subject"
+        app:layout_constraintEnd_toStartOf="@+id/report_card_view_absent_time"
+        app:layout_constraintTop_toTopOf="@+id/report_card_view_subject"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/report_card_view_absent_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:fontFamily="@font/varelaroundregular"
+        android:text="Tempo di assenza"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/report_card_view_vote"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/report_card_view_vote" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -46,4 +46,9 @@
         android:id="@+id/nav_bacheca"
         android:name="com.giua.app.ui.bacheca.BachecaFragment"
         android:label="@string/menu_bacheca" />
+
+    <fragment
+        android:id="@+id/nav_pagella"
+        android:name="com.giua.app.ui.pagella.PagellaFragment"
+        android:label="@string/fragment_pagella" />
 </navigation>

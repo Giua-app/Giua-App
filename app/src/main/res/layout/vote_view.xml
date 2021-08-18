@@ -25,6 +25,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/corner_radius_10dp"
+    android:backgroundTint="@color/general_view_color"
     android:padding="10dp">
 
     <!-- Questo è il componente utilizzato per aggiungere i voti -->
@@ -155,6 +156,7 @@
             android:layout_gravity="top|center_horizontal"
             android:layout_marginTop="20dp"
             android:background="@drawable/corner_radius_10dp"
+            android:backgroundTint="@color/general_view_color"
             android:fontFamily="@font/varelaroundregular"
             android:paddingStart="5dp"
             android:paddingTop="5dp"
@@ -171,6 +173,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
             android:background="@drawable/corner_radius_10dp"
+            android:backgroundTint="@color/general_view_color"
             android:fontFamily="@font/varelaroundregular"
             android:paddingStart="5dp"
             android:paddingTop="5dp"

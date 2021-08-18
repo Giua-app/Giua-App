@@ -73,7 +73,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         btnSettings = findViewById(R.id.nav_drawer_settings_button);
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_voti, R.id.nav_agenda, R.id.nav_lezioni, R.id.nav_bacheca)
+                R.id.nav_voti, R.id.nav_agenda, R.id.nav_lezioni, R.id.nav_bacheca, R.id.nav_pagella)
                 .setOpenableLayout(drawerLayout)
                 .build();
 
@@ -122,6 +122,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             startLessonsFragment();
         } else if (item.getItemId() == R.id.nav_bacheca) {
             startNewsLetterFragment();
+        } else if (item.getItemId() == R.id.nav_pagella) {
+            startReportCardFragment();
         }
 
         return true;
@@ -142,6 +144,11 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
     private void settingsButtonClick(View view) {
         startActivity(new Intent(this, SettingsActivity.class));
+    }
+
+    private void startReportCardFragment() {
+        handler.post(() -> navController.navigate(R.id.nav_pagella, null));
+        closeNavDrawer();
     }
 
     private void startNewsLetterFragment() {

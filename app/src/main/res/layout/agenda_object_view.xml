@@ -22,7 +22,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/corner_radius_10dp"
-    android:backgroundTint="@color/placeholder"
+    android:backgroundTint="@color/general_view_color"
     android:padding="10dp"
     android:orientation="horizontal">
 

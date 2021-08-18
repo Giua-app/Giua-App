@@ -70,10 +70,10 @@ dependencies {
 
 
     // jsoup HTML parser library @ https://jsoup.org/
-    implementation 'org.jsoup:jsoup:1.14.1'
+    implementation 'org.jsoup:jsoup:1.14.2'
 
     // Giua scraper
-    implementation 'com.github.Giua-app:Giua-Webscraper:1.0.11-beta'
+    implementation 'com.github.Giua-app:Giua-Webscraper:1.0.15-beta'
 
     // Error handler lib
     implementation 'cat.ereza:customactivityoncrash:2.3.0'

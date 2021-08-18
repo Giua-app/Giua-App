@@ -101,4 +101,10 @@
     <string name="agenda_view_type_homeworks">Compiti</string>
     <string name="agenda_view_type_homework_and_tests">Compiti e Verifiche</string>
     <string name="agenda_view_type_tests">Verifiche</string>
+
+    <!-- Pagella fragment -->
+    <string name="fragment_pagella">Pagella</string>
+    <string name="report_card_btn_first_quarter">Vai al 1° Quadrimestre</string>
+    <string name="report_card_btn_second_quarter">Vai al 2° Quadrimestre</string>
+
 </resources>

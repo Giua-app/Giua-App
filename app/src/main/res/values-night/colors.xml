@@ -37,8 +37,6 @@
     <color name="adaptive_color_text">#FAFAFA</color>
     <color name="newsletter_layout">#3E3E3E</color>
     <color name="newsletter_img">#0080FF</color>
-    <color name="nav_drawer_selected_background">#4D004D99</color>
-    <color name="nav_drawer_selected_text">#0066CC</color>
     <color name="nav_drawer_item_text">#0066CC</color>
     <color name="obscure_layout">#CD000000</color>
     <color name="light_white_night_black">#000000</color>

@@ -19,6 +19,7 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.giua.app">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -47,7 +48,9 @@
         <activity
             android:name=".ActivityManager"
             android:label="@string/app_name"
-            android:theme="@style/Theme.GiuaApp.NoActionBar">
+            android:theme="@style/Theme.GiuaApp.NoActionBar"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -57,7 +60,9 @@
         <activity
             android:name=".MainLogin"
             android:label="@string/app_name"
-            android:theme="@style/Theme.GiuaApp.NoActionBar">
+            android:theme="@style/Theme.GiuaApp.NoActionBar"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -66,7 +71,9 @@
         <activity
             android:name=".AutomaticLogin"
             android:label="@string/app_name"
-            android:theme="@style/Theme.GiuaApp.NoActionBar">
+            android:theme="@style/Theme.GiuaApp.NoActionBar"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -75,7 +82,9 @@
         <activity
             android:name=".DrawerActivity"
             android:label="@string/title_activity_drawer"
-            android:theme="@style/Theme.GiuaApp.NoActionBar">
+            android:theme="@style/Theme.GiuaApp.NoActionBar"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
 
             <!-- The meta-data tag is required if you support API level 15 and lower -->
             <meta-data
@@ -85,7 +94,9 @@
         <activity
             android:name=".SettingsActivity"
             android:label="Impostazioni"
-            android:theme="@style/Theme.GiuaApp.NoActionBar">
+            android:theme="@style/Theme.GiuaApp.NoActionBar"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
 
             <!-- The meta-data tag is required if you support API level 15 and lower -->
             <meta-data
@@ -94,7 +105,9 @@
         </activity>
         <activity
             android:name="com.eggheadgames.aboutbox.activity.AboutActivity"
-            android:theme="@style/AppTheme.MaterialAboutActivity"/>
+            android:theme="@style/AppTheme.MaterialAboutActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
 
     </application>
 

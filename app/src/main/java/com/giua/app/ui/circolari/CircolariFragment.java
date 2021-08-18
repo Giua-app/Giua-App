@@ -216,6 +216,7 @@ public class CircolariFragment extends Fragment {
             tvAttachment.setOnClickListener((view) -> onClickSingleAttachment(attachment));
             tvAttachment.setId(View.generateViewId());
             tvAttachment.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.corner_radius_10dp, context.getTheme()));
+            tvAttachment.setBackgroundTintList(getResources().getColorStateList(R.color.general_view_color, context.getTheme()));
             tvAttachment.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.varelaroundregular));
             tvAttachment.setGravity(Gravity.CENTER);
             tvAttachment.setTextSize(16f);

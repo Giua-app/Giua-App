@@ -40,7 +40,7 @@
     <color name="adaptive_color_text">#090909</color>
     <color name="newsletter_layout">#FAFAFA</color>
     <color name="newsletter_img">#0066cc</color>
-    <color name="nav_drawer_selected_background">#650066CC</color>
+    <color name="nav_drawer_selected_background">#260066CC</color>
     <color name="nav_drawer_selected_text">#0066CC</color>
     <color name="nav_drawer_item_text">#0066CC</color>
     <color name="obscure_layout">#B2000000</color>
