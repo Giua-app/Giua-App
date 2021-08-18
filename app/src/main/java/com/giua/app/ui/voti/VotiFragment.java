@@ -38,6 +38,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.giua.app.DrawerActivity;
 import com.giua.app.GlobalVariables;
+import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
 import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Vote;
@@ -48,7 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class VotiFragment extends Fragment {
+public class VotiFragment extends Fragment implements IGiuaAppFragment {
 
     ProgressBar progressBar;
     VoteView voteView;
@@ -62,6 +63,7 @@ public class VotiFragment extends Fragment {
     Map<String, List<Vote>> allVotes;
     Activity activity;
     View root;
+    boolean refreshVotes = false;
 
     @SuppressLint("ClickableViewAccessibility")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -79,20 +81,23 @@ public class VotiFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         obscureLayoutView.setOnClickListener(this::obscureButtonClick);
 
-        generateAllViewsAsync(false);
+        loadDataAndViews();
 
         return root;
     }
 
     private void onRefresh() {
-        generateAllViewsAsync(true);
+        refreshVotes = true;
+        loadDataAndViews();
     }
 
-    private void generateAllViewsAsync(boolean refresh) {
+    @Override
+    public void loadDataAndViews() {
         new Thread(() -> {
             try {
-                allVotes = GlobalVariables.gS.getAllVotes(refresh);
-                activity.runOnUiThread(this::generateAllViews);
+                allVotes = GlobalVariables.gS.getAllVotes(refreshVotes);
+                refreshVotes = false;
+                activity.runOnUiThread(this::addViews);
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                 activity.runOnUiThread(() -> {
                     DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_voti, Navigation.findNavController(activity, R.id.nav_host_fragment));
@@ -111,7 +116,8 @@ public class VotiFragment extends Fragment {
         }).start();
     }
 
-    private void generateAllViews() {
+    @Override
+    public void addViews() {
         float meanSecondQuarter;
         float meanFirstQuarter;     //media aritmetica dei voti
         int voteCounterFirstQuarter;     //Conta solamente i voti che ci sono e non gli asterischi

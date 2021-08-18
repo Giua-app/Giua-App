@@ -38,6 +38,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.giua.app.GlobalVariables;
+import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
 import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Alert;
@@ -51,7 +52,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-public class AvvisiFragment extends Fragment {
+public class AvvisiFragment extends Fragment implements IGiuaAppFragment {
 
     List<Alert> allAlerts;
     LinearLayout viewsLayout;
@@ -103,7 +104,8 @@ public class AvvisiFragment extends Fragment {
     /**
      * Riaggiorna i dati in modo asincrono e fa aggiungere le views con i dati raccolti
      */
-    private void loadDataAndViews() {
+    @Override
+    public void loadDataAndViews() {
         if (!hasLoadedAllPages && !isLoadingContent) {
             isLoadingContent = true;
             if (currentPage > 1 && pbLoadingContent.getParent() == null)
@@ -142,7 +144,8 @@ public class AvvisiFragment extends Fragment {
     /**
      * Aggiunge effetivamente le {@code AlertView}
      */
-    private void addViews() {
+    @Override
+    public void addViews() {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.setMargins(0, 40, 0, 0);
 

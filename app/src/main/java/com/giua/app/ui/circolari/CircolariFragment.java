@@ -43,6 +43,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.giua.app.GlobalVariables;
+import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
 import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Newsletter;
@@ -56,7 +57,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
-public class CircolariFragment extends Fragment {
+public class CircolariFragment extends Fragment implements IGiuaAppFragment {
 
     LinearLayout layout;
     Context context;
@@ -122,12 +123,13 @@ public class CircolariFragment extends Fragment {
 
         root.findViewById(R.id.newsletter_filter_btn_confirm).setOnClickListener(this::btnFilterConfirmOnClick);
 
-        addNewslettersToViewAsync();
+        loadDataAndViews();
 
         return root;
     }
 
-    private void addNewslettersToViewAsync() {
+    @Override
+    public void loadDataAndViews() {
         loadingPage = true;
         hasCompletedLoading = false;
         if (currentPage > 1 && progressBarLoadingNewsletters.getParent() == null)
@@ -148,7 +150,7 @@ public class CircolariFragment extends Fragment {
                             activity.runOnUiThread(() -> tvNoElements.setVisibility(View.VISIBLE));
                         else if (allNewsletter.isEmpty())
                             loadedAllPages = true;
-                        activity.runOnUiThread(this::addNewslettersToView);
+                        activity.runOnUiThread(this::addViews);
                         currentPage++;
                     }
 
@@ -184,7 +186,8 @@ public class CircolariFragment extends Fragment {
 
     }
 
-    private void addNewslettersToView() {
+    @Override
+    public void addViews() {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.setMargins(0, 40, 0, 0);
 
@@ -243,7 +246,7 @@ public class CircolariFragment extends Fragment {
 
     private void onScrollViewScrolled(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
         if (!loadedAllPages && !loadingPage && !view.canScrollVertically(100) && scrollY - oldScrollY > 10) {
-            addNewslettersToViewAsync();
+            loadDataAndViews();
         }
         if (scrollY - oldScrollY > 0)
             root.findViewById(R.id.newsletter_fragment_btn_go_up).setVisibility(View.VISIBLE);
@@ -256,7 +259,7 @@ public class CircolariFragment extends Fragment {
         loadedAllPages = false;
         currentPage = 1;
         isFilterApplied = false;
-        addNewslettersToViewAsync();
+        loadDataAndViews();
     }
 
     private void btnFilterConfirmOnClick(View view) {
@@ -278,7 +281,7 @@ public class CircolariFragment extends Fragment {
         currentPage = 1;
         loadedAllPages = false;
         tvNoElements.setVisibility(View.GONE);
-        addNewslettersToViewAsync();
+        loadDataAndViews();
     }
 
     private void btnFilterOnClick(View view) {

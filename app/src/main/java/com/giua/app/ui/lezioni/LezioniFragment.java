@@ -41,6 +41,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.giua.app.DrawerActivity;
 import com.giua.app.GlobalVariables;
+import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
 import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Lesson;
@@ -53,7 +54,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class LezioniFragment extends Fragment {
+public class LezioniFragment extends Fragment implements IGiuaAppFragment {
 
     TextView tvCurrentDate;
     ObscureLayoutView obscureLayout;
@@ -120,7 +121,7 @@ public class LezioniFragment extends Fragment {
         calendarView.setOnDateChangeListener(this::calendarOnChangeDateListener);
         btnConfirmDate.setOnClickListener(this::btnConfirmDateOnClick);
 
-        addLessonViewsAsync();
+        loadDataAndViews();
 
         return root;
     }
@@ -129,10 +130,11 @@ public class LezioniFragment extends Fragment {
         lastCallTime = 0;
         hasCompletedLoading = false;
         isSpammingClick = false;
-        addLessonViewsAsync();
+        loadDataAndViews();
     }
 
-    private void addLessonViewsAsync() {
+    @Override
+    public void loadDataAndViews() {
         pbLoadingContent.setVisibility(View.VISIBLE);
         hasCompletedLoading = false;
 
@@ -144,7 +146,7 @@ public class LezioniFragment extends Fragment {
                     if (allLessons == null)
                         return;
                     hasCompletedLoading = true;
-                    activity.runOnUiThread(this::addLessonViews);
+                    activity.runOnUiThread(this::addViews);
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
                         DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_lezioni, Navigation.findNavController(activity, R.id.nav_host_fragment));
@@ -173,7 +175,8 @@ public class LezioniFragment extends Fragment {
     /**
      * Aggiunge le lezioni nella UI
      */
-    private void addLessonViews() {
+    @Override
+    public void addViews() {
         lessonsLayout.removeAllViews();
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
@@ -200,7 +203,7 @@ public class LezioniFragment extends Fragment {
     private void btnConfirmDateOnClick(View view) {
         btnConfirmDate.setVisibility(View.GONE);
         isSpammingClick = false;
-        addLessonViewsAsync();
+        loadDataAndViews();
     }
 
     private void lessonViewOnClick(View view) {
@@ -225,7 +228,7 @@ public class LezioniFragment extends Fragment {
         try {
             currentDate = getCurrentDate(formatterForScraping.parse(year + "-" + (month + 1) + "-" + dayOfMonth));
             setTextWithNames();
-            addLessonViewsAsync();
+            loadDataAndViews();
             obscureLayout.callOnClick();
         } catch (ParseException e) {
             e.printStackTrace();
@@ -266,7 +269,7 @@ public class LezioniFragment extends Fragment {
         calendarView.setDate(currentDate.getTime());
         lessonsLayout.removeAllViews();
         setTextWithNames();
-        addLessonViewsAsync();
+        loadDataAndViews();
     }
 
     private void nextDateOnClick(View view) {
@@ -274,7 +277,7 @@ public class LezioniFragment extends Fragment {
         calendarView.setDate(currentDate.getTime());
         lessonsLayout.removeAllViews();
         setTextWithNames();
-        addLessonViewsAsync();
+        loadDataAndViews();
     }
 
     private Date getCurrentDate(Date date) {

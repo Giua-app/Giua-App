@@ -36,6 +36,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.giua.app.DrawerActivity;
 import com.giua.app.GlobalVariables;
+import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
 import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Homework;
@@ -50,7 +51,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
-public class AgendaFragment extends Fragment {
+public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
     LinearLayout viewsLayout;
     List<Test> allTests;
@@ -129,13 +130,13 @@ public class AgendaFragment extends Fragment {
         if (Integer.parseInt(getCurrentMonth()) == 7)
             btnPrevMonth.setVisibility(View.GONE);
 
-        addDateViewsAsync();
+        loadDataAndViews();
 
         return root;
     }
 
     private void onRefresh() {
-        addDateViewsAsync();
+        loadDataAndViews();
     }
 
     private void btnPrevMonthOnClick(View view) {
@@ -147,7 +148,7 @@ public class AgendaFragment extends Fragment {
                 btnPrevMonth.setVisibility(View.GONE);
             tvTodayText.setText(getMonthFromNumber(Integer.parseInt(getCurrentMonth())) + " " + getCurrentYear());
             viewsLayout.removeAllViews();
-            addDateViewsAsync();
+            loadDataAndViews();
         }
     }
 
@@ -159,7 +160,7 @@ public class AgendaFragment extends Fragment {
                 btnNextMonth.setVisibility(View.GONE);
             tvTodayText.setText(getMonthFromNumber(Integer.parseInt(getCurrentMonth())) + " " + getCurrentYear());
             viewsLayout.removeAllViews();
-            addDateViewsAsync();
+            loadDataAndViews();
         }
     }
 
@@ -277,7 +278,8 @@ public class AgendaFragment extends Fragment {
         }
     }
 
-    private void addDateViewsAsync() {
+    @Override
+    public void loadDataAndViews() {
         if (!isLoadingData) {
             if (viewsLayout.indexOfChild(progressBar) == -1)
                 viewsLayout.addView(progressBar, 0);
@@ -295,7 +297,7 @@ public class AgendaFragment extends Fragment {
                         });
                         isLoadingData = false;
                     } else
-                        activity.runOnUiThread(this::addDateViews);
+                        activity.runOnUiThread(this::addViews);
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
                         DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
@@ -327,7 +329,8 @@ public class AgendaFragment extends Fragment {
         }
     }
 
-    private void addDateViews() {
+    @Override
+    public void addViews() {
         viewsLayout.removeAllViews();
         tvNoElements.setVisibility(View.GONE);
         viewsLayout.scrollTo(0, 0);
