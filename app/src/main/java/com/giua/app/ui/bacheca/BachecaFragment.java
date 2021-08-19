@@ -38,6 +38,7 @@ public class BachecaFragment extends Fragment {
     TabLayout tabLayout;
     //ViewPager2 viewPager;
 
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_bacheca, container, false);
 
@@ -46,32 +47,32 @@ public class BachecaFragment extends Fragment {
 
         //Handle the Child Fragment.
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-        CircolariFragment elf = new CircolariFragment();
-        ft.replace(R.id.fragment_tabs_circolari_avvisi_framelayout, elf);
+        ft.replace(R.id.fragment_tabs_circolari_avvisi_framelayout, new CircolariFragment());
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.addToBackStack(null);
+        ft.setReorderingAllowed(true);
         ft.commit();
         //End
 
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+
+            FragmentTransaction ft;
+
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                ft = getChildFragmentManager().beginTransaction();
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                ft.addToBackStack(null);
+                ft.setReorderingAllowed(true);
 
-                if(tab.getText().toString().equals("Circolari")){
-                    FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-                    CircolariFragment elf = new CircolariFragment();
-                    ft.replace(R.id.fragment_tabs_circolari_avvisi_framelayout, elf);
-                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                    ft.addToBackStack(null);
+                if (tab.getText().toString().equals("Circolari")) {
+                    CircolariFragment circolariFragment = new CircolariFragment();
+                    ft.replace(R.id.fragment_tabs_circolari_avvisi_framelayout, circolariFragment);
                     ft.commit();
-                }
-                if(tab.getText().toString().equals("Avvisi")){
-                    FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-                    AvvisiFragment elf = new AvvisiFragment();
-                    ft.replace(R.id.fragment_tabs_circolari_avvisi_framelayout, elf);
-                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                    ft.addToBackStack(null);
+                } else if (tab.getText().toString().equals("Avvisi")) {
+                    AvvisiFragment avvisiFragment = new AvvisiFragment();
+                    ft.replace(R.id.fragment_tabs_circolari_avvisi_framelayout, avvisiFragment);
                     ft.commit();
                 }
             }

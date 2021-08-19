@@ -352,6 +352,8 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void onPause() {
         canSendErrorMessage = false;
+        layout.removeAllViews();
+        allNewsletter = new Vector<>();
         super.onPause();
     }
 }

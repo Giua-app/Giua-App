@@ -51,10 +51,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Vector;
 
 public class AvvisiFragment extends Fragment implements IGiuaAppFragment {
 
-    List<Alert> allAlerts;
+    List<Alert> allAlerts = new Vector<>();
     LinearLayout viewsLayout;
     LinearLayout detailsLayout;
     LinearLayout attachmentLayout;
@@ -307,6 +308,8 @@ public class AvvisiFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void onPause() {
         canSendErrorMessage = false;
+        viewsLayout.removeAllViews();
+        allAlerts = new Vector<>();
         super.onPause();
     }
 }
