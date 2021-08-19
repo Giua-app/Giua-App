@@ -44,6 +44,34 @@ public class ActivityManager extends AppCompatActivity {
 
         final String defaultUrl = SettingsData.getSettingString(this, "defaultUrl");
 
+        /* Test notifiche, ignora questo pezzo per ora
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "String channel name";
+            String description = "String channel description";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("0", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "0")
+                .setSmallIcon(R.drawable.ic_baseline_calendar_today_24)
+                .setContentTitle("Titolo della notifica")
+                .setContentText("Contenuto notifica")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+        // notificationId is a unique int for each notification that you must define
+        notificationManager.notify(10, builder.build());*/
+
+
+
         if (defaultUrl != null)
             GiuaScraper.setSiteURL(defaultUrl);
 
@@ -57,6 +85,7 @@ public class ActivityManager extends AppCompatActivity {
     }
 
     public void setupCaoc() {
+        //CAOC: CustomActivityOnCrash
         CaocConfig.Builder.create()
                 .backgroundMode(CaocConfig.BACKGROUND_MODE_SILENT) //crash silently when the app is in background
                 .enabled(true)

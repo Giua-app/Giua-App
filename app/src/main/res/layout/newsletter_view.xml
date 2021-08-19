@@ -113,7 +113,8 @@
             android:background="#00FFFFFF"
             android:contentDescription="@string/newsletterview_imagebutton_viewdocument_contentdescription"
             android:scaleType="centerInside"
-            app:srcCompat="@drawable/ic_baseline_pageview_24" />
+            app:srcCompat="@drawable/ic_baseline_pageview_24"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <ImageButton
             android:id="@+id/newsletter_view_btn_attachment"
@@ -123,7 +124,8 @@
             android:background="#00000000"
             android:contentDescription="@string/newsletterview_imagebutton_viewattachment_contentdescription"
             android:scaleType="centerInside"
-            app:srcCompat="@drawable/ic_baseline_attachment_24" />
+            app:srcCompat="@drawable/ic_baseline_attachment_24"
+            tools:ignore="TouchTargetSizeCheck" />
 
     </LinearLayout>
 

@@ -19,6 +19,7 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/corner_radius_15dp"
@@ -35,7 +36,8 @@
         android:fontFamily="@font/varelaroundregular"
         android:text="8:30 - 09:20"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/lesson_view_subject"
@@ -44,6 +46,7 @@
         android:layout_alignParentEnd="true"
         android:fontFamily="@font/varelaroundregular"
         android:text="Italiano"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        tools:ignore="HardcodedText" />
 
 </RelativeLayout>

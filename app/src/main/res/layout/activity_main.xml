@@ -63,6 +63,7 @@
         android:fontFamily="sans-serif"
         android:hint="@string/activitymain_pwdtextbox_hint"
         android:inputType="textPassword"
+        android:minHeight="48dp"
         app:layout_constraintBottom_toTopOf="@+id/login_button"
         app:layout_constraintEnd_toEndOf="@+id/textUser"
         app:layout_constraintHorizontal_bias="0.0"
@@ -83,7 +84,7 @@
 
     <ImageButton
         android:id="@+id/show_password_button"
-        android:layout_width="44dp"
+        android:layout_width="48dp"
         android:layout_height="0dp"
         android:layout_marginEnd="16dp"
         android:backgroundTint="#00000000"
@@ -107,6 +108,7 @@
         android:fontFamily="sans-serif"
         android:hint="@string/activitymain_usertextbox_hint"
         android:inputType="textPersonName"
+        android:minHeight="48dp"
         app:layout_constraintBottom_toTopOf="@+id/textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
