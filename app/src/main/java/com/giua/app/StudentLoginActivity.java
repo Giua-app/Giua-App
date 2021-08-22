@@ -19,36 +19,20 @@
 
 package com.giua.app;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
-import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ProgressBar;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.giua.app.ui.ObscureLayoutView;
 import com.giua.webscraper.GiuaScraper;
-
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import java.io.IOException;
-import java.net.CookieHandler;
-import java.net.CookiePolicy;
-import java.util.Map;
 
 public class StudentLoginActivity extends AppCompatActivity {
 
@@ -60,6 +44,8 @@ public class StudentLoginActivity extends AppCompatActivity {
     String giuaAuthUrl = "";
     String url2 = "";
     String userAgent = "Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.91 Mobile Safari/537.36";
+    String cookie = "";
+    int i = 0;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -78,37 +64,22 @@ public class StudentLoginActivity extends AppCompatActivity {
 
         webView.setWebViewClient(new WebViewClient() {
             public void onPageStarted (WebView view, String url, Bitmap favicon){
-                Log.d(TAG,"Loading page " + url);
+
             }
             public void onPageFinished (WebView view, String url){
-                Log.d(TAG,"LOADED " + url);
+
             }
-            public boolean shouldOverrideUrlLoading(WebView webView, WebResourceRequest request)
-            {
-                Log.d(TAG,"Override Url reached with url " + request.getUrl());
-                if(request.getUrl().toString().matches("^https://registro\\.giua\\.edu\\.it/login/gsuite/check.*$")){
-                    //Contiene gsuite/check, ma non è un paramentro dentro google.com
-                    Log.d(TAG,"FOUND CHECK GSUITE LINK, STOPPING WEBVIEW - " + request.getUrl().toString());
-                    giuaAuthUrl = request.getUrl().toString();
+            public boolean shouldOverrideUrlLoading(WebView webView, WebResourceRequest request) {
+                if (request.getUrl().toString().startsWith("https://registro.giua.edu.it")) {
+                    cookie = CookieManager.getInstance().getCookie("https://registro.giua.edu.it").split("=")[1];
                     onStoppedWebView();
-                    return true;
-                }
-                if(request.getUrl().toString().contains("https://accounts.google.com")){
-                    Log.d(TAG,"Found google login, saving cookies - webview url:" + webView.getUrl());
-                    googleAuthCookies = CookieManager.getInstance().getCookie(webView.getUrl());
-                    Log.d(TAG,"Found google login, saved: " + googleAuthCookies);
                 }
                 return false;
             }
         });
-        webView.setWebChromeClient(new WebChromeClient() {
-            public void onProgressChanged(WebView view, int progress) {
-                //webViewProgress.setProgress(progress, true);
-            }
-        });
+
         webView.getSettings().setUserAgentString(userAgent);
         webView.getSettings().setJavaScriptEnabled(true);
-        clearCookies();
 
         webView.loadUrl("https://registro.giua.edu.it/login/gsuite");
 
@@ -118,34 +89,10 @@ public class StudentLoginActivity extends AppCompatActivity {
     private void onStoppedWebView() {
         webView.setVisibility(View.INVISIBLE);
         obscureLayoutView.setVisibility(View.VISIBLE);
-        Connection session = Jsoup.newSession();
 
-        Log.d(TAG,"Link: " + giuaAuthUrl);
+        GlobalVariables.gS = new GiuaScraper("gsuite", "gsuite", cookie, true);
+        Intent intent = new Intent(StudentLoginActivity.this, DrawerActivity.class);
+        startActivity(intent);
 
-        new Thread(() -> {
-            try {
-                Document doc = session.newRequest()
-                        .url(giuaAuthUrl)
-                        .get();
-
-                //Log.d(TAG,"HTML: \n" + session.cookieStore().getCookies().get(0).getValue() + "\n");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
-
-        //PHPSESSID = session.cookieStore().getCookies().get(0).getValue();
-
-        //LoginData.setCredentials(getApplicationContext(), "GSuite user", "123", PHPSESSID);
-
-        //obscureLayoutView.setVisibility(View.INVISIBLE);
     }
-
-
-    public static void clearCookies()
-    {
-        CookieManager.getInstance().removeAllCookies(null);
-        CookieManager.getInstance().flush();
-    }
-
 }
