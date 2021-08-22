@@ -21,7 +21,6 @@ package com.giua.app;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -38,14 +37,9 @@ public class StudentLoginActivity extends AppCompatActivity {
 
     String TAG = "StudentLoginActivity";
     WebView webView;
-    //ProgressBar webViewProgress;
     ObscureLayoutView obscureLayoutView;
-    String googleAuthCookies = "";
-    String giuaAuthUrl = "";
-    String url2 = "";
     String userAgent = "Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.91 Mobile Safari/537.36";
     String cookie = "";
-    int i = 0;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -54,25 +48,18 @@ public class StudentLoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_student_login);
 
         webView = findViewById(R.id.studentWebView);
-        //webViewProgress = findViewById(R.id.webViewProgressBar);
         obscureLayoutView = findViewById(R.id.studentObscureLayoutView);
 
-        obscureLayoutView.setVisibility(View.INVISIBLE);
-        //webViewProgress.setVisibility(View.VISIBLE);
-
-
+        obscureLayoutView.setVisibility(View.GONE);
 
         webView.setWebViewClient(new WebViewClient() {
-            public void onPageStarted (WebView view, String url, Bitmap favicon){
-
-            }
-            public void onPageFinished (WebView view, String url){
-
-            }
             public boolean shouldOverrideUrlLoading(WebView webView, WebResourceRequest request) {
                 if (request.getUrl().toString().startsWith("https://registro.giua.edu.it")) {
-                    cookie = CookieManager.getInstance().getCookie("https://registro.giua.edu.it").split("=")[1];
-                    onStoppedWebView();
+                    String rawCookie = CookieManager.getInstance().getCookie("https://registro.giua.edu.it");
+                    if (rawCookie != null) {
+                        cookie = rawCookie.split("=")[1];
+                        onStoppedWebView();
+                    }
                 }
                 return false;
             }
@@ -91,8 +78,9 @@ public class StudentLoginActivity extends AppCompatActivity {
         obscureLayoutView.setVisibility(View.VISIBLE);
 
         GlobalVariables.gS = new GiuaScraper("gsuite", "gsuite", cookie, true);
+        LoginData.setCredentials(this, "gsuite", "gsuite", cookie);
         Intent intent = new Intent(StudentLoginActivity.this, DrawerActivity.class);
         startActivity(intent);
-
+        obscureLayoutView.setVisibility(View.GONE);
     }
 }

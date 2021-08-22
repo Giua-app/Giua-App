@@ -116,7 +116,7 @@
 
     <TextView
         android:id="@+id/txtTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:fontFamily="@font/roboto_light"
         android:text="@string/activitymain_textbox_screentitle"
@@ -144,5 +144,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/checkbox_remember_credentials"
         app:layout_constraintVertical_bias="1.0" />
+
+    <Button
+        android:id="@+id/btn_student_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="LOGIN COME STUDENTE"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.091"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

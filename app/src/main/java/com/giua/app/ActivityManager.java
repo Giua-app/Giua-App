@@ -70,19 +70,21 @@ public class ActivityManager extends AppCompatActivity {
         // notificationId is a unique int for each notification that you must define
         notificationManager.notify(10, builder.build());*/
 
-        Intent intent = new Intent(ActivityManager.this, StudentLoginActivity.class);
-        startActivity(intent);
-
-        /*if (defaultUrl != null)
+        if (defaultUrl != null)
             GiuaScraper.setSiteURL(defaultUrl);
 
-        if (LoginData.getUser(this).equals("")) {
-            Intent intent = new Intent(ActivityManager.this, MainLogin.class);
-            startActivity(intent);
-        } else {
-            Intent intent = new Intent(ActivityManager.this, AutomaticLogin.class);
-            startActivity(intent);
-        }*/
+        if (LoginData.getUser(this).equals(""))
+            startMainLoginActivity();
+        else
+            startAutomaticLoginActivity();
+    }
+
+    private void startMainLoginActivity() {
+        startActivity(new Intent(ActivityManager.this, MainLogin.class));
+    }
+
+    private void startAutomaticLoginActivity() {
+        startActivity(new Intent(ActivityManager.this, AutomaticLogin.class));
     }
 
     public void setupCaoc() {

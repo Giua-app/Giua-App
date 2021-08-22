@@ -19,7 +19,6 @@
 
 package com.giua.app;
 
-import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,7 +30,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
@@ -39,6 +37,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.giua.webscraper.GiuaScraper;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -85,22 +84,22 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         tvUsername = navigationView.getHeaderView(0).findViewById(R.id.txtTitle);
         tvUserType = navigationView.getHeaderView(0).findViewById(R.id.txtUserType);
 
-        tvUsername.setText(GlobalVariables.gS.getUser());
-        /*GiuaScraper.userTypes userType = GlobalVariables.gS.getUserType();
-        if (userType == GiuaScraper.userTypes.PARENT)
-            tvUserType.setText("Genitore");
-        else if (userType == GiuaScraper.userTypes.STUDENT)
-            tvUserType.setText("Studente");*/
-
         navigationView.setCheckedItem(R.id.nav_voti);
 
         btnLogout.setOnClickListener(this::logoutButtonClick);
         btnSettings.setOnClickListener(this::settingsButtonClick);
 
-        if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
-        }
+        new Thread(() -> {
+            GiuaScraper.userTypes userType = GlobalVariables.gS.getUserType();
+            String user = GlobalVariables.gS.loadUserFromDocument();
+            this.runOnUiThread(() -> {
+                if (userType == GiuaScraper.userTypes.PARENT)
+                    tvUserType.setText("Genitore");
+                else if (userType == GiuaScraper.userTypes.STUDENT)
+                    tvUserType.setText("Studente");
+                tvUsername.setText(user);
+            });
+        }).start();
     }
 
     @Override

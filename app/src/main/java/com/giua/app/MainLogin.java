@@ -41,13 +41,14 @@ public class MainLogin extends AppCompatActivity {
     ProgressBar pgProgressBar;
     ImageButton btnShowPassword;
     Button btnLogin;
+    Button btnLoginAsStudent;
     boolean btnShowActivated = false;
     CheckBox chRememberCredentials;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_normal_login);
 
         etUsername = findViewById(R.id.textUser);
         etPassword = findViewById(R.id.textPassword);
@@ -55,13 +56,15 @@ public class MainLogin extends AppCompatActivity {
         btnShowPassword = findViewById(R.id.show_password_button);
         btnLogin = findViewById(R.id.login_button);
         chRememberCredentials = findViewById(R.id.checkbox_remember_credentials);
+        btnLoginAsStudent = findViewById(R.id.btn_student_login);
 
         etUsername.setText(LoginData.getUser(getApplicationContext()));     //Imposta lo username memorizzato
         etPassword.setText(LoginData.getPassword(getApplicationContext()));     //Imposta la password memorizzata
 
-        findViewById(R.id.floating_settings_button).setOnClickListener(this::btnSettingClickListener);
-        btnLogin.setOnClickListener(this::btnLoginClickListener);
-        btnShowPassword.setOnClickListener(this::showPasswordClickListener);
+        findViewById(R.id.floating_settings_button).setOnClickListener(this::btnSettingOnClick);
+        btnLogin.setOnClickListener(this::btnLoginOnClick);
+        btnShowPassword.setOnClickListener(this::showPasswordOnClick);
+        btnLoginAsStudent.setOnClickListener(this::btnLoginAsStudentOnClick);
     }
 
     private void login() {
@@ -72,11 +75,8 @@ public class MainLogin extends AppCompatActivity {
                 GlobalVariables.gS.login();
 
                 if (GlobalVariables.gS.checkLogin()) {
-                    System.out.println("login ok");
-                    if (chRememberCredentials.isChecked()) {
-                        String c = GlobalVariables.gS.getCookie();
-                        LoginData.setCredentials(this, etUsername.getText().toString(), etPassword.getText().toString(), c);
-                    }
+                    if (chRememberCredentials.isChecked())
+                        LoginData.setCredentials(this, etUsername.getText().toString(), etPassword.getText().toString(), GlobalVariables.gS.getCookie());
                     startDrawerActivity();
                 } else {
                     setErrorMessage("Qualcosa e' andato storto!");
@@ -85,11 +85,14 @@ public class MainLogin extends AppCompatActivity {
                 }
 
             } catch (GiuaScraperExceptions.SessionCookieEmpty sce) {
-                setErrorMessage("Informazioni di login errate!");
-                this.runOnUiThread(() -> {
-                    etPassword.setText("");
-                    pgProgressBar.setVisibility(View.INVISIBLE);
-                });
+                if (!sce.siteSays.equals("Tipo di utente non ammesso: usare l'autenticazione tramite GSuite.")) {
+                    setErrorMessage("Informazioni di login errate!");
+                    this.runOnUiThread(() -> {
+                        etPassword.setText("");
+                        pgProgressBar.setVisibility(View.INVISIBLE);
+                    });
+                } else
+                    startStudentLoginActivity();
             } catch (GiuaScraperExceptions.UnableToLogin utl) {
                 setErrorMessage("E' stato riscontrato qualche problema sconosciuto");
                 this.runOnUiThread(() -> {
@@ -112,27 +115,26 @@ public class MainLogin extends AppCompatActivity {
         }).start();
     }
 
+    private void startStudentLoginActivity() {
+        startActivity(new Intent(MainLogin.this, StudentLoginActivity.class));
+    }
+
     private void startDrawerActivity() {
         Intent intent = new Intent(MainLogin.this, DrawerActivity.class);
         startActivity(intent);
     }
 
-    private void setErrorMessage(String message) {
-        btnLogin.setEnabled(true);
-        Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
-    }
-
     /**
      * Settings button click listener
      */
-    private void btnSettingClickListener(View view) {
+    private void btnSettingOnClick(View view) {
         startActivity(new Intent(this, SettingsActivity.class));
     }
 
     /**
      * Login click listener
      */
-    private void btnLoginClickListener(View view) {
+    private void btnLoginOnClick(View view) {
         if (etPassword.getText().length() < 1) {
             setErrorMessage("Il campo della password non può essere vuoto!");
             return;
@@ -146,10 +148,14 @@ public class MainLogin extends AppCompatActivity {
         login();
     }
 
+    private void btnLoginAsStudentOnClick(View view) {
+        startStudentLoginActivity();
+    }
+
     /**
      * Show password click listener
      */
-    private void showPasswordClickListener(View view) {
+    private void showPasswordOnClick(View view) {
         if (!btnShowActivated) {
             etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_NULL);      //Mostra la password
             btnShowPassword.setImageResource(R.drawable.ic_baseline_visibility_24);
@@ -160,6 +166,11 @@ public class MainLogin extends AppCompatActivity {
             etPassword.setSelection(etPassword.getText().length());
         }
         btnShowActivated = !btnShowActivated;
+    }
+
+    private void setErrorMessage(String message) {
+        this.runOnUiThread(() -> btnLogin.setEnabled(true));
+        Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
     }
 
     /**
