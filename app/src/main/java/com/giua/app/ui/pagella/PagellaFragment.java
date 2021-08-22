@@ -23,7 +23,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -44,7 +44,8 @@ public class PagellaFragment extends Fragment implements IGiuaAppFragment {
 
     ReportCard reportCard;
     LinearLayout viewsLayout;
-    Button btnQuarter;
+    TextView tvCurrentQuarter;
+    ImageButton btnChangeQuarter;
     ProgressBar pbLoadingPage;
     TextView tvNoElements;
     FragmentActivity activity;
@@ -55,13 +56,13 @@ public class PagellaFragment extends Fragment implements IGiuaAppFragment {
         root = inflater.inflate(R.layout.fragment_pagella, container, false);
 
         viewsLayout = root.findViewById(R.id.report_card_views_layout);
-        btnQuarter = root.findViewById(R.id.report_card_btn_quarter);
+        tvCurrentQuarter = root.findViewById(R.id.report_card_current_quarter);
         pbLoadingPage = root.findViewById(R.id.report_card_progress_bar);
         tvNoElements = root.findViewById(R.id.report_card_no_elements);
+        btnChangeQuarter = root.findViewById(R.id.report_card_btn_change_quarter);
 
         activity = requireActivity();
-
-        btnQuarter.setOnClickListener(this::btnQuarterOnClick);
+        btnChangeQuarter.setOnClickListener(this::btnQuarterOnClick);
 
         loadDataAndViews();
 
@@ -71,9 +72,9 @@ public class PagellaFragment extends Fragment implements IGiuaAppFragment {
     private void btnQuarterOnClick(View view) {
         isFirstQuarter = !isFirstQuarter;
         if (isFirstQuarter)
-            btnQuarter.setText(R.string.report_card_btn_second_quarter);
+            tvCurrentQuarter.setText(R.string.report_card_btn_first_quarter);
         else
-            btnQuarter.setText(R.string.report_card_btn_first_quarter);
+            tvCurrentQuarter.setText(R.string.report_card_btn_second_quarter);
         loadDataAndViews();
 
     }
