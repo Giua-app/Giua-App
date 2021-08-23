@@ -87,20 +87,24 @@ public class AutomaticLogin extends AppCompatActivity {
                     e2.printStackTrace();
                 }
             } catch (GiuaScraperExceptions.SessionCookieEmpty sce) {     //Se il login non dovesse funzionare lancia l acitvity di login ed elimina le credenziali salvate
-                LoginData.clearAll(this);
-                setErrorMessage("Le credenziali di accesso non sono più valide");
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                if (LoginData.getUser(this).equals("gsuite"))    //Questa condizione si verifica quando è presente un acccount studente con il cookie scaduto
+                    startStudentLoginActivity();
+                else {
+                    LoginData.clearAll(this);
+                    setErrorMessage("Le credenziali di accesso non sono più valide");
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    startActivity(new Intent(AutomaticLogin.this, MainLogin.class));
                 }
-                startActivity(new Intent(AutomaticLogin.this, MainLogin.class));
             }
         }).start();
     }
 
     private void threadSleepWithTextUpdates() throws InterruptedException {
-        for(int i = 0; i < waitToReLogin ; i++){
+        for (int i = 0; i < waitToReLogin; i++) {
             int finalI = i;
             runOnUiThread(() -> textAutoLogin.setText("Login fallito\nRiprovo tra " + (waitToReLogin - finalI) + " secondi"));
             Thread.sleep(1000);
@@ -108,9 +112,12 @@ public class AutomaticLogin extends AppCompatActivity {
         runOnUiThread(() -> textAutoLogin.setText("Riprovo..."));
     }
 
+    private void startStudentLoginActivity() {
+        startActivity(new Intent(AutomaticLogin.this, StudentLoginActivity.class));
+    }
+
     private void startDrawerActivity() {
-        Intent intent = new Intent(AutomaticLogin.this, DrawerActivity.class);
-        startActivity(intent);
+        startActivity(new Intent(AutomaticLogin.this, DrawerActivity.class));
     }
 
     private void setErrorMessage(String message) {
