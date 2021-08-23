@@ -98,7 +98,6 @@ public class AvvisiFragment extends Fragment implements IGiuaAppFragment {
             detailsLayout.setVisibility(View.GONE);
         });
 
-        loadDataAndViews();
         return root;
     }
 
@@ -297,6 +296,12 @@ public class AvvisiFragment extends Fragment implements IGiuaAppFragment {
     public void setErrorMessage(String message, View root) {
         if (canSendErrorMessage)
             Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onStart() {
+        loadDataAndViews();
+        super.onStart();
     }
 
     @Override

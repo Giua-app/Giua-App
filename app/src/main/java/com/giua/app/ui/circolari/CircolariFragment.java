@@ -123,8 +123,6 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
 
         root.findViewById(R.id.newsletter_filter_btn_confirm).setOnClickListener(this::btnFilterConfirmOnClick);
 
-        loadDataAndViews();
-
         return root;
     }
 
@@ -344,6 +342,12 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
     }
 
     @Override
+    public void onStart() {
+        loadDataAndViews();
+        super.onStart();
+    }
+
+    @Override
     public void onResume() {
         canSendErrorMessage = true;
         super.onResume();
@@ -352,7 +356,7 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void onPause() {
         canSendErrorMessage = false;
-        layout.removeAllViews();
+        layout.removeViews(1, layout.getChildCount() - 1);
         allNewsletter = new Vector<>();
         super.onPause();
     }
