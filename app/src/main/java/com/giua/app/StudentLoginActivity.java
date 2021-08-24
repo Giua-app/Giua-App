@@ -22,6 +22,7 @@ package com.giua.app;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebResourceRequest;
@@ -32,6 +33,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.giua.app.ui.ObscureLayoutView;
 import com.giua.webscraper.GiuaScraper;
+import com.google.android.material.snackbar.Snackbar;
 
 public class StudentLoginActivity extends AppCompatActivity {
 
@@ -59,7 +61,9 @@ public class StudentLoginActivity extends AppCompatActivity {
                     if (rawCookie != null) {
                         cookie = rawCookie.split("=")[1];
                         onStoppedWebView();
+                        return true;
                     }
+                    Snackbar.make(findViewById(android.R.id.content), "Login studente fallito, contatta gli sviluppatori", Snackbar.LENGTH_LONG).show();
                 }
                 return false;
             }
