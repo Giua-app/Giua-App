@@ -54,7 +54,7 @@ public class StudentLoginActivity extends AppCompatActivity {
 
         webView.setWebViewClient(new WebViewClient() {
             public boolean shouldOverrideUrlLoading(WebView webView, WebResourceRequest request) {
-                if (request.getUrl().toString().equals("https://registro.giua.edu.it/")) {
+                if (request.getUrl().toString().equals("https://registro.giua.edu.it/") || request.getUrl().toString().equals("https://registro.giua.edu.it/#")) {
                     String rawCookie = CookieManager.getInstance().getCookie("https://registro.giua.edu.it");
                     if (rawCookie != null) {
                         cookie = rawCookie.split("=")[1];
