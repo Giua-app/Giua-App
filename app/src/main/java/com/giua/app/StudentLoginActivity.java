@@ -22,7 +22,6 @@ package com.giua.app;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebResourceRequest;
@@ -56,12 +55,12 @@ public class StudentLoginActivity extends AppCompatActivity {
 
         webView.setWebViewClient(new WebViewClient() {
             public boolean shouldOverrideUrlLoading(WebView webView, WebResourceRequest request) {
-                if (request.getUrl().toString().equals("https://registro.giua.edu.it/") || request.getUrl().toString().equals("https://registro.giua.edu.it/#")) {
+                String requestedUrl = request.getUrl().toString();
+                if (requestedUrl.equals("https://registro.giua.edu.it/") || requestedUrl.equals("https://registro.giua.edu.it/#")) {
                     String rawCookie = CookieManager.getInstance().getCookie("https://registro.giua.edu.it");
                     if (rawCookie != null) {
                         cookie = rawCookie.split("=")[1];
                         onStoppedWebView();
-                        return true;
                     }
                     Snackbar.make(findViewById(android.R.id.content), "Login studente fallito, contatta gli sviluppatori", Snackbar.LENGTH_LONG).show();
                 }
@@ -83,8 +82,8 @@ public class StudentLoginActivity extends AppCompatActivity {
 
         GlobalVariables.gS = new GiuaScraper("gsuite", "gsuite", cookie, true);
         LoginData.setCredentials(this, "gsuite", "gsuite", cookie);
+        obscureLayoutView.setVisibility(View.GONE);
         Intent intent = new Intent(StudentLoginActivity.this, DrawerActivity.class);
         startActivity(intent);
-        obscureLayoutView.setVisibility(View.GONE);
     }
 }

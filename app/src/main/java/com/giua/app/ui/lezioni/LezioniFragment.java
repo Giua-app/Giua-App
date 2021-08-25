@@ -136,6 +136,7 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void loadDataAndViews() {
         pbLoadingContent.setVisibility(View.VISIBLE);
+        lessonsLayout.removeAllViews();
         hasCompletedLoading = false;
 
         if (!isSpammingClick && System.nanoTime() - lastCallTime > 500000000) {     //Anti click spam
@@ -177,7 +178,6 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
      */
     @Override
     public void addViews() {
-        lessonsLayout.removeAllViews();
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         params.setMargins(20, 40, 20, 0);

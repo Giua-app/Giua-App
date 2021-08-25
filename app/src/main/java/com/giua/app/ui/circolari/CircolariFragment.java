@@ -62,6 +62,7 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
     LinearLayout layout;
     Context context;
     List<Newsletter> allNewsletter = new Vector<>();
+    List<Newsletter> allNewsletterOld = new Vector<>();
     ProgressBar progressBarLoadingPage;
     ScrollView scrollView;
     LinearLayout attachmentLayout;
@@ -137,8 +138,13 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
             new Thread(() -> {
                 try {
                     if (!isFilterApplied) {
+                        if (!allNewsletter.isEmpty())
+                            allNewsletterOld = allNewsletter;
                         allNewsletter = GlobalVariables.gS.getAllNewslettersWithFilter(onlyNotRead, filterDate, filterText, currentPage, true);
                         isFilterApplied = true;
+                        if (compareNewsletterLists(allNewsletterOld, allNewsletter)) {     //Se i risultati sono li stessi vuol dire che un parametro inserito non ha dato risultati
+                            allNewsletter = new Vector<>();
+                        }
                     } else
                         allNewsletter = GlobalVariables.gS.getAllNewsletters(currentPage, true);
 
@@ -261,25 +267,34 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void btnFilterConfirmOnClick(View view) {
-        onlyNotRead = ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).isChecked();
-        filterDate = ((TextView) root.findViewById(R.id.newsletter_filter_date)).getText().toString();
-        filterText = ((TextView) root.findViewById(R.id.newsletter_filter_text)).getText().toString();
+        boolean onlyNotReadTemp = ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).isChecked();
+        String filterDateTemp = ((TextView) root.findViewById(R.id.newsletter_filter_date)).getText().toString();
+        String filterTextTemp = ((TextView) root.findViewById(R.id.newsletter_filter_text)).getText().toString();
 
-        //il regex funziona dal 2009 fino al 2039
-        if (!filterDate.matches("^((2009)|(20[1-3][0-9])-((0[1-9])|(1[0-2])))$") && !filterDate.equals("")) {
-            setErrorMessage("Data non valida", root);
-            //btnFilterOnClick(view);
-            return;
+        if (onlyNotReadTemp != onlyNotRead || !filterDateTemp.equals(filterDate) || !filterTextTemp.equals(filterText)) {
+
+            //il regex funziona dal 2009 fino al 2039
+            if (!filterDateTemp.matches("^((2009)|(20[1-3][0-9])-((0[1-9])|(1[0-2])))$") && !filterDateTemp.equals("")) {
+                setErrorMessage("Data non valida", root);
+                //btnFilterOnClick(view);
+                return;
+            }
+
+            onlyNotRead = onlyNotReadTemp;
+            filterDate = filterDateTemp;
+            filterText = filterTextTemp;
+            layout.removeViews(1, layout.getChildCount() - 1);
+            filterLayout.setVisibility(View.GONE);
+            obscureButton.setVisibility(View.GONE);
+            isFilterApplied = false;
+            currentPage = 1;
+            loadedAllPages = false;
+            tvNoElements.setVisibility(View.GONE);
+            loadDataAndViews();
+        } else {
+            filterLayout.setVisibility(View.GONE);
+            obscureButton.setVisibility(View.GONE);
         }
-
-        layout.removeViews(1, layout.getChildCount() - 1);
-        filterLayout.setVisibility(View.GONE);
-        obscureButton.setVisibility(View.GONE);
-        isFilterApplied = false;
-        currentPage = 1;
-        loadedAllPages = false;
-        tvNoElements.setVisibility(View.GONE);
-        loadDataAndViews();
     }
 
     private void btnFilterOnClick(View view) {
@@ -288,6 +303,19 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
         ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).setChecked(onlyNotRead);
         ((EditText) root.findViewById(R.id.newsletter_filter_date)).setText(filterDate);
         ((EditText) root.findViewById(R.id.newsletter_filter_text)).setText(filterText);
+    }
+
+    private boolean compareNewsletterLists(List<Newsletter> l1, List<Newsletter> l2) {
+        int l1length = l1.size();
+
+        if (l1length != l2.size())
+            return false;
+
+        for (int i = 0; i < l1length; i++)
+            if (l1.get(i).number != l2.get(i).number)
+                return false;
+
+        return true;
     }
 
     /**
