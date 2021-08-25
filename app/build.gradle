@@ -73,7 +73,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.14.2'
 
     // Giua scraper
-    implementation 'com.github.Giua-app:Giua-Webscraper:1.0.18-beta'
+    implementation 'com.github.Giua-app:Giua-Webscraper:1.0.20-beta'
 
     // Error handler lib
     implementation 'cat.ereza:customactivityoncrash:2.3.0'
