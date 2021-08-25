@@ -79,16 +79,11 @@ public class VotiFragment extends Fragment implements IGiuaAppFragment {
         activity = requireActivity();
 
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
-        obscureLayoutView.setOnClickListener(this::obscureButtonClick);
+        obscureLayoutView.setOnClickListener(this::obscureButtonOnClick);
 
         loadDataAndViews();
 
         return root;
-    }
-
-    private void onRefresh() {
-        refreshVotes = true;
-        loadDataAndViews();
     }
 
     @Override
@@ -96,6 +91,7 @@ public class VotiFragment extends Fragment implements IGiuaAppFragment {
         new Thread(() -> {
             try {
                 allVotes = GlobalVariables.gS.getAllVotes(refreshVotes);
+                GlobalVariables.gS.saveDataToJson();
                 refreshVotes = false;
                 activity.runOnUiThread(this::addViews);
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
@@ -167,30 +163,17 @@ public class VotiFragment extends Fragment implements IGiuaAppFragment {
         swipeRefreshLayout.setRefreshing(false);
     }
 
-    private float getNumberFromVote(Vote vote) {
-        if(vote.isAsterisk)
-            return -1f;
-
-        char lastChar = vote.value.charAt(vote.value.length() - 1);
-        if (lastChar == '+')
-            return (vote.value.length() == 2) ? Character.getNumericValue(vote.value.charAt(0)) + 0.15f : Integer.parseInt(vote.value.substring(0, 2)) + 0.15f;
-
-        else if (lastChar == '-')
-            return (vote.value.length() == 2) ? Character.getNumericValue(vote.value.charAt(0)) - 1 + 0.85f : Integer.parseInt(vote.value.substring(0, 2)) - 1 + 0.85f;
-
-        else if (lastChar == '½')
-            return (vote.value.length() == 2) ? Character.getNumericValue(vote.value.charAt(0)) + 0.5f : Integer.parseInt(vote.value.substring(0, 2)) + 0.5f;
-
-        else
-            return Integer.parseInt(vote.value);
+    private void onRefresh() {
+        refreshVotes = true;
+        loadDataAndViews();
     }
 
-    public void obscureButtonClick(View view){
+    public void obscureButtonOnClick(View view) {
         detailVoteLayout.setVisibility(View.GONE);
         obscureLayoutView.setVisibility(View.GONE);
     }
 
-    private void onClickSingleVote(View view){
+    private void singleVoteOnClick(View view) {
         Resources res = getResources();
         SingleVoteView _view = (SingleVoteView) view;
         TextView detailVoteDate = detailVoteLayout.findViewById(R.id.detail_vote_date);
@@ -212,19 +195,37 @@ public class VotiFragment extends Fragment implements IGiuaAppFragment {
             detailVoteType.setVisibility(View.VISIBLE);
             detailVoteType.setText(Html.fromHtml("<b>" + res.getString(R.string.detail_vote_type) + "</b> " + _view.vote.testType, Html.FROM_HTML_MODE_COMPACT));
         }
-        if(!_view.vote.arguments.equals("")) {
+        if (!_view.vote.arguments.equals("")) {
             detailVoteArguments.setVisibility(View.VISIBLE);
             detailVoteArguments.setText(Html.fromHtml("<b>" + res.getString(R.string.detail_vote_arguments) + "</b> " + _view.vote.arguments, Html.FROM_HTML_MODE_COMPACT));
         }
-        if(!_view.vote.judgement.equals("")) {
+        if (!_view.vote.judgement.equals("")) {
             detailVoteJudge.setVisibility(View.VISIBLE);
             detailVoteJudge.setText(Html.fromHtml("<b>" + res.getString(R.string.detail_vote_judge) + "</b> " + _view.vote.judgement, Html.FROM_HTML_MODE_COMPACT));
         }
     }
 
+    private float getNumberFromVote(Vote vote) {
+        if (vote.isAsterisk)
+            return -1f;
+
+        char lastChar = vote.value.charAt(vote.value.length() - 1);
+        if (lastChar == '+')
+            return (vote.value.length() == 2) ? Character.getNumericValue(vote.value.charAt(0)) + 0.15f : Integer.parseInt(vote.value.substring(0, 2)) + 0.15f;
+
+        else if (lastChar == '-')
+            return (vote.value.length() == 2) ? Character.getNumericValue(vote.value.charAt(0)) - 1 + 0.85f : Integer.parseInt(vote.value.substring(0, 2)) - 1 + 0.85f;
+
+        else if (lastChar == '½')
+            return (vote.value.length() == 2) ? Character.getNumericValue(vote.value.charAt(0)) + 0.5f : Integer.parseInt(vote.value.substring(0, 2)) + 0.5f;
+
+        else
+            return Integer.parseInt(vote.value);
+    }
+
     @SuppressLint("ClickableViewAccessibility")
-    private void addVoteView(String subject, String voteFirstQuart, float rawVoteFirstQuart, String voteSecondQuart, float rawVoteSecondQuart){
-        voteView = new VoteView(requireContext(), null, subject, voteFirstQuart, rawVoteFirstQuart, voteSecondQuart, rawVoteSecondQuart, GlobalVariables.gS.getAllVotes(false).get(subject), this::onClickSingleVote);
+    private void addVoteView(String subject, String voteFirstQuart, float rawVoteFirstQuart, String voteSecondQuart, float rawVoteSecondQuart) {
+        voteView = new VoteView(requireContext(), null, subject, voteFirstQuart, rawVoteFirstQuart, voteSecondQuart, rawVoteSecondQuart, GlobalVariables.gS.getAllVotes(false).get(subject), this::singleVoteOnClick);
         voteView.setId(View.generateViewId());
 
         voteView.setLayoutParams(params);

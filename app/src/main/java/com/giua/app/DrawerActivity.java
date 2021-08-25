@@ -189,6 +189,12 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     }
 
     @Override
+    protected void onDestroy() {
+        AppData.saveJsonString(this, GlobalVariables.gS.saveDataToJson());
+        super.onDestroy();
+    }
+
+    @Override
     protected void onRestart() {
         onRestoreInstanceState(new Bundle());
         releaseInstance();
