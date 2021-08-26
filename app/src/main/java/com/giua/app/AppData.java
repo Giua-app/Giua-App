@@ -25,24 +25,44 @@ import android.content.SharedPreferences;
 public class AppData {
 
     /**
-     * Controlla la memorizzazione delle impostazioni
+     * Controlla la memorizzazione dei dati dell'app
      */
     private static final String appDataPreferenceKey = "appData";
+    private static final String voteKey = "votes";
+    private static final String newsletterKey = "newsletters";
+    private static final String alertKey = "alerts";
 
     private static SharedPreferences getSharedPreferences(final Context context) {
         return context.getSharedPreferences(appDataPreferenceKey, Context.MODE_PRIVATE);
     }
 
-    /**
-     * Salva un valore di tipo {@code string} associato ad una chiave
-     */
-    public static void saveJsonString(final Context context, final String value) {
+    public static void saveVotesString(final Context context, final String jsonString) {
         getSharedPreferences(context).edit()
-                .putString("json", value)
+                .putString(voteKey, jsonString)
                 .apply();
     }
 
-    public static String getJsonString(final Context context) {
-        return getSharedPreferences(context).getString("json", null);
+    public static String getVotesString(final Context context) {
+        return getSharedPreferences(context).getString(voteKey, null);
+    }
+
+    public static void saveNewslettersString(final Context context, final String jsonString) {
+        getSharedPreferences(context).edit()
+                .putString(newsletterKey, jsonString)
+                .apply();
+    }
+
+    public static String getNewslettersString(final Context context) {
+        return getSharedPreferences(context).getString(newsletterKey, null);
+    }
+
+    public static void saveAlertsString(final Context context, final String jsonString) {
+        getSharedPreferences(context).edit()
+                .putString(alertKey, jsonString)
+                .apply();
+    }
+
+    public static String getAlertsString(final Context context) {
+        return getSharedPreferences(context).getString(alertKey, null);
     }
 }

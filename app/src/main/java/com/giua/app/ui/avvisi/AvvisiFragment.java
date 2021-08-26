@@ -37,11 +37,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.giua.app.AppData;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
 import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Alert;
+import com.giua.utils.JsonHelper;
 import com.giua.webscraper.DownloadedFile;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -56,6 +58,7 @@ import java.util.Vector;
 public class AvvisiFragment extends Fragment implements IGiuaAppFragment {
 
     List<Alert> allAlerts = new Vector<>();
+    List<Alert> allAlertsToSave = new Vector<>();
     LinearLayout viewsLayout;
     LinearLayout detailsLayout;
     LinearLayout attachmentLayout;
@@ -123,6 +126,7 @@ public class AvvisiFragment extends Fragment implements IGiuaAppFragment {
                     } else {
                         activity.runOnUiThread(this::addViews);
                         currentPage++;
+                        allAlertsToSave.addAll(allAlerts);
                     }
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     activity.runOnUiThread(() -> {
@@ -316,5 +320,12 @@ public class AvvisiFragment extends Fragment implements IGiuaAppFragment {
         viewsLayout.removeAllViews();
         allAlerts = new Vector<>();
         super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        //FIXME: Salva solo gli ultimi avvisi caricati
+        AppData.saveAlertsString(activity, new JsonHelper().saveAlertsToString(allAlertsToSave));
+        super.onStop();
     }
 }

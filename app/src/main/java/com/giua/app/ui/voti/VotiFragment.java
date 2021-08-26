@@ -36,12 +36,14 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.giua.app.AppData;
 import com.giua.app.DrawerActivity;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
 import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Vote;
+import com.giua.utils.JsonHelper;
 import com.giua.webscraper.GiuaScraperExceptions;
 
 import java.text.DecimalFormat;
@@ -91,7 +93,6 @@ public class VotiFragment extends Fragment implements IGiuaAppFragment {
         new Thread(() -> {
             try {
                 allVotes = GlobalVariables.gS.getAllVotes(refreshVotes);
-                GlobalVariables.gS.saveDataToJson();
                 refreshVotes = false;
                 activity.runOnUiThread(this::addViews);
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
@@ -231,5 +232,11 @@ public class VotiFragment extends Fragment implements IGiuaAppFragment {
         voteView.setLayoutParams(params);
 
         mainLayout.addView(voteView);
+    }
+
+    @Override
+    public void onStop() {
+        AppData.saveVotesString(activity, new JsonHelper().saveVotesToString(allVotes));
+        super.onStop();
     }
 }

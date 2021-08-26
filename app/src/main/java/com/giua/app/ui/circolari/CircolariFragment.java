@@ -42,11 +42,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.giua.app.AppData;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
 import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Newsletter;
+import com.giua.utils.JsonHelper;
 import com.giua.webscraper.DownloadedFile;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
@@ -63,6 +65,7 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
     Context context;
     List<Newsletter> allNewsletter = new Vector<>();
     List<Newsletter> allNewsletterOld = new Vector<>();
+    List<Newsletter> allNewsletterToSave = new Vector<>();
     ProgressBar progressBarLoadingPage;
     ScrollView scrollView;
     LinearLayout attachmentLayout;
@@ -156,8 +159,8 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
                             loadedAllPages = true;
                         activity.runOnUiThread(this::addViews);
                         currentPage++;
+                        allNewsletterToSave.addAll(allNewsletter);
                     }
-
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
                         setErrorMessage(getString(R.string.your_connection_error), root);
@@ -387,5 +390,12 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
         layout.removeViews(1, layout.getChildCount() - 1);
         allNewsletter = new Vector<>();
         super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        //FIXME: Salva solo le ultime circolari caricate
+        AppData.saveNewslettersString(activity, new JsonHelper().saveNewslettersToString(allNewsletterToSave));
+        super.onStop();
     }
 }
