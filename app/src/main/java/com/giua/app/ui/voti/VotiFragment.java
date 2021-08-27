@@ -53,10 +53,10 @@ import java.util.Objects;
 
 public class VotiFragment extends Fragment implements IGiuaAppFragment {
 
-    ProgressBar progressBar;
+    ProgressBar pbLoadingPage;
     VoteView voteView;
     TextView tvNoElements;
-    LinearLayout mainLayout;
+    LinearLayout viewsLayout;
     LinearLayout detailVoteLayout;
     LinearLayout.LayoutParams params;
     ObscureLayoutView obscureLayoutView;    //Questo bottone viene visualizzato dietro al detail layout e se viene cliccato si esce dai dettagli
@@ -71,10 +71,10 @@ public class VotiFragment extends Fragment implements IGiuaAppFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_voti, container, false);
 
-        mainLayout = root.findViewById(R.id.vote_fragment_linear_layout);
+        viewsLayout = root.findViewById(R.id.vote_fragment_linear_layout);
         obscureLayoutView = root.findViewById(R.id.vote_obscure_view);
         detailVoteLayout = root.findViewById(R.id.vote_attachment_layout);
-        progressBar = root.findViewById(R.id.vote_loading_page_bar);
+        pbLoadingPage = root.findViewById(R.id.vote_loading_page_bar);
         tvNoElements = root.findViewById(R.id.vote_fragment_no_elements_view);
         swipeRefreshLayout = root.findViewById(R.id.vote_swipe_refresh_layout);
 
@@ -98,14 +98,14 @@ public class VotiFragment extends Fragment implements IGiuaAppFragment {
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                 activity.runOnUiThread(() -> {
                     DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_voti, Navigation.findNavController(activity, R.id.nav_host_fragment));
-                    progressBar.setVisibility(View.GONE);
+                    pbLoadingPage.setVisibility(View.GONE);
                     tvNoElements.setVisibility(View.VISIBLE);
                     swipeRefreshLayout.setRefreshing(false);
                 });
             } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                 activity.runOnUiThread(() -> {
                     DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_voti, Navigation.findNavController(activity, R.id.nav_host_fragment));
-                    progressBar.setVisibility(View.GONE);
+                    pbLoadingPage.setVisibility(View.GONE);
                     tvNoElements.setVisibility(View.VISIBLE);
                     swipeRefreshLayout.setRefreshing(false);
                 });
@@ -120,8 +120,8 @@ public class VotiFragment extends Fragment implements IGiuaAppFragment {
         int voteCounterFirstQuarter;     //Conta solamente i voti che ci sono e non gli asterischi
         int voteCounterSecondQuarter;
 
-        mainLayout.removeAllViews();
-        params = new LinearLayout.LayoutParams(mainLayout.getLayoutParams().width, mainLayout.getLayoutParams().height);
+        viewsLayout.removeAllViews();
+        params = new LinearLayout.LayoutParams(viewsLayout.getLayoutParams().width, viewsLayout.getLayoutParams().height);
         params.setMargins(10, 20, 10, 30);
 
         if (allVotes.isEmpty()) {
@@ -160,19 +160,21 @@ public class VotiFragment extends Fragment implements IGiuaAppFragment {
                 }
             }
         }
-        progressBar.setVisibility(View.GONE);
+        pbLoadingPage.setVisibility(View.GONE);
         swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void nullAllReferenceWithFragmentViews() {
         root = null;
-        mainLayout = null;
+        viewsLayout = null;
         obscureLayoutView = null;
         detailVoteLayout = null;
-        progressBar = null;
+        pbLoadingPage = null;
         tvNoElements = null;
         swipeRefreshLayout = null;
+        params = null;
+        allVotes = null;
     }
 
     private void onRefresh() {
@@ -242,7 +244,7 @@ public class VotiFragment extends Fragment implements IGiuaAppFragment {
 
         voteView.setLayoutParams(params);
 
-        mainLayout.addView(voteView);
+        viewsLayout.addView(voteView);
     }
 
     @Override

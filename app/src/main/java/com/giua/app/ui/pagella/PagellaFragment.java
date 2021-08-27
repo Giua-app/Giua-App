@@ -69,16 +69,6 @@ public class PagellaFragment extends Fragment implements IGiuaAppFragment {
         return root;
     }
 
-    private void btnQuarterOnClick(View view) {
-        isFirstQuarter = !isFirstQuarter;
-        if (isFirstQuarter)
-            tvCurrentQuarter.setText(R.string.report_card_btn_first_quarter);
-        else
-            tvCurrentQuarter.setText(R.string.report_card_btn_second_quarter);
-        loadDataAndViews();
-
-    }
-
     @Override
     public void loadDataAndViews() {
         viewsLayout.removeAllViews();
@@ -136,6 +126,20 @@ public class PagellaFragment extends Fragment implements IGiuaAppFragment {
         btnChangeQuarter = null;
         reportCard = null;
     }
+
+    //region Listeners
+
+    private void btnQuarterOnClick(View view) {
+        isFirstQuarter = !isFirstQuarter;
+        if (isFirstQuarter)
+            tvCurrentQuarter.setText(R.string.report_card_btn_first_quarter);
+        else
+            tvCurrentQuarter.setText(R.string.report_card_btn_second_quarter);
+        loadDataAndViews();
+
+    }
+
+    //endregion
 
     @Override
     public void onDestroyView() {

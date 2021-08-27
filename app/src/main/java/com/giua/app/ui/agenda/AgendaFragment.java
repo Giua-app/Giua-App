@@ -60,13 +60,13 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     List<Homework> visualizerHomeworks;
     TextView tvTodayText;
     TextView tvNoElements;
-    ImageView btnPrevMonth;
-    ImageView btnNextMonth;
+    ImageView ivPrevMonth;
+    ImageView ivNextMonth;
     Activity activity;
     View root;
     Date currentDate;
-    ProgressBar progressBar;
-    ProgressBar progressBarForDetails;
+    ProgressBar pbLoadingPage;
+    ProgressBar pbForDetails;
     Calendar calendar;
     SimpleDateFormat formatterForMonth = new SimpleDateFormat("MM", Locale.ITALIAN);
     SimpleDateFormat formatterForYear = new SimpleDateFormat("yyyy", Locale.ITALIAN);
@@ -90,8 +90,8 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         viewsLayout = root.findViewById(R.id.agenda_views_layout);
         tvTodayText = root.findViewById(R.id.agenda_month_text);
         tvNoElements = root.findViewById(R.id.agenda_no_elements_text);
-        btnNextMonth = root.findViewById(R.id.agenda_month_next_btn);
-        btnPrevMonth = root.findViewById(R.id.agenda_month_prev_btn);
+        ivNextMonth = root.findViewById(R.id.agenda_month_next_btn);
+        ivPrevMonth = root.findViewById(R.id.agenda_month_prev_btn);
         visualizerLayout = root.findViewById(R.id.agenda_object_visualizer_layout);
         tvVisualizerType = root.findViewById(R.id.agenda_visualizer_type);
         tvVisualizerSubject = root.findViewById(R.id.agenda_visualizer_subject);
@@ -101,7 +101,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         obscureLayoutView = root.findViewById(R.id.agenda_obscure_layout);
         ivVisualizerPrevBtn = root.findViewById(R.id.agenda_visualizer_prev_btn);
         ivVisualizerNextBtn = root.findViewById(R.id.agenda_visualizer_next_btn);
-        progressBarForDetails = root.findViewById(R.id.agenda_progress_bar_details);
+        pbForDetails = root.findViewById(R.id.agenda_progress_bar_details);
         swipeRefreshLayout = root.findViewById(R.id.agenda_swipe_refresh_layout);
 
         activity = requireActivity();
@@ -109,22 +109,22 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         calendar = Calendar.getInstance();
         currentDate = calendar.getTime();
 
-        progressBar = new ProgressBar(requireContext(), null);
+        pbLoadingPage = new ProgressBar(requireContext(), null);
 
         tvTodayText.setText(getMonthFromNumber(Integer.parseInt(getCurrentMonth())) + " " + getCurrentYear());
 
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
-        btnNextMonth.setOnClickListener(this::btnNextMonthOnClick);
-        btnPrevMonth.setOnClickListener(this::btnPrevMonthOnClick);
+        ivNextMonth.setOnClickListener(this::btnNextMonthOnClick);
+        ivPrevMonth.setOnClickListener(this::btnPrevMonthOnClick);
         ivVisualizerPrevBtn.setOnClickListener(this::ivVisualizerPrevBtnOnClick);
         ivVisualizerNextBtn.setOnClickListener(this::ivVisualizerNextBtnOnClick);
         visualizerLayout.setOnClickListener((view) -> {/*Serve ad evitare che quando si il layout questo non sparisca*/});
         obscureLayoutView.setOnClickListener(this::obscureLayoutOnClick);
 
         if (Integer.parseInt(getCurrentMonth()) >= 6 && Integer.parseInt(getCurrentMonth()) <= 8)
-            btnNextMonth.setVisibility(View.GONE);
+            ivNextMonth.setVisibility(View.GONE);
         if (Integer.parseInt(getCurrentMonth()) == 7)
-            btnPrevMonth.setVisibility(View.GONE);
+            ivPrevMonth.setVisibility(View.GONE);
 
         loadDataAndViews();
 
@@ -134,8 +134,8 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void loadDataAndViews() {
         if (!isLoadingData) {
-            if (viewsLayout.indexOfChild(progressBar) == -1)
-                viewsLayout.addView(progressBar, 0);
+            if (viewsLayout.indexOfChild(pbLoadingPage) == -1)
+                viewsLayout.addView(pbLoadingPage, 0);
             new Thread(() -> {
                 try {
                     isLoadingData = true;
@@ -154,7 +154,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
                         DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
-                        progressBar.setVisibility(View.GONE);
+                        pbLoadingPage.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
                         isLoadingData = false;
@@ -162,7 +162,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     activity.runOnUiThread(() -> {
                         DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
-                        progressBar.setVisibility(View.GONE);
+                        pbLoadingPage.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
                         isLoadingData = false;
@@ -171,7 +171,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                     activity.runOnUiThread(() -> {
                         if (!GiuaScraper.isMyInternetWorking())
                             DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
-                        progressBar.setVisibility(View.GONE);
+                        pbLoadingPage.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
                         isLoadingData = false;
@@ -239,8 +239,8 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         viewsLayout = null;
         tvTodayText = null;
         tvNoElements = null;
-        btnNextMonth = null;
-        btnPrevMonth = null;
+        ivNextMonth = null;
+        ivPrevMonth = null;
         visualizerLayout = null;
         tvVisualizerType = null;
         tvVisualizerSubject = null;
@@ -250,7 +250,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         obscureLayoutView = null;
         ivVisualizerPrevBtn = null;
         ivVisualizerNextBtn = null;
-        progressBarForDetails = null;
+        pbForDetails = null;
         swipeRefreshLayout = null;
         allHomeworks = null;
         allTests = null;
@@ -261,9 +261,9 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         if (!isLoadingData) {
             currentDate = getPrevMonth(currentDate);
             if (Integer.parseInt(getCurrentMonth()) < 6 || Integer.parseInt(getCurrentMonth()) > 8)
-                btnNextMonth.setVisibility(View.VISIBLE);
+                ivNextMonth.setVisibility(View.VISIBLE);
             if (Integer.parseInt(getCurrentMonth()) == 9)
-                btnPrevMonth.setVisibility(View.GONE);
+                ivPrevMonth.setVisibility(View.GONE);
             tvTodayText.setText(getMonthFromNumber(Integer.parseInt(getCurrentMonth())) + " " + getCurrentYear());
             viewsLayout.removeAllViews();
             loadDataAndViews();
@@ -273,9 +273,9 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     private void btnNextMonthOnClick(View view) {
         if (!isLoadingData) {
             currentDate = getNextMonth(currentDate);
-            btnPrevMonth.setVisibility(View.VISIBLE);
+            ivPrevMonth.setVisibility(View.VISIBLE);
             if (Integer.parseInt(getCurrentMonth()) >= 6 && Integer.parseInt(getCurrentMonth()) <= 8)
-                btnNextMonth.setVisibility(View.GONE);
+                ivNextMonth.setVisibility(View.GONE);
             tvTodayText.setText(getMonthFromNumber(Integer.parseInt(getCurrentMonth())) + " " + getCurrentYear());
             viewsLayout.removeAllViews();
             loadDataAndViews();
@@ -333,7 +333,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     private void agendaViewOnClick(View view) {
         if (!isLoadingDetails) {
             isLoadingDetails = true;
-            progressBarForDetails.setVisibility(View.VISIBLE);
+            pbForDetails.setVisibility(View.VISIBLE);
             new Thread(() -> {
                 AgendaView agendaView = (AgendaView) view;
                 visualizerHomeworks = new Vector<>();
@@ -348,20 +348,20 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
                         DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
-                        progressBarForDetails.setVisibility(View.GONE);
+                        pbForDetails.setVisibility(View.GONE);
                     });
                     return;
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     activity.runOnUiThread(() -> {
                         DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
-                        progressBarForDetails.setVisibility(View.GONE);
+                        pbForDetails.setVisibility(View.GONE);
                     });
                     return;
                 } catch (NullPointerException e) {
                     activity.runOnUiThread(() -> {
                         if (!GiuaScraper.isMyInternetWorking())
                             DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
-                        progressBarForDetails.setVisibility(View.GONE);
+                        pbForDetails.setVisibility(View.GONE);
                     });
                     return;
                 }
@@ -390,7 +390,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                     obscureLayoutView.setVisibility(View.VISIBLE);
 
                     isLoadingDetails = false;
-                    progressBarForDetails.setVisibility(View.GONE);
+                    pbForDetails.setVisibility(View.GONE);
                 });
             }).start();
         }

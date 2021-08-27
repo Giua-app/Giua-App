@@ -57,7 +57,7 @@ import java.util.Locale;
 public class LezioniFragment extends Fragment implements IGiuaAppFragment {
 
     TextView tvCurrentDate;
-    ObscureLayoutView obscureLayout;
+    ObscureLayoutView obscureLayoutView;
     TextView tvNoElements;
     TextView tvDetailArgs;
     TextView tvDetailActs;
@@ -67,7 +67,7 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
     Button btnConfirmDate;
     CalendarView calendarView;
     FragmentActivity activity;
-    LinearLayout lessonsLayout;
+    LinearLayout viewsLayout;
     LinearLayout lessonDetailLayout;
     CardView bottomCardView;
     List<Lesson> allLessons;
@@ -88,9 +88,9 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
         root = inflater.inflate(R.layout.fragment_lezioni, container, false);
 
         tvCurrentDate = root.findViewById(R.id.lezioni_current_date);
-        lessonsLayout = root.findViewById(R.id.lezioni_lessons_layout);
+        viewsLayout = root.findViewById(R.id.lezioni_lessons_layout);
         calendarView = root.findViewById(R.id.lezioni_calendar_view);
-        obscureLayout = root.findViewById(R.id.lezioni_obscure_view);
+        obscureLayoutView = root.findViewById(R.id.lezioni_obscure_view);
         frameLayout = root.findViewById(R.id.lezioni_frame_layout);
         tvNoElements = root.findViewById(R.id.lezioni_no_elements_view);
         pbLoadingContent = root.findViewById(R.id.lezioni_loading_content);
@@ -117,7 +117,7 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
         root.findViewById(R.id.lezioni_img_prev_date).setOnClickListener(this::prevDateOnClick);
         ivCalendarImage.setOnClickListener(this::tvCurrentDateOnClick);
         tvCurrentDate.setOnClickListener(this::tvCurrentDateOnClick);
-        obscureLayout.setOnClickListener(this::obscureLayoutOnClick);
+        obscureLayoutView.setOnClickListener(this::obscureLayoutOnClick);
         calendarView.setOnDateChangeListener(this::calendarOnChangeDateListener);
         btnConfirmDate.setOnClickListener(this::btnConfirmDateOnClick);
 
@@ -126,17 +126,10 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
         return root;
     }
 
-    private void onRefresh() {
-        lastCallTime = 0;
-        hasCompletedLoading = false;
-        isSpammingClick = false;
-        loadDataAndViews();
-    }
-
     @Override
     public void loadDataAndViews() {
         pbLoadingContent.setVisibility(View.VISIBLE);
-        lessonsLayout.removeAllViews();
+        viewsLayout.removeAllViews();
         hasCompletedLoading = false;
 
         if (!isSpammingClick && System.nanoTime() - lastCallTime > 500000000) {     //Anti click spam
@@ -192,7 +185,7 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
                 lessonView.setLayoutParams(params);
                 lessonView.setOnClickListener(this::lessonViewOnClick);
 
-                lessonsLayout.addView(lessonView);
+                viewsLayout.addView(lessonView);
             }
         }
 
@@ -204,9 +197,9 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
     public void nullAllReferenceWithFragmentViews() {
         root = null;
         tvCurrentDate = null;
-        lessonsLayout = null;
+        viewsLayout = null;
         calendarView = null;
-        obscureLayout = null;
+        obscureLayoutView = null;
         frameLayout = null;
         tvNoElements = null;
         pbLoadingContent = null;
@@ -220,6 +213,15 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
         allLessons = null;
     }
 
+    //region Listeners
+
+    private void onRefresh() {
+        lastCallTime = 0;
+        hasCompletedLoading = false;
+        isSpammingClick = false;
+        loadDataAndViews();
+    }
+
     private void btnConfirmDateOnClick(View view) {
         btnConfirmDate.setVisibility(View.GONE);
         isSpammingClick = false;
@@ -228,7 +230,7 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
 
     private void lessonViewOnClick(View view) {
         lessonDetailLayout.setVisibility(View.VISIBLE);
-        obscureLayout.setVisibility(View.VISIBLE);
+        obscureLayoutView.setVisibility(View.VISIBLE);
         bottomCardView.setZ(-10f);
         btnConfirmDate.setZ(-10f);
         ivCalendarImage.setZ(-10f);
@@ -249,7 +251,7 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
             currentDate = getCurrentDate(formatterForScraping.parse(year + "-" + (month + 1) + "-" + dayOfMonth));
             setTextWithNames();
             loadDataAndViews();
-            obscureLayout.callOnClick();
+            obscureLayoutView.callOnClick();
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -257,7 +259,7 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
 
     private void obscureLayoutOnClick(View view) {
         frameLayout.setVisibility(View.GONE);
-        obscureLayout.setVisibility(View.GONE);
+        obscureLayoutView.setVisibility(View.GONE);
         lessonDetailLayout.setVisibility(View.GONE);
         ivCalendarImage.setZ(13.75f);
         bottomCardView.setZ(13.75f);
@@ -266,11 +268,31 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
 
     private void tvCurrentDateOnClick(View view) {
         frameLayout.setVisibility(View.VISIBLE);
-        obscureLayout.setVisibility(View.VISIBLE);
+        obscureLayoutView.setVisibility(View.VISIBLE);
         ivCalendarImage.setZ(-10f);
         bottomCardView.setZ(-10f);
         btnConfirmDate.setZ(-10f);
     }
+
+    private void prevDateOnClick(View view) {
+        currentDate = getPrevDate(currentDate);
+        calendarView.setDate(currentDate.getTime());
+        viewsLayout.removeAllViews();
+        setTextWithNames();
+        loadDataAndViews();
+    }
+
+    private void nextDateOnClick(View view) {
+        currentDate = getNextDate(currentDate);
+        calendarView.setDate(currentDate.getTime());
+        viewsLayout.removeAllViews();
+        setTextWithNames();
+        loadDataAndViews();
+    }
+
+    //endregion
+
+    //region Metodi
 
     private void setTextWithNames() {
         String s = formatterForVisualize.format(currentDate);
@@ -282,22 +304,6 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
             tvCurrentDate.setText("Domani");
         else
             tvCurrentDate.setText(formatterForVisualize.format(currentDate));
-    }
-
-    private void prevDateOnClick(View view) {
-        currentDate = getPrevDate(currentDate);
-        calendarView.setDate(currentDate.getTime());
-        lessonsLayout.removeAllViews();
-        setTextWithNames();
-        loadDataAndViews();
-    }
-
-    private void nextDateOnClick(View view) {
-        currentDate = getNextDate(currentDate);
-        calendarView.setDate(currentDate.getTime());
-        lessonsLayout.removeAllViews();
-        setTextWithNames();
-        loadDataAndViews();
     }
 
     private Date getCurrentDate(Date date) {
@@ -316,6 +322,8 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
         calendar.add(Calendar.DAY_OF_YEAR, -1);
         return calendar.getTime();
     }
+
+    //endregion
 
     @Override
     public void onDestroyView() {

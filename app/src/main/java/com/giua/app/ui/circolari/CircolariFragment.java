@@ -66,13 +66,13 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
     List<Newsletter> allNewsletter = new Vector<>();
     List<Newsletter> allNewsletterOld = new Vector<>();
     List<Newsletter> allNewsletterToSave = new Vector<>();
-    ProgressBar progressBarLoadingPage;
+    ProgressBar pbLoadingPage;
     ScrollView scrollView;
     LinearLayout attachmentLayout;
-    ObscureLayoutView obscureButton;
-    ImageView btnFilter;
+    ObscureLayoutView obscureLayoutView;
+    ImageView ivFilter;
     LinearLayout filterLayout;
-    ProgressBar progressBarLoadingNewsletters;
+    ProgressBar pbLoadingNewsletters;
     TextView tvNoElements;
     FragmentActivity activity;
     SwipeRefreshLayout swipeRefreshLayout;
@@ -93,27 +93,27 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
 
         context = getContext();
         layout = root.findViewById(R.id.newsletter_linear_layout);
-        progressBarLoadingPage = root.findViewById(R.id.circolari_loading_page_bar);
+        pbLoadingPage = root.findViewById(R.id.circolari_loading_page_bar);
         scrollView = root.findViewById(R.id.newsletter_scroll_view);
         attachmentLayout = root.findViewById(R.id.attachment_layout);
-        obscureButton = root.findViewById(R.id.newsletter_obscure_layout);
+        obscureLayoutView = root.findViewById(R.id.newsletter_obscure_layout);
         tvNoElements = root.findViewById(R.id.newsletter_fragment_no_elements_view);
-        btnFilter = root.findViewById(R.id.newsletter_filter_button);
+        ivFilter = root.findViewById(R.id.newsletter_filter_button);
         filterLayout = root.findViewById(R.id.newsletter_filter_layout);
         swipeRefreshLayout = root.findViewById(R.id.newsletter_swipe_refresh_layout);
 
         activity = requireActivity();
 
-        progressBarLoadingNewsletters = new ProgressBar(getContext());
-        progressBarLoadingNewsletters.setId(View.generateViewId());
+        pbLoadingNewsletters = new ProgressBar(getContext());
+        pbLoadingNewsletters.setId(View.generateViewId());
 
         scrollView.setOnScrollChangeListener(this::onScrollViewScrolled);
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         attachmentLayout.setOnClickListener((view) -> {
         });
-        btnFilter.setOnClickListener(this::btnFilterOnClick);
+        ivFilter.setOnClickListener(this::btnFilterOnClick);
 
-        obscureButton.setOnClickListener((view) -> {
+        obscureLayoutView.setOnClickListener((view) -> {
             view.setVisibility(View.GONE);
             attachmentLayout.setVisibility(View.GONE);
             filterLayout.setVisibility(View.GONE);
@@ -134,8 +134,8 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
     public void loadDataAndViews() {
         loadingPage = true;
         hasCompletedLoading = false;
-        if (currentPage > 1 && progressBarLoadingNewsletters.getParent() == null)
-            layout.addView(progressBarLoadingNewsletters);
+        if (currentPage > 1 && pbLoadingNewsletters.getParent() == null)
+            layout.addView(pbLoadingNewsletters);
 
         if (!loadedAllPages) {
             new Thread(() -> {
@@ -166,7 +166,7 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
                         setErrorMessage(getString(R.string.your_connection_error), root);
                         if (currentPage == 1)
                             tvNoElements.setVisibility(View.VISIBLE);
-                        progressBarLoadingPage.setVisibility(View.GONE);
+                        pbLoadingPage.setVisibility(View.GONE);
                         swipeRefreshLayout.setRefreshing(false);
                     });
                     allNewsletter = new Vector<>();
@@ -176,17 +176,17 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
                         setErrorMessage(getString(R.string.site_connection_error), root);
                         if (currentPage == 1)
                             tvNoElements.setVisibility(View.VISIBLE);
-                        progressBarLoadingPage.setVisibility(View.GONE);
+                        pbLoadingPage.setVisibility(View.GONE);
                         swipeRefreshLayout.setRefreshing(false);
                     });
                     allNewsletter = new Vector<>();
                 }
-                activity.runOnUiThread(() -> layout.removeView(progressBarLoadingNewsletters));
+                activity.runOnUiThread(() -> layout.removeView(pbLoadingNewsletters));
                 swipeRefreshLayout.setRefreshing(false);
                 loadingPage = false;
             }).start();
         } else {
-            layout.removeView(progressBarLoadingNewsletters);
+            layout.removeView(pbLoadingNewsletters);
             swipeRefreshLayout.setRefreshing(false);
             loadingPage = false;
         }
@@ -205,7 +205,7 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
             layout.addView(newsletterView);
         }
 
-        progressBarLoadingPage.setVisibility(View.GONE);
+        pbLoadingPage.setVisibility(View.GONE);
         swipeRefreshLayout.setRefreshing(false);
     }
 
@@ -213,17 +213,18 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
     public void nullAllReferenceWithFragmentViews() {
         root = null;
         layout = null;
-        progressBarLoadingPage = null;
+        pbLoadingPage = null;
         scrollView = null;
         attachmentLayout = null;
-        obscureButton = null;
+        obscureLayoutView = null;
         tvNoElements = null;
-        btnFilter = null;
+        ivFilter = null;
         filterLayout = null;
         swipeRefreshLayout = null;
         allNewsletter = null;
     }
 
+    //region Listeners
     private void onClickSingleAttachment(String url) {
         if (!isDownloading) {
             downloadAndOpenFile(url);
@@ -257,7 +258,7 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
         }
 
         attachmentLayout.setVisibility(View.VISIBLE);
-        obscureButton.setVisibility(View.VISIBLE);
+        obscureLayoutView.setVisibility(View.VISIBLE);
     }
 
     private void onClickDocument(Newsletter newsletter) {
@@ -303,7 +304,7 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
             filterText = filterTextTemp;
             layout.removeViews(1, layout.getChildCount() - 1);
             filterLayout.setVisibility(View.GONE);
-            obscureButton.setVisibility(View.GONE);
+            obscureLayoutView.setVisibility(View.GONE);
             isFilterApplied = false;
             currentPage = 1;
             loadedAllPages = false;
@@ -311,17 +312,21 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
             loadDataAndViews();
         } else {
             filterLayout.setVisibility(View.GONE);
-            obscureButton.setVisibility(View.GONE);
+            obscureLayoutView.setVisibility(View.GONE);
         }
     }
 
     private void btnFilterOnClick(View view) {
-        obscureButton.setVisibility(View.VISIBLE);
+        obscureLayoutView.setVisibility(View.VISIBLE);
         filterLayout.setVisibility(View.VISIBLE);
         ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).setChecked(onlyNotRead);
         ((EditText) root.findViewById(R.id.newsletter_filter_date)).setText(filterDate);
         ((EditText) root.findViewById(R.id.newsletter_filter_text)).setText(filterText);
     }
+
+    //endregion
+
+    //region Metodi
 
     private boolean compareNewsletterLists(List<Newsletter> l1, List<Newsletter> l2) {
         int l1length = l1.size();
@@ -341,8 +346,8 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
      */
     private void downloadAndOpenFile(String url) {
         isDownloading = true;
-        progressBarLoadingPage.setZ(10f);
-        progressBarLoadingPage.setVisibility(View.VISIBLE);
+        pbLoadingPage.setZ(10f);
+        pbLoadingPage.setVisibility(View.VISIBLE);
         new Thread(() -> {
             try {
                 DownloadedFile downloadedFile = GlobalVariables.gS.download(url);
@@ -362,7 +367,7 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
                 e.printStackTrace();
             }
             isDownloading = false;
-            activity.runOnUiThread(() -> progressBarLoadingPage.setVisibility(View.GONE));
+            activity.runOnUiThread(() -> pbLoadingPage.setVisibility(View.GONE));
         }).start();
     }
 
@@ -386,6 +391,8 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
         if (canSendErrorMessage)
             Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
+
+    //endregion
 
     @Override
     public void onStart() {
