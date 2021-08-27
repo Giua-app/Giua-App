@@ -15,6 +15,8 @@
 Giua-App è una applicazione per Android che permette di visualizzare voti, assenze, lezioni e tutte le altre informazioni ottenibili da un sito con il registro elettronico [giua@school](https://github.com/trinko/giuaschool#giuaschool).
 Questa app usa la libreria [Giua-Webscraper](https://github.com/Giua-app/Giua-Webscraper) per ottenere le informazioni dal sito
 
+![Screenshots](/readme-assets/Screenshots.png "Screenshots")
+
 ## Come si scarica?
 Vai nella scheda [Actions](https://github.com/Giua-app/Giua-App/actions/workflows/build_on_release.yml?query=event%3Arelease) e clicca sull'ultimo workflow, poi scarica l'artifact "debug-apk". Dentro lo zip ci sarà il file apk da installare su Android.
 
