@@ -209,6 +209,21 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
         swipeRefreshLayout.setRefreshing(false);
     }
 
+    @Override
+    public void nullAllReferenceWithFragmentViews() {
+        root = null;
+        layout = null;
+        progressBarLoadingPage = null;
+        scrollView = null;
+        attachmentLayout = null;
+        obscureButton = null;
+        tvNoElements = null;
+        btnFilter = null;
+        filterLayout = null;
+        swipeRefreshLayout = null;
+        allNewsletter = null;
+    }
+
     private void onClickSingleAttachment(String url) {
         if (!isDownloading) {
             downloadAndOpenFile(url);
@@ -387,15 +402,19 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void onPause() {
         canSendErrorMessage = false;
-        layout.removeViews(1, layout.getChildCount() - 1);
-        allNewsletter = new Vector<>();
         super.onPause();
     }
 
     @Override
     public void onStop() {
-        //FIXME: Salva solo le ultime circolari caricate
-        AppData.saveNewslettersString(activity, new JsonHelper().saveNewslettersToString(allNewsletterToSave));
+        if (!allNewsletterToSave.isEmpty())
+            AppData.saveNewslettersString(activity, new JsonHelper().saveNewslettersToString(allNewsletterToSave));
         super.onStop();
+    }
+
+    @Override
+    public void onDestroyView() {
+        nullAllReferenceWithFragmentViews();
+        super.onDestroyView();
     }
 }

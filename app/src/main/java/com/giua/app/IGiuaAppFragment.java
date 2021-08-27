@@ -26,4 +26,9 @@ public interface IGiuaAppFragment {
     void loadDataAndViews();
 
     void addViews();
+
+    /**
+     * Serve a risolvere i memory leak
+     */
+    void nullAllReferenceWithFragmentViews();
 }

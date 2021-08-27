@@ -200,6 +200,26 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
         swipeRefreshLayout.setRefreshing(false);
     }
 
+    @Override
+    public void nullAllReferenceWithFragmentViews() {
+        root = null;
+        tvCurrentDate = null;
+        lessonsLayout = null;
+        calendarView = null;
+        obscureLayout = null;
+        frameLayout = null;
+        tvNoElements = null;
+        pbLoadingContent = null;
+        lessonDetailLayout = null;
+        tvDetailArgs = null;
+        tvDetailActs = null;
+        bottomCardView = null;
+        btnConfirmDate = null;
+        ivCalendarImage = null;
+        swipeRefreshLayout = null;
+        allLessons = null;
+    }
+
     private void btnConfirmDateOnClick(View view) {
         btnConfirmDate.setVisibility(View.GONE);
         isSpammingClick = false;
@@ -295,5 +315,11 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
         calendar.setTime(date);
         calendar.add(Calendar.DAY_OF_YEAR, -1);
         return calendar.getTime();
+    }
+
+    @Override
+    public void onDestroyView() {
+        nullAllReferenceWithFragmentViews();
+        super.onDestroyView();
     }
 }

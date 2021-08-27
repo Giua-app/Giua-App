@@ -164,6 +164,17 @@ public class VotiFragment extends Fragment implements IGiuaAppFragment {
         swipeRefreshLayout.setRefreshing(false);
     }
 
+    @Override
+    public void nullAllReferenceWithFragmentViews() {
+        root = null;
+        mainLayout = null;
+        obscureLayoutView = null;
+        detailVoteLayout = null;
+        progressBar = null;
+        tvNoElements = null;
+        swipeRefreshLayout = null;
+    }
+
     private void onRefresh() {
         refreshVotes = true;
         loadDataAndViews();
@@ -177,10 +188,10 @@ public class VotiFragment extends Fragment implements IGiuaAppFragment {
     private void singleVoteOnClick(View view) {
         Resources res = getResources();
         SingleVoteView _view = (SingleVoteView) view;
-        TextView detailVoteDate = detailVoteLayout.findViewById(R.id.detail_vote_date);
-        TextView detailVoteType = detailVoteLayout.findViewById(R.id.detail_vote_type);
-        TextView detailVoteArguments = detailVoteLayout.findViewById(R.id.detail_vote_arguments);
-        TextView detailVoteJudge = detailVoteLayout.findViewById(R.id.detail_vote_judge);
+        TextView detailVoteDate = root.findViewById(R.id.detail_vote_date);
+        TextView detailVoteType = root.findViewById(R.id.detail_vote_type);
+        TextView detailVoteArguments = root.findViewById(R.id.detail_vote_arguments);
+        TextView detailVoteJudge = root.findViewById(R.id.detail_vote_judge);
         detailVoteDate.setVisibility(View.GONE);
         detailVoteType.setVisibility(View.GONE);
         detailVoteArguments.setVisibility(View.GONE);
@@ -188,7 +199,7 @@ public class VotiFragment extends Fragment implements IGiuaAppFragment {
         detailVoteLayout.setVisibility(View.VISIBLE);
         obscureLayoutView.setVisibility(View.VISIBLE);
 
-        if(!_view.vote.date.equals("")) {
+        if (!_view.vote.date.equals("")) {
             detailVoteDate.setVisibility(View.VISIBLE);
             detailVoteDate.setText(Html.fromHtml("<b>" + res.getString(R.string.detail_vote_date) + "</b> " + _view.vote.date, Html.FROM_HTML_MODE_COMPACT));
         }
@@ -238,5 +249,11 @@ public class VotiFragment extends Fragment implements IGiuaAppFragment {
     public void onStop() {
         AppData.saveVotesString(activity, new JsonHelper().saveVotesToString(allVotes));
         super.onStop();
+    }
+
+    @Override
+    public void onDestroyView() {
+        nullAllReferenceWithFragmentViews();
+        super.onDestroyView();
     }
 }

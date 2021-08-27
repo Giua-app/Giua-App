@@ -118,12 +118,8 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         btnPrevMonth.setOnClickListener(this::btnPrevMonthOnClick);
         ivVisualizerPrevBtn.setOnClickListener(this::ivVisualizerPrevBtnOnClick);
         ivVisualizerNextBtn.setOnClickListener(this::ivVisualizerNextBtnOnClick);
-        visualizerLayout.setOnClickListener((view) -> {
-        });
-        obscureLayoutView.setOnClickListener((view) -> {
-            visualizerLayout.setVisibility(View.GONE);
-            obscureLayoutView.setVisibility(View.GONE);
-        });
+        visualizerLayout.setOnClickListener((view) -> {/*Serve ad evitare che quando si il layout questo non sparisca*/});
+        obscureLayoutView.setOnClickListener(this::obscureLayoutOnClick);
 
         if (Integer.parseInt(getCurrentMonth()) >= 6 && Integer.parseInt(getCurrentMonth()) <= 8)
             btnNextMonth.setVisibility(View.GONE);
@@ -135,10 +131,132 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         return root;
     }
 
-    private void onRefresh() {
-        loadDataAndViews();
+    @Override
+    public void loadDataAndViews() {
+        if (!isLoadingData) {
+            if (viewsLayout.indexOfChild(progressBar) == -1)
+                viewsLayout.addView(progressBar, 0);
+            new Thread(() -> {
+                try {
+                    isLoadingData = true;
+                    allTests = GlobalVariables.gS.getAllTestsWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())), true);
+                    allHomeworks = GlobalVariables.gS.getAllHomeworksWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())), true);
+
+                    if (allTests.isEmpty() && allHomeworks.isEmpty()) {
+                        activity.runOnUiThread(() -> {
+                            viewsLayout.removeAllViews();
+                            tvNoElements.setVisibility(View.VISIBLE);
+                            swipeRefreshLayout.setRefreshing(false);
+                        });
+                        isLoadingData = false;
+                    } else
+                        activity.runOnUiThread(this::addViews);
+                } catch (GiuaScraperExceptions.YourConnectionProblems e) {
+                    activity.runOnUiThread(() -> {
+                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
+                        progressBar.setVisibility(View.GONE);
+                        tvNoElements.setVisibility(View.VISIBLE);
+                        swipeRefreshLayout.setRefreshing(false);
+                        isLoadingData = false;
+                    });
+                } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
+                    activity.runOnUiThread(() -> {
+                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
+                        progressBar.setVisibility(View.GONE);
+                        tvNoElements.setVisibility(View.VISIBLE);
+                        swipeRefreshLayout.setRefreshing(false);
+                        isLoadingData = false;
+                    });
+                } catch (NullPointerException e) {
+                    activity.runOnUiThread(() -> {
+                        if (!GiuaScraper.isMyInternetWorking())
+                            DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
+                        progressBar.setVisibility(View.GONE);
+                        tvNoElements.setVisibility(View.VISIBLE);
+                        swipeRefreshLayout.setRefreshing(false);
+                        isLoadingData = false;
+                    });
+                }
+                swipeRefreshLayout.setRefreshing(false);
+            }).start();
+        }
     }
 
+    @Override
+    public void addViews() {
+        viewsLayout.removeAllViews();
+        tvNoElements.setVisibility(View.GONE);
+        viewsLayout.scrollTo(0, 0);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(0, 50, 0, 0);
+
+        int testCounter = 0;
+        int allTestsLength = allTests.size();
+        //Rircordarsi che i compiti e le verifiche sono già messe in ordine di data
+        for (Homework homework : allHomeworks) {
+            int homeworkDay = Integer.parseInt(homework.day);
+            AgendaView view;
+
+            while (testCounter < allTestsLength && homeworkDay > Integer.parseInt(allTests.get(testCounter).day)) {
+                //Sino a quando non arrivi alla data del primo compito trovato metti nel layout tutte le verifche che trovi
+                AgendaView view2 = new AgendaView(requireContext(), null, allTests.get(testCounter));
+                view2.setOnClickListener(this::agendaViewOnClick);
+                view2.setId(View.generateViewId());
+                view2.setLayoutParams(params);
+                viewsLayout.addView(view2);
+
+                testCounter++;
+            }
+
+            if (testCounter < allTestsLength && homeworkDay == Integer.parseInt(allTests.get(testCounter).day)) {     //In questo giorno ci sono sia verifiche che compiti
+                view = new AgendaView(requireContext(), null, homework, allTests.get(testCounter));
+                testCounter++;
+            } else {    //Solo compiti
+                view = new AgendaView(requireContext(), null, homework);
+            }
+
+            view.setOnClickListener(this::agendaViewOnClick);
+            view.setId(View.generateViewId());
+            view.setLayoutParams(params);
+            viewsLayout.addView(view);
+        }
+        while (testCounter < allTestsLength) {
+            //Aggiungi tutte le restanti verifiche che si trovano dopo l'ultimo compito
+            AgendaView view = new AgendaView(requireContext(), null, allTests.get(testCounter));
+            view.setOnClickListener(this::agendaViewOnClick);
+            view.setId(View.generateViewId());
+            view.setLayoutParams(params);
+            viewsLayout.addView(view);
+
+            testCounter++;
+        }
+        isLoadingData = false;
+    }
+
+    @Override
+    public void nullAllReferenceWithFragmentViews() {
+        root = null;
+        viewsLayout = null;
+        tvTodayText = null;
+        tvNoElements = null;
+        btnNextMonth = null;
+        btnPrevMonth = null;
+        visualizerLayout = null;
+        tvVisualizerType = null;
+        tvVisualizerSubject = null;
+        tvVisualizerCreator = null;
+        tvVisualizerText = null;
+        tvVisualizerDate = null;
+        obscureLayoutView = null;
+        ivVisualizerPrevBtn = null;
+        ivVisualizerNextBtn = null;
+        progressBarForDetails = null;
+        swipeRefreshLayout = null;
+        allHomeworks = null;
+        allTests = null;
+    }
+
+    //region Listeners
     private void btnPrevMonthOnClick(View view) {
         if (!isLoadingData) {
             currentDate = getPrevMonth(currentDate);
@@ -278,107 +396,12 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         }
     }
 
-    @Override
-    public void loadDataAndViews() {
-        if (!isLoadingData) {
-            if (viewsLayout.indexOfChild(progressBar) == -1)
-                viewsLayout.addView(progressBar, 0);
-            new Thread(() -> {
-                try {
-                    isLoadingData = true;
-                    allTests = GlobalVariables.gS.getAllTestsWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())), true);
-                    allHomeworks = GlobalVariables.gS.getAllHomeworksWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())), true);
-
-                    if (allTests.isEmpty() && allHomeworks.isEmpty()) {
-                        activity.runOnUiThread(() -> {
-                            viewsLayout.removeAllViews();
-                            tvNoElements.setVisibility(View.VISIBLE);
-                            swipeRefreshLayout.setRefreshing(false);
-                        });
-                        isLoadingData = false;
-                    } else
-                        activity.runOnUiThread(this::addViews);
-                } catch (GiuaScraperExceptions.YourConnectionProblems e) {
-                    activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
-                        progressBar.setVisibility(View.GONE);
-                        tvNoElements.setVisibility(View.VISIBLE);
-                        swipeRefreshLayout.setRefreshing(false);
-                        isLoadingData = false;
-                    });
-                } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
-                    activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
-                        progressBar.setVisibility(View.GONE);
-                        tvNoElements.setVisibility(View.VISIBLE);
-                        swipeRefreshLayout.setRefreshing(false);
-                        isLoadingData = false;
-                    });
-                } catch (NullPointerException e) {
-                    activity.runOnUiThread(() -> {
-                        if (!GiuaScraper.isMyInternetWorking())
-                            DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
-                        progressBar.setVisibility(View.GONE);
-                        tvNoElements.setVisibility(View.VISIBLE);
-                        swipeRefreshLayout.setRefreshing(false);
-                        isLoadingData = false;
-                    });
-                }
-                swipeRefreshLayout.setRefreshing(false);
-            }).start();
-        }
+    private void onRefresh() {
+        loadDataAndViews();
     }
+    //endregion
 
-    @Override
-    public void addViews() {
-        viewsLayout.removeAllViews();
-        tvNoElements.setVisibility(View.GONE);
-        viewsLayout.scrollTo(0, 0);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0, 50, 0, 0);
-
-        int testCounter = 0;
-        int allTestsLength = allTests.size();
-        //Rircordarsi che i compiti e le verifiche sono già messe in ordine di data
-        for (Homework homework : allHomeworks) {
-            int homeworkDay = Integer.parseInt(homework.day);
-            AgendaView view;
-
-            while (testCounter < allTestsLength && homeworkDay > Integer.parseInt(allTests.get(testCounter).day)) {
-                //Sino a quando non arrivi alla data del primo compito trovato metti tutte le verifche che trovi
-                AgendaView view2 = new AgendaView(requireContext(), null, allTests.get(testCounter));
-                view2.setOnClickListener(this::agendaViewOnClick);
-                view2.setId(View.generateViewId());
-                view2.setLayoutParams(params);
-                viewsLayout.addView(view2);
-
-                testCounter++;
-            }
-
-            if (testCounter < allTestsLength && homeworkDay == Integer.parseInt(allTests.get(testCounter).day)) {     //In questo giorno ci sono sia verifiche che compiti
-                view = new AgendaView(requireContext(), null, homework, allTests.get(testCounter));
-                testCounter++;
-            } else {    //Solo compiti
-                view = new AgendaView(requireContext(), null, homework);
-            }
-
-            view.setOnClickListener(this::agendaViewOnClick);
-            view.setId(View.generateViewId());
-            view.setLayoutParams(params);
-            viewsLayout.addView(view);
-        }
-        while (testCounter < allTestsLength) {
-            //Aggiungi tutte le restanti verifiche che si trovano dopo l'ultimo compito
-            AgendaView view = new AgendaView(requireContext(), null, allTests.get(testCounter));
-            view.setOnClickListener(this::agendaViewOnClick);
-            view.setId(View.generateViewId());
-            view.setLayoutParams(params);
-            viewsLayout.addView(view);
-
-            testCounter++;
-        }
-        isLoadingData = false;
-    }
+    //region Metodi
 
     private Date getNextMonth(Date date) {
         calendar.setTime(date);
@@ -465,5 +488,17 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
             return String.valueOf(n);
         else
             return "0" + n;
+    }
+
+    private void obscureLayoutOnClick(View view) {
+        visualizerLayout.setVisibility(View.GONE);
+        obscureLayoutView.setVisibility(View.GONE);
+    }
+    //endregion
+
+    @Override
+    public void onDestroyView() {
+        nullAllReferenceWithFragmentViews();
+        super.onDestroyView();
     }
 }

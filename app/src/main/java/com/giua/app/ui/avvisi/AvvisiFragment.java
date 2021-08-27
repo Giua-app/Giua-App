@@ -166,54 +166,24 @@ public class AvvisiFragment extends Fragment implements IGiuaAppFragment {
         finishedLoading();
     }
 
-    /**
-     * Scarica e salva dall'url un file col nome "avviso" e lo apre chiamando openFile
-     */
-    private void downloadAndOpenFile(String url) {
-        if (!isDownloading) {
-            isDownloading = true;
-            pbLoadingPage.setZ(10f);
-            pbLoadingPage.setVisibility(View.VISIBLE);
-            new Thread(() -> {
-                try {
-                    DownloadedFile downloadedFile = GlobalVariables.gS.download(url);
-                    FileOutputStream out = new FileOutputStream(requireContext().getFilesDir() + "/" + "allegato." + downloadedFile.fileExtension);
-                    if (downloadedFile.data != null && downloadedFile.data.length > 0) {
-                        out.write(downloadedFile.data);
-                        out.close();
-                        openFile("allegato." + downloadedFile.fileExtension, downloadedFile.fileExtension);
-                    } else {
-                        activity.runOnUiThread(() -> setErrorMessage("E' stato incontrato un errore di rete durante il download: riprovare", root));
-                    }
-                } catch (GiuaScraperExceptions.YourConnectionProblems e) {
-                    activity.runOnUiThread(() -> setErrorMessage(getString(R.string.your_connection_error), root));
-                } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
-                    activity.runOnUiThread(() -> setErrorMessage(getString(R.string.site_connection_error), root));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                isDownloading = false;
-                activity.runOnUiThread(() -> pbLoadingPage.setVisibility(View.GONE));
-            }).start();
-        }
+    @Override
+    public void nullAllReferenceWithFragmentViews() {
+        root = null;
+        viewsLayout = null;
+        pbLoadingPage = null;
+        scrollView = null;
+        tvNoElements = null;
+        fabGoUp = null;
+        swipeRefreshLayout = null;
+        obscureLayoutView = null;
+        detailsLayout = null;
+        attachmentLayout = null;
+        pbLoadingContent = null;
+        allAlerts = null;
+        allAlertsToSave = null;
     }
 
-    /**
-     * Apre il file col nome di "avviso"
-     */
-    private void openFile(String fileName, String fileExtension) {
-        Intent target = new Intent(Intent.ACTION_VIEW);
-        target.setData(FileProvider.getUriForFile(activity, "com.giua.app.provider", new File(requireContext().getFilesDir() + "/" + fileName)));
-        target.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-        Intent intent = Intent.createChooser(target, "Apri con:");
-        try {
-            startActivity(intent);
-        } catch (Exception e) {
-            setErrorMessage("Non è stata trovata alcuna app compatibile con il tipo di file " + fileExtension, root);
-        }
-    }
-
+    //region Listeners
     private void alertViewOnClick(View view) {
         pbLoadingPage.setVisibility(View.VISIBLE);
 
@@ -265,6 +235,11 @@ public class AvvisiFragment extends Fragment implements IGiuaAppFragment {
         }).start();
     }
 
+    private void btnGoUpOnClick(View view) {
+        scrollView.smoothScrollTo(0, 0);
+    }
+
+
     /**
      * Listener dello scorrimento della scroll view
      */
@@ -285,9 +260,56 @@ public class AvvisiFragment extends Fragment implements IGiuaAppFragment {
         viewsLayout.removeAllViews();
         loadDataAndViews();
     }
+    //endregion
 
-    private void btnGoUpOnClick(View view) {
-        scrollView.smoothScrollTo(0, 0);
+    //region Metodi
+
+    /**
+     * Scarica e salva dall'url un file col nome "avviso" e lo apre chiamando openFile
+     */
+    private void downloadAndOpenFile(String url) {
+        if (!isDownloading) {
+            isDownloading = true;
+            pbLoadingPage.setZ(10f);
+            pbLoadingPage.setVisibility(View.VISIBLE);
+            new Thread(() -> {
+                try {
+                    DownloadedFile downloadedFile = GlobalVariables.gS.download(url);
+                    FileOutputStream out = new FileOutputStream(requireContext().getFilesDir() + "/" + "allegato." + downloadedFile.fileExtension);
+                    if (downloadedFile.data != null && downloadedFile.data.length > 0) {
+                        out.write(downloadedFile.data);
+                        out.close();
+                        openFile("allegato." + downloadedFile.fileExtension, downloadedFile.fileExtension);
+                    } else {
+                        activity.runOnUiThread(() -> setErrorMessage("E' stato incontrato un errore di rete durante il download: riprovare", root));
+                    }
+                } catch (GiuaScraperExceptions.YourConnectionProblems e) {
+                    activity.runOnUiThread(() -> setErrorMessage(getString(R.string.your_connection_error), root));
+                } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
+                    activity.runOnUiThread(() -> setErrorMessage(getString(R.string.site_connection_error), root));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                isDownloading = false;
+                activity.runOnUiThread(() -> pbLoadingPage.setVisibility(View.GONE));
+            }).start();
+        }
+    }
+
+    /**
+     * Apre il file col nome di "avviso"
+     */
+    private void openFile(String fileName, String fileExtension) {
+        Intent target = new Intent(Intent.ACTION_VIEW);
+        target.setData(FileProvider.getUriForFile(activity, "com.giua.app.provider", new File(requireContext().getFilesDir() + "/" + fileName)));
+        target.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        Intent intent = Intent.createChooser(target, "Apri con:");
+        try {
+            startActivity(intent);
+        } catch (Exception e) {
+            setErrorMessage("Non è stata trovata alcuna app compatibile con il tipo di file " + fileExtension, root);
+        }
     }
 
     private void finishedLoading() {
@@ -301,6 +323,10 @@ public class AvvisiFragment extends Fragment implements IGiuaAppFragment {
         if (canSendErrorMessage)
             Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
+
+    //endregion
+
+    //region Fragment lifecycle
 
     @Override
     public void onStart() {
@@ -317,15 +343,21 @@ public class AvvisiFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void onPause() {
         canSendErrorMessage = false;
-        viewsLayout.removeAllViews();
         allAlerts = new Vector<>();
         super.onPause();
     }
 
     @Override
     public void onStop() {
-        //FIXME: Salva solo gli ultimi avvisi caricati
-        AppData.saveAlertsString(activity, new JsonHelper().saveAlertsToString(allAlertsToSave));
+        if (!allAlertsToSave.isEmpty())
+            AppData.saveNewslettersString(activity, new JsonHelper().saveAlertsToString(allAlertsToSave));
         super.onStop();
     }
+
+    @Override
+    public void onDestroyView() {
+        nullAllReferenceWithFragmentViews();
+        super.onDestroyView();
+    }
+    //endregion
 }

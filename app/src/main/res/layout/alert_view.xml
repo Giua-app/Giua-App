@@ -79,12 +79,12 @@
         android:id="@+id/alert_status_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
         android:fontFamily="@font/varelaroundregular"
         android:text="Stato"
         android:textSize="15sp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/alert_view_left_image"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="HardcodedText" />
 

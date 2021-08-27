@@ -126,5 +126,21 @@ public class PagellaFragment extends Fragment implements IGiuaAppFragment {
 
     }
 
+    @Override
+    public void nullAllReferenceWithFragmentViews() {
+        root = null;
+        viewsLayout = null;
+        tvCurrentQuarter = null;
+        pbLoadingPage = null;
+        tvNoElements = null;
+        btnChangeQuarter = null;
+        reportCard = null;
+    }
+
+    @Override
+    public void onDestroyView() {
+        nullAllReferenceWithFragmentViews();
+        super.onDestroyView();
+    }
 
 }
