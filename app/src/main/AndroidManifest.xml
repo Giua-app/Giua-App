@@ -90,10 +90,8 @@
                 android:value=".ActivityManager" />
         </activity>
         <activity
-            android:name="com.eggheadgames.aboutbox.activity.AboutActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.MaterialAboutActivity"
-            tools:ignore="LockedOrientationActivity" />
+            android:name=".AboutActivity"
+            android:theme="@style/AppTheme.MaterialAboutActivity"/>
     </application>
 
 </manifest>

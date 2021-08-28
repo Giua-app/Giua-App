@@ -24,7 +24,6 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.eggheadgames.aboutbox.AboutConfig;
 import com.giua.webscraper.GiuaScraper;
 
 import cat.ereza.customactivityoncrash.config.CaocConfig;
@@ -36,7 +35,7 @@ public class ActivityManager extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setupCaoc(); //Crash handler
-        setupAboutBox(); //About screen
+        //setupAboutBox(); //About screen
 
 
         //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
@@ -102,7 +101,7 @@ public class ActivityManager extends AppCompatActivity {
                 .apply();
     }
 
-    public void setupAboutBox() {
+    /*public void setupAboutBox() {
         AboutConfig aboutConfig = AboutConfig.getInstance();
         aboutConfig.appName = getString(R.string.app_name);
         aboutConfig.appIcon = R.mipmap.ic_launcher;
@@ -148,13 +147,13 @@ public class ActivityManager extends AppCompatActivity {
             }
         };
         // set it only if aboutConfig.analytics is defined.
-        aboutConfig.logUiEventName = "Log";*/
+        aboutConfig.logUiEventName = "Log";*
 
         // Contact Support email details
         //aboutConfig.emailAddress = "Test";
         //aboutConfig.emailSubject = "Test";
         //aboutConfig.emailBody = "Test";
-    }
+    }*/
 
 
     /**

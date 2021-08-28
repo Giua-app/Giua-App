@@ -67,4 +67,9 @@
         <item name="fontFamily">@font/varelaroundregular</item>
     </style>
 
+    <style name="AppTheme.MaterialAboutActivity" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/relative_main_color</item>
+        <item name="colorPrimaryDark">@color/relative_main_color</item>
+    </style>
+
 </resources>

@@ -111,7 +111,7 @@
                 android:layout_width="390dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:text="@string/egab_about_screen_title"
+                android:text="About"
                 android:textColor="@color/adaptive_color_text" />
 
         </LinearLayout>
