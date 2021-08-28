@@ -17,7 +17,7 @@
  *     along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 
-package com.giua.app.ui.circolari;
+package com.giua.app.ui.newsletters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -59,7 +59,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
-public class CircolariFragment extends Fragment implements IGiuaAppFragment {
+public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
     LinearLayout layout;
     Context context;
@@ -89,7 +89,7 @@ public class CircolariFragment extends Fragment implements IGiuaAppFragment {
     String filterText = "";
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.fragment_circolari, container, false);
+        root = inflater.inflate(R.layout.fragment_newsletters, container, false);
 
         context = getContext();
         layout = root.findViewById(R.id.newsletter_linear_layout);

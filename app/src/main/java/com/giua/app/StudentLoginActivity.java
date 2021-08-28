@@ -61,6 +61,7 @@ public class StudentLoginActivity extends AppCompatActivity {
                     if (rawCookie != null) {
                         cookie = rawCookie.split("=")[1];
                         onStoppedWebView();
+                        return true;
                     }
                     Snackbar.make(findViewById(android.R.id.content), "Login studente fallito, contatta gli sviluppatori", Snackbar.LENGTH_LONG).show();
                 }

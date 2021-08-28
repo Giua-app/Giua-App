@@ -17,13 +17,14 @@
  *     along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 
-package com.giua.app.ui.voti;
+package com.giua.app.ui.votes;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,13 +52,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class VotiFragment extends Fragment implements IGiuaAppFragment {
+public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
     ProgressBar pbLoadingPage;
     VoteView voteView;
     TextView tvNoElements;
     LinearLayout viewsLayout;
-    LinearLayout detailVoteLayout;
+    LinearLayout voteVisualizer;
     LinearLayout.LayoutParams params;
     ObscureLayoutView obscureLayoutView;    //Questo bottone viene visualizzato dietro al detail layout e se viene cliccato si esce dai dettagli
     SwipeRefreshLayout swipeRefreshLayout;
@@ -69,11 +70,11 @@ public class VotiFragment extends Fragment implements IGiuaAppFragment {
 
     @SuppressLint("ClickableViewAccessibility")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.fragment_voti, container, false);
+        root = inflater.inflate(R.layout.fragment_votes, container, false);
 
         viewsLayout = root.findViewById(R.id.vote_fragment_linear_layout);
         obscureLayoutView = root.findViewById(R.id.vote_obscure_view);
-        detailVoteLayout = root.findViewById(R.id.vote_attachment_layout);
+        voteVisualizer = root.findViewById(R.id.vote_attachment_layout);
         pbLoadingPage = root.findViewById(R.id.vote_loading_page_bar);
         tvNoElements = root.findViewById(R.id.vote_fragment_no_elements_view);
         swipeRefreshLayout = root.findViewById(R.id.vote_swipe_refresh_layout);
@@ -169,7 +170,7 @@ public class VotiFragment extends Fragment implements IGiuaAppFragment {
         root = null;
         viewsLayout = null;
         obscureLayoutView = null;
-        detailVoteLayout = null;
+        voteVisualizer = null;
         pbLoadingPage = null;
         tvNoElements = null;
         swipeRefreshLayout = null;
@@ -183,7 +184,7 @@ public class VotiFragment extends Fragment implements IGiuaAppFragment {
     }
 
     public void obscureButtonOnClick(View view) {
-        detailVoteLayout.setVisibility(View.GONE);
+        voteVisualizer.setVisibility(View.GONE);
         obscureLayoutView.setVisibility(View.GONE);
     }
 
@@ -194,11 +195,13 @@ public class VotiFragment extends Fragment implements IGiuaAppFragment {
         TextView detailVoteType = root.findViewById(R.id.detail_vote_type);
         TextView detailVoteArguments = root.findViewById(R.id.detail_vote_arguments);
         TextView detailVoteJudge = root.findViewById(R.id.detail_vote_judge);
+        detailVoteArguments.setMovementMethod(new ScrollingMovementMethod());
+        detailVoteJudge.setMovementMethod(new ScrollingMovementMethod());
         detailVoteDate.setVisibility(View.GONE);
         detailVoteType.setVisibility(View.GONE);
         detailVoteArguments.setVisibility(View.GONE);
         detailVoteJudge.setVisibility(View.GONE);
-        detailVoteLayout.setVisibility(View.VISIBLE);
+        voteVisualizer.setVisibility(View.VISIBLE);
         obscureLayoutView.setVisibility(View.VISIBLE);
 
         if (!_view.vote.date.equals("")) {

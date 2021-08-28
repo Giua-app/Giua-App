@@ -17,7 +17,7 @@
  *     along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 
-package com.giua.app.ui.avvisi;
+package com.giua.app.ui.alerts;
 
 import android.content.Context;
 import android.graphics.Typeface;

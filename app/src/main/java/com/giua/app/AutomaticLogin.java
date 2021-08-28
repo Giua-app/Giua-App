@@ -66,13 +66,14 @@ public class AutomaticLogin extends AppCompatActivity {
                 startDrawerActivity();
             } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.SiteConnectionProblems e) {
                 runOnUiThread(() -> logoutButton.setVisibility(View.VISIBLE));
-                if (!GiuaScraper.isMyInternetWorking()) {
+
+                if (!GiuaScraper.isMyInternetWorking())
                     runOnUiThread(() -> setErrorMessage(getString(R.string.your_connection_error)));
-                } else if (!GiuaScraper.isSiteWorking()) {
+                else if (!GiuaScraper.isSiteWorking())
                     runOnUiThread(() -> setErrorMessage(getString(R.string.site_connection_error)));
-                } else {
+                else
                     runOnUiThread(() -> setErrorMessage("E' stato riscontrato qualche problema sconosciuto riguardo la rete"));
-                }
+
                 try {
                     //Thread.sleep(2000);
                     runOnUiThread(() -> progressBar.setVisibility(View.INVISIBLE));
@@ -99,6 +100,9 @@ public class AutomaticLogin extends AppCompatActivity {
                     }
                     startActivity(new Intent(AutomaticLogin.this, MainLogin.class));
                 }
+            } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
+                runOnUiThread(() -> logoutButton.setVisibility(View.VISIBLE));
+                runOnUiThread(() -> setErrorMessage(getString(R.string.site_in_maintenace_error)));
             }
         }).start();
     }

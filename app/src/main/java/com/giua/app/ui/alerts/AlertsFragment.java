@@ -17,11 +17,12 @@
  *     along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 
-package com.giua.app.ui.avvisi;
+package com.giua.app.ui.alerts;
 
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,7 +56,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
-public class AvvisiFragment extends Fragment implements IGiuaAppFragment {
+public class AlertsFragment extends Fragment implements IGiuaAppFragment {
 
     List<Alert> allAlerts = new Vector<>();
     List<Alert> allAlertsToSave = new Vector<>();
@@ -78,7 +79,7 @@ public class AvvisiFragment extends Fragment implements IGiuaAppFragment {
     boolean isDownloading = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.fragment_avvisi, container, false);
+        root = inflater.inflate(R.layout.fragment_alerts, container, false);
 
         viewsLayout = root.findViewById(R.id.alert_linear_layout);
         pbLoadingPage = root.findViewById(R.id.alert_loading_page_bar);
@@ -193,6 +194,7 @@ public class AvvisiFragment extends Fragment implements IGiuaAppFragment {
 
                 activity.runOnUiThread(() -> {
                     Alert alert = ((AlertView) view).alert;
+                    ((TextView) root.findViewById(R.id.alert_details_text_view)).setMovementMethod(new ScrollingMovementMethod());
                     ((TextView) root.findViewById(R.id.alert_details_text_view)).setText(alert.details);
                     ((TextView) root.findViewById(R.id.alert_creator_text_view)).setText(alert.creator);
                     ((TextView) root.findViewById(R.id.alert_type_text_view)).setText(alert.type);

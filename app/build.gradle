@@ -68,13 +68,14 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
     implementation 'androidx.annotation:annotation:1.2.0'
 
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
+    // Memory leak lib
+    //debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'  //DEBUG
 
     // jsoup HTML parser library @ https://jsoup.org/
     implementation 'org.jsoup:jsoup:1.14.2'
 
     // Giua scraper
-    implementation 'com.github.Giua-app:Giua-Webscraper:1.0.20-beta'
+    implementation 'com.github.Giua-app:Giua-Webscraper:1.1.0-beta'
 
     // Error handler lib
     implementation 'cat.ereza:customactivityoncrash:2.3.0'

@@ -70,8 +70,8 @@
     <!-- Fragment lezioni -->
     <string name="fragmentlezioni_textview_currentdate">Data attuale</string>
     <string name="fragmentlezioni_btn_confirmdate">Conferma data</string>
-    <string name="fragmentlezioni_textview_lesson_detail_args">Argomenti</string>
-    <string name="fragmentlezioni_textview_lesson_detail_acts">Attivita</string>
+    <string name="fragmentlezioni_textview_visualizer_arguments">Argomenti</string>
+    <string name="fragmentlezioni_textview_visualizer_activities">Attivita</string>
 
     <!-- Loading Screen -->
     <string name="loadingscreen_textview_automaticlogin" tools:ignore="TypographyEllipsis">Accesso automatico\n Attendere prego...</string>
@@ -106,5 +106,6 @@
     <string name="fragment_pagella">Pagella</string>
     <string name="report_card_btn_first_quarter">1° Quadrimestre</string>
     <string name="report_card_btn_second_quarter">2° Quadrimestre</string>
+    <string name="site_in_maintenace_error">Il sito è in manutenzione, riprova più tardi</string>
 
 </resources>

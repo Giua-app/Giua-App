@@ -24,7 +24,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".ui.lezioni.LezioniFragment">
+    tools:context=".ui.lessons.LessonsFragment">
 
 
     <TextView
@@ -164,7 +164,7 @@
         app:layout_constraintStart_toStartOf="@+id/lezioni_bottom_card_view" />
 
     <LinearLayout
-        android:id="@+id/lezioni_lesson_detail"
+        android:id="@+id/lezioni_visualizer_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
@@ -184,22 +184,24 @@
         app:layout_constraintVertical_bias="0.35000002">
 
         <TextView
-            android:id="@+id/lezioni_lesson_detail_args"
+            android:id="@+id/lezioni_visualizer_arguments"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:fontFamily="@font/varelaroundregular"
-            android:text="@string/fragmentlezioni_textview_lesson_detail_args"
+            android:maxHeight="120dp"
+            android:text="@string/fragmentlezioni_textview_visualizer_arguments"
             android:textSize="15sp" />
 
         <TextView
-            android:id="@+id/lezioni_lesson_detail_acts"
+            android:id="@+id/lezioni_visualizer_activities"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:layout_weight="1"
             android:fontFamily="@font/varelaroundregular"
-            android:text="@string/fragmentlezioni_textview_lesson_detail_acts"
+            android:maxHeight="120dp"
+            android:text="@string/fragmentlezioni_textview_visualizer_activities"
             android:textSize="15sp" />
     </LinearLayout>
 

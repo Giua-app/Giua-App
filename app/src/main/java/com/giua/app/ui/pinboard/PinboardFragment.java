@@ -17,7 +17,7 @@
  *     along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 
-package com.giua.app.ui.bacheca;
+package com.giua.app.ui.pinboard;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -30,37 +30,37 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.giua.app.R;
-import com.giua.app.ui.avvisi.AvvisiFragment;
-import com.giua.app.ui.circolari.CircolariFragment;
+import com.giua.app.ui.alerts.AlertsFragment;
+import com.giua.app.ui.newsletters.NewslettersFragment;
 import com.google.android.material.tabs.TabLayout;
 
-public class BachecaFragment extends Fragment {
+public class PinboardFragment extends Fragment {
 
     TabLayout tabLayout;
     FragmentManager fragmentManager;
     FragmentTransaction ft;
-    CircolariFragment circolariFragment;
-    AvvisiFragment avvisiFragment;
+    NewslettersFragment newslettersFragment;
+    AlertsFragment alertsFragment;
     //ViewPager2 viewPager;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_bacheca, container, false);
+        View root = inflater.inflate(R.layout.fragment_pinboard, container, false);
 
         tabLayout = root.findViewById(R.id.tabLayout);
         //viewPager = root.findViewById(R.id.pager);
 
         fragmentManager = getChildFragmentManager();
 
-        circolariFragment = new CircolariFragment();
-        avvisiFragment = new AvvisiFragment();
+        newslettersFragment = new NewslettersFragment();
+        alertsFragment = new AlertsFragment();
 
         //Handle the Child Fragment.
         ft = fragmentManager.beginTransaction();
-        ft.add(R.id.fragment_tabs_circolari_avvisi_framelayout, circolariFragment, "circolari");
-        ft.add(R.id.fragment_tabs_circolari_avvisi_framelayout, avvisiFragment, "avvisi");
-        ft.hide(avvisiFragment);
-        ft.show(circolariFragment);
+        ft.add(R.id.fragment_tabs_circolari_avvisi_framelayout, newslettersFragment, "circolari");
+        ft.add(R.id.fragment_tabs_circolari_avvisi_framelayout, alertsFragment, "avvisi");
+        ft.hide(alertsFragment);
+        ft.show(newslettersFragment);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.addToBackStack(null);
         ft.setReorderingAllowed(true);
@@ -77,12 +77,12 @@ public class BachecaFragment extends Fragment {
                 ft.setReorderingAllowed(true);
 
                 if (tab.getText().toString().equals("Circolari")) {
-                    ft.hide(avvisiFragment);
-                    ft.show(circolariFragment);
+                    ft.hide(alertsFragment);
+                    ft.show(newslettersFragment);
                     ft.commit();
                 } else if (tab.getText().toString().equals("Avvisi")) {
-                    ft.hide(circolariFragment);
-                    ft.show(avvisiFragment);
+                    ft.hide(newslettersFragment);
+                    ft.show(alertsFragment);
                     ft.commit();
                 }
             }
@@ -101,12 +101,12 @@ public class BachecaFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        ft.remove(circolariFragment);
-        ft.remove(avvisiFragment);
+        ft.remove(newslettersFragment);
+        ft.remove(alertsFragment);
         fragmentManager = null;
         ft = null;
-        circolariFragment = null;
-        avvisiFragment = null;
+        newslettersFragment = null;
+        alertsFragment = null;
         tabLayout = null;
         super.onDestroyView();
     }

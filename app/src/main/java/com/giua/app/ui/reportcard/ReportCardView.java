@@ -17,7 +17,7 @@
  *     along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 
-package com.giua.app.ui.pagella;
+package com.giua.app.ui.reportcard;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -35,12 +35,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class PagellaView extends ConstraintLayout {
+public class ReportCardView extends ConstraintLayout {
 
     String subject;
     List<String> vote;
 
-    public PagellaView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, String subject, List<String> vote) {
+    public ReportCardView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, String subject, List<String> vote) {
         super(context, attrs);
 
         this.subject = subject;

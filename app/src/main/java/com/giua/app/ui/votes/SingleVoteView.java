@@ -17,39 +17,24 @@
  *     along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 
-package com.giua.app.ui.lezioni;
+package com.giua.app.ui.votes;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.giua.app.R;
-import com.giua.objects.Lesson;
+import com.giua.objects.Vote;
 
 import org.jetbrains.annotations.NotNull;
 
-public class LessonView extends ConstraintLayout {
+public class SingleVoteView extends androidx.appcompat.widget.AppCompatTextView {
+    Vote vote;
 
-    Lesson lesson;
-
-    public LessonView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, Lesson lesson) {
+    public SingleVoteView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, Vote vote){
         super(context, attrs);
 
-        this.lesson = lesson;
-
-        initializeComponent(context);
-    }
-
-    private void initializeComponent(Context context) {
-        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        layoutInflater.inflate(R.layout.lesson_view, this);
-
-        ((TextView) findViewById(R.id.lesson_view_subject)).setText(lesson.subject);
-        ((TextView) findViewById(R.id.lesson_view_time)).setText(lesson.time);
+        this.vote = vote;
     }
 }

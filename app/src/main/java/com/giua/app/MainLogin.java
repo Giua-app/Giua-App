@@ -84,8 +84,8 @@ public class MainLogin extends AppCompatActivity {
                     this.runOnUiThread(() -> pgProgressBar.setVisibility(View.INVISIBLE));
                 }
 
-            } catch (GiuaScraperExceptions.SessionCookieEmpty sce) {
-                if (!sce.siteSays.equals("Tipo di utente non ammesso: usare l'autenticazione tramite GSuite.")) {
+            } catch (GiuaScraperExceptions.SessionCookieEmpty e) {
+                if (!e.siteSays.equals("Tipo di utente non ammesso: usare l'autenticazione tramite GSuite.")) {
                     setErrorMessage("Informazioni di login errate!");
                     this.runOnUiThread(() -> {
                         etPassword.setText("");
@@ -93,8 +93,14 @@ public class MainLogin extends AppCompatActivity {
                     });
                 } else
                     startStudentLoginActivity();
-            } catch (GiuaScraperExceptions.UnableToLogin utl) {
+            } catch (GiuaScraperExceptions.UnableToLogin e) {
                 setErrorMessage("E' stato riscontrato qualche problema sconosciuto");
+                this.runOnUiThread(() -> {
+                    etPassword.setText("");
+                    pgProgressBar.setVisibility(View.INVISIBLE);
+                });
+            } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
+                setErrorMessage(getString(R.string.site_in_maintenace_error));
                 this.runOnUiThread(() -> {
                     etPassword.setText("");
                     pgProgressBar.setVisibility(View.INVISIBLE);

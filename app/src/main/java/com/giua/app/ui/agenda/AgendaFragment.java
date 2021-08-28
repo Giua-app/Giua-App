@@ -21,6 +21,7 @@ package com.giua.app.ui.agenda;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -111,6 +112,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
         pbLoadingPage = new ProgressBar(requireContext(), null);
 
+        tvVisualizerText.setMovementMethod(new ScrollingMovementMethod());
         tvTodayText.setText(getMonthFromNumber(Integer.parseInt(getCurrentMonth())) + " " + getCurrentYear());
 
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
@@ -382,9 +384,10 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                     }
 
                     ivVisualizerPrevBtn.setVisibility(View.INVISIBLE);
-                    if (visualizerHomeworks.size() + visualizerTests.size() == 1)
-                        ivVisualizerNextBtn.setVisibility(View.INVISIBLE);
-                    else
+                    if (visualizerHomeworks.size() + visualizerTests.size() == 1) {  //E' presente solo un elemento
+                        ivVisualizerPrevBtn.setVisibility(View.GONE);
+                        ivVisualizerNextBtn.setVisibility(View.GONE);
+                    } else
                         ivVisualizerNextBtn.setVisibility(View.VISIBLE);
                     visualizerLayout.setVisibility(View.VISIBLE);
                     obscureLayoutView.setVisibility(View.VISIBLE);

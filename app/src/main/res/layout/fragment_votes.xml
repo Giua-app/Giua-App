@@ -19,14 +19,30 @@
   -->
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:androd="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/vote_fragment_constraint_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@color/background"
+    android:orientation="vertical"
+    tools:context=".ui.votes.VotesFragment">
+
+    <!-- Qui verranno visualizzati i dettagli del voto cliccato-->
+
+    <ProgressBar
+        android:id="@+id/vote_loading_page_bar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="67dp"
+        android:layout_height="67dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.425" />
 
     <TextView
-        android:id="@+id/alert_no_elements_view"
+        android:id="@+id/vote_fragment_no_elements_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/varelaroundregular"
@@ -38,83 +54,55 @@
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.43" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/alert_btn_go_up"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
-        android:visibility="gone"
-        app:backgroundTint="@color/main_color_lighter"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.952"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.978"
-        app:srcCompat="@drawable/ic_baseline_arrow_upward_24"
-        android:contentDescription="Vai sopra" />
+        app:layout_constraintVertical_bias="0.441" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/alert_swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/vote_swipe_refresh_layout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0">
 
         <ScrollView
-            android:id="@+id/alert_scroll_view"
+            android:id="@+id/vote_fragment_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="none"
-            androd:ignore="SpeakableTextPresentCheck">
+            tools:ignore="SpeakableTextPresentCheck">
 
             <LinearLayout
-                android:id="@+id/alert_linear_layout"
+                android:id="@+id/vote_fragment_linear_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="10dp" />
+                android:padding="5dp" />
+
         </ScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <ProgressBar
-        android:id="@+id/alert_loading_page_bar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="67dp"
-        android:layout_height="67dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <com.giua.app.ui.ObscureLayoutView
-        android:id="@+id/alert_obscure_layout"
+        android:id="@+id/vote_obscure_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        androd:ignore="ContentDescription"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-    </com.giua.app.ui.ObscureLayoutView>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
     <LinearLayout
-        android:id="@+id/alert_details_layout"
+        android:id="@+id/vote_attachment_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:background="@drawable/corner_radius_10dp"
-        android:backgroundTint="@color/general_view_color"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:background="@drawable/general_view_style"
+        android:elevation="20dp"
         android:orientation="vertical"
         android:padding="10dp"
         android:visibility="gone"
@@ -123,42 +111,46 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.421">
+        app:layout_constraintVertical_bias="0.422">
 
         <TextView
-            android:id="@+id/alert_type_text_view"
+            android:id="@+id/detail_vote_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/varelaroundregular"
-            android:text="Tipo"
-            android:textAlignment="center"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:text="@string/detail_vote_date"
+            android:textSize="15sp"
+            android:visibility="gone" />
 
         <TextView
-            android:id="@+id/alert_details_text_view"
+            android:id="@+id/detail_vote_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:fontFamily="@font/varelaroundregular"
-            android:text="Dettagli"
-            android:textSize="18sp" />
+            android:text="@string/detail_vote_type"
+            android:textSize="15sp"
+            android:visibility="gone" />
 
         <TextView
-            android:id="@+id/alert_creator_text_view"
+            android:id="@+id/detail_vote_arguments"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:fontFamily="@font/varelaroundregular"
-            android:text="Creatore"
-            android:textAlignment="textEnd" />
+            android:scrollbars="vertical"
+            android:text="@string/detail_vote_arguments"
+            android:maxHeight="100dp"
+            android:textSize="15sp"
+            android:visibility="gone" />
 
-        <LinearLayout
-            android:id="@+id/alert_attachment_layout"
+        <TextView
+            android:id="@+id/detail_vote_judge"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"></LinearLayout>
-
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/varelaroundregular"
+            android:text="@string/detail_vote_judge"
+            android:textSize="15sp"
+            android:maxHeight="100dp"
+            android:visibility="gone" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,7 +17,7 @@
  *     along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 
-package com.giua.app.ui.pagella;
+package com.giua.app.ui.reportcard;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -40,7 +40,7 @@ import com.giua.app.R;
 import com.giua.objects.ReportCard;
 import com.giua.webscraper.GiuaScraperExceptions;
 
-public class PagellaFragment extends Fragment implements IGiuaAppFragment {
+public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
 
     ReportCard reportCard;
     LinearLayout viewsLayout;
@@ -53,7 +53,7 @@ public class PagellaFragment extends Fragment implements IGiuaAppFragment {
     boolean isFirstQuarter = true;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.fragment_pagella, container, false);
+        root = inflater.inflate(R.layout.fragment_reportcard, container, false);
 
         viewsLayout = root.findViewById(R.id.report_card_views_layout);
         tvCurrentQuarter = root.findViewById(R.id.report_card_current_quarter);
@@ -106,7 +106,7 @@ public class PagellaFragment extends Fragment implements IGiuaAppFragment {
 
         int viewsCounter = 0;
         for (String key : reportCard.allVotes.keySet()) {
-            PagellaView view = new PagellaView(activity, null, key, reportCard.allVotes.get(key));
+            ReportCardView view = new ReportCardView(activity, null, key, reportCard.allVotes.get(key));
             if (viewsCounter > 0)
                 view.setLayoutParams(params);
 

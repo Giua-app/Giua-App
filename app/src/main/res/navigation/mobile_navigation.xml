@@ -26,9 +26,9 @@
 
     <fragment
         android:id="@+id/nav_voti"
-        android:name="com.giua.app.ui.voti.VotiFragment"
+        android:name="com.giua.app.ui.votes.VotesFragment"
         android:label="@string/menu_voti"
-        tools:layout="@layout/fragment_voti" />
+        tools:layout="@layout/fragment_votes" />
 
     <fragment
         android:id="@+id/nav_agenda"
@@ -38,17 +38,17 @@
 
     <fragment
         android:id="@+id/nav_lezioni"
-        android:name="com.giua.app.ui.lezioni.LezioniFragment"
+        android:name="com.giua.app.ui.lessons.LessonsFragment"
         android:label="@string/menu_lezioni"
-        tools:layout="@layout/fragment_lezioni" />
+        tools:layout="@layout/fragment_lessons" />
 
     <fragment
         android:id="@+id/nav_bacheca"
-        android:name="com.giua.app.ui.bacheca.BachecaFragment"
+        android:name="com.giua.app.ui.pinboard.PinboardFragment"
         android:label="@string/menu_bacheca" />
 
     <fragment
         android:id="@+id/nav_pagella"
-        android:name="com.giua.app.ui.pagella.PagellaFragment"
+        android:name="com.giua.app.ui.reportcard.ReportCardFragment"
         android:label="@string/fragment_pagella" />
 </navigation>

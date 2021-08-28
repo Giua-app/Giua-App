@@ -17,10 +17,11 @@
  *     along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 
-package com.giua.app.ui.lezioni;
+package com.giua.app.ui.lessons;
 
 import android.os.Bundle;
 import android.text.Html;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,13 +55,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class LezioniFragment extends Fragment implements IGiuaAppFragment {
+public class LessonsFragment extends Fragment implements IGiuaAppFragment {
 
     TextView tvCurrentDate;
     ObscureLayoutView obscureLayoutView;
     TextView tvNoElements;
-    TextView tvDetailArgs;
-    TextView tvDetailActs;
+    TextView tvVisualizerArguments;
+    TextView tvVisualizerActivities;
     ImageView ivCalendarImage;
     ProgressBar pbLoadingContent;
     FrameLayout frameLayout;
@@ -68,7 +69,7 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
     CalendarView calendarView;
     FragmentActivity activity;
     LinearLayout viewsLayout;
-    LinearLayout lessonDetailLayout;
+    LinearLayout visualizerLayout;
     CardView bottomCardView;
     List<Lesson> allLessons;
     Date currentDate;
@@ -85,7 +86,7 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
     boolean isSpammingClick = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.fragment_lezioni, container, false);
+        root = inflater.inflate(R.layout.fragment_lessons, container, false);
 
         tvCurrentDate = root.findViewById(R.id.lezioni_current_date);
         viewsLayout = root.findViewById(R.id.lezioni_lessons_layout);
@@ -94,9 +95,9 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
         frameLayout = root.findViewById(R.id.lezioni_frame_layout);
         tvNoElements = root.findViewById(R.id.lezioni_no_elements_view);
         pbLoadingContent = root.findViewById(R.id.lezioni_loading_content);
-        lessonDetailLayout = root.findViewById(R.id.lezioni_lesson_detail);
-        tvDetailArgs = root.findViewById(R.id.lezioni_lesson_detail_args);
-        tvDetailActs = root.findViewById(R.id.lezioni_lesson_detail_acts);
+        visualizerLayout = root.findViewById(R.id.lezioni_visualizer_layout);
+        tvVisualizerArguments = root.findViewById(R.id.lezioni_visualizer_arguments);
+        tvVisualizerActivities = root.findViewById(R.id.lezioni_visualizer_activities);
         bottomCardView = root.findViewById(R.id.lezioni_bottom_card_view);
         btnConfirmDate = root.findViewById(R.id.lezioni_btn_confirm_date);
         ivCalendarImage = root.findViewById(R.id.lezioni_calendar_image_view);
@@ -111,6 +112,8 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
         tomorrowDate = getNextDate(currentDate);
 
         tvCurrentDate.setText("Oggi");
+        tvVisualizerArguments.setMovementMethod(new ScrollingMovementMethod());
+        tvVisualizerActivities.setMovementMethod(new ScrollingMovementMethod());
 
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         root.findViewById(R.id.lezioni_img_next_date).setOnClickListener(this::nextDateOnClick);
@@ -203,9 +206,9 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
         frameLayout = null;
         tvNoElements = null;
         pbLoadingContent = null;
-        lessonDetailLayout = null;
-        tvDetailArgs = null;
-        tvDetailActs = null;
+        visualizerLayout = null;
+        tvVisualizerArguments = null;
+        tvVisualizerActivities = null;
         bottomCardView = null;
         btnConfirmDate = null;
         ivCalendarImage = null;
@@ -229,21 +232,21 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void lessonViewOnClick(View view) {
-        lessonDetailLayout.setVisibility(View.VISIBLE);
+        visualizerLayout.setVisibility(View.VISIBLE);
         obscureLayoutView.setVisibility(View.VISIBLE);
         bottomCardView.setZ(-10f);
         btnConfirmDate.setZ(-10f);
         ivCalendarImage.setZ(-10f);
 
         if (!((LessonView) view).lesson.arguments.equals(""))
-            tvDetailArgs.setText(Html.fromHtml("<b>Argomenti:</b> " + ((LessonView) view).lesson.arguments, Html.FROM_HTML_MODE_COMPACT));
+            tvVisualizerArguments.setText(Html.fromHtml("<b>Argomenti:</b> " + ((LessonView) view).lesson.arguments, Html.FROM_HTML_MODE_COMPACT));
         else
-            tvDetailArgs.setText(Html.fromHtml("<b>Argomenti:</b> Non specificati", Html.FROM_HTML_MODE_COMPACT));
+            tvVisualizerArguments.setText(Html.fromHtml("<b>Argomenti:</b> Non specificati", Html.FROM_HTML_MODE_COMPACT));
 
         if (!((LessonView) view).lesson.activities.equals(""))
-            tvDetailActs.setText(Html.fromHtml("<b>Attività:</b> " + ((LessonView) view).lesson.activities, Html.FROM_HTML_MODE_COMPACT));
+            tvVisualizerActivities.setText(Html.fromHtml("<b>Attività:</b> " + ((LessonView) view).lesson.activities, Html.FROM_HTML_MODE_COMPACT));
         else
-            tvDetailActs.setText(Html.fromHtml("<b>Attività:</b> Non specificata", Html.FROM_HTML_MODE_COMPACT));
+            tvVisualizerActivities.setText(Html.fromHtml("<b>Attività:</b> Non specificata", Html.FROM_HTML_MODE_COMPACT));
     }
 
     private void calendarOnChangeDateListener(CalendarView view, int year, int month, int dayOfMonth) {
@@ -260,7 +263,7 @@ public class LezioniFragment extends Fragment implements IGiuaAppFragment {
     private void obscureLayoutOnClick(View view) {
         frameLayout.setVisibility(View.GONE);
         obscureLayoutView.setVisibility(View.GONE);
-        lessonDetailLayout.setVisibility(View.GONE);
+        visualizerLayout.setVisibility(View.GONE);
         ivCalendarImage.setZ(13.75f);
         bottomCardView.setZ(13.75f);
         btnConfirmDate.setZ(13.75f);
