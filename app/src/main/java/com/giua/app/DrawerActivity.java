@@ -81,8 +81,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
         navigationView.setNavigationItemSelectedListener(this);
 
+        tvUserType = navigationView.getHeaderView(0).findViewById(R.id.txtSubtitle);
         tvUsername = navigationView.getHeaderView(0).findViewById(R.id.txtTitle);
-        tvUserType = navigationView.getHeaderView(0).findViewById(R.id.txtUserType);
 
         navigationView.setCheckedItem(R.id.nav_voti);
 
