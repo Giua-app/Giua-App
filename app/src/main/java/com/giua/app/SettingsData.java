@@ -64,8 +64,8 @@ public class SettingsData {
         return getSharedPreferences(context).getString(key, null);
     }
 
-    public static String getSettingInt(final Context context, final String key) {
-        return getSharedPreferences(context).getString(key, null);
+    public static int getSettingInt(final Context context, final String key) {
+        return getSharedPreferences(context).getInt(key, -1);
     }
 
     public static String getSettingFloat(final Context context, final String key) {

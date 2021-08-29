@@ -92,6 +92,10 @@
         <activity
             android:name=".AboutActivity"
             android:theme="@style/AppTheme.MaterialAboutActivity"/>
+        <activity
+            android:name=".AppIntroActivity"
+            android:label="label"
+            android:theme="@style/Theme.GiuaApp.NoActionBar"/>
     </application>
 
 </manifest>

@@ -69,8 +69,19 @@ public class ActivityManager extends AppCompatActivity {
         // notificationId is a unique int for each notification that you must define
         notificationManager.notify(10, builder.build());*/
 
+
         if (defaultUrl != null)
             GiuaScraper.setSiteURL(defaultUrl);
+
+        final int introStatus = SettingsData.getSettingInt(this, "introStatus");
+        //final int introStatus = 0;         //DEBUG
+
+        // 1 = Intro già vista , 0 = Intro non vista , -1 = Intro mai vista
+        if(introStatus != 1){
+            startActivity(new Intent(ActivityManager.this, AppIntroActivity.class));
+            return;
+        }
+
 
         if (LoginData.getUser(this).equals(""))
             startMainLoginActivity();
