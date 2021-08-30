@@ -19,10 +19,15 @@
 
 package com.giua.app;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.giua.webscraper.GiuaScraper;
 
@@ -38,15 +43,14 @@ public class ActivityManager extends AppCompatActivity {
         //setupAboutBox(); //About screen
 
 
-        //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
-        GiuaScraper.setDebugMode(true);
+        GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
+        GiuaScraper.setDebugMode(false);
 
         final String defaultUrl = SettingsData.getSettingString(this, "defaultUrl");
 
-        /* Test notifiche, ignora questo pezzo per ora
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "String channel name";
-            String description = "String channel description";
+            CharSequence name = "Giua App Aggiornamenti";
+            String description = "";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel("0", name, importance);
             channel.setDescription(description);

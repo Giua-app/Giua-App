@@ -23,4 +23,6 @@ import com.giua.webscraper.GiuaScraper;
 
 public class GlobalVariables {
     public static GiuaScraper gS = null;
+    public static int numberNewsletters = -1;
+    public static int numberAlerts = -1;
 }

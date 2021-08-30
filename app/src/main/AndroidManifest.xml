@@ -91,11 +91,19 @@
         </activity>
         <activity
             android:name=".AboutActivity"
-            android:theme="@style/AppTheme.MaterialAboutActivity"/>
+            android:theme="@style/AppTheme.MaterialAboutActivity" />
         <activity
             android:name=".AppIntroActivity"
             android:label="label"
-            android:theme="@style/Theme.GiuaApp.NoActionBar"/>
+            android:theme="@style/Theme.GiuaApp.NoActionBar" />
+        android:name="com.eggheadgames.aboutbox.activity.AboutActivity"
+        android:screenOrientation="portrait"
+        android:theme="@style/AppTheme.MaterialAboutActivity"
+        tools:ignore="LockedOrientationActivity" />
+
+        <receiver
+            android:name=".BackgroundReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>

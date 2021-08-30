@@ -19,9 +19,13 @@
 
 package com.giua.app;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -56,7 +60,10 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     NavController navController;     //Si puo intendere come il manager dei fragments
     Button btnLogout;
     Button btnSettings;
+    Intent iBackgroundService;
     Handler handler = new Handler();
+    AlarmManager alarmManager;
+    PendingIntent pendingIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +88,9 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
 
+        iBackgroundService = new Intent(this, BackgroundReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(this, 0, iBackgroundService, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -202,6 +212,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     protected void onResume() {
         onRestoreInstanceState(new Bundle());
         releaseInstance();
+        alarmManager.cancel(pendingIntent);
         super.onResume();
     }
 
@@ -214,6 +225,11 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     @Override
     protected void onStop() {
         onSaveInstanceState(new Bundle());
+        /*alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime(),
+                ThreadLocalRandom.current().nextInt(36_000_000, 54_000_000),
+                pendingIntent);*/
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 2000, pendingIntent); //DEBUG
         super.onStop();
     }
 }
