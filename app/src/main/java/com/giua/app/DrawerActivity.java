@@ -21,7 +21,6 @@ package com.giua.app;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -48,6 +47,7 @@ import com.google.android.material.snackbar.Snackbar;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class DrawerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -60,7 +60,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     NavController navController;     //Si puo intendere come il manager dei fragments
     Button btnLogout;
     Button btnSettings;
-    Intent iBackgroundService;
+    Intent iCheckNewsReceiver;
     Handler handler = new Handler();
     AlarmManager alarmManager;
     PendingIntent pendingIntent;
@@ -88,9 +88,9 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
 
-        iBackgroundService = new Intent(this, BackgroundReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(this, 0, iBackgroundService, PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        pendingIntent = PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_UPDATE_CURRENT);
 
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -205,6 +205,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     protected void onRestart() {
         onRestoreInstanceState(new Bundle());
         releaseInstance();
+        alarmManager.cancel(pendingIntent);
         super.onRestart();
     }
 
@@ -212,7 +213,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     protected void onResume() {
         onRestoreInstanceState(new Bundle());
         releaseInstance();
-        alarmManager.cancel(pendingIntent);
         super.onResume();
     }
 
@@ -225,11 +225,23 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     @Override
     protected void onStop() {
         onSaveInstanceState(new Bundle());
-        /*alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
                 SystemClock.elapsedRealtime(),
-                ThreadLocalRandom.current().nextInt(36_000_000, 54_000_000),
-                pendingIntent);*/
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 2000, pendingIntent); //DEBUG
+                AlarmManager.INTERVAL_HOUR + ThreadLocalRandom.current().nextInt(0, 900000),   //Intervallo di 1 ora più numero random tra 0 e 15 minuti
+                pendingIntent);
+        //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000 , pendingIntent);    //DEBUG
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        boolean alarmUp = (PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE) != null);  //Controlla se l'allarme è stato già settato, in caso contrario settalo
+        if (!alarmUp)
+            alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
+                    SystemClock.elapsedRealtime(),
+                    AlarmManager.INTERVAL_HOUR + ThreadLocalRandom.current().nextInt(0, 900000),   //Intervallo di 1 ora più numero random tra 0 e 15 minuti
+                    pendingIntent);
+        //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000 , pendingIntent);  //DEBUG
+        super.onDestroy();
     }
 }

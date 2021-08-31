@@ -31,10 +31,14 @@ public class AppData {
     private static final String voteKey = "votes";
     private static final String newsletterKey = "newsletters";
     private static final String alertKey = "alerts";
+    private static final String numberNewslettersKey = "number_newsletters";
+    private static final String numberAlertsKey = "number_alerts";
 
     private static SharedPreferences getSharedPreferences(final Context context) {
         return context.getSharedPreferences(appDataPreferenceKey, Context.MODE_PRIVATE);
     }
+
+    //region Dati per il json
 
     public static void saveVotesString(final Context context, final String jsonString) {
         getSharedPreferences(context).edit()
@@ -65,4 +69,30 @@ public class AppData {
     public static String getAlertsString(final Context context) {
         return getSharedPreferences(context).getString(alertKey, null);
     }
+
+    //endregion
+
+    //region Dati del broadcast di background
+
+    public static void saveNumberNewslettersInt(final Context context, final int value) {
+        getSharedPreferences(context).edit()
+                .putInt(numberNewslettersKey, value)
+                .apply();
+    }
+
+    public static int getNumberNewslettersInt(final Context context) {
+        return getSharedPreferences(context).getInt(numberNewslettersKey, -1);
+    }
+
+    public static void saveNumberAlertsInt(final Context context, final int value) {
+        getSharedPreferences(context).edit()
+                .putInt(numberAlertsKey, value)
+                .apply();
+    }
+
+    public static int getNumberAlertsInt(final Context context) {
+        return getSharedPreferences(context).getInt(numberAlertsKey, -1);
+    }
+
+    //endregion
 }
