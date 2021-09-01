@@ -26,8 +26,6 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
 import com.giua.webscraper.GiuaScraper;
 
@@ -59,20 +57,6 @@ public class ActivityManager extends AppCompatActivity {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
-
-
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "0")
-                .setSmallIcon(R.drawable.ic_baseline_calendar_today_24)
-                .setContentTitle("Titolo della notifica")
-                .setContentText("Contenuto notifica")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-
-        // notificationId is a unique int for each notification that you must define
-        notificationManager.notify(10, builder.build());
-
 
         if (defaultUrl != null)
             GiuaScraper.setSiteURL(defaultUrl);

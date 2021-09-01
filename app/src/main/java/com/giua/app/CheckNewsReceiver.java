@@ -57,7 +57,8 @@ public class CheckNewsReceiver extends BroadcastReceiver {
                 //DEBUG
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
                         .setSmallIcon(R.drawable.ic_giuaschool_logo2)
-                        .setContentTitle("Si è verificato un errore " + e.toString())
+                        .setContentTitle("Si è verificato un errore")
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText(e.toString()))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
                 notificationManager.notify(10, builder.build());
@@ -82,7 +83,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
             LoginData.setCredentials(context, LoginData.getUser(context), LoginData.getPassword(context), gS.getCookie());
         } else {    //Se l'account è di gsuite fai il login con gsuite
             try {
-                gS = new GiuaScraper(LoginData.getUser(context), LoginData.getPassword(context), LoginData.getCookie(context), true); //DEBUG
+                gS = new GiuaScraper(LoginData.getUser(context), LoginData.getPassword(context), LoginData.getCookie(context), true);
                 gS.login();
             } catch (GiuaScraperExceptions.SessionCookieEmpty e) {
                 gS = new GiuaScraper(LoginData.getUser(context), LoginData.getPassword(context), makeGsuiteLogin(), true);
@@ -104,6 +105,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
                     .setSmallIcon(R.drawable.ic_giuaschool_logo2)
                     .setContentTitle("Nuova circolare")
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText("Numero circolari: " + numberNewsletters + "\nNumero circolari vecchie: " + numberNewslettersOld))  //DEBUG
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
             notificationManager.notify(10, builder.build());
@@ -112,6 +114,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
                     .setSmallIcon(R.drawable.ic_giuaschool_logo2)
                     .setContentTitle("Nuovo avviso")
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText("Numero avvisi: " + numberAlerts + "\nNumero avvisi vecchie: " + numberAlertsOld))  //DEBUG
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
             notificationManager.notify(11, builder.build());
