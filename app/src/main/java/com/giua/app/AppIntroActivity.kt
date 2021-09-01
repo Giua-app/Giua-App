@@ -34,62 +34,96 @@ class AppIntroActivity : AppIntro(){
         LayoutInflaterCompat.setFactory2(layoutInflater, IconicsLayoutInflater2(delegate))
         super.onCreate(savedInstanceState)
 
+
+        setProgressIndicator()
+
         addSlide(AppIntroFragment.newInstance(
-                "Benvenuto!",
-                "Segui questa preve introduzione per scorpire tutte le funzionalità di Giua App",
-                imageDrawable = R.mipmap.ic_launcher,
-                backgroundDrawable = R.drawable.intro_back_slide1,
-                titleTypefaceFontRes = R.font.caviar_dreams_bold,
-                descriptionTypefaceFontRes = R.font.caviar_dreams_bold
+            "Benvenuto!",
+            "Segui questa preve introduzione per scoprire tutte le funzionalità di Giua App",
+            imageDrawable = R.drawable.ic_giuaschool_logo1,
+            backgroundDrawable = R.drawable.intro_back_slide1,
+            titleTypefaceFontRes = R.font.caviar_dreams_bold,
+            descriptionTypefaceFontRes = R.font.caviar_dreams
         ))
 
         addSlide(AppIntroFragment.newInstance(SliderPage(
-                "Voti",
-                "Puoi cliccare su un voto per vederne i dettagli",
-                imageDrawable = R.mipmap.ic_launcher,
-                backgroundDrawable = R.drawable.intro_back_slide2,
-                titleTypefaceFontRes = R.font.roboto_light,
-                descriptionTypefaceFontRes = R.font.roboto_light
+            "Voti",
+            "Puoi cliccare su un voto per vederne i dettagli",
+            imageDrawable = R.mipmap.voti_tutorial,
+            backgroundDrawable = R.drawable.intro_back_slide2,
+            titleTypefaceFontRes = R.font.caviar_dreams_bold,
+            descriptionTypefaceFontRes = R.font.caviar_dreams
         )))
 
+        /*addSlide(AppIntroFragment.newInstance(SliderPage(
+            "Voti",
+            "Puoi cliccare su un voto per vederne i dettagli",
+            imageDrawable = R.mipmap.voti2_tutorial,
+            backgroundDrawable = R.drawable.intro_back_slide5,
+            titleTypefaceFontRes = R.font.caviar_dreams_bold,
+            descriptionTypefaceFontRes = R.font.roboto_light
+        )))*/
+
         addSlide(AppIntroFragment.newInstance(
-                "Bacheca (Circolari)",
-                "Clicca su {gmd_pageview} per visualizzare la circolare, clicca su {gmd_attachment} per vedere i suoi allegati",
-                imageDrawable = R.mipmap.ic_launcher,
-                backgroundDrawable = R.drawable.intro_back_slide3,
-                titleTypefaceFontRes = R.font.roboto_light,
-                descriptionTypefaceFontRes = R.font.roboto_light
+            "Bacheca (Circolari)",
+            "Clicca su {cmd_file_document_outline} per visualizzare la circolare",
+            imageDrawable = R.mipmap.circolari_tutorial,
+            backgroundDrawable = R.drawable.intro_back_slide3,
+            titleTypefaceFontRes = R.font.caviar_dreams_bold,
+            descriptionTypefaceFontRes = R.font.caviar_dreams
         ))
 
         addSlide(AppIntroFragment.newInstance(
-                "Bacheca (Avvisi)",
-                "Clicca su un avviso per vedere i dettagli",
-                imageDrawable = R.mipmap.ic_launcher,
-                backgroundDrawable = R.drawable.intro_back_slide4
+            "Bacheca (Circolari)",
+            "Clicca su {gmd_attachment} per vedere i suoi allegati",
+            imageDrawable = R.mipmap.circolari2_tutorial,
+            backgroundDrawable = R.drawable.intro_back_slide4,
+            titleTypefaceFontRes = R.font.caviar_dreams_bold,
+            descriptionTypefaceFontRes = R.font.caviar_dreams
         ))
 
         addSlide(AppIntroFragment.newInstance(
-                "Lezioni",
-                "Clicca su una lezione per vedere i dettagli. Per cambiare giorno, clicca su ICONACALENDARIO per selezionare il giorno",
-                imageDrawable = R.mipmap.ic_launcher,
-                backgroundDrawable = R.drawable.intro_back_slide5
+            "Bacheca (Avvisi)",
+            "Clicca su un avviso per vederne i dettagli",
+            imageDrawable = R.mipmap.avvisi_tutorial,
+            backgroundDrawable = R.drawable.intro_back_slide6,
+            titleTypefaceFontRes = R.font.caviar_dreams_bold,
+            descriptionTypefaceFontRes = R.font.caviar_dreams
+        ))
+
+        addSlide(AppIntroFragment.newInstance(
+            "Lezioni",
+            "Clicca su una lezione per vederne i dettagli",
+            imageDrawable = R.mipmap.lezioni_tutorial,
+            backgroundDrawable = R.drawable.intro_back_slide7,
+            titleTypefaceFontRes = R.font.caviar_dreams_bold,
+            descriptionTypefaceFontRes = R.font.caviar_dreams
+        ))
+
+        addSlide(AppIntroFragment.newInstance(
+            "Lezioni",
+            "Per cambiare giorno, clicca su {cmd_calendar_blank} per aprire il calendario",
+            imageDrawable = R.mipmap.lezioni2_tutorial,
+            backgroundDrawable = R.drawable.intro_back_slide8,
+            titleTypefaceFontRes = R.font.caviar_dreams_bold,
+            descriptionTypefaceFontRes = R.font.caviar_dreams
         ))
 
         addSlide(AppIntroFragment.newInstance(
             "Agenda",
-            "bla",
-            imageDrawable = R.mipmap.ic_launcher,
-            backgroundDrawable = R.drawable.intro_back_slide1,
+            "Clicca su una verifica o compito per vedere i dettagli",
+            imageDrawable = R.mipmap.agenda_tutorial,
+            backgroundDrawable = R.drawable.intro_back_slide9,
             titleTypefaceFontRes = R.font.caviar_dreams_bold,
-            descriptionTypefaceFontRes = R.font.caviar_dreams_bold
+            descriptionTypefaceFontRes = R.font.caviar_dreams
         ))
 
         addSlide(AppIntroFragment.newInstance(SliderPage(
-            "bla",
-            "bla",
+            "Ottimizzazione batteria",
+            "Per poter ricevere notifiche dal registro devi togliere sta cosa perchè si (inserire codice per aprire impostazioni e togliere la cosa)",
             imageDrawable = R.mipmap.ic_launcher,
-            backgroundDrawable = R.drawable.intro_back_slide2,
-            titleTypefaceFontRes = R.font.roboto_light,
+            backgroundDrawable = R.drawable.intro_back_slide1,
+            titleTypefaceFontRes = R.font.caviar_dreams_bold,
             descriptionTypefaceFontRes = R.font.roboto_light
         )))
 

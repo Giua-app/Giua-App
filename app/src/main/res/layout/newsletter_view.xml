@@ -108,12 +108,13 @@
         <ImageButton
             android:id="@+id/newsletter_view_btn_document"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="#00FFFFFF"
             android:contentDescription="@string/newsletterview_imagebutton_viewdocument_contentdescription"
             android:scaleType="centerInside"
-            app:srcCompat="@drawable/ic_baseline_pageview_24"
+            app:srcCompat="@drawable/ic_find_in_page"
+            app:tint="@color/main_color_lighter"
             tools:ignore="TouchTargetSizeCheck" />
 
         <ImageButton
@@ -140,5 +141,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="43dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
