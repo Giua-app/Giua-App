@@ -23,11 +23,20 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.webkit.CookieManager;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.giua.webscraper.GiuaScraper;
+import com.giua.webscraper.GiuaScraperExceptions;
+
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class CheckNewsReceiver extends BroadcastReceiver {
     private Context context;
@@ -39,50 +48,16 @@ public class CheckNewsReceiver extends BroadcastReceiver {
             Log.d("", "Servizio di background: controllo nuove cose");
 
             try {
-                if (GlobalVariables.gS != null)
-                    gS = GlobalVariables.gS;
-                else {
-                    //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");  //DEBUG
-                    gS = new GiuaScraper(LoginData.getUser(context), LoginData.getPassword(context), LoginData.getCookie(context), true);
-                    gS.login();
-                    LoginData.setCredentials(context, LoginData.getUser(context), LoginData.getPassword(context), gS.getCookie());
-                }
-                int numberNewslettersOld = AppData.getNumberNewslettersInt(context);
-                int numberAlertsOld = AppData.getNumberAlertsInt(context);
-                int numberNewsletters = gS.checkForNewsletterUpdate();
-                int numberAlerts = gS.checkForAlertsUpdate();
-                AppData.saveNumberNewslettersInt(context, numberNewsletters);
-                AppData.saveNumberAlertsInt(context, numberAlerts);
 
-                if (numberNewslettersOld != -1 && numberNewsletters - numberNewslettersOld > 0) {
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                            .setSmallIcon(R.drawable.ic_baseline_calendar_today_24)
-                            .setContentTitle("Nuova circolare")
-                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                checkAndMakeLogin();
 
-                    notificationManager.notify(10, builder.build());
-                }
-                if (numberAlertsOld != -1 && numberAlerts - numberAlertsOld > 0) {
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                            .setSmallIcon(R.drawable.ic_baseline_calendar_today_24)
-                            .setContentTitle("Nuovo avviso")
-                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                checkNewsAndSendNotifications();
 
-                    notificationManager.notify(11, builder.build());
-                }
-                if (gS.checkForAbsenceUpdate()) {
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                            .setSmallIcon(R.drawable.ic_baseline_calendar_today_24)
-                            .setContentTitle("Nuova assenza")
-                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-                    notificationManager.notify(12, builder.build());
-                }
             } catch (Exception e) {
                 //DEBUG
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                        .setSmallIcon(R.drawable.ic_baseline_calendar_today_24)
-                        .setContentTitle("Cè stato un errore")
+                        .setSmallIcon(R.drawable.ic_giuaschool_logo2)
+                        .setContentTitle("Si è verificato un errore " + e.toString())
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
                 notificationManager.notify(10, builder.build());
@@ -98,5 +73,75 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         checkNews();
     }
 
+    private void checkAndMakeLogin() {
+        if (GlobalVariables.gS != null)     //Se un istanza di Giuascraper esiste già non ricrearla ed usa quella
+            gS = GlobalVariables.gS;
+        else if (!LoginData.getUser(context).equals("gsuite")) {  //Se l'account non è di gsuite fai il login normale
+            gS = new GiuaScraper(LoginData.getUser(context), LoginData.getPassword(context), LoginData.getCookie(context), true);
+            gS.login();
+            LoginData.setCredentials(context, LoginData.getUser(context), LoginData.getPassword(context), gS.getCookie());
+        } else {    //Se l'account è di gsuite fai il login con gsuite
+            try {
+                gS = new GiuaScraper(LoginData.getUser(context), LoginData.getPassword(context), LoginData.getCookie(context), true); //DEBUG
+                gS.login();
+            } catch (GiuaScraperExceptions.SessionCookieEmpty e) {
+                gS = new GiuaScraper(LoginData.getUser(context), LoginData.getPassword(context), makeGsuiteLogin(), true);
+                gS.login();
+                LoginData.setCredentials(context, LoginData.getUser(context), LoginData.getPassword(context), gS.getCookie());
+            }
+        }
+    }
+
+    private void checkNewsAndSendNotifications() {
+        int numberNewslettersOld = AppData.getNumberNewslettersInt(context);
+        int numberAlertsOld = AppData.getNumberAlertsInt(context);
+        int numberNewsletters = gS.checkForNewsletterUpdate();
+        int numberAlerts = gS.checkForAlertsUpdate();
+        AppData.saveNumberNewslettersInt(context, numberNewsletters);
+        AppData.saveNumberAlertsInt(context, numberAlerts);
+
+        if (numberNewslettersOld != -1 && numberNewsletters - numberNewslettersOld > 0) {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
+                    .setSmallIcon(R.drawable.ic_giuaschool_logo2)
+                    .setContentTitle("Nuova circolare")
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+            notificationManager.notify(10, builder.build());
+        }
+        if (numberAlertsOld != -1 && numberAlerts - numberAlertsOld > 0) {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
+                    .setSmallIcon(R.drawable.ic_giuaschool_logo2)
+                    .setContentTitle("Nuovo avviso")
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+            notificationManager.notify(11, builder.build());
+        }
+        if (gS.checkForAbsenceUpdate()) {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
+                    .setSmallIcon(R.drawable.ic_giuaschool_logo2)
+                    .setContentTitle("Nuova assenza")
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+            notificationManager.notify(12, builder.build());
+        }
+    }
+
+    private String makeGsuiteLogin() {
+        Connection session = Jsoup.newSession()
+                .followRedirects(true)
+                .userAgent("Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.91 Mobile Safari/537.36");
+
+        String[] allCookiesRaw = CookieManager.getInstance().getCookie("https://accounts.google.com").split("; ");
+        for (String cookie : allCookiesRaw) {
+            session.cookie(cookie.split("=")[0], cookie.split("=")[1]);
+        }
+
+        try {
+            session.newRequest().url("https://registro.giua.edu.it/login/gsuite").get();
+            return session.cookieStore().get(new URI("https://registro.giua.edu.it")).toString().split("=")[1].replace("]", "");
+        } catch (IOException | URISyntaxException ignored) {
+            return "";
+        }
+    }
 
 }

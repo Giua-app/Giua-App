@@ -241,7 +241,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                     SystemClock.elapsedRealtime(),
                     AlarmManager.INTERVAL_HOUR + ThreadLocalRandom.current().nextInt(0, 900000),   //Intervallo di 1 ora più numero random tra 0 e 15 minuti
                     pendingIntent);
-        //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000 , pendingIntent);  //DEBUG
         super.onDestroy();
     }
 }

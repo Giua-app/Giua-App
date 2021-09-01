@@ -73,7 +73,6 @@ public class StudentLoginActivity extends AppCompatActivity {
         webView.getSettings().setJavaScriptEnabled(true);
 
         webView.loadUrl("https://registro.giua.edu.it/login/gsuite");
-
     }
 
 
