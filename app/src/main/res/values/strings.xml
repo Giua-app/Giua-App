@@ -54,7 +54,7 @@
     <string name="customactivityoncrash_error_activity_error_details_copied">Copiato negli appunti</string>
 
     <!-- Activity Main (login screen) -->
-    <string name="activitymain_button_login">LOGIN</string>
+    <string name="activitymain_button_login">ACCEDI</string>
     <string name="activitymain_checkbox_remember_credentials">Ricorda credenziali</string>
     <string name="activitymain_pwdtextbox_hint">password</string>
     <string name="activitymain_btn_showpassword">Mostra password</string>

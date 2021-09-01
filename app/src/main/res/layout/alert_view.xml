@@ -23,7 +23,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/general_view_style"
-    android:padding="10dp">
+    android:padding="8dp">
 
     <ImageView
         android:id="@+id/alert_view_left_image"
@@ -51,9 +51,9 @@
 
     <TextView
         android:id="@+id/alert_receivers_text_view"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="24dp"
         android:fontFamily="@font/varelaroundregular"
         android:text="Destinatari"
         app:layout_constraintEnd_toEndOf="parent"
@@ -63,9 +63,9 @@
 
     <TextView
         android:id="@+id/alert_object_text_view"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="16dp"
         android:fontFamily="@font/varelaroundregular"
         android:text="Oggetto"
         android:textSize="15sp"
@@ -80,7 +80,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
         android:fontFamily="@font/varelaroundregular"
         android:text="Stato"
         android:textSize="15sp"

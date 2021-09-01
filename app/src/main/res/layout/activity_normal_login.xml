@@ -30,44 +30,76 @@
         android:id="@+id/login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="216dp"
+        android:layout_marginTop="48dp"
         android:backgroundTint="@color/main_color"
-        android:paddingStart="30dp"
+        android:paddingStart="25dp"
         android:paddingTop="15dp"
-        android:paddingEnd="30dp"
+        android:paddingEnd="25dp"
         android:paddingBottom="15dp"
         android:text="@string/activitymain_button_login"
         android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textPassword" />
 
     <CheckBox
         android:id="@+id/checkbox_remember_credentials"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginBottom="52dp"
         android:checked="true"
         android:text="@string/activitymain_checkbox_remember_credentials"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/login_button" />
+        app:layout_constraintHorizontal_bias="0.061"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/textPassword"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="52dp"
+        android:layout_marginTop="24dp"
         android:autofillHints="password"
         android:fontFamily="sans-serif"
         android:hint="@string/activitymain_pwdtextbox_hint"
         android:inputType="textPassword"
         android:minHeight="48dp"
-        app:layout_constraintBottom_toTopOf="@+id/login_button"
         app:layout_constraintEnd_toEndOf="@+id/textUser"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textUser" />
+        app:layout_constraintStart_toStartOf="@+id/textUser"
+        app:layout_constraintTop_toBottomOf="@+id/textUser" />
+
+    <EditText
+        android:id="@+id/textUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="128dp"
+        android:autofillHints="username"
+        android:ems="10"
+        android:fontFamily="sans-serif"
+        android:hint="@string/activitymain_usertextbox_hint"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtSubtitle" />
+
+    <ImageButton
+        android:id="@+id/show_password_button"
+        android:layout_width="48dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="#00000000"
+        android:contentDescription="@string/activitymain_btn_showpassword"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="@+id/textPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.351"
+        app:layout_constraintStart_toEndOf="@+id/textPassword"
+        app:layout_constraintTop_toTopOf="@+id/textPassword"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/ic_baseline_visibility_off_24" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -82,38 +114,6 @@
         app:layout_constraintVertical_bias="0.0"
         tools:visibility="invisible" />
 
-    <ImageButton
-        android:id="@+id/show_password_button"
-        android:layout_width="48dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="16dp"
-        android:backgroundTint="#00000000"
-        android:contentDescription="@string/activitymain_btn_showpassword"
-        android:scaleType="fitCenter"
-        app:layout_constraintBottom_toBottomOf="@+id/textPassword"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.365"
-        app:layout_constraintStart_toEndOf="@+id/textPassword"
-        app:layout_constraintTop_toTopOf="@+id/textPassword"
-        app:layout_constraintVertical_bias="1.0"
-        app:srcCompat="@drawable/ic_baseline_visibility_off_24" />
-
-    <EditText
-        android:id="@+id/textUser"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        android:autofillHints="username"
-        android:ems="10"
-        android:fontFamily="sans-serif"
-        android:hint="@string/activitymain_usertextbox_hint"
-        android:inputType="textPersonName"
-        android:minHeight="48dp"
-        app:layout_constraintBottom_toTopOf="@+id/textPassword"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <TextView
         android:id="@+id/txtSubtitle"
         android:layout_width="0dp"
@@ -122,12 +122,12 @@
         android:text="@string/activitymain_textbox_screentitle"
         android:textAlignment="center"
         android:textSize="36sp"
-        app:layout_constraintBottom_toTopOf="@+id/textUser"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.304" />
+        app:layout_constraintVertical_bias="0.056" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floating_settings_button"
@@ -145,16 +145,15 @@
         app:layout_constraintTop_toBottomOf="@+id/checkbox_remember_credentials"
         app:layout_constraintVertical_bias="1.0" />
 
-    <Button
+    <TextView
         android:id="@+id/btn_student_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:text="LOGIN COME STUDENTE"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.091"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_marginTop="16dp"
+        android:text="Sei uno studente?"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="@+id/login_button"
+        app:layout_constraintStart_toStartOf="@+id/login_button"
+        app:layout_constraintTop_toBottomOf="@+id/login_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

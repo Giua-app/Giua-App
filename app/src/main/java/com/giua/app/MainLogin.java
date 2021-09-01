@@ -28,6 +28,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -41,7 +42,7 @@ public class MainLogin extends AppCompatActivity {
     ProgressBar pgProgressBar;
     ImageButton btnShowPassword;
     Button btnLogin;
-    Button btnLoginAsStudent;
+    TextView btnLoginAsStudent;
     boolean btnShowActivated = false;
     CheckBox chRememberCredentials;
 

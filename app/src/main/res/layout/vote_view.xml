@@ -26,7 +26,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/corner_radius_10dp"
     android:backgroundTint="@color/general_view_color"
-    android:padding="10dp">
+    android:padding="8dp">
 
     <!-- Questo è il componente utilizzato per aggiungere i voti -->
 
@@ -70,7 +70,7 @@
             android:id="@+id/list_votes_text_view_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
+            android:layout_marginStart="16dp"
             android:fontFamily="@font/varelaroundregular"
             android:text="@string/votecomponent_textview_firstperiod"
             android:textSize="15sp" />
@@ -79,7 +79,7 @@
             android:id="@+id/list_vote_scroll_view_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="24dp"
             android:overScrollMode="never"
             android:padding="5dp"
             android:scrollbars="none"
@@ -98,8 +98,8 @@
             android:id="@+id/list_votes_text_view_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="60dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="72dp"
             android:layout_weight="1"
             android:fontFamily="@font/varelaroundregular"
             android:text="@string/votecomponent_textview_secondperiod"
@@ -109,7 +109,7 @@
             android:id="@+id/list_vote_scroll_view_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="96dp"
             android:overScrollMode="never"
             android:padding="5dp"
             android:scrollbars="none"
@@ -154,7 +154,7 @@
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_gravity="top|center_horizontal"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="24dp"
             android:background="@drawable/corner_radius_10dp"
             android:backgroundTint="@color/general_view_color"
             android:fontFamily="@font/varelaroundregular"
