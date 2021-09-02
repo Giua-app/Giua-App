@@ -24,6 +24,12 @@ import android.content.SharedPreferences;
 
 public class SettingsData {
 
+    /*  Tutti i nomi delle chiave
+
+    defaultUrl - L'url di default del sito
+
+     */
+
     /**
      * Controlla la memorizzazione delle impostazioni
      */
@@ -75,5 +81,4 @@ public class SettingsData {
     public static void clearAll(final Context context) {
         getSharedPreferences(context).edit().clear().apply();
     }
-
 }

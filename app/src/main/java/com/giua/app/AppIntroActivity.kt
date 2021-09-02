@@ -133,13 +133,13 @@ class AppIntroActivity : AppIntro(){
 
     public override fun onSkipPressed(currentFragment: Fragment?) {
         super.onSkipPressed(currentFragment)
-        SettingsData.saveSettingInt(this, "introStatus", 1)
+        SettingsData.saveSettingInt(this, SettingKey.INTRO_STATUS, 1)
         startActivity(Intent(this@AppIntroActivity, ActivityManager::class.java))
     }
 
     public override fun onDonePressed(currentFragment: Fragment?) {
         super.onDonePressed(currentFragment)
-        SettingsData.saveSettingInt(this, "introStatus", 1)
+        SettingsData.saveSettingInt(this, SettingKey.INTRO_STATUS, 1)
         startActivity(Intent(this@AppIntroActivity, ActivityManager::class.java))
     }
 

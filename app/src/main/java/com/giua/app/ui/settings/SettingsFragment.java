@@ -19,17 +19,23 @@
 
 package com.giua.app.ui.settings;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.EditTextPreference;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.giua.app.AboutActivity;
 import com.giua.app.R;
+import com.giua.app.SettingKey;
+import com.giua.app.SettingsData;
 import com.giua.webscraper.GiuaScraper;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
@@ -39,20 +45,85 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         // Load the preferences from an XML resource
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
-        setupAllObjects();
+        setupAllObjects(requireContext());
     }
 
-    private void setupAllObjects() {
-        EditTextPreference etSiteUrl = findPreference("siteUrl");
-        etSiteUrl.setPersistent(true);
-        etSiteUrl.setText(GiuaScraper.getSiteURL());
-        etSiteUrl.setOnPreferenceChangeListener(this::siteUrlChanged);
+    private void setupAllObjects(Context context) {
 
-        Preference btnAboutScreen = findPreference("aboutScreen");
-        btnAboutScreen.setOnPreferenceClickListener(this::btnAboutScreenOnClick);
+        //region Personalizzazione
 
-        Preference btnCrashScreen = findPreference("crashScreen");
+        setupThemeObject(context);
+
+        //endregion
+
+        //region Debug
+
+        setupSiteUrlObject();
+        setupAboutScreenObject();
+        setupCrashScreenObject();
+
+        //endregion
+    }
+
+    private void setupThemeObject(Context context) {
+        ListPreference lTheme = Objects.requireNonNull(findPreference("theme"));
+        lTheme.setEntries(new CharSequence[]{"Chiaro", "Scuro", "Segui il sistema"});
+        lTheme.setEntryValues(new CharSequence[]{"0", "1", "2"});
+        String defualtTheme = SettingsData.getSettingString(context, SettingKey.THEME);
+        if (defualtTheme == null)
+            lTheme.setValueIndex(2);
+        else
+            lTheme.setValueIndex(Integer.parseInt(defualtTheme));
+        lTheme.setOnPreferenceChangeListener(this::lThemeChangeListener);
+    }
+
+    private void setupCrashScreenObject() {
+        Preference btnCrashScreen = Objects.requireNonNull(findPreference("crashScreen"));
         btnCrashScreen.setOnPreferenceClickListener(this::btnCrashScreenOnClick);
+    }
+
+    private void setupAboutScreenObject() {
+        Preference btnAboutScreen = Objects.requireNonNull(findPreference("aboutScreen"));
+        btnAboutScreen.setOnPreferenceClickListener(this::btnAboutScreenOnClick);
+    }
+
+    private void setupSiteUrlObject() {
+        EditTextPreference etSiteUrl = Objects.requireNonNull(findPreference("siteUrl"));
+        String defaultUrl = SettingsData.getSettingString(requireContext(), SettingKey.DEFAULT_URL);
+        if (defaultUrl != null)
+            etSiteUrl.setText(defaultUrl);
+        else
+            etSiteUrl.setText("https://registro.giua.edu.it");
+        etSiteUrl.setOnPreferenceChangeListener(this::siteUrlChanged);
+        etSiteUrl.setOnPreferenceClickListener(this::siteUrlOnClick);
+    }
+
+    private boolean siteUrlOnClick(Preference preference) {
+        if (!Pattern.matches("https?://([a-zA-Z0-9]+[.])+([a-zA-Z0-9]+)(:[0-9]+)?", ((EditTextPreference) preference).getText())) {
+            String defaultUrl = SettingsData.getSettingString(requireContext(), SettingKey.DEFAULT_URL);
+            if (defaultUrl != null)
+                ((EditTextPreference) preference).setText(defaultUrl);
+            else
+                ((EditTextPreference) preference).setText("https://registro.giua.edu.it");
+        }
+
+        return true;
+    }
+
+    private boolean lThemeChangeListener(Preference preference, Object o) {
+        SettingsData.saveSettingString(requireContext(), SettingKey.THEME, (String) o);
+        switch (SettingsData.getSettingString(requireContext(), SettingKey.THEME)) {
+            case "0":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case "1":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+            case "2":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+        }
+        return true;
     }
 
     private boolean btnCrashScreenOnClick(Preference preference) {
@@ -65,9 +136,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private boolean siteUrlChanged(Preference preference, Object o) {
-        if (Pattern.matches("https?://([a-zA-Z0-9]+[.])+([a-zA-Z0-9]+)(:[0-9]+)?", String.valueOf(((EditTextPreference) preference).getText()))) {
-            GiuaScraper.setSiteURL(String.valueOf(((EditTextPreference) preference).getText()));
-        } //else
+        if (Pattern.matches("https?://([a-zA-Z0-9]+[.])+([a-zA-Z0-9]+)(:[0-9]+)?", (String) o)) {
+            GiuaScraper.setSiteURL((String) o);
+            SettingsData.saveSettingString(requireContext(), SettingKey.DEFAULT_URL, (String) o);
+        } else {
+            ((EditTextPreference) preference).setText("https://registro.giua.edu.it");
+        }
         //TODO: Fai capire che ce stato un errore
         return true;
     }

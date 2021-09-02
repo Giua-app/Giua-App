@@ -252,7 +252,8 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onStop() {
-        AppData.saveVotesString(activity, new JsonHelper().saveVotesToString(allVotes));
+        if (allVotes != null && !allVotes.isEmpty())
+            AppData.saveVotesString(activity, new JsonHelper().saveVotesToString(allVotes));
         super.onStop();
     }
 

@@ -26,6 +26,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.giua.webscraper.GiuaScraper;
 
@@ -44,7 +45,7 @@ public class ActivityManager extends AppCompatActivity {
         //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
         GiuaScraper.setDebugMode(true);
 
-        final String defaultUrl = SettingsData.getSettingString(this, "defaultUrl");
+        final String defaultUrl = SettingsData.getSettingString(this, SettingKey.DEFAULT_URL);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Giua App Aggiornamenti";
@@ -58,14 +59,26 @@ public class ActivityManager extends AppCompatActivity {
             notificationManager.createNotificationChannel(channel);
         }
 
+        switch (SettingsData.getSettingString(this, SettingKey.THEME)) {
+            case "0":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case "1":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+            case "2":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+        }
+
         if (defaultUrl != null)
             GiuaScraper.setSiteURL(defaultUrl);
 
-        final int introStatus = SettingsData.getSettingInt(this, "introStatus");
+        final int introStatus = SettingsData.getSettingInt(this, SettingKey.INTRO_STATUS);
         //final int introStatus = 0;         //DEBUG
 
         // 1 = Intro già vista , 0 = Intro non vista , -1 = Intro mai vista
-        if(introStatus != 1){
+        if (introStatus != 1) {
             startActivity(new Intent(ActivityManager.this, AppIntroActivity.class));
             return;
         }

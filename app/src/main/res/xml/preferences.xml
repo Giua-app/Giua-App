@@ -19,17 +19,36 @@
 
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <EditTextPreference
-        app:key="siteUrl"
-        app:title="Imposta l'url del sito"
-        app:negativeButtonText="Annulla"
-        app:positiveButtonText="Imposta" />
+    <PreferenceCategory
+        app:title="Personalizzazione"
+        app:iconSpaceReserved="false">
 
-    <Preference
-        app:key="aboutScreen"
-        app:title="About" />
+        <ListPreference
+            app:key="theme"
+            app:title="Scegli un tema"
+            app:iconSpaceReserved="false" />
 
-    <Preference
-        app:key="crashScreen"
-        app:title="Fai esplodere il mondo" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="Debug"
+        app:iconSpaceReserved="false"
+        app:allowDividerAbove="true">
+
+        <EditTextPreference
+            app:key="siteUrl"
+            app:negativeButtonText="Annulla"
+            app:positiveButtonText="Imposta"
+            app:title="Imposta l'url del sito"
+            app:iconSpaceReserved="false" />
+        <Preference
+            app:key="crashScreen"
+            app:title="Fai esplodere il mondo"
+            app:iconSpaceReserved="false" />
+        <Preference
+            app:key="aboutScreen"
+            app:title="About"
+            app:iconSpaceReserved="false" />
+    </PreferenceCategory>
+
 </PreferenceScreen>
