@@ -20,11 +20,9 @@
 package com.giua.app.ui.newsletters;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -39,22 +37,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class NewsletterView extends ConstraintLayout {
     Newsletter newsletter;
-    TextView tvStatus;
-    TextView tvNumberID;
-    TextView tvDate;
-    TextView tvObject;
-    ImageView ivNotRead;
-    ImageButton btnDocument;
-    ImageButton btnAttachments;
-    Runnable clickDocument;
-    Runnable clickAttachment;
 
-    public NewsletterView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, Newsletter newsletter, Runnable clickDocument, Runnable clickAttachment) {
+    public NewsletterView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, Newsletter newsletter) {
         super(context, attrs);
 
         this.newsletter = newsletter;
-        this.clickDocument = clickDocument;
-        this.clickAttachment = clickAttachment;
 
         initializeComponent(context);
     }
@@ -63,21 +50,11 @@ public class NewsletterView extends ConstraintLayout {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layoutInflater.inflate(R.layout.newsletter_view, this);
 
-        tvStatus = findViewById(R.id.newsletter_status_text_view);
-        tvNumberID = findViewById(R.id.newsletter_numberid_text_view);
-        tvDate = findViewById(R.id.newsletter_date_text_view);
-        tvObject = findViewById(R.id.newsletter_object_text_view);
-        ivNotRead = findViewById(R.id.newsletter_view_left_image);
-        btnDocument = findViewById(R.id.newsletter_view_btn_document);
-        btnAttachments = findViewById(R.id.newsletter_view_btn_attachment);
-
-        btnDocument.setOnClickListener((view) -> clickDocument.run());
-        if (newsletter.attachments != null) {   //Se cè almeno un allegato metti l'onlick nell'immagine
-            btnAttachments.setOnClickListener((view) -> clickAttachment.run());
-        } else {    //Se non ce ne sono metti l'immagine un po trasparente e di colore grigio
-            btnAttachments.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.non_vote, context.getTheme())));
-            btnAttachments.setAlpha(0.3f);
-        }
+        TextView tvStatus = findViewById(R.id.newsletter_status_text_view);
+        TextView tvNumberID = findViewById(R.id.newsletter_numberid_text_view);
+        TextView tvDate = findViewById(R.id.newsletter_date_text_view);
+        TextView tvObject = findViewById(R.id.newsletter_object_text_view);
+        ImageView ivNotRead = findViewById(R.id.newsletter_view_left_image);
 
         if (!newsletter.isRead()) {
             tvStatus.setText("Da leggere");

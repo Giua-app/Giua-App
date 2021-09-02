@@ -35,11 +35,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.giua.app.ui.agenda.AgendaFragment;
+import com.giua.app.ui.lessons.LessonsFragment;
+import com.giua.app.ui.pinboard.PinboardFragment;
+import com.giua.app.ui.reportcard.ReportCardFragment;
+import com.giua.app.ui.votes.VotesFragment;
 import com.giua.webscraper.GiuaScraper;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -64,6 +70,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     Handler handler = new Handler();
     AlarmManager alarmManager;
     PendingIntent pendingIntent;
+    FragmentTransaction transaction;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +81,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         //LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
         //super.onCreate(savedInstanceState);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
@@ -107,10 +115,10 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             String user = GlobalVariables.gS.loadUserFromDocument();
             this.runOnUiThread(() -> {
                 if (userType == GiuaScraper.userTypes.PARENT)
-                    tvUserType.setText("Genitore");
+                    runOnUiThread(() -> tvUserType.setText("Genitore"));
                 else if (userType == GiuaScraper.userTypes.STUDENT)
-                    tvUserType.setText("Studente");
-                tvUsername.setText(user);
+                    runOnUiThread(() -> tvUserType.setText("Studente"));
+                runOnUiThread(() -> tvUsername.setText(user));
             });
         }).start();
     }
@@ -123,6 +131,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
     @Override
     public boolean onNavigationItemSelected(@NonNull @NotNull MenuItem item) {
+        transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setReorderingAllowed(true);
         if (item.isChecked()) {
             closeNavDrawer();
         } else if (item.getItemId() == R.id.nav_voti) {
@@ -136,6 +146,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         } else if (item.getItemId() == R.id.nav_pagella) {
             startReportCardFragment();
         }
+        transaction.commit();
 
         return true;
     }
@@ -158,27 +169,28 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     }
 
     private void startReportCardFragment() {
-        handler.post(() -> navController.navigate(R.id.nav_pagella, null));
+        transaction.replace(R.id.nav_host_fragment, ReportCardFragment.class, null);
+        toolbar.setTitle("Pagella");
         closeNavDrawer();
     }
 
     private void startNewsLetterFragment() {
-        handler.post(() -> navController.navigate(R.id.nav_bacheca, null));
+        transaction.replace(R.id.nav_host_fragment, PinboardFragment.class, null);
         closeNavDrawer();
     }
 
     private void startVotesFragment() {
-        handler.post(() -> navController.navigate(R.id.nav_voti, null));
+        transaction.replace(R.id.nav_host_fragment, VotesFragment.class, null);
         closeNavDrawer();
     }
 
     private void startLessonsFragment() {
-        handler.post(() -> navController.navigate(R.id.nav_lezioni, null));
+        transaction.replace(R.id.nav_host_fragment, LessonsFragment.class, null);
         closeNavDrawer();
     }
 
     private void startAgendaFragment() {
-        handler.post(() -> navController.navigate(R.id.nav_agenda, null));
+        transaction.replace(R.id.nav_host_fragment, AgendaFragment.class, null);
         closeNavDrawer();
     }
 

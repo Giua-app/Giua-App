@@ -199,7 +199,16 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         params.setMargins(0, 40, 0, 0);
 
         for (Newsletter newsletter : allNewsletter) {
-            NewsletterView newsletterView = new NewsletterView(context, null, newsletter, () -> onClickDocument(newsletter), () -> onClickAttachmentImage(newsletter));
+            NewsletterView newsletterView = new NewsletterView(context, null, newsletter);
+            newsletterView.findViewById(R.id.newsletter_view_btn_document).setOnClickListener((view) -> onClickDocument(newsletter));
+
+            if (newsletter.attachments != null) {
+                newsletterView.findViewById(R.id.newsletter_view_btn_attachment).setOnClickListener((view) -> onClickAttachmentImage(newsletter));
+            } else {
+                newsletterView.findViewById(R.id.newsletter_view_btn_attachment).setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.non_vote, context.getTheme())));
+                newsletterView.findViewById(R.id.newsletter_view_btn_attachment).setAlpha(0.3f);
+            }
+
             newsletterView.setLayoutParams(params);
 
             layout.addView(newsletterView);
@@ -212,16 +221,16 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void nullAllReferenceWithFragmentViews() {
         root = null;
-        layout = null;
+        attachmentLayout = null;
+        /*layout = null;
         pbLoadingPage = null;
         scrollView = null;
-        attachmentLayout = null;
         obscureLayoutView = null;
         tvNoElements = null;
         ivFilter = null;
         filterLayout = null;
         swipeRefreshLayout = null;
-        allNewsletter = null;
+        allNewsletter = null;*/
     }
 
     //region Listeners

@@ -170,18 +170,18 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void nullAllReferenceWithFragmentViews() {
         root = null;
-        viewsLayout = null;
+        detailsLayout = null;
+        /*viewsLayout = null;
         pbLoadingPage = null;
         scrollView = null;
         tvNoElements = null;
         fabGoUp = null;
         swipeRefreshLayout = null;
         obscureLayoutView = null;
-        detailsLayout = null;
         attachmentLayout = null;
         pbLoadingContent = null;
         allAlerts = null;
-        allAlertsToSave = null;
+        allAlertsToSave = null;*/
     }
 
     //region Listeners

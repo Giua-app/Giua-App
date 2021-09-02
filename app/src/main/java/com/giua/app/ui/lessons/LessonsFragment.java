@@ -199,7 +199,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void nullAllReferenceWithFragmentViews() {
         root = null;
-        tvCurrentDate = null;
+        /*tvCurrentDate = null;
         viewsLayout = null;
         calendarView = null;
         obscureLayoutView = null;
@@ -213,7 +213,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         btnConfirmDate = null;
         ivCalendarImage = null;
         swipeRefreshLayout = null;
-        allLessons = null;
+        allLessons = null;*/
     }
 
     //region Listeners

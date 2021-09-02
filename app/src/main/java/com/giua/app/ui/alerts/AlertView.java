@@ -37,11 +37,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class AlertView extends ConstraintLayout {
     Alert alert;
-    TextView tvStatus;
-    TextView tvDate;
-    TextView tvObject;
-    TextView tvReceivers;
-    ImageView ivNotRead;
 
     public AlertView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, Alert alert) {
         super(context, attrs);
@@ -55,11 +50,11 @@ public class AlertView extends ConstraintLayout {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layoutInflater.inflate(R.layout.alert_view, this);
 
-        tvStatus = findViewById(R.id.alert_status_text_view);
-        tvDate = findViewById(R.id.alert_date_text_view);
-        tvObject = findViewById(R.id.alert_object_text_view);
-        tvReceivers = findViewById(R.id.alert_receivers_text_view);
-        ivNotRead = findViewById(R.id.alert_view_left_image);
+        TextView tvStatus = findViewById(R.id.alert_status_text_view);
+        TextView tvDate = findViewById(R.id.alert_date_text_view);
+        TextView tvObject = findViewById(R.id.alert_object_text_view);
+        TextView tvReceivers = findViewById(R.id.alert_receivers_text_view);
+        ImageView ivNotRead = findViewById(R.id.alert_view_left_image);
 
         if (!alert.isRead()) {
             tvStatus.setText("Da leggere");

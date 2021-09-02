@@ -39,8 +39,6 @@ public class PinboardFragment extends Fragment {
     TabLayout tabLayout;
     FragmentManager fragmentManager;
     FragmentTransaction ft;
-    NewslettersFragment newslettersFragment;
-    AlertsFragment alertsFragment;
     //ViewPager2 viewPager;
 
 
@@ -51,19 +49,10 @@ public class PinboardFragment extends Fragment {
         //viewPager = root.findViewById(R.id.pager);
 
         fragmentManager = getChildFragmentManager();
-
-        newslettersFragment = new NewslettersFragment();
-        alertsFragment = new AlertsFragment();
-
-        //Handle the Child Fragment.
         ft = fragmentManager.beginTransaction();
-        ft.add(R.id.fragment_tabs_circolari_avvisi_framelayout, newslettersFragment, "circolari");
-        ft.add(R.id.fragment_tabs_circolari_avvisi_framelayout, alertsFragment, "avvisi");
-        ft.hide(alertsFragment);
-        ft.show(newslettersFragment);
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.addToBackStack(null);
         ft.setReorderingAllowed(true);
+        ft.replace(R.id.fragment_tabs_circolari_avvisi_framelayout, NewslettersFragment.class, null);
         ft.commit();
         //End
 
@@ -72,17 +61,14 @@ public class PinboardFragment extends Fragment {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 ft = fragmentManager.beginTransaction();
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 ft.addToBackStack(null);
                 ft.setReorderingAllowed(true);
 
                 if (tab.getText().toString().equals("Circolari")) {
-                    ft.hide(alertsFragment);
-                    ft.show(newslettersFragment);
+                    ft.replace(R.id.fragment_tabs_circolari_avvisi_framelayout, NewslettersFragment.class, null);
                     ft.commit();
                 } else if (tab.getText().toString().equals("Avvisi")) {
-                    ft.hide(newslettersFragment);
-                    ft.show(alertsFragment);
+                    ft.replace(R.id.fragment_tabs_circolari_avvisi_framelayout, AlertsFragment.class, null);
                     ft.commit();
                 }
             }
@@ -101,12 +87,8 @@ public class PinboardFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        ft.remove(newslettersFragment);
-        ft.remove(alertsFragment);
         fragmentManager = null;
         ft = null;
-        newslettersFragment = null;
-        alertsFragment = null;
         tabLayout = null;
         super.onDestroyView();
     }

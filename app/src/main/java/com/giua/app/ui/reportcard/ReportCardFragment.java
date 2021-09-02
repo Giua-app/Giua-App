@@ -119,12 +119,12 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void nullAllReferenceWithFragmentViews() {
         root = null;
-        viewsLayout = null;
+        /*viewsLayout = null;
         tvCurrentQuarter = null;
         pbLoadingPage = null;
         tvNoElements = null;
         btnChangeQuarter = null;
-        reportCard = null;
+        reportCard = null;*/
     }
 
     //region Listeners

@@ -238,7 +238,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void nullAllReferenceWithFragmentViews() {
         root = null;
-        viewsLayout = null;
+        /*viewsLayout = null;
         tvTodayText = null;
         tvNoElements = null;
         ivNextMonth = null;
@@ -255,7 +255,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         pbForDetails = null;
         swipeRefreshLayout = null;
         allHomeworks = null;
-        allTests = null;
+        allTests = null;*/
     }
 
     //region Listeners

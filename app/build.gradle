@@ -74,7 +74,7 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
     //--Memory leak lib
-    //debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'  //DEBUG
+    //implementation 'com.squareup.leakcanary:leakcanary-android:2.7'  //DEBUG
 
     //--jsoup HTML parser library @ https://jsoup.org/
     implementation 'org.jsoup:jsoup:1.14.2'

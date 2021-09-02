@@ -43,23 +43,20 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class VoteView extends ConstraintLayout {
-    String subjectValue;
+    String subjectName;
     String voteFirstQuarter;
     float rawVoteFirstQuarter;
     String voteSecondQuarter;
     float rawVoteSecondQuarter;
-    TextView tvVoteFisrtQuarter;
-    TextView tvVoteSecondQuarter;
-    TextView tvSubject;
-    LinearLayout listVoteLayout1;
-    LinearLayout listVoteLayout2;
-    List<Vote> allVotes;
-    OnClickListener onClick;
+    private LinearLayout listVoteLayout1;
+    private LinearLayout listVoteLayout2;
+    final List<Vote> allVotes;
+    private final OnClickListener onClick;
 
     public VoteView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, String subject, String voteFirstQuarter, float rawVoteFirstQuarter, String voteSecondQuarter, float rawVoteSecondQuarter, List<Vote> allVotes, OnClickListener onClick) {
         super(context, attrs);
 
-        this.subjectValue = subject;
+        this.subjectName = subject;
         this.voteFirstQuarter = voteFirstQuarter;
         this.rawVoteFirstQuarter = rawVoteFirstQuarter;
         this.voteSecondQuarter = voteSecondQuarter;
@@ -69,15 +66,15 @@ public class VoteView extends ConstraintLayout {
         initializeComponent(context);
     }
 
-    private void initializeComponent(Context context){
+    private void initializeComponent(Context context) {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layoutInflater.inflate(R.layout.vote_view, this);
 
-        tvSubject = findViewById(R.id.text_view_subject);
-        tvVoteFisrtQuarter = findViewById(R.id.text_view_vote_primo_quadrimestre);
-        tvVoteSecondQuarter = findViewById(R.id.text_view_vote_secondo_quadrimestre);
+        TextView tvSubject = findViewById(R.id.text_view_subject);
+        TextView tvVoteFisrtQuarter = findViewById(R.id.text_view_vote_primo_quadrimestre);
+        TextView tvVoteSecondQuarter = findViewById(R.id.text_view_vote_secondo_quadrimestre);
 
-        tvSubject.setText(this.subjectValue);
+        tvSubject.setText(this.subjectName);
         tvVoteFisrtQuarter.setText(this.voteFirstQuarter);
         tvVoteSecondQuarter.setText(this.voteSecondQuarter);
 

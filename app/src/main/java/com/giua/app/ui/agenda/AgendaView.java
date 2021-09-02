@@ -38,10 +38,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class AgendaView extends RelativeLayout {
-
-    TextView tvTime;
-    TextView tvDate;
-    TextView tvType;
     Homework homework = null;
     Test test = null;
 
@@ -76,9 +72,9 @@ public class AgendaView extends RelativeLayout {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layoutInflater.inflate(R.layout.agenda_object_view, this);
 
-        tvTime = findViewById(R.id.agenda_view_time);
-        tvDate = findViewById(R.id.agenda_view_date);
-        tvType = findViewById(R.id.agenda_view_type);
+        TextView tvTime = findViewById(R.id.agenda_view_time);
+        TextView tvDate = findViewById(R.id.agenda_view_date);
+        TextView tvType = findViewById(R.id.agenda_view_type);
 
         if (homework != null && test != null) {
             objectDay.set(Integer.parseInt(homework.year), Integer.parseInt(homework.month), Integer.parseInt(homework.day), 0, 0, 0);

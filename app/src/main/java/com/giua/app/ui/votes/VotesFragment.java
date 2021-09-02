@@ -168,14 +168,14 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void nullAllReferenceWithFragmentViews() {
         root = null;
-        viewsLayout = null;
+        /*viewsLayout = null;
         obscureLayoutView = null;
         voteVisualizer = null;
         pbLoadingPage = null;
         tvNoElements = null;
         swipeRefreshLayout = null;
         params = null;
-        allVotes = null;
+        allVotes = null;*/
     }
 
     private void onRefresh() {
