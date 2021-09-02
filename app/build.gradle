@@ -93,6 +93,9 @@ dependencies {
     //--App Intro
     implementation 'com.github.AppIntro:AppIntro:6.1.0'
 
+    //--Settings screen (https://developer.android.com/jetpack/androidx/releases/preference)
+    implementation "androidx.preference:preference:1.1.1"
+
     //implementation 'org.jetbrains.kotlin:kotlin-stdlib-jre8'
 
     //--Android Iconics NON AGGIORNARE
