@@ -59,16 +59,18 @@ public class ActivityManager extends AppCompatActivity {
             notificationManager.createNotificationChannel(channel);
         }
 
-        switch (SettingsData.getSettingString(this, SettingKey.THEME)) {
-            case "0":
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                break;
-            case "1":
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                break;
-            case "2":
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                break;
+        if (SettingsData.getSettingString(this, SettingKey.THEME) != null) {
+            switch (SettingsData.getSettingString(this, SettingKey.THEME)) {
+                case "0":
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    break;
+                case "1":
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    break;
+                case "2":
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                    break;
+            }
         }
 
         if (defaultUrl != null)

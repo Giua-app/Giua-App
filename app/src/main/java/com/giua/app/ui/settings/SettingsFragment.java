@@ -112,7 +112,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private boolean lThemeChangeListener(Preference preference, Object o) {
         SettingsData.saveSettingString(requireContext(), SettingKey.THEME, (String) o);
-        switch (SettingsData.getSettingString(requireContext(), SettingKey.THEME)) {
+        switch ((String) o) {
             case "0":
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 break;
