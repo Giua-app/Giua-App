@@ -166,12 +166,11 @@ public class MainLogin extends AppCompatActivity {
         if (!btnShowActivated) {
             etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_NULL);      //Mostra la password
             btnShowPassword.setImageResource(R.drawable.ic_baseline_visibility_24);
-            etPassword.setSelection(etPassword.getText().length());
         } else {
             etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);  //Nasconde la password
             btnShowPassword.setImageResource(R.drawable.ic_baseline_visibility_off_24);
-            etPassword.setSelection(etPassword.getText().length());
         }
+        etPassword.setSelection(etPassword.getText().length());
         btnShowActivated = !btnShowActivated;
     }
 

@@ -67,7 +67,7 @@ public class SettingsData {
     }
 
     public static String getSettingString(final Context context, final String key) {
-        return getSharedPreferences(context).getString(key, null);
+        return getSharedPreferences(context).getString(key, "");
     }
 
     public static int getSettingInt(final Context context, final String key) {

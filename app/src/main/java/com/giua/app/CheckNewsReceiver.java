@@ -56,9 +56,9 @@ public class CheckNewsReceiver extends BroadcastReceiver {
             } catch (Exception e) {
                 //DEBUG
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                        .setSmallIcon(R.drawable.ic_giuaschool_logo2)
+                        .setSmallIcon(R.drawable.ic_giuaschool_logo1)
                         .setContentTitle("Si è verificato un errore")
-                        .setStyle(new NotificationCompat.BigTextStyle().bigText(e.toString()))
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText(e.toString() + "; " + e.getMessage()))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
                 notificationManager.notify(10, builder.build());
@@ -103,7 +103,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
 
         if (numberNewslettersOld != -1 && numberNewsletters - numberNewslettersOld > 0) {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                    .setSmallIcon(R.drawable.ic_giuaschool_logo2)
+                    .setSmallIcon(R.drawable.ic_giuaschool_logo1)
                     .setContentTitle("Nuova circolare")
                     .setStyle(new NotificationCompat.BigTextStyle().bigText("Numero circolari: " + numberNewsletters + "\nNumero circolari vecchie: " + numberNewslettersOld))  //DEBUG
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
@@ -112,7 +112,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         }
         if (numberAlertsOld != -1 && numberAlerts - numberAlertsOld > 0) {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                    .setSmallIcon(R.drawable.ic_giuaschool_logo2)
+                    .setSmallIcon(R.drawable.ic_giuaschool_logo1)
                     .setContentTitle("Nuovo avviso")
                     .setStyle(new NotificationCompat.BigTextStyle().bigText("Numero avvisi: " + numberAlerts + "\nNumero avvisi vecchie: " + numberAlertsOld))  //DEBUG
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
@@ -121,7 +121,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         }
         if (gS.checkForAbsenceUpdate()) {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                    .setSmallIcon(R.drawable.ic_giuaschool_logo2)
+                    .setSmallIcon(R.drawable.ic_giuaschool_logo1)
                     .setContentTitle("Nuova assenza")
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 

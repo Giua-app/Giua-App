@@ -26,7 +26,8 @@
         <ListPreference
             app:key="theme"
             app:title="Scegli un tema"
-            app:iconSpaceReserved="false" />
+            app:iconSpaceReserved="false"
+            app:negativeButtonText="Annulla" />
 
     </PreferenceCategory>
 

@@ -70,10 +70,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         lTheme.setEntries(new CharSequence[]{"Chiaro", "Scuro", "Segui il sistema"});
         lTheme.setEntryValues(new CharSequence[]{"0", "1", "2"});
         String defualtTheme = SettingsData.getSettingString(context, SettingKey.THEME);
-        if (defualtTheme == null)
-            lTheme.setValueIndex(2);
-        else
+        if (!defualtTheme.equals(""))
             lTheme.setValueIndex(Integer.parseInt(defualtTheme));
+        else
+            lTheme.setValueIndex(2);
+
         lTheme.setOnPreferenceChangeListener(this::lThemeChangeListener);
     }
 
@@ -90,7 +91,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private void setupSiteUrlObject() {
         EditTextPreference etSiteUrl = Objects.requireNonNull(findPreference("siteUrl"));
         String defaultUrl = SettingsData.getSettingString(requireContext(), SettingKey.DEFAULT_URL);
-        if (defaultUrl != null)
+        if (!defaultUrl.equals(""))
             etSiteUrl.setText(defaultUrl);
         else
             etSiteUrl.setText("https://registro.giua.edu.it");
@@ -101,7 +102,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private boolean siteUrlOnClick(Preference preference) {
         if (!Pattern.matches("https?://([a-zA-Z0-9]+[.])+([a-zA-Z0-9]+)(:[0-9]+)?", ((EditTextPreference) preference).getText())) {
             String defaultUrl = SettingsData.getSettingString(requireContext(), SettingKey.DEFAULT_URL);
-            if (defaultUrl != null)
+            if (!defaultUrl.equals(""))
                 ((EditTextPreference) preference).setText(defaultUrl);
             else
                 ((EditTextPreference) preference).setText("https://registro.giua.edu.it");

@@ -299,7 +299,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         String filterDateTemp = ((TextView) root.findViewById(R.id.newsletter_filter_date)).getText().toString();
         String filterTextTemp = ((TextView) root.findViewById(R.id.newsletter_filter_text)).getText().toString();
 
-        if (onlyNotReadTemp != onlyNotRead || !filterDateTemp.equals(filterDate) || !filterTextTemp.equals(filterText)) {
+        if (onlyNotReadTemp != onlyNotRead || !filterDateTemp.equals(filterDate) || !filterTextTemp.equals(filterText)) {   //Se è cambiato qualcosa allora procedi
 
             //il regex funziona dal 2009 fino al 2039
             if (!filterDateTemp.matches("^((2009)|(20[1-3][0-9])-((0[1-9])|(1[0-2])))$") && !filterDateTemp.equals("")) {
