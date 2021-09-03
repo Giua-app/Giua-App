@@ -17,7 +17,8 @@
   ~     along with this program.  If not, see https://www.gnu.org/licenses/.
   -->
 
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
         app:title="Personalizzazione"
@@ -46,6 +47,12 @@
             app:key="crashScreen"
             app:title="Fai esplodere il mondo"
             app:iconSpaceReserved="false" />
+        <Preference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:iconSpaceReserved="false"
+            app:key="introScreen"
+            app:title="Riguarda l'intro" />
         <Preference
             app:key="aboutScreen"
             app:title="About"

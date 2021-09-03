@@ -52,7 +52,6 @@ public class ActivityManager extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setupCaoc(); //Crash handler
-        //setupAboutBox(); //About screen
 
 
         //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
@@ -76,7 +75,7 @@ public class ActivityManager extends AppCompatActivity {
             GiuaScraper.setSiteURL(defaultUrl);
 
         final int introStatus = SettingsData.getSettingInt(this, SettingKey.INTRO_STATUS);
-        //final int introStatus = 0;         //DEBUG
+        //introStatus = 0;         //DEBUG
 
         // 1 = Intro già vista , 0 = Intro non vista , -1 = Intro mai vista
         if (introStatus != 1) {
@@ -112,60 +111,6 @@ public class ActivityManager extends AppCompatActivity {
                 //.errorActivity(ErrorActivity.class)
                 .apply();
     }
-
-    /*public void setupAboutBox() {
-        AboutConfig aboutConfig = AboutConfig.getInstance();
-        aboutConfig.appName = getString(R.string.app_name);
-        aboutConfig.appIcon = R.mipmap.ic_launcher;
-        aboutConfig.version = BuildConfig.VERSION_NAME;
-        aboutConfig.author = "Hiem & Franck1421";
-        aboutConfig.aboutLabelTitle = "About App";
-        aboutConfig.packageName = getApplicationContext().getPackageName();
-        //aboutConfig.buildType = AboutConfig.BuildType.GOOGLE; usato per "Leave review"
-
-        aboutConfig.shareMessage = "ehi ciao ma sai che ho trovato questa app molto bll ceh la devi " +
-                "scaricare assolutamente tipo subito ora ceh proprio immediato non ci devi manco " +
-                "pensare tipo proprio apri l'app e farai 'wow meno male che ho dato retta al mio " +
-                "amico altrimenti ero uno sfigato' - Condiviso da Giua App plus pro edizione premium";
-
-        //aboutConfig.facebookUserName = "Test";
-        //aboutConfig.twitterUserName = "Test";
-        aboutConfig.webHomePage = "https://github.com/Giua-app/Giua-App";
-
-        // app publisher for "Try Other Apps" item
-        //aboutConfig.appPublisher = "Test";
-
-        // if pages are stored locally, then you need to override aboutConfig.dialog to be able use custom WebView
-        //aboutConfig.companyHtmlPath = "Test";
-        //aboutConfig.privacyHtmlPath = "Test";
-        //aboutConfig.acknowledgmentHtmlPath = "Test";
-
-        /*aboutConfig.dialog = new IDialog() {
-            @Override
-            public void open(AppCompatActivity appCompatActivity, String url, String tag) {
-                // handle custom implementations of WebView. It will be called when user click to web items. (Example: "Privacy", "Acknowledgments" and "About")
-            }
-        };*/
-
-        /*aboutConfig.analytics = new IAnalytic() {
-            @Override
-            public void logUiEvent(String s, String s1) {
-                // handle log events.
-            }
-
-            @Override
-            public void logException(Exception e, boolean b) {
-                // handle exception events.
-            }
-        };
-        // set it only if aboutConfig.analytics is defined.
-        aboutConfig.logUiEventName = "Log";*
-
-        // Contact Support email details
-        //aboutConfig.emailAddress = "Test";
-        //aboutConfig.emailSubject = "Test";
-        //aboutConfig.emailBody = "Test";
-    }*/
 
 
     /**

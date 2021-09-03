@@ -26,6 +26,7 @@ import com.github.appintro.AppIntro
 import com.github.appintro.AppIntroFragment
 import com.github.appintro.AppIntroPageTransformerType
 import com.github.appintro.model.SliderPage
+import com.giua.app.ui.intro.CustomDokiActivity
 import com.mikepenz.iconics.context.IconicsLayoutInflater2
 
 class AppIntroActivity : AppIntro(){
@@ -36,10 +37,11 @@ class AppIntroActivity : AppIntro(){
 
 
         setProgressIndicator()
+        setImmersiveMode()
 
         addSlide(AppIntroFragment.newInstance(
             "Benvenuto!",
-            "Segui questa preve introduzione per scoprire tutte le funzionalità di Giua App",
+            "Segui questa breve introduzione per scoprire tutte le funzionalità di Giua App",
             imageDrawable = R.drawable.ic_giuaschool_logo1,
             backgroundDrawable = R.drawable.intro_back_slide1,
             titleTypefaceFontRes = R.font.caviar_dreams_bold,
@@ -120,27 +122,30 @@ class AppIntroActivity : AppIntro(){
 
         addSlide(AppIntroFragment.newInstance(SliderPage(
             "Ottimizzazione batteria",
-            "Per poter ricevere notifiche dal registro devi togliere sta cosa perchè si (inserire codice per aprire impostazioni e togliere la cosa)",
-            imageDrawable = R.mipmap.ic_launcher,
+            "Per poter ricevere notifiche dal registro devi l'ottimizzazione batteria, cliccando \"FINE\" verrà aperta le impostazioni della batteria" +
+                    "\n\nATTENZIONE: Il processo cambia da telefono a telefono, controlla su ",
+            imageDrawable = R.mipmap.battery_tutorial,
             backgroundDrawable = R.drawable.intro_back_slide1,
             titleTypefaceFontRes = R.font.caviar_dreams_bold,
             descriptionTypefaceFontRes = R.font.roboto_light
         )))
-
 
         setTransformer(AppIntroPageTransformerType.Parallax())
     }
 
     public override fun onSkipPressed(currentFragment: Fragment?) {
         super.onSkipPressed(currentFragment)
-        SettingsData.saveSettingInt(this, SettingKey.INTRO_STATUS, 1)
-        startActivity(Intent(this@AppIntroActivity, ActivityManager::class.java))
+        finishIntro()
     }
 
     public override fun onDonePressed(currentFragment: Fragment?) {
         super.onDonePressed(currentFragment)
+        finishIntro()
+    }
+
+    private fun finishIntro(){
         SettingsData.saveSettingInt(this, SettingKey.INTRO_STATUS, 1)
-        startActivity(Intent(this@AppIntroActivity, ActivityManager::class.java))
+        startActivity(Intent(this@AppIntroActivity, CustomDokiActivity::class.java))
     }
 
 

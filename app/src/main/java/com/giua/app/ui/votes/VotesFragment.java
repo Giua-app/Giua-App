@@ -248,6 +248,8 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
         voteView.setLayoutParams(params);
 
         viewsLayout.addView(voteView);
+
+
     }
 
     @Override

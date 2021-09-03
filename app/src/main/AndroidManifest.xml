@@ -104,6 +104,11 @@
             android:label="label"
             android:theme="@style/Theme.GiuaApp.NoActionBar" />
 
+        <activity
+            android:name=".ui.intro.CustomDokiActivity"
+            android:label="label"
+            android:theme="@style/Theme.GiuaApp.NoActionBar" />
+
         <receiver
             android:name=".CheckNewsReceiver"
             android:exported="false" />

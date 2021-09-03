@@ -30,6 +30,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.giua.app.AboutActivity;
+import com.giua.app.AppIntroActivity;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
@@ -88,6 +89,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         btnAboutScreen.setOnPreferenceClickListener(this::btnAboutScreenOnClick);
     }
 
+    private void setupIntroScreenObject() {
+        Preference btnIntroScreen = Objects.requireNonNull(findPreference("introScreen"));
+        btnIntroScreen.setOnPreferenceClickListener(this::btnIntroScreenOnClick);
+    }
+
     private void setupSiteUrlObject() {
         EditTextPreference etSiteUrl = Objects.requireNonNull(findPreference("siteUrl"));
         String defaultUrl = SettingsData.getSettingString(requireContext(), SettingKey.DEFAULT_URL);
@@ -132,7 +138,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private boolean btnAboutScreenOnClick(Preference preference) {
+        SettingsData.saveSettingInt(requireContext(), SettingKey.INTRO_STATUS, 0);
         startActivity(new Intent(requireContext(), AboutActivity.class));
+        return true;
+    }
+
+    private boolean btnIntroScreenOnClick(Preference preference) {
+        startActivity(new Intent(requireContext(), AppIntroActivity.class));
         return true;
     }
 
