@@ -66,6 +66,12 @@ public class SettingsData {
                 .apply();
     }
 
+    public static void saveSettingBoolean(final Context context, final String key, final boolean value) {
+        getSharedPreferences(context).edit()
+                .putBoolean(key, value)
+                .apply();
+    }
+
     public static String getSettingString(final Context context, final String key) {
         return getSharedPreferences(context).getString(key, "");
     }
@@ -76,6 +82,10 @@ public class SettingsData {
 
     public static String getSettingFloat(final Context context, final String key) {
         return getSharedPreferences(context).getString(key, null);
+    }
+
+    public static boolean getSettingBoolean(final Context context, final String key) {
+        return getSharedPreferences(context).getBoolean(key, false);
     }
 
     public static void clearAll(final Context context) {

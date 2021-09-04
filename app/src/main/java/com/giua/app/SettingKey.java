@@ -34,4 +34,9 @@ public abstract class SettingKey {
      * Il tema da utilizzare di defualt
      **/
     public static final String THEME = "theme";
+
+    /**
+     * Indica se le notifiche sono attive
+     */
+    public static final String NOTIFICATION = "notification";
 }

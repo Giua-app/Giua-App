@@ -28,6 +28,7 @@ import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SwitchPreference;
 
 import com.giua.app.AboutActivity;
 import com.giua.app.AppIntroActivity;
@@ -51,6 +52,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void setupAllObjects(Context context) {
 
+        //region Funzionalità
+        setupNotificationObject(context);
+        //endreigon
+
         //region Personalizzazione
 
         setupThemeObject(context);
@@ -64,6 +69,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         setupCrashScreenObject();
 
         //endregion
+    }
+
+    private void setupNotificationObject(Context context) {
+        SwitchPreference swNotification = Objects.requireNonNull(findPreference("notification"));
+        swNotification.setChecked(SettingsData.getSettingBoolean(context, SettingKey.NOTIFICATION));
+        swNotification.setOnPreferenceChangeListener(this::swNotificationChangeListener);
+    }
+
+    private boolean swNotificationChangeListener(Preference preference, Object o) {
+        SettingsData.saveSettingBoolean(requireContext(), SettingKey.NOTIFICATION, (boolean) o);
+        return true;
     }
 
     private void setupThemeObject(Context context) {

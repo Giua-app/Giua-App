@@ -17,8 +17,19 @@
   ~     along with this program.  If not, see https://www.gnu.org/licenses/.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:title="Funzionalità"
+        app:iconSpaceReserved="false">
+
+        <SwitchPreference
+            app:key="notification"
+            app:title="Abilita le notifiche"
+            app:iconSpaceReserved="false"
+            app:defaultValue="false" />
+
+    </PreferenceCategory>
 
     <PreferenceCategory
         app:title="Personalizzazione"
@@ -48,10 +59,8 @@
             app:title="Fai esplodere il mondo"
             app:iconSpaceReserved="false" />
         <Preference
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:iconSpaceReserved="false"
             app:key="introScreen"
+            app:iconSpaceReserved="false"
             app:title="Riguarda l'intro" />
         <Preference
             app:key="aboutScreen"

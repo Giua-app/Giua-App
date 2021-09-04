@@ -43,6 +43,16 @@ public class CheckNewsReceiver extends BroadcastReceiver {
     private NotificationManagerCompat notificationManager;
     private GiuaScraper gS;
 
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if (SettingsData.getSettingBoolean(context, SettingKey.NOTIFICATION)) {
+            Log.d("", "Broadcast di background STARTATO");
+            this.context = context;
+            notificationManager = NotificationManagerCompat.from(context);
+            checkNews();
+        }
+    }
+
     private void checkNews() {
         new Thread(() -> {
             Log.d("", "Servizio di background: controllo nuove cose");
@@ -64,14 +74,6 @@ public class CheckNewsReceiver extends BroadcastReceiver {
                 notificationManager.notify(10, builder.build());
             }
         }).start();
-    }
-
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        Log.d("", "Broadcast di background STARTATO");
-        this.context = context;
-        notificationManager = NotificationManagerCompat.from(context);
-        checkNews();
     }
 
     private void checkAndMakeLogin() {
