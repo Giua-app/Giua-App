@@ -1,6 +1,6 @@
 /*
  * Giua App
- * Android app to view data from the giua@school workbook
+ * Android app to view data from the giua@school workbook 
  * Copyright (C) 2021 - 2021 Hiem, Franck1421 and contributors
  *
  *     This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see https://www.gnu.org/licenses/.
  */
-package com.giua.app
+package com.giua.app.ui.intro
 
 import android.content.Intent
 import android.os.Bundle
@@ -26,7 +26,10 @@ import com.github.appintro.AppIntro
 import com.github.appintro.AppIntroFragment
 import com.github.appintro.AppIntroPageTransformerType
 import com.github.appintro.model.SliderPage
-import com.giua.app.ui.intro.CustomDokiActivity
+import com.giua.app.ActivityManager
+import com.giua.app.R
+import com.giua.app.SettingKey
+import com.giua.app.SettingsData
 import com.mikepenz.iconics.context.IconicsLayoutInflater2
 
 class AppIntroActivity : AppIntro(){
@@ -38,6 +41,7 @@ class AppIntroActivity : AppIntro(){
 
         setProgressIndicator()
         setImmersiveMode()
+        isSystemBackButtonLocked = true
 
         addSlide(AppIntroFragment.newInstance(
             "Benvenuto!",
@@ -120,14 +124,27 @@ class AppIntroActivity : AppIntro(){
             descriptionTypefaceFontRes = R.font.caviar_dreams
         ))
 
-        addSlide(AppIntroFragment.newInstance(SliderPage(
+        /*addSlide(AppIntroFragment.newInstance(SliderPage(
             "Ottimizzazione batteria",
-            "Per poter ricevere notifiche dal registro devi l'ottimizzazione batteria, cliccando \"FINE\" verrà aperta le impostazioni della batteria" +
-                    "\n\nATTENZIONE: Il processo cambia da telefono a telefono, controlla su ",
+            "Per poter ricevere notifiche dal registro devi dissativare l'ottimizzazione batteria" +
+                    "\nCliccando \"FINE\" verranno aperte delle istruzioni specifiche del tuo telefono",
             imageDrawable = R.mipmap.battery_tutorial,
             backgroundDrawable = R.drawable.intro_back_slide1,
             titleTypefaceFontRes = R.font.caviar_dreams_bold,
             descriptionTypefaceFontRes = R.font.roboto_light
+        )))*/
+
+        val dokiSlide : DokiSlidePolicyFragment = DokiSlidePolicyFragment.newInstance()
+
+        addSlide(dokiSlide)
+
+        addSlide(AppIntroFragment.newInstance(SliderPage(
+            "E' tutto pronto!",
+            "Clicca \"FINE\" per passare alla pagina di login",
+            imageDrawable = R.mipmap.fine_tutorial,
+            backgroundDrawable = R.drawable.intro_back_slide1,
+            titleTypefaceFontRes = R.font.caviar_dreams_bold,
+            descriptionTypefaceFontRes = R.font.caviar_dreams
         )))
 
         setTransformer(AppIntroPageTransformerType.Parallax())
@@ -145,7 +162,7 @@ class AppIntroActivity : AppIntro(){
 
     private fun finishIntro(){
         SettingsData.saveSettingInt(this, SettingKey.INTRO_STATUS, 1)
-        startActivity(Intent(this@AppIntroActivity, CustomDokiActivity::class.java))
+        startActivity(Intent(this@AppIntroActivity, ActivityManager::class.java))
     }
 
 

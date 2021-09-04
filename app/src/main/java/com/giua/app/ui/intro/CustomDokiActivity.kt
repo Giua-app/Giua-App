@@ -19,11 +19,9 @@
 
 package com.giua.app.ui.intro
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.giua.app.ActivityManager
 import com.giua.app.R
 import dev.doubledot.doki.views.DokiContentView
 
@@ -37,11 +35,17 @@ class CustomDokiActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_intro_doki)
 
-        dokiContent?.setOnCloseListener { startActivity(Intent(this@CustomDokiActivity, ActivityManager::class.java)) }
+        dokiContent?.setOnCloseListener {
+            Toast.makeText(
+                this,
+                "Ora puoi andare avanti!",
+                Toast.LENGTH_LONG
+            ).show()
+            supportFinishAfterTransition()
+             }
         dokiContent?.setExplanationVisibility(false)
         dokiContent?.setDeveloperSolutionVisibility(false)
         dokiContent?.loadContent(appName = "Giua App")
-        Log.d("ARII", "IDUASUDLSADLASDSAUIPGD")
     }
 
 }

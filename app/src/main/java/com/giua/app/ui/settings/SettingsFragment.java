@@ -31,10 +31,10 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 
 import com.giua.app.AboutActivity;
-import com.giua.app.AppIntroActivity;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
+import com.giua.app.ui.intro.AppIntroActivity;
 import com.giua.webscraper.GiuaScraper;
 
 import java.util.Objects;
@@ -67,6 +67,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         setupSiteUrlObject();
         setupAboutScreenObject();
         setupCrashScreenObject();
+        setupIntroScreenObject();
 
         //endregion
     }

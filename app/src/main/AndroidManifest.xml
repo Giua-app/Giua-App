@@ -100,7 +100,7 @@
             android:theme="@style/AppTheme.MaterialAboutActivity" />
 
         <activity
-            android:name=".AppIntroActivity"
+            android:name=".ui.intro.AppIntroActivity"
             android:label="label"
             android:theme="@style/Theme.GiuaApp.NoActionBar" />
 
