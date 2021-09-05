@@ -39,4 +39,10 @@ public class SettingsActivity extends AppCompatActivity {
                 .replace(R.id.settings_fragment_container, SettingsFragment.class, null)
                 .commit();
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }

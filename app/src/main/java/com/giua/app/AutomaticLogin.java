@@ -118,10 +118,12 @@ public class AutomaticLogin extends AppCompatActivity {
 
     private void startStudentLoginActivity() {
         startActivity(new Intent(AutomaticLogin.this, StudentLoginActivity.class));
+        finish();
     }
 
     private void startDrawerActivity() {
         startActivity(new Intent(AutomaticLogin.this, DrawerActivity.class));
+        finish();
     }
 
     private void setErrorMessage(String message) {
@@ -137,31 +139,5 @@ public class AutomaticLogin extends AppCompatActivity {
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-    }
-
-    @Override
-    protected void onRestart() {
-        onRestoreInstanceState(new Bundle());
-        releaseInstance();
-        super.onRestart();
-    }
-
-    @Override
-    protected void onResume() {
-        onRestoreInstanceState(new Bundle());
-        releaseInstance();
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        onSaveInstanceState(new Bundle());
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        onSaveInstanceState(new Bundle());
-        super.onStop();
     }
 }

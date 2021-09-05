@@ -49,13 +49,12 @@ public class ActivityManager extends AppCompatActivity {
                 break;
 
         }
-
         super.onCreate(savedInstanceState);
 
         setupCaoc(); //Crash handler
 
 
-        //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
+        GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
         GiuaScraper.setDebugMode(true);
 
         final String defaultUrl = SettingsData.getSettingString(this, SettingKey.DEFAULT_URL);
@@ -81,6 +80,7 @@ public class ActivityManager extends AppCompatActivity {
         // 1 = Intro già vista , 0 = Intro non vista , -1 = Intro mai vista
         if (introStatus != 1) {
             startActivity(new Intent(ActivityManager.this, AppIntroActivity.class));
+            finish();
             return;
         }
 
@@ -92,10 +92,12 @@ public class ActivityManager extends AppCompatActivity {
 
     private void startMainLoginActivity() {
         startActivity(new Intent(ActivityManager.this, MainLogin.class));
+        finish();
     }
 
     private void startAutomaticLoginActivity() {
         startActivity(new Intent(ActivityManager.this, AutomaticLogin.class));
+        finish();
     }
 
     public void setupCaoc() {
@@ -123,31 +125,5 @@ public class ActivityManager extends AppCompatActivity {
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-    }
-
-    @Override
-    protected void onRestart() {
-        onRestoreInstanceState(new Bundle());
-        releaseInstance();
-        super.onRestart();
-    }
-
-    @Override
-    protected void onResume() {
-        onRestoreInstanceState(new Bundle());
-        releaseInstance();
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        onSaveInstanceState(new Bundle());
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        onSaveInstanceState(new Bundle());
-        super.onStop();
     }
 }

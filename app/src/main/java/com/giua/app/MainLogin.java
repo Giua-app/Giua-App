@@ -189,30 +189,4 @@ public class MainLogin extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
-
-    @Override
-    protected void onRestart() {
-        onRestoreInstanceState(new Bundle());
-        releaseInstance();
-        super.onRestart();
-    }
-
-    @Override
-    protected void onResume() {
-        onRestoreInstanceState(new Bundle());
-        releaseInstance();
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        onSaveInstanceState(new Bundle());
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        onSaveInstanceState(new Bundle());
-        super.onStop();
-    }
 }

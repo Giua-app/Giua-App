@@ -242,7 +242,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
     @SuppressLint("ClickableViewAccessibility")
     private void addVoteView(String subject, String voteFirstQuart, float rawVoteFirstQuart, String voteSecondQuart, float rawVoteSecondQuart) {
-        voteView = new VoteView(requireContext(), null, subject, voteFirstQuart, rawVoteFirstQuart, voteSecondQuart, rawVoteSecondQuart, GlobalVariables.gS.getAllVotes(false).get(subject), this::singleVoteOnClick);
+        voteView = new VoteView(requireContext(), null, subject, voteFirstQuart, rawVoteFirstQuart, voteSecondQuart, rawVoteSecondQuart, allVotes.get(subject), this::singleVoteOnClick);
         voteView.setId(View.generateViewId());
 
         voteView.setLayoutParams(params);

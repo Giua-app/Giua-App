@@ -74,7 +74,8 @@
             android:label="@string/title_activity_drawer"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.GiuaApp.NoActionBar"
-            tools:ignore="LockedOrientationActivity">
+            tools:ignore="LockedOrientationActivity"
+            android:launchMode="singleTop">
 
             <!-- The meta-data tag is required if you support API level 15 and lower -->
             <meta-data

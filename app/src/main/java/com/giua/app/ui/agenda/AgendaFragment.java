@@ -155,7 +155,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                         isLoadingData = false;
                     } else
                         activity.runOnUiThread(this::addViews);
-                } catch (GiuaScraperExceptions.YourConnectionProblems e) {
+                } catch (GiuaScraperExceptions.YourConnectionProblems | NullPointerException e) {
                     activity.runOnUiThread(() -> {
                         DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
                         pbLoadingPage.setVisibility(View.GONE);
@@ -166,15 +166,6 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     activity.runOnUiThread(() -> {
                         DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
-                        pbLoadingPage.setVisibility(View.GONE);
-                        tvNoElements.setVisibility(View.VISIBLE);
-                        swipeRefreshLayout.setRefreshing(false);
-                        isLoadingData = false;
-                    });
-                } catch (NullPointerException e) {
-                    activity.runOnUiThread(() -> {
-                        if (!GiuaScraper.isMyInternetWorking())
-                            DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
                         pbLoadingPage.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);

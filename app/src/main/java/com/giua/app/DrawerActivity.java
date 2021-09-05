@@ -23,7 +23,6 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,13 +30,16 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
@@ -52,6 +54,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -67,10 +70,10 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     Button btnLogout;
     Button btnSettings;
     Intent iCheckNewsReceiver;
-    Handler handler = new Handler();
     AlarmManager alarmManager;
     PendingIntent pendingIntent;
     FragmentTransaction transaction;
+    FragmentManager fragmentManager;
     Toolbar toolbar;
 
     @Override
@@ -78,23 +81,12 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer);
 
-        //LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
-        //super.onCreate(savedInstanceState);
-
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         btnLogout = findViewById(R.id.nav_drawer_logout_button);
         btnSettings = findViewById(R.id.nav_drawer_settings_button);
-
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_voti, R.id.nav_agenda, R.id.nav_lezioni, R.id.nav_bacheca, R.id.nav_pagella)
-                .setOpenableLayout(drawerLayout)
-                .build();
-
-        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
 
         iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -124,14 +116,28 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     }
 
     @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        fragmentManager = getSupportFragmentManager();
+        transaction = fragmentManager.beginTransaction();
+        mAppBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.nav_voti, R.id.nav_agenda, R.id.nav_lezioni, R.id.nav_bacheca, R.id.nav_pagella)
+                .setOpenableLayout(drawerLayout)
+                .build();
+
+        navController = ((NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment)).getNavController(); //Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+    }
+
+    @Override
     public boolean onSupportNavigateUp() {
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp();
+        return NavigationUI.navigateUp(navController, mAppBarConfiguration) || super.onSupportNavigateUp();
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull @NotNull MenuItem item) {
-        transaction = getSupportFragmentManager().beginTransaction();
+        transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
         if (item.isChecked()) {
             closeNavDrawer();
@@ -142,11 +148,12 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         } else if (item.getItemId() == R.id.nav_lezioni) {
             startLessonsFragment();
         } else if (item.getItemId() == R.id.nav_bacheca) {
-            startNewsLetterFragment();
+            startPinBoardFragment();
         } else if (item.getItemId() == R.id.nav_pagella) {
             startReportCardFragment();
         }
         transaction.commit();
+        closeNavDrawer();
 
         return true;
     }
@@ -161,44 +168,59 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         Intent intent = new Intent(this, ActivityManager.class);
         LoginData.clearAll(this);
         startActivity(intent);
-        finish();
+        startVotesFragment();
     }
 
     private void settingsButtonClick(View view) {
         startActivity(new Intent(this, SettingsActivity.class));
+
+        // Ritorna una lista di fragment che sono presenti nel fragmentManager.
+        // Dovrebbe sempre restituire 1 solo fragment in quanto viene usato sempre il replace().
+        List<Fragment> allFragments = fragmentManager.getFragments();
+
+        for (Fragment fragment : allFragments) {    //Rimuove tutti i fragment nel fragmentManager
+            fragmentManager.beginTransaction().remove(fragment).commit();
+        }
+
+        //Questo sleep è solo per motivi grafici
+        new Thread(() -> {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
+            }
+            runOnUiThread(() -> navigationView.setCheckedItem(R.id.nav_voti));
+        }).start();
     }
 
     private void startReportCardFragment() {
         transaction.replace(R.id.nav_host_fragment, ReportCardFragment.class, null);
         toolbar.setTitle("Pagella");
-        closeNavDrawer();
     }
 
-    private void startNewsLetterFragment() {
+    private void startPinBoardFragment() {
         transaction.replace(R.id.nav_host_fragment, PinboardFragment.class, null);
-        closeNavDrawer();
+        toolbar.setTitle("Bacheca");
     }
 
     private void startVotesFragment() {
         transaction.replace(R.id.nav_host_fragment, VotesFragment.class, null);
-        closeNavDrawer();
+        toolbar.setTitle("Voti");
     }
 
     private void startLessonsFragment() {
         transaction.replace(R.id.nav_host_fragment, LessonsFragment.class, null);
-        closeNavDrawer();
+        toolbar.setTitle("Lezioni");
     }
 
     private void startAgendaFragment() {
         transaction.replace(R.id.nav_host_fragment, AgendaFragment.class, null);
-        closeNavDrawer();
+        toolbar.setTitle("Agenda");
     }
 
     public static void setErrorMessage(String message, View root, int layoutID, NavController _navController) {
         if (Objects.requireNonNull(_navController.getCurrentDestination()).getId() == layoutID)
             Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
-
 
     @Override
     public void onBackPressed() {
@@ -214,35 +236,9 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     }
 
     @Override
-    protected void onRestart() {
-        onRestoreInstanceState(new Bundle());
-        releaseInstance();
-        alarmManager.cancel(pendingIntent);
-        super.onRestart();
-    }
-
-    @Override
-    protected void onResume() {
-        onRestoreInstanceState(new Bundle());
-        releaseInstance();
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        onSaveInstanceState(new Bundle());
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        onSaveInstanceState(new Bundle());
-        super.onStop();
-    }
-
-    @Override
     protected void onDestroy() {
-        if (SettingsData.getSettingBoolean(this, SettingKey.NOTIFICATION)) {
+        alarmManager.cancel(pendingIntent);
+        if (!LoginData.getUser(this).equals("") && SettingsData.getSettingBoolean(this, SettingKey.NOTIFICATION)) {
             alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
                     SystemClock.elapsedRealtime(),
                     AlarmManager.INTERVAL_HOUR + ThreadLocalRandom.current().nextInt(0, 900000),   //Intervallo di 1 ora più numero random tra 0 e 15 minuti
