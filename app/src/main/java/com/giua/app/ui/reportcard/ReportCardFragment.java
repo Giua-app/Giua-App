@@ -84,11 +84,13 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
 
                 activity.runOnUiThread(() -> pbLoadingPage.setVisibility(View.GONE));
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
+                //Errore di connessione
                 activity.runOnUiThread(() -> {
                     DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_pagella, Navigation.findNavController(activity, R.id.nav_host_fragment));
                     pbLoadingPage.setVisibility(View.GONE);
                 });
             } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
+                //Errore di connessione al sito
                 activity.runOnUiThread(() -> {
                     DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_pagella, Navigation.findNavController(activity, R.id.nav_host_fragment));
                     pbLoadingPage.setVisibility(View.GONE);

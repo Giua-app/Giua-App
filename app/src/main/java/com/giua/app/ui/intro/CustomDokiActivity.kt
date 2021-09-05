@@ -35,6 +35,7 @@ class CustomDokiActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_intro_doki)
 
+        //Pulsante "Close" listener
         dokiContent?.setOnCloseListener {
             Toast.makeText(
                 this,
@@ -42,7 +43,7 @@ class CustomDokiActivity : AppCompatActivity() {
                 Toast.LENGTH_LONG
             ).show()
             supportFinishAfterTransition()
-             }
+        }
         dokiContent?.setExplanationVisibility(false)
         dokiContent?.setDeveloperSolutionVisibility(false)
         dokiContent?.loadContent(appName = "Giua App")

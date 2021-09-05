@@ -19,6 +19,7 @@
 
 package com.giua.app.ui.agenda;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -85,6 +86,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     boolean isLoadingData = false;
     boolean isLoadingDetails = false;
 
+    @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_agenda, container, false);
 
@@ -120,7 +122,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         ivPrevMonth.setOnClickListener(this::btnPrevMonthOnClick);
         ivVisualizerPrevBtn.setOnClickListener(this::ivVisualizerPrevBtnOnClick);
         ivVisualizerNextBtn.setOnClickListener(this::ivVisualizerNextBtnOnClick);
-        visualizerLayout.setOnClickListener((view) -> {/*Serve ad evitare che quando si il layout questo non sparisca*/});
+        visualizerLayout.setOnClickListener((view) -> {/*Serve ad evitare che quando si clicca il layout questo non sparisca*/});
         obscureLayoutView.setOnClickListener(this::obscureLayoutOnClick);
 
         if (Integer.parseInt(getCurrentMonth()) >= 6 && Integer.parseInt(getCurrentMonth()) <= 8)
@@ -259,6 +261,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     }
 
     //region Listeners
+    @SuppressLint("SetTextI18n")
     private void btnPrevMonthOnClick(View view) {
         if (!isLoadingData) {
             currentDate = getPrevMonth(currentDate);
@@ -272,6 +275,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void btnNextMonthOnClick(View view) {
         if (!isLoadingData) {
             currentDate = getNextMonth(currentDate);

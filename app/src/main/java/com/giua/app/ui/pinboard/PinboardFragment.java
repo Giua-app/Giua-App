@@ -34,6 +34,8 @@ import com.giua.app.ui.alerts.AlertsFragment;
 import com.giua.app.ui.newsletters.NewslettersFragment;
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.Objects;
+
 public class PinboardFragment extends Fragment {
 
     TabLayout tabLayout;
@@ -64,7 +66,7 @@ public class PinboardFragment extends Fragment {
                 ft.addToBackStack(null);
                 ft.setReorderingAllowed(true);
 
-                if (tab.getText().toString().equals("Circolari")) {
+                if (Objects.requireNonNull(tab.getText()).toString().equals("Circolari")) {
                     ft.replace(R.id.fragment_tabs_circolari_avvisi_framelayout, NewslettersFragment.class, null);
                     ft.commit();
                 } else if (tab.getText().toString().equals("Avvisi")) {

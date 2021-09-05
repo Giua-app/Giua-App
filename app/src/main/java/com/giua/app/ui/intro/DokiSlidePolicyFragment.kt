@@ -47,11 +47,8 @@ class DokiSlidePolicyFragment : Fragment(), SlidePolicy {
     private lateinit var image: ImageView
     private lateinit var layout: ConstraintLayout
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_doki_slidepolicy, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?):
+            View? = inflater.inflate(R.layout.fragment_doki_slidepolicy, container, false)
 
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -62,7 +59,9 @@ class DokiSlidePolicyFragment : Fragment(), SlidePolicy {
         image = view.findViewById(R.id.image)
         layout = view.findViewById(R.id.constraint_layout_slidepolicy)
 
+        //Background
         layout.background = ResourcesCompat.getDrawable(resources, R.drawable.intro_back_slide9, null)
+        //Pulsante istruzioni
         button.setOnClickListener {
             dokiViewed = true
             Toast.makeText(
@@ -82,10 +81,12 @@ class DokiSlidePolicyFragment : Fragment(), SlidePolicy {
         image.setImageDrawable(ResourcesCompat.getDrawable(resources, R.mipmap.battery_tutorial, null))
     }
 
+    //getter per dokiViewed, richiamato da SlidePolicy
     override val isPolicyRespected: Boolean
         get() = dokiViewed
 
     override fun onUserIllegallyRequestedNextPage() {
+        //Eseguito quando isPolicyRespected è false
         Toast.makeText(
             requireContext(),
             "Leggi le istruzioni e disattiva l'ottimz. batteria!",

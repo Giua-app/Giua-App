@@ -145,6 +145,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
                     hasCompletedLoading = true;
                     activity.runOnUiThread(this::addViews);
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
+                    //Errore di connessione
                     activity.runOnUiThread(() -> {
                         DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_lezioni, Navigation.findNavController(activity, R.id.nav_host_fragment));
                         pbLoadingContent.setVisibility(View.GONE);
@@ -152,6 +153,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
                         swipeRefreshLayout.setRefreshing(false);
                     });
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
+                    //Errore di connessione al registro
                     activity.runOnUiThread(() -> {
                         DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_lezioni, Navigation.findNavController(activity, R.id.nav_host_fragment));
                         pbLoadingContent.setVisibility(View.GONE);
@@ -161,6 +163,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
                 }
             }).start();
         } else {
+            //l'utente sta spammando
             isSpammingClick = true;
             btnConfirmDate.setVisibility(View.VISIBLE);
             pbLoadingContent.setVisibility(View.GONE);
@@ -232,6 +235,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void lessonViewOnClick(View view) {
+        //Dettagli delle lezioni
         visualizerLayout.setVisibility(View.VISIBLE);
         obscureLayoutView.setVisibility(View.VISIBLE);
         bottomCardView.setZ(-10f);
@@ -278,6 +282,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void prevDateOnClick(View view) {
+        //data precedente
         currentDate = getPrevDate(currentDate);
         calendarView.setDate(currentDate.getTime());
         viewsLayout.removeAllViews();
@@ -286,6 +291,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void nextDateOnClick(View view) {
+        //prossimo giorno
         currentDate = getNextDate(currentDate);
         calendarView.setDate(currentDate.getTime());
         viewsLayout.removeAllViews();

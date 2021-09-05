@@ -39,8 +39,8 @@ class AppIntroActivity : AppIntro(){
         super.onCreate(savedInstanceState)
 
 
-        setProgressIndicator()
-        setImmersiveMode()
+        setProgressIndicator() //Progress bar come barra anzichè pallini
+        setImmersiveMode() //Fullscreen
         isSystemBackButtonLocked = true
 
         addSlide(AppIntroFragment.newInstance(
@@ -60,15 +60,6 @@ class AppIntroActivity : AppIntro(){
             titleTypefaceFontRes = R.font.caviar_dreams_bold,
             descriptionTypefaceFontRes = R.font.caviar_dreams
         )))
-
-        /*addSlide(AppIntroFragment.newInstance(SliderPage(
-            "Voti",
-            "Puoi cliccare su un voto per vederne i dettagli",
-            imageDrawable = R.mipmap.voti2_tutorial,
-            backgroundDrawable = R.drawable.intro_back_slide5,
-            titleTypefaceFontRes = R.font.caviar_dreams_bold,
-            descriptionTypefaceFontRes = R.font.roboto_light
-        )))*/
 
         addSlide(AppIntroFragment.newInstance(
             "Bacheca (Circolari)",
@@ -124,19 +115,8 @@ class AppIntroActivity : AppIntro(){
             descriptionTypefaceFontRes = R.font.caviar_dreams
         ))
 
-        /*addSlide(AppIntroFragment.newInstance(SliderPage(
-            "Ottimizzazione batteria",
-            "Per poter ricevere notifiche dal registro devi dissativare l'ottimizzazione batteria" +
-                    "\nCliccando \"FINE\" verranno aperte delle istruzioni specifiche del tuo telefono",
-            imageDrawable = R.mipmap.battery_tutorial,
-            backgroundDrawable = R.drawable.intro_back_slide1,
-            titleTypefaceFontRes = R.font.caviar_dreams_bold,
-            descriptionTypefaceFontRes = R.font.roboto_light
-        )))*/
-
-        val dokiSlide : DokiSlidePolicyFragment = DokiSlidePolicyFragment.newInstance()
-
-        addSlide(dokiSlide)
+        //Slide con SlidePolicy per evitare che l'utente salti le istruzioni
+        addSlide(DokiSlidePolicyFragment.newInstance())
 
         addSlide(AppIntroFragment.newInstance(SliderPage(
             "E' tutto pronto!",
@@ -162,7 +142,9 @@ class AppIntroActivity : AppIntro(){
 
     private fun finishIntro(){
         SettingsData.saveSettingInt(this, SettingKey.INTRO_STATUS, 1)
+        //Ritorna all'activity manager per decidere cosa fare
         startActivity(Intent(this@AppIntroActivity, ActivityManager::class.java))
+        finish()
     }
 
 
