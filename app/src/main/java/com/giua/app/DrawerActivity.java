@@ -185,7 +185,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         //Questo sleep è solo per motivi grafici
         new Thread(() -> {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(200);
             } catch (InterruptedException ignored) {
             }
             runOnUiThread(() -> navigationView.setCheckedItem(R.id.nav_voti));

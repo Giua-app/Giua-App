@@ -42,6 +42,7 @@ import com.giua.app.DrawerActivity;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
+import com.giua.app.ThreadManager;
 import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Vote;
 import com.giua.utils.JsonHelper;
@@ -66,6 +67,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
     Map<String, List<Vote>> allVotes;
     Activity activity;
     View root;
+    ThreadManager threadManager;
     boolean refreshVotes = false;
 
     @SuppressLint("ClickableViewAccessibility")
@@ -91,7 +93,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void loadDataAndViews() {
-        new Thread(() -> {
+        threadManager.addAndRun(() -> {
             try {
                 allVotes = GlobalVariables.gS.getAllVotes(refreshVotes);
                 refreshVotes = false;
@@ -111,7 +113,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
                     swipeRefreshLayout.setRefreshing(false);
                 });
             }
-        }).start();
+        });
     }
 
     @Override
@@ -168,6 +170,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void nullAllReferenceWithFragmentViews() {
         root = null;
+        threadManager.destroyAllAndNullMe();
         /*viewsLayout = null;
         obscureLayoutView = null;
         voteVisualizer = null;

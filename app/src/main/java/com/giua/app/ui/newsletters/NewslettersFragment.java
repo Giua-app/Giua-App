@@ -46,6 +46,7 @@ import com.giua.app.AppData;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
+import com.giua.app.ThreadManager;
 import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Newsletter;
 import com.giua.utils.JsonHelper;
@@ -76,6 +77,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     TextView tvNoElements;
     FragmentActivity activity;
     SwipeRefreshLayout swipeRefreshLayout;
+    ThreadManager threadManager;
     View root;
     boolean isDownloading = false;
     int currentPage = 1;
@@ -138,16 +140,13 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             layout.addView(pbLoadingNewsletters);
 
         if (!loadedAllPages) {
-            new Thread(() -> {
+            threadManager.addAndRun(() -> {
                 try {
                     if (!isFilterApplied) {
                         if (!allNewsletter.isEmpty())
                             allNewsletterOld = allNewsletter;
                         allNewsletter = GlobalVariables.gS.getAllNewslettersWithFilter(onlyNotRead, filterDate, filterText, currentPage, true);
                         isFilterApplied = true;
-                        if (compareNewsletterLists(allNewsletterOld, allNewsletter)) {     //Se i risultati sono li stessi vuol dire che un parametro inserito non ha dato risultati
-                            allNewsletter = new Vector<>();
-                        }
                     } else
                         allNewsletter = GlobalVariables.gS.getAllNewsletters(currentPage, true);
 
@@ -184,7 +183,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                 activity.runOnUiThread(() -> layout.removeView(pbLoadingNewsletters));
                 swipeRefreshLayout.setRefreshing(false);
                 loadingPage = false;
-            }).start();
+            });
         } else {
             layout.removeView(pbLoadingNewsletters);
             swipeRefreshLayout.setRefreshing(false);
@@ -222,6 +221,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     public void nullAllReferenceWithFragmentViews() {
         root = null;
         attachmentLayout = null;
+        threadManager.destroyAllAndNullMe();
         /*layout = null;
         pbLoadingPage = null;
         scrollView = null;
@@ -357,7 +357,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         isDownloading = true;
         pbLoadingPage.setZ(10f);
         pbLoadingPage.setVisibility(View.VISIBLE);
-        new Thread(() -> {
+        threadManager.addAndRun(() -> {
             try {
                 DownloadedFile downloadedFile = GlobalVariables.gS.download(url);
                 FileOutputStream out = new FileOutputStream(requireContext().getFilesDir() + "/" + "circolare." + downloadedFile.fileExtension);
@@ -377,7 +377,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             }
             isDownloading = false;
             activity.runOnUiThread(() -> pbLoadingPage.setVisibility(View.GONE));
-        }).start();
+        });
     }
 
     /**

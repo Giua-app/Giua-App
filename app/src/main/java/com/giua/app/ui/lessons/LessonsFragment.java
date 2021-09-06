@@ -44,6 +44,7 @@ import com.giua.app.DrawerActivity;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
+import com.giua.app.ThreadManager;
 import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Lesson;
 import com.giua.webscraper.GiuaScraperExceptions;
@@ -78,6 +79,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
     Date yesterdayDate;
     Date tomorrowDate;
     View root;
+    ThreadManager threadManager;
     SwipeRefreshLayout swipeRefreshLayout;
     SimpleDateFormat formatterForScraping = new SimpleDateFormat("yyyy-MM-dd", Locale.ITALIAN);
     SimpleDateFormat formatterForVisualize = new SimpleDateFormat("dd-MM-yyyy", Locale.ITALIAN);
@@ -106,6 +108,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         activity = requireActivity();
         calendar = Calendar.getInstance();
         currentDate = new Date();
+        threadManager = new ThreadManager();
 
         todayDate = currentDate;
         yesterdayDate = getPrevDate(currentDate);
@@ -136,7 +139,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         hasCompletedLoading = false;
 
         if (!isSpammingClick && System.nanoTime() - lastCallTime > 500000000) {     //Anti click spam
-            new Thread(() -> {
+            threadManager.addAndRun(() -> {
                 lastCallTime = System.nanoTime();
                 try {
                     allLessons = GlobalVariables.gS.getAllLessons(formatterForScraping.format(currentDate), true);
@@ -161,7 +164,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
                         swipeRefreshLayout.setRefreshing(false);
                     });
                 }
-            }).start();
+            });
         } else {
             //l'utente sta spammando
             isSpammingClick = true;
@@ -202,6 +205,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void nullAllReferenceWithFragmentViews() {
         root = null;
+        threadManager.destroyAllAndNullMe();
         /*tvCurrentDate = null;
         viewsLayout = null;
         calendarView = null;

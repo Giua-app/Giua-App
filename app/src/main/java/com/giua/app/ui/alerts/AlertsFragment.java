@@ -42,6 +42,7 @@ import com.giua.app.AppData;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
+import com.giua.app.ThreadManager;
 import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Alert;
 import com.giua.utils.JsonHelper;
@@ -72,6 +73,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
     ObscureLayoutView obscureLayoutView;
     View root;
     FragmentActivity activity;
+    ThreadManager threadManager;
     int currentPage = 1;    //Rappresenta la pagina degli avvisi da caricare
     boolean hasLoadedAllPages = false;
     boolean isLoadingContent = false;
@@ -114,7 +116,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
             isLoadingContent = true;
             if (currentPage > 1 && pbLoadingContent.getParent() == null)
                 viewsLayout.addView(pbLoadingContent);
-            new Thread(() -> {
+            threadManager.addAndRun(() -> {
                 try {
                     allAlerts = GlobalVariables.gS.getAllAlerts(currentPage, true);
 
@@ -142,7 +144,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
                         tvNoElements.setVisibility(View.VISIBLE);
                     });
                 }
-            }).start();
+            });
         }
     }
 
@@ -171,6 +173,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
     public void nullAllReferenceWithFragmentViews() {
         root = null;
         detailsLayout = null;
+        threadManager.destroyAllAndNullMe();
         /*viewsLayout = null;
         pbLoadingPage = null;
         scrollView = null;
@@ -188,7 +191,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
     private void alertViewOnClick(View view) {
         pbLoadingPage.setVisibility(View.VISIBLE);
 
-        new Thread(() -> {
+        threadManager.addAndRun(() -> {
             try {
                 ((AlertView) view).alert.getDetails(GlobalVariables.gS);
 
@@ -234,7 +237,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
                     tvNoElements.setVisibility(View.VISIBLE);
                 });
             }
-        }).start();
+        });
     }
 
     private void btnGoUpOnClick(View view) {
@@ -274,7 +277,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
             isDownloading = true;
             pbLoadingPage.setZ(10f);
             pbLoadingPage.setVisibility(View.VISIBLE);
-            new Thread(() -> {
+            threadManager.addAndRun(() -> {
                 try {
                     DownloadedFile downloadedFile = GlobalVariables.gS.download(url);
                     FileOutputStream out = new FileOutputStream(requireContext().getFilesDir() + "/" + "allegato." + downloadedFile.fileExtension);
@@ -294,7 +297,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
                 }
                 isDownloading = false;
                 activity.runOnUiThread(() -> pbLoadingPage.setVisibility(View.GONE));
-            }).start();
+            });
         }
     }
 

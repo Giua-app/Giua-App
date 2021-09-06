@@ -37,6 +37,7 @@ import com.giua.app.DrawerActivity;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
+import com.giua.app.ThreadManager;
 import com.giua.objects.ReportCard;
 import com.giua.webscraper.GiuaScraperExceptions;
 
@@ -49,6 +50,7 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
     ProgressBar pbLoadingPage;
     TextView tvNoElements;
     FragmentActivity activity;
+    ThreadManager threadManager;
     View root;
     boolean isFirstQuarter = true;
 
@@ -74,7 +76,7 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
         viewsLayout.removeAllViews();
         pbLoadingPage.setVisibility(View.VISIBLE);
         tvNoElements.setVisibility(View.GONE);
-        new Thread(() -> {
+        threadManager.addAndRun(() -> {
             try {
                 reportCard = GlobalVariables.gS.getReportCard(isFirstQuarter, true);
                 if (reportCard.exists)
@@ -97,8 +99,7 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
                 });
             }
 
-
-        }).start();
+        });
     }
 
     @Override
@@ -121,6 +122,7 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void nullAllReferenceWithFragmentViews() {
         root = null;
+        threadManager.destroyAllAndNullMe();
         /*viewsLayout = null;
         tvCurrentQuarter = null;
         pbLoadingPage = null;
