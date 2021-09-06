@@ -97,7 +97,7 @@ dependencies {
     implementation "androidx.preference:preference:1.1.1"
 
     //--Doki (display info from dontkillmyapp.com - https://github.com/DoubleDotLabs/doki)
-    implementation('dev.doubledot.doki:library:c18efeb072@aar') {
+    implementation('dev.doubledot.doki:library:0.0.1@aar') {
         transitive = true
     }
 
