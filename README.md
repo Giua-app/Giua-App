@@ -27,8 +27,8 @@ Vai nella scheda [Actions](https://github.com/Giua-app/Giua-App/actions/workflow
 - [x] ~~visualizza lezioni~~
 - [x] ~~visualizza circolari~~
 - [x] ~~visualizza avvisi~~
-- [ ] controlla in background per novità (nuovo voto, nuovo avviso, ecc)
-- [ ] invia notifica quando ci sono novità
+- [x] ~~controlla in background per novità (nuovo voto, nuovo avviso, ecc)
+- [x] ~~invia notifica quando ci sono novità
 - [ ] memorizza informazioni per uso offline
 
 ## Come posso contribuire?
