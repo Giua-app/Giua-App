@@ -5,8 +5,8 @@ name: Assemble app on new release
 # Controls when the action will run. 
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
-  release:
-    types: [published]
+  #release:
+    #types: [published]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -20,6 +20,15 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+    
+      - name: Decode Keystore
+        env:
+          ENCODED_STRING: ${{ secrets.KEYSTORE }}
+        run: |
+            TMP_KEYSTORE_FILE_PATH="${RUNNER_TEMP}"/keystore
+            mkdir "${TMP_KEYSTORE_FILE_PATH}"
+            echo $ENCODED_STRING | base64 -di > "${TMP_KEYSTORE_FILE_PATH}"/giua-app.jks
+    
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
         with:
@@ -44,18 +53,23 @@ jobs:
           
       - name: Permission to gradle File
         run: chmod +x gradlew
-        
-      - name: Build release and debug with Gradle
-        run: ./gradlew assemble
+
+      - name: Build release with Gradle
+        run: ./gradlew assembleRelease
+        env:
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          
 
       - uses: actions/upload-artifact@v2
         with:
           name: release-apk
           path: app/build/outputs/apk/release/
           
-      - uses: actions/upload-artifact@v2
-        with:
-          name: debug-apk
-          path: app/build/outputs/apk/debug/
+#      - uses: actions/upload-artifact@v2
+#        with:
+#          name: debug-apk
+#          path: app/build/outputs
 
 
