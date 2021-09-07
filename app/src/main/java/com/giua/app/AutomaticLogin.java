@@ -37,7 +37,7 @@ public class AutomaticLogin extends AppCompatActivity {
     int waitToReLogin = 5;
     Button logoutButton;
     ProgressBar progressBar;
-    TextView textAutoLogin;
+    TextView tvAutoLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +45,7 @@ public class AutomaticLogin extends AppCompatActivity {
         setContentView(R.layout.loading_screen);
 
         logoutButton = findViewById(R.id.loading_screen_logout_btn);
-        textAutoLogin = findViewById(R.id.loading_screen_minor_text_view);
+        tvAutoLogin = findViewById(R.id.loading_screen_minor_text_view);
         progressBar = findViewById(R.id.loading_screen_progressbar);
         logoutButton.setOnClickListener((view) -> {
             LoginData.clearAll(this);
@@ -102,6 +102,8 @@ public class AutomaticLogin extends AppCompatActivity {
                 }
             } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
                 runOnUiThread(() -> logoutButton.setVisibility(View.VISIBLE));
+                runOnUiThread(() -> progressBar.setVisibility(View.GONE));
+                runOnUiThread(() -> tvAutoLogin.setText("Accesso fallito."));
                 runOnUiThread(() -> setErrorMessage(getString(R.string.site_in_maintenace_error)));
             }
         }).start();
@@ -110,10 +112,10 @@ public class AutomaticLogin extends AppCompatActivity {
     private void threadSleepWithTextUpdates() throws InterruptedException {
         for (int i = 0; i < waitToReLogin; i++) {
             int finalI = i;
-            runOnUiThread(() -> textAutoLogin.setText("Login fallito\nRiprovo tra " + (waitToReLogin - finalI) + " secondi"));
+            runOnUiThread(() -> tvAutoLogin.setText("Login fallito\nRiprovo tra " + (waitToReLogin - finalI) + " secondi"));
             Thread.sleep(1000);
         }
-        runOnUiThread(() -> textAutoLogin.setText("Riprovo..."));
+        runOnUiThread(() -> tvAutoLogin.setText("Riprovo..."));
     }
 
     private void startStudentLoginActivity() {
