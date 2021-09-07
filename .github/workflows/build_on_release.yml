@@ -61,7 +61,9 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
           
-      - run: ls ./ && ls app/ && ls app/build
+      - run: ls ./
+      - run: ls app/build
+      - run: ls app/build/outputs
           
 
 #      - uses: actions/upload-artifact@v2
