@@ -32,7 +32,7 @@
     <color name="general_view_color">#323232</color>
     <color name="white">#FAFAFA</color>
     <color name="black">#090909</color>
-    <color name="list_vote">#3E3E3E</color>
+    <color name="inside_general_view_color">#3E3E3E</color>
     <color name="mean_vote_layout">#3E3E3E</color>
     <color name="adaptive_color_text">#FAFAFA</color>
     <color name="newsletter_layout">#3E3E3E</color>

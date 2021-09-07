@@ -23,6 +23,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -66,7 +68,8 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
         activity = requireActivity();
         threadManager = new ThreadManager();
 
-        btnChangeQuarter.setOnClickListener(this::btnQuarterOnClick);
+        btnChangeQuarter.setOnClickListener(this::changeQuarterOnClick);
+        tvCurrentQuarter.setOnClickListener(this::changeQuarterOnClick);
 
         loadDataAndViews();
 
@@ -135,7 +138,9 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
 
     //region Listeners
 
-    private void btnQuarterOnClick(View view) {
+    private void changeQuarterOnClick(View view) {
+        Animation animation = AnimationUtils.loadAnimation(requireContext(), R.anim.change_quarter);
+        btnChangeQuarter.startAnimation(animation);
         isFirstQuarter = !isFirstQuarter;
         if (isFirstQuarter)
             tvCurrentQuarter.setText(R.string.report_card_btn_first_quarter);

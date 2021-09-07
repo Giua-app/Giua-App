@@ -35,7 +35,7 @@
     <color name="general_view_color">#FAFAFA</color>
     <color name="white">#FAFAFA</color>
     <color name="black">#090909</color>
-    <color name="list_vote">#FAFAFA</color>
+    <color name="inside_general_view_color">#FAFAFA</color>
     <color name="mean_vote_layout">#FAFAFA</color>
     <color name="adaptive_color_text">#090909</color>
     <color name="newsletter_layout">#FAFAFA</color>

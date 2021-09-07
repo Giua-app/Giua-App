@@ -52,33 +52,40 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.445" />
 
-    <TextView
-        android:id="@+id/report_card_current_quarter"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/report_card_quarter_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
-        android:fontFamily="@font/varelaroundregular"
-        android:textSize="16sp"
-        android:text="@string/report_card_btn_first_quarter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.067"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:contentPadding="8dp"
+        app:cardCornerRadius="10dp">
 
-    <ImageButton
-        android:id="@+id/report_card_btn_change_quarter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
-        android:src="@drawable/ic_baseline_sync_24"
-        android:backgroundTint="@color/main_color"
-        android:background="@drawable/corner_radius_10dp"
-        android:padding="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/report_card_current_quarter"
-        app:layout_constraintStart_toEndOf="@+id/report_card_current_quarter"
-        app:layout_constraintTop_toTopOf="@+id/report_card_current_quarter"
-        app:layout_constraintVertical_bias="0.5"
-        android:contentDescription="Cambia il quadrimestre della pagella" />
+        <TextView
+            android:id="@+id/report_card_current_quarter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/varelaroundregular"
+            android:layout_gravity="center|start"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:text="@string/report_card_btn_first_quarter" />
+
+        <ImageButton
+            android:id="@+id/report_card_btn_change_quarter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="140dp"
+            android:layout_gravity="center|end"
+            android:src="@drawable/ic_baseline_sync_24"
+            android:background="@android:color/transparent"
+            android:adjustViewBounds="true"
+            android:contentDescription="Cambia il quadrimestre della pagella" />
+
+    </androidx.cardview.widget.CardView>
 
     <ScrollView
         android:id="@+id/scrollView2"
@@ -90,7 +97,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/report_card_btn_change_quarter"
+        app:layout_constraintTop_toBottomOf="@+id/report_card_quarter_container"
         app:layout_constraintVertical_bias="1.0"
         tools:ignore="SpeakableTextPresentCheck">
 

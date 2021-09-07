@@ -154,6 +154,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                             viewsLayout.removeAllViews();
                             tvNoElements.setVisibility(View.VISIBLE);
                             swipeRefreshLayout.setRefreshing(false);
+                            isLoadingData = false;
                         });
                     } else
                         activity.runOnUiThread(this::addViews);
