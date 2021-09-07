@@ -35,7 +35,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
@@ -54,7 +53,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -66,7 +64,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     TextView tvUserType;
     DrawerLayout drawerLayout;
     NavigationView navigationView;     //Il navigation drawer vero e proprio
-    NavController navController;     //Si puo intendere come il manager dei fragments
+    NavController navController = null;     //Si puo intendere come il manager dei fragments
     Button btnLogout;
     Button btnSettings;
     Intent iCheckNewsReceiver;
@@ -78,6 +76,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (savedInstanceState != null)
+            savedInstanceState.clear();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer);
 
@@ -119,15 +119,21 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        fragmentManager = getSupportFragmentManager();
-        transaction = fragmentManager.beginTransaction();
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_voti, R.id.nav_agenda, R.id.nav_lezioni, R.id.nav_bacheca, R.id.nav_pagella)
-                .setOpenableLayout(drawerLayout)
-                .build();
+        if (navController == null) {
+            fragmentManager = getSupportFragmentManager();
+            transaction = fragmentManager.beginTransaction();
+            mAppBarConfiguration = new AppBarConfiguration.Builder(
+                    R.id.nav_voti, R.id.nav_agenda, R.id.nav_lezioni, R.id.nav_bacheca, R.id.nav_pagella)
+                    .setOpenableLayout(drawerLayout)
+                    .build();
 
-        navController = ((NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment)).getNavController(); //Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+            if (getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment).getClass() != NavHostFragment.class) {
+                fragmentManager.beginTransaction().replace(R.id.nav_host_fragment, NavHostFragment.class, null).commitNow();
+            }
+
+            navController = ((NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment)).getNavController();
+            NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+        }
     }
 
     @Override
@@ -168,12 +174,12 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         Intent intent = new Intent(this, ActivityManager.class);
         LoginData.clearAll(this);
         startActivity(intent);
-        startVotesFragment();
+        finish();
     }
 
     private void settingsButtonClick(View view) {
         startActivity(new Intent(this, SettingsActivity.class));
-
+/*
         // Ritorna una lista di fragment che sono presenti nel fragmentManager.
         // Dovrebbe sempre restituire 1 solo fragment in quanto viene usato sempre il replace().
         List<Fragment> allFragments = fragmentManager.getFragments();
@@ -189,7 +195,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             } catch (InterruptedException ignored) {
             }
             runOnUiThread(() -> navigationView.setCheckedItem(R.id.nav_voti));
-        }).start();
+        }).start();*/
     }
 
     private void startReportCardFragment() {

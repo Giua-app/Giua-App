@@ -105,6 +105,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         swipeRefreshLayout = root.findViewById(R.id.newsletter_swipe_refresh_layout);
 
         activity = requireActivity();
+        threadManager = new ThreadManager();
 
         pbLoadingNewsletters = new ProgressBar(getContext());
         pbLoadingNewsletters.setId(View.generateViewId());

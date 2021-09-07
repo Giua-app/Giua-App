@@ -95,6 +95,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
         pbLoadingContent = new ProgressBar(requireContext());
 
         activity = requireActivity();
+        threadManager = new ThreadManager();
 
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         fabGoUp.setOnClickListener(this::btnGoUpOnClick);

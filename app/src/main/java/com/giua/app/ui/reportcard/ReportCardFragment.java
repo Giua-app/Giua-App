@@ -64,6 +64,8 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
         btnChangeQuarter = root.findViewById(R.id.report_card_btn_change_quarter);
 
         activity = requireActivity();
+        threadManager = new ThreadManager();
+
         btnChangeQuarter.setOnClickListener(this::btnQuarterOnClick);
 
         loadDataAndViews();

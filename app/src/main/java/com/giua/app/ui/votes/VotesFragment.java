@@ -82,6 +82,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
         swipeRefreshLayout = root.findViewById(R.id.vote_swipe_refresh_layout);
 
         activity = requireActivity();
+        threadManager = new ThreadManager();
 
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         obscureLayoutView.setOnClickListener(this::obscureButtonOnClick);
