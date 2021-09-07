@@ -89,3 +89,4 @@ lint/outputs/
 lint/tmp/
 # lint/reports/
 /.idea/render.experimental.xml
+app/release/output-metadata.json
