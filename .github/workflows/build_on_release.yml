@@ -64,7 +64,7 @@ jobs:
           
       - run: ls ./
       - run: ls app/build
-      - run: ls app/build/outputs
+      - run: ls app/build/outputs/apk/release
           
 
 #      - uses: actions/upload-artifact@v2
