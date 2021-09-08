@@ -55,8 +55,8 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build release with Gradle
-        run: ./gradlew assembleProdRelease --debug
-        #run: ./gradlew task build --debug | grep .apk
+        #run: ./gradlew assembleRelease
+        run: ./gradlew task clean && ./gradlew task build --debug | grep .apk
         env:
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
