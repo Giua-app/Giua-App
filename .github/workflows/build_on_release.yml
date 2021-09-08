@@ -21,18 +21,17 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     
+        # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+    
       - name: Decode Keystore
         env:
           ENCODED_STRING: ${{ secrets.KEYSTORE }}
         run: |
-            TMP_KEYSTORE_FILE_PATH="${RUNNER_TEMP}"/keystore
-            mkdir "${TMP_KEYSTORE_FILE_PATH}"
-            echo $ENCODED_STRING | base64 -di > "${TMP_KEYSTORE_FILE_PATH}"/giua-app.jks
-    
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+            KEYSTORE_FILE_PATH="${GITHUB_WORKSPACE}"/app/keystore
+            echo $ENCODED_STRING | base64 -di > "${KEYSTORE_FILE_PATH}"/giua-app.jks
           
       - uses: gradle/wrapper-validation-action@v1
         
