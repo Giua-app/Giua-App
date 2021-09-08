@@ -31,6 +31,7 @@ jobs:
           ENCODED_STRING: ${{ secrets.KEYSTORE }}
         run: |
             KEYSTORE_FILE_PATH="${GITHUB_WORKSPACE}"/app/keystore
+            mkdir "${KEYSTORE_FILE_PATH}"
             echo $ENCODED_STRING | base64 -di > "${KEYSTORE_FILE_PATH}"/giua-app.jks
           
       - uses: gradle/wrapper-validation-action@v1
