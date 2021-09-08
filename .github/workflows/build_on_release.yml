@@ -55,8 +55,8 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build release with Gradle
-        #run: ./gradlew assembleRelease
-        run: ./gradlew task clean && ./gradlew task build --debug | grep .apk
+        run: ./gradlew assembleProdRelease
+        #run: ./gradlew task clean && ./gradlew task build --debug | grep .apk
         env:
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
@@ -64,7 +64,7 @@ jobs:
           
       - run: ls ./
       - run: ls app/build/outputs
-      - run: ls -l app/build/outputs/apk/release
+      - run: ls -a app/build/outputs/apk/release
           
 
 #      - uses: actions/upload-artifact@v2
