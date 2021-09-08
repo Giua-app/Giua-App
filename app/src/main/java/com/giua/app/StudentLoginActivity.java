@@ -67,6 +67,11 @@ public class StudentLoginActivity extends AppCompatActivity {
                 }
                 return false;
             }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                webView.setVisibility(View.VISIBLE);
+            }
         });
 
         webView.getSettings().setUserAgentString(userAgent);

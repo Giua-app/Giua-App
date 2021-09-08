@@ -25,20 +25,35 @@
     android:layout_height="match_parent"
     tools:context=".StudentLoginActivity">
 
+    <!-- Usata la prima volta che si apre la activity, fa vedere all'utente che
+        sta accadendo qualcosa anzi che dello schermo bianco -->
     <ProgressBar
         android:id="@+id/progressBar2"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Caricamento pagina\nGSuite in corso..."
+        android:textAlignment="center"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar2" />
+
     <com.giua.app.ui.ObscureLayoutView
         android:id="@+id/studentObscureLayoutView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="gone"
         app:cancelText="Elaborazione in corso"
         app:hasCancelText="true"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -50,6 +65,7 @@
         android:id="@+id/studentWebView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -21,6 +21,7 @@ package com.giua.app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
@@ -58,6 +59,7 @@ public class MainLogin extends AppCompatActivity {
         btnLogin = findViewById(R.id.login_button);
         chRememberCredentials = findViewById(R.id.checkbox_remember_credentials);
         btnLoginAsStudent = findViewById(R.id.btn_student_login);
+        btnLoginAsStudent.setText(Html.fromHtml("<p>Sei uno studente?\n<u><i>Clicca qui!</i></u></p>",0));
 
         etUsername.setText(LoginData.getUser(getApplicationContext()));     //Imposta lo username memorizzato
         etPassword.setText(LoginData.getPassword(getApplicationContext()));     //Imposta la password memorizzata
