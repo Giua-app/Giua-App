@@ -28,6 +28,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -188,6 +189,8 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
     }
 
     public void obscureButtonOnClick(View view) {
+        voteVisualizer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
+        obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
         voteVisualizer.setVisibility(View.GONE);
         obscureLayoutView.setVisibility(View.GONE);
     }
@@ -205,6 +208,8 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
         detailVoteType.setVisibility(View.GONE);
         detailVoteArguments.setVisibility(View.GONE);
         detailVoteJudge.setVisibility(View.GONE);
+        voteVisualizer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
+        obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
         voteVisualizer.setVisibility(View.VISIBLE);
         obscureLayoutView.setVisibility(View.VISIBLE);
 
@@ -212,7 +217,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
             detailVoteDate.setVisibility(View.VISIBLE);
             detailVoteDate.setText(Html.fromHtml("<b>" + res.getString(R.string.detail_vote_date) + "</b> " + _view.vote.date, Html.FROM_HTML_MODE_COMPACT));
         }
-        if(!_view.vote.testType.equals("")) {
+        if (!_view.vote.testType.equals("")) {
             detailVoteType.setVisibility(View.VISIBLE);
             detailVoteType.setText(Html.fromHtml("<b>" + res.getString(R.string.detail_vote_type) + "</b> " + _view.vote.testType, Html.FROM_HTML_MODE_COMPACT));
         }

@@ -26,6 +26,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -101,6 +102,8 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
         fabGoUp.setOnClickListener(this::btnGoUpOnClick);
         scrollView.setOnScrollChangeListener(this::scrollViewOnScroll);
         obscureLayoutView.setOnClickListener((view) -> {
+            detailsLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
+            obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
             obscureLayoutView.setVisibility(View.GONE);
             detailsLayout.setVisibility(View.GONE);
         });
@@ -121,12 +124,10 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
                 try {
                     allAlerts = GlobalVariables.gS.getAllAlerts(currentPage, true);
 
-                    if (allAlerts.isEmpty() && currentPage == 1) {
+                    if (allAlerts.isEmpty()) {
                         hasLoadedAllPages = true;
                         activity.runOnUiThread(this::finishedLoading);
-                    } else if (allAlerts.isEmpty()) {
-                        hasLoadedAllPages = true;
-                        activity.runOnUiThread(this::finishedLoading);
+                        activity.runOnUiThread(() -> tvNoElements.setVisibility(View.VISIBLE));
                     } else {
                         activity.runOnUiThread(this::addViews);
                         currentPage++;
@@ -221,6 +222,8 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
                         attachmentLayout.addView(tvUrl);
                     }
 
+                    detailsLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
+                    obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
                     detailsLayout.setVisibility(View.VISIBLE);
                     obscureLayoutView.setVisibility(View.VISIBLE);
                     pbLoadingPage.setVisibility(View.GONE);

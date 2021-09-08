@@ -26,6 +26,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -388,6 +389,8 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                         ivVisualizerNextBtn.setVisibility(View.GONE);
                     } else
                         ivVisualizerNextBtn.setVisibility(View.VISIBLE);
+                    visualizerLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
+                    obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
                     visualizerLayout.setVisibility(View.VISIBLE);
                     obscureLayoutView.setVisibility(View.VISIBLE);
 
@@ -493,6 +496,8 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void obscureLayoutOnClick(View view) {
+        visualizerLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
+        obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
         visualizerLayout.setVisibility(View.GONE);
         obscureLayoutView.setVisibility(View.GONE);
     }

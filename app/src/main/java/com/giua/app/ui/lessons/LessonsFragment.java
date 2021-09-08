@@ -25,6 +25,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.FrameLayout;
@@ -240,6 +241,8 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
 
     private void lessonViewOnClick(View view) {
         //Dettagli delle lezioni
+        visualizerLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
+        obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
         visualizerLayout.setVisibility(View.VISIBLE);
         obscureLayoutView.setVisibility(View.VISIBLE);
         bottomCardView.setZ(-10f);
@@ -270,6 +273,8 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
 
     private void obscureLayoutOnClick(View view) {
         frameLayout.setVisibility(View.GONE);
+        visualizerLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
+        obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
         obscureLayoutView.setVisibility(View.GONE);
         visualizerLayout.setVisibility(View.GONE);
         ivCalendarImage.setZ(13.75f);

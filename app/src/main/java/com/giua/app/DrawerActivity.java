@@ -103,7 +103,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         btnSettings.setOnClickListener(this::settingsButtonClick);
 
         new Thread(() -> {
-            GiuaScraper.userTypes userType = GlobalVariables.gS.getUserType();
+            GiuaScraper.userTypes userType = GlobalVariables.gS.getUserTypeEnum();
             String user = GlobalVariables.gS.loadUserFromDocument();
             this.runOnUiThread(() -> {
                 if (userType == GiuaScraper.userTypes.PARENT)
