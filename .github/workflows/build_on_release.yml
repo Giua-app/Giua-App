@@ -62,15 +62,11 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
           
-      - run: ls ./
-      - run: ls app/build/outputs
-      - run: ls -a app/build/outputs/apk/release
           
-
-#      - uses: actions/upload-artifact@v2
-#        with:
-#          name: release-artifacts
-#          path: app/
+      - uses: actions/upload-artifact@v2
+        with:
+          name: release-artifacts
+          path: app/build/outputs/apk/release
           
 #      - uses: actions/upload-artifact@v2
 #        with:
