@@ -3,7 +3,7 @@
 <p align='center'>
   <a href='https://github.com/Giua-app/Giua-App/blob/master/LICENSE'><img src='https://img.shields.io/github/license/Giua-app/Giua-App'/></a>
   <img src='https://img.shields.io/github/v/tag/Giua-app/Giua-App?label=version&include_prereleases&color=success'/>
-  <a href='https://github.com/Giua-app/Giua-App/actions/workflows/main.yml'><img src='https://github.com/Giua-app/Giua-App/actions/workflows/main.yml/badge.svg'/></a>
+  <a href='https://github.com/Giua-app/Giua-App/actions/workflows/main.yml'><img src='https://github.com/Giua-app/Giua-App/actions/workflows/build_on_release.yml/badge.svg'/></a>
 </p>
 
 <p align='center'>
