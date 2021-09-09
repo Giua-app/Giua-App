@@ -49,43 +49,5 @@
         app:headerLayout="@layout/nav_header_main"
         app:itemBackground="@drawable/selector_nav_drawer_item_selected"
         app:itemTextColor="@drawable/selector_nav_drawer_item_text"
-        app:menu="@menu/activity_main_drawer">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:orientation="vertical"
-            android:background="@android:color/transparent">
-
-            <Button
-                android:id="@+id/nav_drawer_settings_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/selector_nav_drawer_item_clicked"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
-                android:fontFamily="@font/varelaroundregular"
-                android:text="@string/impostazioni_text"
-                android:textAlignment="viewStart"
-                android:textAllCaps="false"
-                android:textColor="@color/adaptive_color_text"
-                android:textAppearance="@style/NavDrawerItemStyle" />
-
-            <Button
-                android:id="@+id/nav_drawer_logout_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
-                android:background="@drawable/selector_nav_drawer_item_clicked"
-                android:fontFamily="@font/varelaroundregular"
-                android:text="@string/logout_text"
-                android:textAlignment="viewStart"
-                android:textAllCaps="false"
-                android:textColor="@color/adaptive_color_text"
-                android:textAppearance="@style/NavDrawerItemStyle" />
-        </LinearLayout>
-
-    </com.google.android.material.navigation.NavigationView>
+        app:menu="@menu/activity_main_drawer" />
 </androidx.drawerlayout.widget.DrawerLayout>

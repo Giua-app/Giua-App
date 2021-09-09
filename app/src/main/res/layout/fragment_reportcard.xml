@@ -78,12 +78,13 @@
             android:id="@+id/report_card_btn_change_quarter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="140dp"
             android:layout_gravity="center|end"
-            android:src="@drawable/ic_baseline_sync_24"
-            android:background="@android:color/transparent"
+            android:layout_marginStart="140dp"
             android:adjustViewBounds="true"
-            android:contentDescription="Cambia il quadrimestre della pagella" />
+            android:background="@android:color/transparent"
+            android:contentDescription="Cambia il quadrimestre della pagella"
+            android:src="@drawable/ic_baseline_sync_24"
+            tools:ignore="TouchTargetSizeCheck" />
 
     </androidx.cardview.widget.CardView>
 

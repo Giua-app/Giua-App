@@ -53,7 +53,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private void setupAllObjects(Context context) {
 
         //region Funzionalità
+
         setupNotificationObject(context);
+
         //endreigon
 
         //region Personalizzazione

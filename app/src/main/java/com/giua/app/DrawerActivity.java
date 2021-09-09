@@ -25,8 +25,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -64,8 +62,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     DrawerLayout drawerLayout;
     NavigationView navigationView;     //Il navigation drawer vero e proprio
     NavController navController = null;     //Si puo intendere come il manager dei fragments
-    Button btnLogout;
-    Button btnSettings;
     Intent iCheckNewsReceiver;
     AlarmManager alarmManager;
     PendingIntent pendingIntent;
@@ -87,8 +83,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         setSupportActionBar(toolbar);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
-        btnLogout = findViewById(R.id.nav_drawer_logout_button);
-        btnSettings = findViewById(R.id.nav_drawer_settings_button);
 
         bundle = new Bundle();
         bundle.putBoolean("offline", offlineMode);
@@ -104,8 +98,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
         navigationView.setCheckedItem(R.id.nav_voti);
 
-        btnLogout.setOnClickListener(this::logoutButtonClick);
-        btnSettings.setOnClickListener(this::settingsButtonClick);
+//        btnLogout.setOnClickListener(this::logoutButtonClick);
+//        btnSettings.setOnClickListener(this::settingsButtonClick);
 
         if (!offlineMode) {
             new Thread(() -> {
@@ -137,11 +131,11 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                     .setOpenableLayout(drawerLayout)
                     .build();
 
-            if (getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment).getClass() != NavHostFragment.class) {
+            if (Objects.requireNonNull(getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment)).getClass() != NavHostFragment.class) {
                 fragmentManager.beginTransaction().replace(R.id.nav_host_fragment, NavHostFragment.class, null).commitNow();
             }
 
-            navController = ((NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment)).getNavController();
+            navController = ((NavHostFragment) Objects.requireNonNull(getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment))).getNavController();
             NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
             startVotesFragment();
         }
@@ -168,6 +162,10 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             startPinBoardFragment();
         } else if (item.getItemId() == R.id.nav_pagella) {
             startReportCardFragment();
+        } else if (item.getItemId() == R.id.nav_settings) {
+            startSettingsActivity();
+        } else if (item.getItemId() == R.id.nav_logout) {
+            makeLogout();
         }
         transaction.commit();
         closeNavDrawer();
@@ -181,14 +179,14 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         }
     }
 
-    private void logoutButtonClick(View view) {
+    private void makeLogout() {
         Intent intent = new Intent(this, ActivityManager.class);
         LoginData.clearAll(this);
         startActivity(intent);
         finish();
     }
 
-    private void settingsButtonClick(View view) {
+    private void startSettingsActivity() {
         startActivity(new Intent(this, SettingsActivity.class));
     }
 

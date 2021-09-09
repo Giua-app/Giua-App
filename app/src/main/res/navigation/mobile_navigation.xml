@@ -51,4 +51,14 @@
         android:id="@+id/nav_pagella"
         android:name="com.giua.app.ui.reportcard.ReportCardFragment"
         android:label="@string/fragment_pagella" />
+
+    <activity
+        android:id="@+id/nav_settings"
+        android:name="com.giua.app.SettingsActivity"
+        android:label="Impostazioni" />
+
+    <activity
+        android:id="@+id/nav_logout"
+        android:name="com.giua.app.MainLogin"
+        android:label="Impostazioni" />
 </navigation>

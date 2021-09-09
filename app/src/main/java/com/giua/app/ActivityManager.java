@@ -72,7 +72,7 @@ public class ActivityManager extends AppCompatActivity {
         if (!defaultUrl.equals(""))
             GiuaScraper.setSiteURL(defaultUrl);
 
-       GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
+       //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
 
         final int introStatus = SettingsData.getSettingInt(this, SettingKey.INTRO_STATUS);
         //introStatus = 0;         //DEBUG

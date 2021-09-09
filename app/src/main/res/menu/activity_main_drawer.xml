@@ -40,4 +40,13 @@
             android:title="@string/activitymaindrawer_nav_pagella" />
     </group>
 
+    <group android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_settings"
+            android:title="@string/settings_text" />
+        <item
+            android:id="@+id/nav_logout"
+            android:title="@string/logout_text" />
+    </group>
+
 </menu>
