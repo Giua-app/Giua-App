@@ -88,10 +88,13 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     boolean isFilterApplied = false;
     boolean onlyNotRead = false;
     boolean canSendErrorMessage = true;
+    boolean offlineMode = false;
     String filterDate = "";
     String filterText = "";
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        if (getArguments() != null)
+            offlineMode = getArguments().getBoolean("offline");
         root = inflater.inflate(R.layout.fragment_newsletters, container, false);
 
         context = getContext();
@@ -151,23 +154,32 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         if (!loadedAllPages) {
             threadManager.addAndRun(() -> {
                 try {
-                    if (!isFilterApplied) {
-                        if (!allNewsletter.isEmpty())
-                            allNewsletterOld = allNewsletter;
-                        allNewsletter = GlobalVariables.gS.getAllNewslettersWithFilter(onlyNotRead, filterDate, filterText, currentPage, true);
-                        isFilterApplied = true;
-                    } else
-                        allNewsletter = GlobalVariables.gS.getAllNewsletters(currentPage, true);
+                    if (!offlineMode) {
+                        if (!isFilterApplied) {
+                            if (!allNewsletter.isEmpty())
+                                allNewsletterOld = allNewsletter;
+                            allNewsletter = GlobalVariables.gS.getAllNewslettersWithFilter(onlyNotRead, filterDate, filterText, currentPage, true);
+                            isFilterApplied = true;
+                        } else
+                            allNewsletter = GlobalVariables.gS.getAllNewsletters(currentPage, true);
+                    } else {
+                        loadedAllPages = true;
+                        try {
+                            allNewsletter = new JsonHelper().parseJsonForNewsletters(AppData.getNewslettersString(requireContext()));
+                        } catch (Exception ignored) {
+                        }
+                    }
 
                     if (allNewsletter != null) {
                         hasCompletedLoading = true;
+                        if (currentPage == 1)
+                            allNewsletterToSave = allNewsletter;
                         if (allNewsletter.isEmpty() && currentPage == 1)
                             activity.runOnUiThread(() -> tvNoElements.setVisibility(View.VISIBLE));
                         else if (allNewsletter.isEmpty())
                             loadedAllPages = true;
                         activity.runOnUiThread(this::addViews);
                         currentPage++;
-                        allNewsletterToSave.addAll(allNewsletter);
                     }
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
@@ -210,7 +222,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             NewsletterView newsletterView = new NewsletterView(context, null, newsletter);
             newsletterView.findViewById(R.id.newsletter_view_btn_document).setOnClickListener((view) -> onClickDocument(newsletter));
 
-            if (newsletter.attachments != null) {
+            if (newsletter.attachments != null && !newsletter.attachments.isEmpty()) {
                 newsletterView.findViewById(R.id.newsletter_view_btn_attachment).setOnClickListener((view) -> onClickAttachmentImage(newsletter));
             } else {
                 newsletterView.findViewById(R.id.newsletter_view_btn_attachment).setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.non_vote, context.getTheme())));
@@ -440,7 +452,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onStop() {
-        if (!allNewsletterToSave.isEmpty())
+        if (!allNewsletterToSave.isEmpty() && !offlineMode)
             AppData.saveNewslettersString(activity, new JsonHelper().saveNewslettersToString(allNewsletterToSave));
         super.onStop();
     }

@@ -33,15 +33,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.navigation.Navigation;
 
-import com.giua.app.DrawerActivity;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
 import com.giua.app.ThreadManager;
 import com.giua.objects.ReportCard;
 import com.giua.webscraper.GiuaScraperExceptions;
+import com.google.android.material.snackbar.Snackbar;
 
 public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
 
@@ -93,13 +92,13 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                 //Errore di connessione
                 activity.runOnUiThread(() -> {
-                    DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_pagella, Navigation.findNavController(activity, R.id.nav_host_fragment));
+                    setErrorMessage(getString(R.string.your_connection_error), root);
                     pbLoadingPage.setVisibility(View.GONE);
                 });
             } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                 //Errore di connessione al sito
                 activity.runOnUiThread(() -> {
-                    DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_pagella, Navigation.findNavController(activity, R.id.nav_host_fragment));
+                    setErrorMessage(getString(R.string.site_connection_error), root);
                     pbLoadingPage.setVisibility(View.GONE);
                 });
             }
@@ -151,6 +150,10 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
     }
 
     //endregion
+
+    private void setErrorMessage(String message, View root) {
+        Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
+    }
 
     @Override
     public void onDestroyView() {

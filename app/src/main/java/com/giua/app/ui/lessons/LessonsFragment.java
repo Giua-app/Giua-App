@@ -38,10 +38,8 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.navigation.Navigation;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.giua.app.DrawerActivity;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
@@ -49,6 +47,7 @@ import com.giua.app.ThreadManager;
 import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Lesson;
 import com.giua.webscraper.GiuaScraperExceptions;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -151,7 +150,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     //Errore di connessione
                     activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_lezioni, Navigation.findNavController(activity, R.id.nav_host_fragment));
+                        setErrorMessage(getString(R.string.your_connection_error), root);
                         pbLoadingContent.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
@@ -159,7 +158,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     //Errore di connessione al registro
                     activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_lezioni, Navigation.findNavController(activity, R.id.nav_host_fragment));
+                        setErrorMessage(getString(R.string.site_connection_error), root);
                         pbLoadingContent.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
@@ -339,6 +338,10 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         calendar.setTime(date);
         calendar.add(Calendar.DAY_OF_YEAR, -1);
         return calendar.getTime();
+    }
+
+    private void setErrorMessage(String message, View root) {
+        Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
 
     //endregion

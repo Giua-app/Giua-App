@@ -34,10 +34,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.giua.app.DrawerActivity;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
@@ -45,8 +43,8 @@ import com.giua.app.ThreadManager;
 import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Homework;
 import com.giua.objects.Test;
-import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -161,7 +159,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                         activity.runOnUiThread(this::addViews);
                 } catch (GiuaScraperExceptions.YourConnectionProblems | NullPointerException e) {
                     activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
+                        setErrorMessage(getString(R.string.your_connection_error), root);
                         pbLoadingPage.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
@@ -169,7 +167,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                     });
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
+                        setErrorMessage(getString(R.string.site_connection_error), root);
                         pbLoadingPage.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
@@ -349,20 +347,13 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                         visualizerHomeworks = GlobalVariables.gS.getHomework(agendaView.homework.date);
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
+                        setErrorMessage(getString(R.string.your_connection_error), root);
                         pbForDetails.setVisibility(View.GONE);
                     });
                     return;
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
-                        pbForDetails.setVisibility(View.GONE);
-                    });
-                    return;
-                } catch (NullPointerException e) {
-                    activity.runOnUiThread(() -> {
-                        if (!GiuaScraper.isMyInternetWorking())
-                            DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_agenda, Navigation.findNavController(activity, R.id.nav_host_fragment));
+                        setErrorMessage(getString(R.string.site_connection_error), root);
                         pbForDetails.setVisibility(View.GONE);
                     });
                     return;
@@ -399,6 +390,13 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                 });
             });
         }
+    }
+
+    private void obscureLayoutOnClick(View view) {
+        visualizerLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
+        obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
+        visualizerLayout.setVisibility(View.GONE);
+        obscureLayoutView.setVisibility(View.GONE);
     }
 
     private void onRefresh() {
@@ -495,11 +493,8 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
             return "0" + n;
     }
 
-    private void obscureLayoutOnClick(View view) {
-        visualizerLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
-        obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
-        visualizerLayout.setVisibility(View.GONE);
-        obscureLayoutView.setVisibility(View.GONE);
+    private void setErrorMessage(String message, View root) {
+        Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
     //endregion
 

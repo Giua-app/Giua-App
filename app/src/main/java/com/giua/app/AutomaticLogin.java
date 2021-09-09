@@ -35,22 +35,23 @@ import com.google.android.material.snackbar.Snackbar;
 
 public class AutomaticLogin extends AppCompatActivity {
     int waitToReLogin = 5;
-    Button logoutButton;
-    ProgressBar progressBar;
+    Button btnLogout;
+    Button btnOffline;
+    ProgressBar pbLoadingScreen;
     TextView tvAutoLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.loading_screen);
+        setContentView(R.layout.activity_automatic_login);
 
-        logoutButton = findViewById(R.id.loading_screen_logout_btn);
+        btnLogout = findViewById(R.id.loading_screen_logout_btn);
         tvAutoLogin = findViewById(R.id.loading_screen_minor_text_view);
-        progressBar = findViewById(R.id.loading_screen_progressbar);
-        logoutButton.setOnClickListener((view) -> {
-            LoginData.clearAll(this);
-            startActivity(new Intent(AutomaticLogin.this, MainLogin.class));
-        });
+        pbLoadingScreen = findViewById(R.id.loading_screen_progressbar);
+        btnOffline = findViewById(R.id.loading_screen_offline_btn);
+
+        btnOffline.setOnClickListener(this::btnOfflineOnClick);
+        btnLogout.setOnClickListener(this::btnLogoutOnClick);
 
         GiuaScraper.setDebugMode(true);
         loginWithPreviousCredentials();
@@ -58,14 +59,15 @@ public class AutomaticLogin extends AppCompatActivity {
 
     private void loginWithPreviousCredentials() {
         new Thread(() -> {
-            runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
+            runOnUiThread(() -> pbLoadingScreen.setVisibility(View.VISIBLE));
             try {
                 GlobalVariables.gS = new GiuaScraper(LoginData.getUser(this), LoginData.getPassword(this), LoginData.getCookie(this), true);
                 GlobalVariables.gS.login();
                 LoginData.setCredentials(this, LoginData.getUser(this), LoginData.getPassword(this), GlobalVariables.gS.getCookie());
                 startDrawerActivity();
             } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.SiteConnectionProblems e) {
-                runOnUiThread(() -> logoutButton.setVisibility(View.VISIBLE));
+                runOnUiThread(() -> btnLogout.setVisibility(View.VISIBLE));
+                runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));
 
                 if (!GiuaScraper.isMyInternetWorking())
                     runOnUiThread(() -> setErrorMessage(getString(R.string.your_connection_error)));
@@ -75,9 +77,7 @@ public class AutomaticLogin extends AppCompatActivity {
                     runOnUiThread(() -> setErrorMessage("E' stato riscontrato qualche problema sconosciuto riguardo la rete"));
 
                 try {
-                    //Thread.sleep(2000);
-                    runOnUiThread(() -> progressBar.setVisibility(View.INVISIBLE));
-                    //runOnUiThread(() -> setErrorMessage("Riprovo automaticamente tra " + waitToReLogin + " secondi"));
+                    runOnUiThread(() -> pbLoadingScreen.setVisibility(View.INVISIBLE));
                     threadSleepWithTextUpdates();
 
                     if (waitToReLogin < 30)
@@ -101,12 +101,23 @@ public class AutomaticLogin extends AppCompatActivity {
                     startActivity(new Intent(AutomaticLogin.this, MainLogin.class));
                 }
             } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
-                runOnUiThread(() -> logoutButton.setVisibility(View.VISIBLE));
-                runOnUiThread(() -> progressBar.setVisibility(View.GONE));
+                runOnUiThread(() -> btnLogout.setVisibility(View.VISIBLE));
+                runOnUiThread(() -> pbLoadingScreen.setVisibility(View.GONE));
                 runOnUiThread(() -> tvAutoLogin.setText("Accesso fallito."));
                 runOnUiThread(() -> setErrorMessage(getString(R.string.site_in_maintenace_error)));
             }
         }).start();
+    }
+
+    private void btnLogoutOnClick(View view) {
+        LoginData.clearAll(this);
+        startActivity(new Intent(AutomaticLogin.this, MainLogin.class));
+        finish();
+    }
+
+    private void btnOfflineOnClick(View view) {
+        startActivity(new Intent(AutomaticLogin.this, DrawerActivity.class).putExtra("offline", true));
+        finish();
     }
 
     private void threadSleepWithTextUpdates() throws InterruptedException {

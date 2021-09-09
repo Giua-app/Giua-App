@@ -80,8 +80,11 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
     boolean isLoadingContent = false;
     boolean canSendErrorMessage = true;
     boolean isDownloading = false;
+    boolean offlineMode = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        if (getArguments() != null)
+            offlineMode = getArguments().getBoolean("offline");
         root = inflater.inflate(R.layout.fragment_alerts, container, false);
 
         viewsLayout = root.findViewById(R.id.alert_linear_layout);
@@ -122,12 +125,24 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
                 viewsLayout.addView(pbLoadingContent);
             threadManager.addAndRun(() -> {
                 try {
-                    allAlerts = GlobalVariables.gS.getAllAlerts(currentPage, true);
+                    if (!offlineMode)
+                        allAlerts = GlobalVariables.gS.getAllAlerts(currentPage, true);
+                    else {
+                        hasLoadedAllPages = true;
+                        try {
+                            allAlerts = new JsonHelper().parseJsonForAlerts(AppData.getAlertsString(requireContext()));
+                        } catch (Exception ignored) {
+                        }
 
-                    if (allAlerts.isEmpty()) {
+                    }
+
+                    if (allAlerts.isEmpty() && currentPage == 1) {
                         hasLoadedAllPages = true;
                         activity.runOnUiThread(this::finishedLoading);
                         activity.runOnUiThread(() -> tvNoElements.setVisibility(View.VISIBLE));
+                    } else if (allAlerts.isEmpty()) {
+                        hasLoadedAllPages = true;
+                        activity.runOnUiThread(this::finishedLoading);
                     } else {
                         activity.runOnUiThread(this::addViews);
                         currentPage++;
@@ -358,8 +373,8 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onStop() {
-        if (!allAlertsToSave.isEmpty())
-            AppData.saveNewslettersString(activity, new JsonHelper().saveAlertsToString(allAlertsToSave));
+        if (!allAlertsToSave.isEmpty() && !offlineMode)
+            AppData.saveAlertsString(activity, new JsonHelper().saveAlertsToString(allAlertsToSave));
         super.onStop();
     }
 

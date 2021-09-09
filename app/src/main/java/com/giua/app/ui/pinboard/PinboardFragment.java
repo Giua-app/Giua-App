@@ -41,6 +41,7 @@ public class PinboardFragment extends Fragment {
     TabLayout tabLayout;
     FragmentManager fragmentManager;
     FragmentTransaction ft;
+    Bundle bundle;
     //ViewPager2 viewPager;
 
 
@@ -50,11 +51,12 @@ public class PinboardFragment extends Fragment {
         tabLayout = root.findViewById(R.id.tabLayout);
         //viewPager = root.findViewById(R.id.pager);
 
+        bundle = getArguments();
         fragmentManager = getChildFragmentManager();
         ft = fragmentManager.beginTransaction();
         ft.addToBackStack(null);
         ft.setReorderingAllowed(true);
-        ft.replace(R.id.fragment_tabs_circolari_avvisi_framelayout, NewslettersFragment.class, null);
+        ft.replace(R.id.fragment_tabs_circolari_avvisi_framelayout, NewslettersFragment.class, bundle);
         ft.commit();
         //End
 
@@ -67,10 +69,10 @@ public class PinboardFragment extends Fragment {
                 ft.setReorderingAllowed(true);
 
                 if (Objects.requireNonNull(tab.getText()).toString().equals("Circolari")) {
-                    ft.replace(R.id.fragment_tabs_circolari_avvisi_framelayout, NewslettersFragment.class, null);
+                    ft.replace(R.id.fragment_tabs_circolari_avvisi_framelayout, NewslettersFragment.class, bundle);
                     ft.commit();
                 } else if (tab.getText().toString().equals("Avvisi")) {
-                    ft.replace(R.id.fragment_tabs_circolari_avvisi_framelayout, AlertsFragment.class, null);
+                    ft.replace(R.id.fragment_tabs_circolari_avvisi_framelayout, AlertsFragment.class, bundle);
                     ft.commit();
                 }
             }

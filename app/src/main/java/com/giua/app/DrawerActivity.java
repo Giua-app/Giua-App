@@ -49,7 +49,6 @@ import com.giua.app.ui.reportcard.ReportCardFragment;
 import com.giua.app.ui.votes.VotesFragment;
 import com.giua.webscraper.GiuaScraper;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -73,11 +72,14 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     FragmentTransaction transaction;
     FragmentManager fragmentManager;
     Toolbar toolbar;
+    Bundle bundle;
+    boolean offlineMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (savedInstanceState != null)
             savedInstanceState.clear();
+        offlineMode = getIntent().getBooleanExtra("offline", false);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer);
 
@@ -87,6 +89,9 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         navigationView = findViewById(R.id.nav_view);
         btnLogout = findViewById(R.id.nav_drawer_logout_button);
         btnSettings = findViewById(R.id.nav_drawer_settings_button);
+
+        bundle = new Bundle();
+        bundle.putBoolean("offline", offlineMode);
 
         iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -102,17 +107,22 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         btnLogout.setOnClickListener(this::logoutButtonClick);
         btnSettings.setOnClickListener(this::settingsButtonClick);
 
-        new Thread(() -> {
-            GiuaScraper.userTypes userType = GlobalVariables.gS.getUserTypeEnum();
-            String user = GlobalVariables.gS.loadUserFromDocument();
-            this.runOnUiThread(() -> {
-                if (userType == GiuaScraper.userTypes.PARENT)
-                    runOnUiThread(() -> tvUserType.setText("Genitore"));
-                else if (userType == GiuaScraper.userTypes.STUDENT)
-                    runOnUiThread(() -> tvUserType.setText("Studente"));
-                runOnUiThread(() -> tvUsername.setText(user));
-            });
-        }).start();
+        if (!offlineMode) {
+            new Thread(() -> {
+                GiuaScraper.userTypes userType = GlobalVariables.gS.getUserTypeEnum();
+                String user = GlobalVariables.gS.loadUserFromDocument();
+                this.runOnUiThread(() -> {
+                    if (userType == GiuaScraper.userTypes.PARENT)
+                        runOnUiThread(() -> tvUserType.setText("Genitore"));
+                    else if (userType == GiuaScraper.userTypes.STUDENT)
+                        runOnUiThread(() -> tvUserType.setText("Studente"));
+                    runOnUiThread(() -> tvUsername.setText(user));
+                });
+            }).start();
+        } else {
+            runOnUiThread(() -> tvUserType.setText("Offline"));
+            runOnUiThread(() -> tvUsername.setText("Offline"));
+        }
     }
 
     @Override
@@ -133,6 +143,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
             navController = ((NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment)).getNavController();
             NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+            startVotesFragment();
         }
     }
 
@@ -179,53 +190,46 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
     private void settingsButtonClick(View view) {
         startActivity(new Intent(this, SettingsActivity.class));
-/*
-        // Ritorna una lista di fragment che sono presenti nel fragmentManager.
-        // Dovrebbe sempre restituire 1 solo fragment in quanto viene usato sempre il replace().
-        List<Fragment> allFragments = fragmentManager.getFragments();
-
-        for (Fragment fragment : allFragments) {    //Rimuove tutti i fragment nel fragmentManager
-            fragmentManager.beginTransaction().remove(fragment).commit();
-        }
-
-        //Questo sleep è solo per motivi grafici
-        new Thread(() -> {
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException ignored) {
-            }
-            runOnUiThread(() -> navigationView.setCheckedItem(R.id.nav_voti));
-        }).start();*/
     }
 
     private void startReportCardFragment() {
-        transaction.replace(R.id.nav_host_fragment, ReportCardFragment.class, null);
-        toolbar.setTitle("Pagella");
+        transaction.replace(R.id.nav_host_fragment, ReportCardFragment.class, bundle);
+        if (!offlineMode)
+            toolbar.setTitle("Pagella");
+        else
+            toolbar.setTitle("Pagella - Offline");
     }
 
     private void startPinBoardFragment() {
-        transaction.replace(R.id.nav_host_fragment, PinboardFragment.class, null);
-        toolbar.setTitle("Bacheca");
+        transaction.replace(R.id.nav_host_fragment, PinboardFragment.class, bundle);
+        if (!offlineMode)
+            toolbar.setTitle("Bacheca");
+        else
+            toolbar.setTitle("Bacheca - Offline");
     }
 
     private void startVotesFragment() {
-        transaction.replace(R.id.nav_host_fragment, VotesFragment.class, null);
-        toolbar.setTitle("Voti");
+        transaction.replace(R.id.nav_host_fragment, VotesFragment.class, bundle);
+        if (!offlineMode)
+            toolbar.setTitle("Voti");
+        else
+            toolbar.setTitle("Voti - Offline");
     }
 
     private void startLessonsFragment() {
-        transaction.replace(R.id.nav_host_fragment, LessonsFragment.class, null);
-        toolbar.setTitle("Lezioni");
+        transaction.replace(R.id.nav_host_fragment, LessonsFragment.class, bundle);
+        if (!offlineMode)
+            toolbar.setTitle("Lezioni");
+        else
+            toolbar.setTitle("Lezioni - Offline");
     }
 
     private void startAgendaFragment() {
-        transaction.replace(R.id.nav_host_fragment, AgendaFragment.class, null);
-        toolbar.setTitle("Agenda");
-    }
-
-    public static void setErrorMessage(String message, View root, int layoutID, NavController _navController) {
-        if (Objects.requireNonNull(_navController.getCurrentDestination()).getId() == layoutID)
-            Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
+        transaction.replace(R.id.nav_host_fragment, AgendaFragment.class, bundle);
+        if (!offlineMode)
+            toolbar.setTitle("Agenda");
+        else
+            toolbar.setTitle("Agenda - Offline");
     }
 
     @Override
@@ -239,6 +243,12 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putBoolean("offline", offlineMode);
+        super.onSaveInstanceState(outState);
     }
 
     @Override

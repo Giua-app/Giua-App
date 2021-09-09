@@ -35,11 +35,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.giua.app.AppData;
-import com.giua.app.DrawerActivity;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
@@ -48,6 +46,7 @@ import com.giua.app.ui.ObscureLayoutView;
 import com.giua.objects.Vote;
 import com.giua.utils.JsonHelper;
 import com.giua.webscraper.GiuaScraperExceptions;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -70,9 +69,12 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
     View root;
     ThreadManager threadManager;
     boolean refreshVotes = false;
+    boolean offlineMode = false;
 
     @SuppressLint("ClickableViewAccessibility")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        if (getArguments() != null)
+            offlineMode = getArguments().getBoolean("offline");
         root = inflater.inflate(R.layout.fragment_votes, container, false);
 
         viewsLayout = root.findViewById(R.id.vote_fragment_linear_layout);
@@ -98,18 +100,20 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
         threadManager.addAndRun(() -> {
             try {
                 allVotes = GlobalVariables.gS.getAllVotes(refreshVotes);
+                /*else
+                    allVotes = new JsonHelper().parseJsonForVotes(AppData.getVotesString(requireContext()));*/
                 refreshVotes = false;
                 activity.runOnUiThread(this::addViews);
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                 activity.runOnUiThread(() -> {
-                    DrawerActivity.setErrorMessage(getString(R.string.your_connection_error), root, R.id.nav_voti, Navigation.findNavController(activity, R.id.nav_host_fragment));
+                    setErrorMessage(getString(R.string.your_connection_error), root);
                     pbLoadingPage.setVisibility(View.GONE);
                     tvNoElements.setVisibility(View.VISIBLE);
                     swipeRefreshLayout.setRefreshing(false);
                 });
             } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                 activity.runOnUiThread(() -> {
-                    DrawerActivity.setErrorMessage(getString(R.string.site_connection_error), root, R.id.nav_voti, Navigation.findNavController(activity, R.id.nav_host_fragment));
+                    setErrorMessage(getString(R.string.site_connection_error), root);
                     pbLoadingPage.setVisibility(View.GONE);
                     tvNoElements.setVisibility(View.VISIBLE);
                     swipeRefreshLayout.setRefreshing(false);
@@ -259,6 +263,10 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
         viewsLayout.addView(voteView);
 
 
+    }
+
+    private void setErrorMessage(String message, View root) {
+        Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
