@@ -22,7 +22,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+    <group
+        android:checkableBehavior="single"
+        android:id="@+id/nav_group_main_functions">
         <item
             android:id="@+id/nav_voti"
             android:title="@string/activitymaindrawer_nav_voti" />
@@ -40,7 +42,9 @@
             android:title="@string/activitymaindrawer_nav_pagella" />
     </group>
 
-    <group android:checkableBehavior="none">
+    <group
+        android:checkableBehavior="none"
+        android:id="@+id/nav_group_other_functions">
         <item
             android:id="@+id/nav_settings"
             android:title="@string/settings_text" />

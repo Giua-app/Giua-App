@@ -46,24 +46,24 @@ public class AppData {
                 .apply();
     }
 
-    public static String getVotesString(final Context context) {
-        return getSharedPreferences(context).getString(voteKey, null);
-    }
-
     public static void saveNewslettersString(final Context context, final String jsonString) {
         getSharedPreferences(context).edit()
                 .putString(newsletterKey, jsonString)
                 .apply();
     }
 
-    public static String getNewslettersString(final Context context) {
-        return getSharedPreferences(context).getString(newsletterKey, null);
-    }
-
     public static void saveAlertsString(final Context context, final String jsonString) {
         getSharedPreferences(context).edit()
                 .putString(alertKey, jsonString)
                 .apply();
+    }
+
+    public static String getVotesString(final Context context) {
+        return getSharedPreferences(context).getString(voteKey, null);
+    }
+
+    public static String getNewslettersString(final Context context) {
+        return getSharedPreferences(context).getString(newsletterKey, null);
     }
 
     public static String getAlertsString(final Context context) {

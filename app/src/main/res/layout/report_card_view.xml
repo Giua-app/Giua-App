@@ -33,6 +33,7 @@
         android:fontFamily="@font/varelaroundregular"
         android:text="Materia"
         android:textSize="18sp"
+        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/cardView"
         app:layout_constraintEnd_toStartOf="@+id/cardView"
         app:layout_constraintHorizontal_bias="0.0"
@@ -41,7 +42,7 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="100dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
@@ -71,7 +72,9 @@
             android:layout_marginTop="24dp"
             android:background="@drawable/corner_radius_10dp"
             android:fontFamily="@font/varelaroundregular"
+            android:maxWidth="100dp"
             android:minWidth="30dp"
+            android:maxLines="1"
             android:padding="5dp"
             android:text="8"
             android:textAlignment="center"

@@ -91,7 +91,7 @@
     <string name="activitymaindrawer_nav_lezioni">Lezioni</string>
     <string name="activitymaindrawer_nav_bacheca">Bacheca</string>
     <string name="activitymaindrawer_nav_pagella">Pagella</string>
-    <string name="logout_text">Logout</string>
+    <string name="logout_text">Esci</string>
     <string name="settings_text">Impostazioni</string>
     <string name="obscure_layout_text">Annulla</string>
     <string name="homeworks">Compiti</string>

@@ -33,6 +33,10 @@ import com.giua.webscraper.GiuaScraper;
 
 import cat.ereza.customactivityoncrash.config.CaocConfig;
 
+/**
+ * Questa è la prima activity ad essere avviata e serve a gestire quale activity
+ * dovrà essere startata dopo.
+ */
 public class ActivityManager extends AppCompatActivity {
 
     @Override
@@ -72,7 +76,7 @@ public class ActivityManager extends AppCompatActivity {
         if (!defaultUrl.equals(""))
             GiuaScraper.setSiteURL(defaultUrl);
 
-       //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
+        //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
 
         final int introStatus = SettingsData.getSettingInt(this, SettingKey.INTRO_STATUS);
         //introStatus = 0;         //DEBUG

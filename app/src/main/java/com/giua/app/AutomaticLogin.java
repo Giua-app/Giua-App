@@ -76,17 +76,14 @@ public class AutomaticLogin extends AppCompatActivity {
                 else
                     runOnUiThread(() -> setErrorMessage("E' stato riscontrato qualche problema sconosciuto riguardo la rete"));
 
-                try {
-                    runOnUiThread(() -> pbLoadingScreen.setVisibility(View.INVISIBLE));
-                    threadSleepWithTextUpdates();
 
-                    if (waitToReLogin < 30)
-                        waitToReLogin += 5;
+                runOnUiThread(() -> pbLoadingScreen.setVisibility(View.INVISIBLE));
+                threadSleepWithTextUpdates();
 
-                    loginWithPreviousCredentials();
-                } catch (InterruptedException e2) {
-                    e2.printStackTrace();
-                }
+                if (waitToReLogin < 30)
+                    waitToReLogin += 5;
+
+                loginWithPreviousCredentials();
             } catch (GiuaScraperExceptions.SessionCookieEmpty sce) {     //Se il login non dovesse funzionare lancia l acitvity di login ed elimina le credenziali salvate
                 if (LoginData.getUser(this).equals("gsuite"))    //Questa condizione si verifica quando è presente un acccount studente con il cookie scaduto
                     startStudentLoginActivity();
@@ -102,6 +99,7 @@ public class AutomaticLogin extends AppCompatActivity {
                 }
             } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
                 runOnUiThread(() -> btnLogout.setVisibility(View.VISIBLE));
+                runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));
                 runOnUiThread(() -> pbLoadingScreen.setVisibility(View.GONE));
                 runOnUiThread(() -> tvAutoLogin.setText("Accesso fallito."));
                 runOnUiThread(() -> setErrorMessage(getString(R.string.site_in_maintenace_error)));
@@ -120,11 +118,14 @@ public class AutomaticLogin extends AppCompatActivity {
         finish();
     }
 
-    private void threadSleepWithTextUpdates() throws InterruptedException {
+    private void threadSleepWithTextUpdates() {
         for (int i = 0; i < waitToReLogin; i++) {
             int finalI = i;
             runOnUiThread(() -> tvAutoLogin.setText("Login fallito\nRiprovo tra " + (waitToReLogin - finalI) + " secondi"));
-            Thread.sleep(1000);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
+            }
         }
         runOnUiThread(() -> tvAutoLogin.setText("Riprovo..."));
     }
