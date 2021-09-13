@@ -61,17 +61,7 @@ public class ActivityManager extends AppCompatActivity {
 
         final String defaultUrl = SettingsData.getSettingString(this, SettingKey.DEFAULT_URL);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Giua App Aggiornamenti";
-            String description = "";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("0", name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
+        setupNotificationManager();
 
         if (!defaultUrl.equals(""))
             GiuaScraper.setSiteURL(defaultUrl);
@@ -86,6 +76,8 @@ public class ActivityManager extends AppCompatActivity {
             startActivity(new Intent(ActivityManager.this, AppIntroActivity.class));
             return;
         }
+
+        checkForUpdates();
 
         if (LoginData.getUser(this).equals(""))
             startMainLoginActivity();
@@ -103,7 +95,11 @@ public class ActivityManager extends AppCompatActivity {
         finish();
     }
 
-    public void setupCaoc() {
+    private void checkForUpdates(){
+        new Thread(() -> new AppUpdateManager().checkForAppUpdates(this)).start();
+    }
+
+    private void setupCaoc() {
         //CAOC: CustomActivityOnCrash
         CaocConfig.Builder.create()
                 .backgroundMode(CaocConfig.BACKGROUND_MODE_SILENT) //crash silently when the app is in background
@@ -118,6 +114,29 @@ public class ActivityManager extends AppCompatActivity {
                 .apply();
     }
 
+    private void setupNotificationManager(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Giua App Novità";
+            String description = "";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("0", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+
+            CharSequence name2 = "Giua App Aggiornamenti";
+            String description2 = "Aggiornamenti dell'app da github";
+            int importance2 = NotificationManager.IMPORTANCE_DEFAULT;
+
+            NotificationChannel channel2 = new NotificationChannel("1", name2, importance2);
+            channel.setDescription(description2);
+            NotificationManager notificationManager2 = getSystemService(NotificationManager.class);
+            notificationManager2.createNotificationChannel(channel2);
+        }
+    }
+
 
     /**
      * Esci dall'applicazione simulando la pressione del tasto home
@@ -129,4 +148,7 @@ public class ActivityManager extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
+
+
+
 }
