@@ -15,21 +15,26 @@
 Giua-App è una applicazione per Android che permette di visualizzare voti, assenze, lezioni e tutte le altre informazioni ottenibili da un sito con il registro elettronico [giua@school](https://github.com/trinko/giuaschool#giuaschool).
 Questa app usa la libreria [Giua-Webscraper](https://github.com/Giua-app/Giua-Webscraper) per ottenere le informazioni dal sito
 
+## Che cosa può fare?
+- Supporta gli utenti sia Studente (con login attraverso google) sia Genitore
+- Visualizzare lezioni
+- Visualizzare verifiche e compiti
+- Visualizzare circolari e avvisi
+- Scaricare circolari e avvisi + allegati
+- Visualizzare l'agenda
+- Visualizzare pagella
+- Notificare in caso di nuovi compiti, verifiche, circolari, avvisi e assenze/ritardi da giustificare
+- Notificare di nuovi aggiornamenti dell'app
+
 ![Screenshots](/readme-assets/Screenshots.png "Screenshots")
 
 ## Come si scarica?
-Vai nella scheda [Actions](https://github.com/Giua-app/Giua-App/actions/workflows/build_on_release.yml?query=event%3Arelease) e clicca sull'ultimo workflow, poi scarica l'artifact "debug-apk". Dentro lo zip ci sarà il file apk da installare su Android.
+Per scaricare versioni stabili andare sulle [Release](https://github.com/Giua-app/Giua-App/releases), in ogni release c'è allegato un apk dell'app
+
+Per scaricare versioni di debug andare sulle [Actions](https://github.com/Giua-app/Giua-App/actions/workflows/build_on_commit.yml)
 
 ## Funzioni da implementare
 
-- [x] ~~pagina login~~
-- [x] ~~visualizza voti e medie~~
-- [x] ~~visualizza lezioni~~
-- [x] ~~visualizza circolari~~
-- [x] ~~visualizza avvisi~~
-- [x] ~~controlla in background per novità (nuovo voto, nuovo avviso, ecc)~~
-- [x] ~~invia notifica quando ci sono novità~~
-- [x] ~~memorizza informazioni per uso offline~~
 - [ ] aggiornamento automatico
 - [ ] pagina home
 
