@@ -22,6 +22,10 @@ package com.giua.app;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import org.jsoup.Jsoup;
+
+import java.io.IOException;
+
 public class AppData {
 
     /**
@@ -92,6 +96,18 @@ public class AppData {
 
     public static int getNumberAlertsInt(final Context context) {
         return getSharedPreferences(context).getInt(numberAlertsKey, -1);
+    }
+
+    /**
+     * Questa funzione facendo una richiesta web aumenta il numero di visite
+     * Piratepx tiene traccia delle visite per 30 giorni ed è open source
+     *
+     * @param name Nome dell'oggetto su cui aumentare le visite
+     */
+    public static void increaseVisitCount(String name){
+        try {
+            Jsoup.newSession().url("https://app.piratepx.com/ship?p=a58207a1-9863-4bc9-a377-39ef3c802a24&i=" + name).get();
+        } catch (IOException ignored) { } //Non ci interessa se va in errore
     }
 
     //endregion
