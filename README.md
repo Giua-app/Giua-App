@@ -11,6 +11,8 @@
   <a href='https://github.com/Giua-app/Giua-Webscraper'><img src='https://img.shields.io/github/v/release/Giua-app/Giua-Webscraper?color=success&include_prereleases&label=Github%20giua-webscraper'/></a>
 </p>
 
+[<img src="readme-assets/get-it-on-github.png" alt="Get it on GitHub" height="80">](https://github.com/Giua-app/Giua-App/releases)
+
 ## Che cos'è?
 Giua-App è una applicazione per Android che permette di visualizzare voti, assenze, lezioni e tutte le altre informazioni ottenibili da un sito con il registro elettronico [giua@school](https://github.com/trinko/giuaschool#giuaschool).
 Questa app usa la libreria [Giua-Webscraper](https://github.com/Giua-app/Giua-Webscraper) per ottenere le informazioni dal sito
