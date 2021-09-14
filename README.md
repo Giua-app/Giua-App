@@ -29,7 +29,9 @@ Vai nella scheda [Actions](https://github.com/Giua-app/Giua-App/actions/workflow
 - [x] ~~visualizza avvisi~~
 - [x] ~~controlla in background per novità (nuovo voto, nuovo avviso, ecc)~~
 - [x] ~~invia notifica quando ci sono novità~~
-- [ ] memorizza informazioni per uso offline
+- [x] ~~memorizza informazioni per uso offline~~
+- [ ] aggiornamento automatico
+- [ ] pagina home
 
 ## Come posso contribuire?
 Contatta HiemSword o Franck1421
