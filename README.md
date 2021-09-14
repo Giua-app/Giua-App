@@ -23,8 +23,7 @@ Questa app usa la libreria [Giua-Webscraper](https://github.com/Giua-app/Giua-We
 - Supporta gli utenti sia Studente (con login attraverso google) sia Genitore
 - Visualizzare lezioni
 - Visualizzare verifiche e compiti
-- Visualizzare circolari e avvisi
-- Scaricare circolari e avvisi + allegati
+- Visualizzare e scaricare circolari o avvisi
 - Visualizzare l'agenda
 - Visualizzare pagella
 - Notificare in caso di nuovi compiti, verifiche, circolari, avvisi e assenze/ritardi da giustificare
