@@ -30,6 +30,7 @@ import android.webkit.WebViewClient;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.giua.app.AppData;
 import com.giua.app.GlobalVariables;
 import com.giua.app.LoginData;
 import com.giua.app.R;
@@ -66,6 +67,7 @@ public class StudentLoginActivity extends AppCompatActivity {
                         onStoppedWebView();
                         return true;
                     }
+                    new Thread(() -> AppData.increaseVisitCount("WebView cookie error")).start();
                     Snackbar.make(findViewById(android.R.id.content), "Login studente fallito, contatta gli sviluppatori", Snackbar.LENGTH_LONG).show();
                 }
                 return false;
@@ -85,6 +87,7 @@ public class StudentLoginActivity extends AppCompatActivity {
 
 
     private void onStoppedWebView() {
+        new Thread(() -> AppData.increaseVisitCount("Login OK (Studente/Google)")).start();
         webView.setVisibility(View.INVISIBLE);
         obscureLayoutView.setVisibility(View.VISIBLE);
 

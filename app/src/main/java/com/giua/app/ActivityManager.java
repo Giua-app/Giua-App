@@ -75,6 +75,7 @@ public class ActivityManager extends AppCompatActivity {
 
         // 1 = Intro già vista , 0 = Intro non vista , -1 = Intro mai vista
         if (introStatus != 1) {
+            new Thread(() -> AppData.increaseVisitCount("Primo avvio (nuove installazioni)")).start();
             startActivity(new Intent(ActivityManager.this, AppIntroActivity.class));
             return;
         }

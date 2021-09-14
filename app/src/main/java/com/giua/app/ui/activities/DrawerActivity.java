@@ -41,6 +41,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.giua.app.ActivityManager;
+import com.giua.app.AppData;
 import com.giua.app.CheckNewsReceiver;
 import com.giua.app.GlobalVariables;
 import com.giua.app.LoginData;
@@ -187,6 +188,9 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     }
 
     private void makeLogout() {
+        new Thread(() -> {
+            AppData.increaseVisitCount("Log out");
+        }).start();
         Intent intent = new Intent(this, ActivityManager.class);
         LoginData.clearAll(this);
         startActivity(intent);

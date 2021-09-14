@@ -32,6 +32,7 @@ import com.danielstone.materialaboutlibrary.items.MaterialAboutActionItem;
 import com.danielstone.materialaboutlibrary.items.MaterialAboutTitleItem;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutCard;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutList;
+import com.giua.app.AppData;
 import com.giua.app.R;
 import com.google.android.material.snackbar.Snackbar;
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
@@ -68,6 +69,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 .setOnClickAction(() -> {
                     if(importantInteger==3){
                         Snackbar.make(findViewById(android.R.id.content), ";)", Snackbar.LENGTH_SHORT).show();
+                        new Thread(() -> AppData.increaseVisitCount(";)")).start();
                         importantInteger=0;
                         return;
                     }

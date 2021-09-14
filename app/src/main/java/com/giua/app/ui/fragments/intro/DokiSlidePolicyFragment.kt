@@ -84,7 +84,8 @@ class DokiSlidePolicyFragment : Fragment(), SlidePolicy {
 
     //getter per dokiViewed, richiamato da SlidePolicy
     override val isPolicyRespected: Boolean
-        get() = dokiViewed
+        get() = true //TODO: rifare completamente l'avviso della batteria anziche sto schifo
+        //get() = dokiViewed
 
     override fun onUserIllegallyRequestedNextPage() {
         //Eseguito quando isPolicyRespected è false

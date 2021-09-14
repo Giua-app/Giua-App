@@ -98,17 +98,26 @@ public class AppData {
         return getSharedPreferences(context).getInt(numberAlertsKey, -1);
     }
 
+    //endregion
+
     /**
      * Questa funzione facendo una richiesta web aumenta il numero di visite
-     * Piratepx tiene traccia delle visite per 30 giorni ed è open source
+     * Piratepx tiene traccia delle visite per 30 giorni
+     * In questo momento stiamo contando le visite per:
+     *  - Nuove installazioni
+     *  - Login studente/genitore
+     *  - Errori di webview
+     *  - Easter egg
      *
      * @param name Nome dell'oggetto su cui aumentare le visite
      */
     public static void increaseVisitCount(String name){
+        if(BuildConfig.BUILD_TYPE.equals("debug")){
+            //Ignora le build di debug
+            return;
+        }
         try {
-            Jsoup.newSession().url("https://app.piratepx.com/ship?p=a58207a1-9863-4bc9-a377-39ef3c802a24&i=" + name).get();
+            Jsoup.newSession().url("https://app.piratepx.com/ship?p=6af8462c-efe0-4f9a-96d0-ec9a8bbb9060&i=" + name).get();
         } catch (IOException ignored) { } //Non ci interessa se va in errore
     }
-
-    //endregion
 }

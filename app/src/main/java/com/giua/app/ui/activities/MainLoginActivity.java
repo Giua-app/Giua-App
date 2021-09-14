@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.giua.app.AppData;
 import com.giua.app.GlobalVariables;
 import com.giua.app.LoginData;
 import com.giua.app.R;
@@ -132,9 +133,7 @@ public class MainLoginActivity extends AppCompatActivity {
     }
 
     private void startDrawerActivity() {
-        new Thread(() -> {
-            //AppData.increaseVisitCount("Login Success");
-        }).start();
+        new Thread(() -> AppData.increaseVisitCount("Login OK (Genitore)")).start();
         Intent intent = new Intent(MainLoginActivity.this, DrawerActivity.class);
         startActivity(intent);
     }
