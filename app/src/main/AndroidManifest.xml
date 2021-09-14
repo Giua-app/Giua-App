@@ -101,12 +101,12 @@
             android:theme="@style/AppTheme.MaterialAboutActivity" />
 
         <activity
-            android:name="com.giua.app.ui.fragments.intro.AppIntroActivity"
+            android:name="com.giua.app.ui.activities.AppIntroActivity"
             android:label="label"
             android:theme="@style/Theme.GiuaApp.NoActionBar" />
 
         <activity
-            android:name="com.giua.app.ui.fragments.intro.CustomDokiActivity"
+            android:name="com.giua.app.ui.activities.CustomDokiActivity"
             android:label="label"
             android:theme="@style/Theme.GiuaApp.NoActionBar" />
 

@@ -34,7 +34,7 @@ import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
 import com.giua.app.ui.activities.AboutActivity;
-import com.giua.app.ui.fragments.intro.AppIntroActivity;
+import com.giua.app.ui.activities.AppIntroActivity;
 import com.giua.webscraper.GiuaScraper;
 
 import java.util.Objects;

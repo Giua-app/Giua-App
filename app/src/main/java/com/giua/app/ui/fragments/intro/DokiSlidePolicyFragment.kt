@@ -36,6 +36,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import com.github.appintro.SlidePolicy
 import com.giua.app.R
+import com.giua.app.ui.activities.CustomDokiActivity
 
 class DokiSlidePolicyFragment : Fragment(), SlidePolicy {
 

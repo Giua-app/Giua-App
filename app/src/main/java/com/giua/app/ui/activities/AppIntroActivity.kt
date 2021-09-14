@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see https://www.gnu.org/licenses/.
  */
-package com.giua.app.ui.fragments.intro
+package com.giua.app.ui.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -30,6 +30,7 @@ import com.giua.app.ActivityManager
 import com.giua.app.R
 import com.giua.app.SettingKey
 import com.giua.app.SettingsData
+import com.giua.app.ui.fragments.intro.DokiSlidePolicyFragment
 import com.mikepenz.iconics.context.IconicsLayoutInflater2
 
 class AppIntroActivity : AppIntro(){
