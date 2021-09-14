@@ -132,6 +132,9 @@ public class MainLoginActivity extends AppCompatActivity {
     }
 
     private void startDrawerActivity() {
+        new Thread(() -> {
+            //AppData.increaseVisitCount("Login Success");
+        }).start();
         Intent intent = new Intent(MainLoginActivity.this, DrawerActivity.class);
         startActivity(intent);
     }
