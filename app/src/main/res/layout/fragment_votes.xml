@@ -26,7 +26,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical"
-    tools:context=".ui.votes.VotesFragment">
+    tools:context=".ui.fragments.votes.VotesFragment">
 
     <!-- Qui verranno visualizzati i dettagli del voto cliccato-->
 
@@ -84,7 +84,7 @@
         </ScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <com.giua.app.ui.ObscureLayoutView
+    <com.giua.app.ui.fragments.ObscureLayoutView
         android:id="@+id/vote_obscure_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

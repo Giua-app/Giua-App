@@ -28,7 +28,9 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
-import com.giua.app.ui.intro.AppIntroActivity;
+import com.giua.app.ui.activities.AutomaticLoginActivity;
+import com.giua.app.ui.activities.MainLoginActivity;
+import com.giua.app.ui.fragments.intro.AppIntroActivity;
 import com.giua.webscraper.GiuaScraper;
 
 import cat.ereza.customactivityoncrash.config.CaocConfig;
@@ -86,12 +88,12 @@ public class ActivityManager extends AppCompatActivity {
     }
 
     private void startMainLoginActivity() {
-        startActivity(new Intent(ActivityManager.this, MainLogin.class));
+        startActivity(new Intent(ActivityManager.this, MainLoginActivity.class));
         finish();
     }
 
     private void startAutomaticLoginActivity() {
-        startActivity(new Intent(ActivityManager.this, AutomaticLogin.class));
+        startActivity(new Intent(ActivityManager.this, AutomaticLoginActivity.class));
         finish();
     }
 

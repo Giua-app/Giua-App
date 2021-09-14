@@ -23,7 +23,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".StudentLoginActivity">
+    tools:context=".ui.activities.StudentLoginActivity">
 
     <!-- Usata la prima volta che si apre la activity, fa vedere all'utente che
         sta accadendo qualcosa anzi che dello schermo bianco -->
@@ -49,7 +49,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progressBar2" />
 
-    <com.giua.app.ui.ObscureLayoutView
+    <com.giua.app.ui.fragments.ObscureLayoutView
         android:id="@+id/studentObscureLayoutView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

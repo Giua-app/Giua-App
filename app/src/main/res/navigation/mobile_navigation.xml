@@ -26,39 +26,39 @@
 
     <fragment
         android:id="@+id/nav_voti"
-        android:name="com.giua.app.ui.votes.VotesFragment"
+        android:name="com.giua.app.ui.fragments.votes.VotesFragment"
         android:label="@string/menu_voti"
         tools:layout="@layout/fragment_votes" />
 
     <fragment
         android:id="@+id/nav_agenda"
-        android:name="com.giua.app.ui.agenda.AgendaFragment"
+        android:name="com.giua.app.ui.fragments.agenda.AgendaFragment"
         android:label="@string/menu_agenda"
         tools:layout="@layout/fragment_agenda" />
 
     <fragment
         android:id="@+id/nav_lezioni"
-        android:name="com.giua.app.ui.lessons.LessonsFragment"
+        android:name="com.giua.app.ui.fragments.lessons.LessonsFragment"
         android:label="@string/menu_lezioni"
         tools:layout="@layout/fragment_lessons" />
 
     <fragment
         android:id="@+id/nav_bacheca"
-        android:name="com.giua.app.ui.pinboard.PinboardFragment"
+        android:name="com.giua.app.ui.fragments.pinboard.PinboardFragment"
         android:label="@string/menu_bacheca" />
 
     <fragment
         android:id="@+id/nav_pagella"
-        android:name="com.giua.app.ui.reportcard.ReportCardFragment"
+        android:name="com.giua.app.ui.fragments.reportcard.ReportCardFragment"
         android:label="@string/fragment_pagella" />
 
     <activity
         android:id="@+id/nav_settings"
-        android:name="com.giua.app.SettingsActivity"
+        android:name="com.giua.app.ui.activities.SettingsActivity"
         android:label="Impostazioni" />
 
     <activity
         android:id="@+id/nav_logout"
-        android:name="com.giua.app.MainLogin"
+        android:name="com.giua.app.ui.activities.MainLoginActivity"
         android:label="Impostazioni" />
 </navigation>

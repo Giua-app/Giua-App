@@ -24,7 +24,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".ui.agenda.AgendaFragment">
+    tools:context=".ui.fragments.agenda.AgendaFragment">
 
     <TextView
         android:id="@+id/agenda_month_text"
@@ -111,7 +111,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.427" />
 
-    <com.giua.app.ui.ObscureLayoutView
+    <com.giua.app.ui.fragments.ObscureLayoutView
         android:id="@+id/agenda_obscure_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

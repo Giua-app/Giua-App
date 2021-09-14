@@ -40,7 +40,7 @@
         </activity>
 
         <activity
-            android:name=".MainLogin"
+            android:name=".ui.activities.MainLoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.GiuaApp.NoActionBar"
@@ -51,7 +51,7 @@
         </activity>
 
         <activity
-            android:name=".AutomaticLogin"
+            android:name=".ui.activities.AutomaticLoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.GiuaApp.NoActionBar"
@@ -62,7 +62,7 @@
         </activity>
 
         <activity
-            android:name=".StudentLoginActivity"
+            android:name=".ui.activities.StudentLoginActivity"
             android:label="Student Login"
             android:exported="true"
             android:screenOrientation="portrait"
@@ -70,7 +70,7 @@
             tools:ignore="LockedOrientationActivity"/>
 
         <activity
-            android:name=".DrawerActivity"
+            android:name=".ui.activities.DrawerActivity"
             android:label="@string/title_activity_drawer"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.GiuaApp.NoActionBar"
@@ -84,7 +84,7 @@
         </activity>
 
         <activity
-            android:name=".SettingsActivity"
+            android:name=".ui.activities.SettingsActivity"
             android:label="Impostazioni"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.GiuaApp.NoActionBar"
@@ -97,16 +97,16 @@
         </activity>
 
         <activity
-            android:name=".AboutActivity"
+            android:name=".ui.activities.AboutActivity"
             android:theme="@style/AppTheme.MaterialAboutActivity" />
 
         <activity
-            android:name=".ui.intro.AppIntroActivity"
+            android:name="com.giua.app.ui.fragments.intro.AppIntroActivity"
             android:label="label"
             android:theme="@style/Theme.GiuaApp.NoActionBar" />
 
         <activity
-            android:name=".ui.intro.CustomDokiActivity"
+            android:name="com.giua.app.ui.fragments.intro.CustomDokiActivity"
             android:label="label"
             android:theme="@style/Theme.GiuaApp.NoActionBar" />
 

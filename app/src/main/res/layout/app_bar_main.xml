@@ -23,7 +23,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DrawerActivity">
+    tools:context=".ui.activities.DrawerActivity">
 
     <!-- Toolbar in cui verra messa l'icona del navigation drawer -->
     <com.google.android.material.appbar.AppBarLayout

@@ -94,7 +94,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.giua.app.ui.ObscureLayoutView
+    <com.giua.app.ui.fragments.ObscureLayoutView
         android:id="@+id/alert_obscure_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -105,7 +105,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-    </com.giua.app.ui.ObscureLayoutView>
+    </com.giua.app.ui.fragments.ObscureLayoutView>
 
     <LinearLayout
         android:id="@+id/alert_details_layout"
