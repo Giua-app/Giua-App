@@ -101,15 +101,21 @@ public class AppUpdateManager {
             return;
         }
 
-        Log.d("LOOK","-> " + Arrays.toString(updateVer) + " " + Arrays.toString(currentVer));
+        Log.d("LOOK", "-> " + Arrays.toString(updateVer) + " " + Arrays.toString(currentVer));
 
-        if(currentVer[0].equals(updateVer[0]) && currentVer[1].equals(updateVer[1]) && currentVer[2].equals(updateVer[2])){
+        if (currentVer[0].equals(updateVer[0]) && currentVer[1].equals(updateVer[1]) && currentVer[2].equals(updateVer[2])) {
             //Nessun aggiornamento, esci silenziosamente
+            return;
+        }
+
+        if (AppData.getLastUpdateVersionKey(context).equals(tagName)) {
+            //Questo aggiornamento è già stato notificato all'utente, esci silenziosamente
             return;
         }
 
         //Se siamo arrivati fino a qui vuol dire che c'è un aggiornamento
         sendUpdateNotific(context);
+        AppData.saveLastUpdateVersionString(context, tagName);
 
         //TODO: una volta scaricato l'apk chiedere all'utente di installare
         /*Uri uri = Uri.parse("file://" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/giua_update.apk");

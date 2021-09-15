@@ -22,10 +22,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_voti">
+    app:startDestination="@+id/nav_home">
 
     <fragment
-        android:id="@+id/nav_voti"
+        android:id="@+id/nav_home"
+        android:name="com.giua.app.ui.fragments.home.HomeFragment"
+        android:label="@string/activitymaindrawer_nav_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_votes"
         android:name="com.giua.app.ui.fragments.votes.VotesFragment"
         android:label="@string/menu_voti"
         tools:layout="@layout/fragment_votes" />
@@ -37,18 +43,18 @@
         tools:layout="@layout/fragment_agenda" />
 
     <fragment
-        android:id="@+id/nav_lezioni"
+        android:id="@+id/nav_lessons"
         android:name="com.giua.app.ui.fragments.lessons.LessonsFragment"
         android:label="@string/menu_lezioni"
         tools:layout="@layout/fragment_lessons" />
 
     <fragment
-        android:id="@+id/nav_bacheca"
+        android:id="@+id/nav_pin_board"
         android:name="com.giua.app.ui.fragments.pinboard.PinboardFragment"
         android:label="@string/menu_bacheca" />
 
     <fragment
-        android:id="@+id/nav_pagella"
+        android:id="@+id/nav_report_card"
         android:name="com.giua.app.ui.fragments.reportcard.ReportCardFragment"
         android:label="@string/fragment_pagella" />
 

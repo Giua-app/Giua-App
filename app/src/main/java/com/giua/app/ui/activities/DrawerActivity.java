@@ -27,18 +27,18 @@ import android.os.SystemClock;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import com.giua.app.ActivityManager;
 import com.giua.app.AppData;
@@ -49,6 +49,7 @@ import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
 import com.giua.app.ui.fragments.agenda.AgendaFragment;
+import com.giua.app.ui.fragments.home.HomeFragment;
 import com.giua.app.ui.fragments.lessons.LessonsFragment;
 import com.giua.app.ui.fragments.pinboard.PinboardFragment;
 import com.giua.app.ui.fragments.reportcard.ReportCardFragment;
@@ -58,19 +59,12 @@ import com.google.android.material.navigation.NavigationView;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class DrawerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private AppBarConfiguration mAppBarConfiguration;
 
-    TextView tvUsername;
-    TextView tvUserType;
-    DrawerLayout drawerLayout;
-    NavigationView navigationView;     //Il navigation drawer vero e proprio
-    NavController navController = null;     //Si puo intendere come il manager dei fragments
-    Intent iCheckNewsReceiver;
     AlarmManager alarmManager;
     PendingIntent pendingIntent;
     FragmentTransaction transaction;
@@ -89,22 +83,21 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);    //Il navigation drawer vero e proprio
 
         bundle = new Bundle();
         bundle.putBoolean("offline", offlineMode);
 
-        iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
+        Intent iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         pendingIntent = PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_UPDATE_CURRENT);
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        tvUserType = navigationView.getHeaderView(0).findViewById(R.id.txtSubtitle);
-        tvUsername = navigationView.getHeaderView(0).findViewById(R.id.txtTitle);
+        TextView tvUserType = navigationView.getHeaderView(0).findViewById(R.id.txtSubtitle);
+        TextView tvUsername = navigationView.getHeaderView(0).findViewById(R.id.txtTitle);
 
-        navigationView.setCheckedItem(R.id.nav_voti);
+        navigationView.setCheckedItem(R.id.nav_home);
 
 //        btnLogout.setOnClickListener(this::logoutButtonClick);
 //        btnSettings.setOnClickListener(this::settingsButtonClick);
@@ -130,58 +123,39 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        fragmentManager = getSupportFragmentManager();
+        transaction = fragmentManager.beginTransaction();
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
-        if (navController == null) {
-            fragmentManager = getSupportFragmentManager();
-            transaction = fragmentManager.beginTransaction();
-            mAppBarConfiguration = new AppBarConfiguration.Builder(
-                    R.id.nav_voti, R.id.nav_agenda, R.id.nav_lezioni, R.id.nav_bacheca, R.id.nav_pagella)
-                    .setOpenableLayout(drawerLayout)
-                    .build();
+        toggle.setDrawerIndicatorEnabled(true);
+        toggle.syncState();
+        drawerLayout.addDrawerListener(toggle);
 
-            if (Objects.requireNonNull(getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment)).getClass() != NavHostFragment.class) {
-                fragmentManager.beginTransaction().replace(R.id.nav_host_fragment, NavHostFragment.class, null).commitNow();
-            }
-
-            navController = ((NavHostFragment) Objects.requireNonNull(getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment))).getNavController();
-            NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-            startVotesFragment();
-        }
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration) || super.onSupportNavigateUp();
+        if (!offlineMode)
+            toolbar.setTitle("Home");
+        else
+            toolbar.setTitle("Home - Offline");
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull @NotNull MenuItem item) {
-        transaction = fragmentManager.beginTransaction();
-        transaction.setReorderingAllowed(true);
         if (item.isChecked()) {
             closeNavDrawer();
-        } else if (item.getItemId() == R.id.nav_voti) {
-            startVotesFragment();
-        } else if (item.getItemId() == R.id.nav_agenda) {
-            startAgendaFragment();
-        } else if (item.getItemId() == R.id.nav_lezioni) {
-            startLessonsFragment();
-        } else if (item.getItemId() == R.id.nav_bacheca) {
-            startPinBoardFragment();
-        } else if (item.getItemId() == R.id.nav_pagella) {
-            startReportCardFragment();
         } else if (item.getItemId() == R.id.nav_settings) {
             startSettingsActivity();
         } else if (item.getItemId() == R.id.nav_logout) {
             makeLogout();
-        }
-        transaction.commit();
+        } else
+            changeFragment(item.getItemId());
         closeNavDrawer();
 
         return true;
     }
 
     private void closeNavDrawer() {
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         }
@@ -201,57 +175,98 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         startActivity(new Intent(this, SettingsActivity.class));
     }
 
-    private void startReportCardFragment() {
-        transaction.replace(R.id.nav_host_fragment, ReportCardFragment.class, bundle);
-        if (!offlineMode)
-            toolbar.setTitle("Pagella");
-        else
-            toolbar.setTitle("Pagella - Offline");
+    private void changeFragment(@IdRes int id) {
+        FragmentManager manager = getSupportFragmentManager();
+        Fragment fragment;
+        String tag = getTagFromId(id);
+
+        if (tag.equals(""))  //Se tag è vuoto vuol dire che questo id non è stato ancora implementato quindi finisci
+            return;
+
+        if (id == R.id.nav_home) {
+            fragment = manager.findFragmentByTag(tag);
+            if (fragment == null)
+                fragment = new HomeFragment();
+            changeFragmentWithManager(fragment, tag);
+            if (!offlineMode)
+                toolbar.setTitle("Home");
+            else
+                toolbar.setTitle("Home - Offline");
+        } else if (id == R.id.nav_votes) {
+            fragment = manager.findFragmentByTag(tag);
+            if (fragment == null)
+                fragment = new VotesFragment();
+            changeFragmentWithManager(fragment, tag);
+            if (!offlineMode)
+                toolbar.setTitle("Voti");
+            else
+                toolbar.setTitle("Voti - Offline");
+        } else if (id == R.id.nav_agenda) {
+            fragment = manager.findFragmentByTag(tag);
+            if (fragment == null)
+                fragment = new AgendaFragment();
+            changeFragmentWithManager(fragment, tag);
+            if (!offlineMode)
+                toolbar.setTitle("Agenda");
+            else
+                toolbar.setTitle("Agenda - Offline");
+        } else if (id == R.id.nav_lessons) {
+            fragment = manager.findFragmentByTag(tag);
+            if (fragment == null)
+                fragment = new LessonsFragment();
+            changeFragmentWithManager(fragment, tag);
+            if (!offlineMode)
+                toolbar.setTitle("Lezioni");
+            else
+                toolbar.setTitle("Lezioni - Offline");
+        } else if (id == R.id.nav_pin_board) {
+            fragment = manager.findFragmentByTag(tag);
+            if (fragment == null)
+                fragment = new PinboardFragment();
+            changeFragmentWithManager(fragment, tag);
+            if (!offlineMode)
+                toolbar.setTitle("Bacheca");
+            else
+                toolbar.setTitle("Bacheca - Offline");
+        } else if (id == R.id.nav_report_card) {
+            fragment = manager.findFragmentByTag(tag);
+            if (fragment == null)
+                fragment = new ReportCardFragment();
+            changeFragmentWithManager(fragment, tag);
+            if (!offlineMode)
+                toolbar.setTitle("Pagella");
+            else
+                toolbar.setTitle("Pagella - Offline");
+        }
     }
 
-    private void startPinBoardFragment() {
-        transaction.replace(R.id.nav_host_fragment, PinboardFragment.class, bundle);
-        if (!offlineMode)
-            toolbar.setTitle("Bacheca");
-        else
-            toolbar.setTitle("Bacheca - Offline");
+    private String getTagFromId(@IdRes int id) {
+        if (id == R.id.nav_home)
+            return "FRAGMENT_HOME";
+        if (id == R.id.nav_votes)
+            return "FRAGMENT_VOTES";
+        if (id == R.id.nav_agenda)
+            return "FRAGMENT_AGENDA";
+        if (id == R.id.nav_lessons)
+            return "FRAGMENT_LESSONS";
+        if (id == R.id.nav_pin_board)
+            return "FRAGMENT_PIN_BOARD";
+        if (id == R.id.nav_report_card)
+            return "FRAGMENT_REPORT_CARD";
+        return "";
     }
 
-    private void startVotesFragment() {
-        transaction.replace(R.id.nav_host_fragment, VotesFragment.class, bundle);
-        if (!offlineMode)
-            toolbar.setTitle("Voti");
-        else
-            toolbar.setTitle("Voti - Offline");
-    }
-
-    private void startLessonsFragment() {
-        transaction.replace(R.id.nav_host_fragment, LessonsFragment.class, bundle);
-        if (!offlineMode)
-            toolbar.setTitle("Lezioni");
-        else
-            toolbar.setTitle("Lezioni - Offline");
-    }
-
-    private void startAgendaFragment() {
-        transaction.replace(R.id.nav_host_fragment, AgendaFragment.class, bundle);
-        if (!offlineMode)
-            toolbar.setTitle("Agenda");
-        else
-            toolbar.setTitle("Agenda - Offline");
+    private void changeFragmentWithManager(Fragment fragment, String tag) {
+        FragmentManager manager = getSupportFragmentManager();
+        manager.beginTransaction().replace(R.id.content_main, fragment, tag).commit();
     }
 
     @Override
     public void onBackPressed() {
-        if (Objects.requireNonNull(navController.getCurrentDestination()).getId() != R.id.nav_voti) {
-            navigationView.setCheckedItem(R.id.nav_voti);
-            startVotesFragment();
-        } else {
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_HOME);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        }
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     @Override

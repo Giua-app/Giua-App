@@ -87,6 +87,15 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
             offlineMode = getArguments().getBoolean("offline");
         root = inflater.inflate(R.layout.fragment_alerts, container, false);
 
+        allAlerts = new Vector<>();
+        allAlertsToSave = new Vector<>();
+        currentPage = 1;    //Rappresenta la pagina degli avvisi da caricare
+        hasLoadedAllPages = false;
+        isLoadingContent = false;
+        canSendErrorMessage = true;
+        isDownloading = false;
+        offlineMode = false;
+
         viewsLayout = root.findViewById(R.id.alert_linear_layout);
         pbLoadingPage = root.findViewById(R.id.alert_loading_page_bar);
         scrollView = root.findViewById(R.id.alert_scroll_view);
@@ -188,14 +197,14 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void nullAllReferenceWithFragmentViews() {
-        root = null;
+        /*root = null;
         detailsLayout = null;
         threadManager.destroyAllAndNullMe();
-        /*viewsLayout = null;
+        fabGoUp = null;
+        viewsLayout = null;
         pbLoadingPage = null;
         scrollView = null;
         tvNoElements = null;
-        fabGoUp = null;
         swipeRefreshLayout = null;
         obscureLayoutView = null;
         attachmentLayout = null;

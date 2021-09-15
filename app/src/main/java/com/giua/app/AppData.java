@@ -37,6 +37,7 @@ public class AppData {
     private static final String alertKey = "alerts";
     private static final String numberNewslettersKey = "number_newsletters";
     private static final String numberAlertsKey = "number_alerts";
+    private static final String lastUpdateVersionKey = "last_update_version";
 
     private static SharedPreferences getSharedPreferences(final Context context) {
         return context.getSharedPreferences(appDataPreferenceKey, Context.MODE_PRIVATE);
@@ -96,6 +97,20 @@ public class AppData {
 
     public static int getNumberAlertsInt(final Context context) {
         return getSharedPreferences(context).getInt(numberAlertsKey, -1);
+    }
+
+    //endregion
+
+    //region Dati dell'utlimo aggiornamento trovato
+
+    public static void saveLastUpdateVersionString(final Context context, final String value) {
+        getSharedPreferences(context).edit()
+                .putString(lastUpdateVersionKey, value)
+                .apply();
+    }
+
+    public static String getLastUpdateVersionKey(final Context context) {
+        return getSharedPreferences(context).getString(lastUpdateVersionKey, "");
     }
 
     //endregion

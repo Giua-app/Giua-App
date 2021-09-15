@@ -27,7 +27,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.giua.app.R;
 import com.giua.app.ui.fragments.alerts.AlertsFragment;
@@ -38,42 +37,64 @@ import java.util.Objects;
 
 public class PinboardFragment extends Fragment {
 
-    TabLayout tabLayout;
-    FragmentManager fragmentManager;
-    FragmentTransaction ft;
-    Bundle bundle;
-    //ViewPager2 viewPager;
-
-
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_pinboard, container, false);
 
-        tabLayout = root.findViewById(R.id.tabLayout);
-        //viewPager = root.findViewById(R.id.pager);
+        TabLayout tabLayout = root.findViewById(R.id.tabLayout);
 
-        bundle = getArguments();
-        fragmentManager = getChildFragmentManager();
-        ft = fragmentManager.beginTransaction();
-        ft.addToBackStack(null);
-        ft.setReorderingAllowed(true);
-        ft.replace(R.id.fragment_tabs_circolari_avvisi_framelayout, NewslettersFragment.class, bundle);
-        ft.commit();
+        Bundle bundle = getArguments();
+        FragmentManager fragmentManager = getChildFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentByTag("FRAGMENT_NEWSLETTER");
+        if (fragment == null) {
+            fragmentManager.beginTransaction()
+                    .addToBackStack(null)
+                    .setReorderingAllowed(true)
+                    .replace(R.id.fragment_tabs_circolari_avvisi_framelayout, NewslettersFragment.class, bundle, "FRAGMENT_NEWSLETTER")
+                    .commit();
+        } else {
+            fragmentManager.beginTransaction()
+                    .addToBackStack(null)
+                    .setReorderingAllowed(true)
+                    .replace(R.id.fragment_tabs_circolari_avvisi_framelayout, fragment, "FRAGMENT_NEWSLETTER")
+                    .commit();
+        }
         //End
 
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                ft = fragmentManager.beginTransaction();
-                ft.addToBackStack(null);
-                ft.setReorderingAllowed(true);
-
                 if (Objects.requireNonNull(tab.getText()).toString().equals("Circolari")) {
-                    ft.replace(R.id.fragment_tabs_circolari_avvisi_framelayout, NewslettersFragment.class, bundle);
-                    ft.commit();
+                    Fragment fragment = fragmentManager.findFragmentByTag("FRAGMENT_NEWSLETTER");
+                    if (fragment == null) {
+                        fragmentManager.beginTransaction()
+                                .addToBackStack(null)
+                                .setReorderingAllowed(true)
+                                .replace(R.id.fragment_tabs_circolari_avvisi_framelayout, NewslettersFragment.class, bundle, "FRAGMENT_NEWSLETTER")
+                                .commit();
+                    } else {
+                        fragmentManager.beginTransaction()
+                                .addToBackStack(null)
+                                .setReorderingAllowed(true)
+                                .replace(R.id.fragment_tabs_circolari_avvisi_framelayout, fragment, "FRAGMENT_NEWSLETTER")
+                                .commit();
+                    }
                 } else if (tab.getText().toString().equals("Avvisi")) {
-                    ft.replace(R.id.fragment_tabs_circolari_avvisi_framelayout, AlertsFragment.class, bundle);
-                    ft.commit();
+                    Fragment fragment = fragmentManager.findFragmentByTag("FRAGMENT_ALERTS");
+                    if (fragment == null) {
+                        fragmentManager.beginTransaction()
+                                .addToBackStack(null)
+                                .setReorderingAllowed(true)
+                                .replace(R.id.fragment_tabs_circolari_avvisi_framelayout, AlertsFragment.class, bundle, "FRAGMENT_ALERTS")
+                                .commit();
+                    } else {
+                        fragment.onDestroy();
+                        fragmentManager.beginTransaction()
+                                .addToBackStack(null)
+                                .setReorderingAllowed(true)
+                                .replace(R.id.fragment_tabs_circolari_avvisi_framelayout, fragment, "FRAGMENT_ALERTS")
+                                .commit();
+                    }
                 }
             }
             @Override
@@ -87,13 +108,5 @@ public class PinboardFragment extends Fragment {
             }
         });
         return root;
-    }
-
-    @Override
-    public void onDestroyView() {
-        fragmentManager = null;
-        ft = null;
-        tabLayout = null;
-        super.onDestroyView();
     }
 }

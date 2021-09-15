@@ -97,6 +97,21 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             offlineMode = getArguments().getBoolean("offline");
         root = inflater.inflate(R.layout.fragment_newsletters, container, false);
 
+        allNewsletter = new Vector<>();
+        allNewsletterOld = new Vector<>();
+        allNewsletterToSave = new Vector<>();
+        isDownloading = false;
+        currentPage = 1;
+        loadedAllPages = false;
+        loadingPage = false;
+        hasCompletedLoading = false;
+        isFilterApplied = false;
+        onlyNotRead = false;
+        canSendErrorMessage = true;
+        offlineMode = false;
+        filterDate = "";
+        filterText = "";
+
         context = getContext();
         layout = root.findViewById(R.id.newsletter_linear_layout);
         pbLoadingPage = root.findViewById(R.id.circolari_loading_page_bar);
@@ -240,16 +255,16 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void nullAllReferenceWithFragmentViews() {
-        root = null;
-        attachmentLayout = null;
         threadManager.destroyAllAndNullMe();
-        /*layout = null;
+        /*root = null;
+        attachmentLayout = null;
+        filterLayout = null;
+        layout = null;
         pbLoadingPage = null;
         scrollView = null;
         obscureLayoutView = null;
         tvNoElements = null;
         ivFilter = null;
-        filterLayout = null;
         swipeRefreshLayout = null;
         allNewsletter = null;*/
     }

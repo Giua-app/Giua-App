@@ -26,19 +26,23 @@
         android:checkableBehavior="single"
         android:id="@+id/nav_group_main_functions">
         <item
-            android:id="@+id/nav_voti"
+            android:id="@+id/nav_home"
+            android:title="@string/activitymaindrawer_nav_home" />
+
+        <item
+            android:id="@+id/nav_votes"
             android:title="@string/activitymaindrawer_nav_voti" />
         <item
             android:id="@+id/nav_agenda"
             android:title="@string/activitymaindrawer_nav_agenda" />
         <item
-            android:id="@+id/nav_lezioni"
+            android:id="@+id/nav_lessons"
             android:title="@string/activitymaindrawer_nav_lezioni" />
         <item
-            android:id="@+id/nav_bacheca"
+            android:id="@+id/nav_pin_board"
             android:title="@string/activitymaindrawer_nav_bacheca" />
         <item
-            android:id="@+id/nav_pagella"
+            android:id="@+id/nav_report_card"
             android:title="@string/activitymaindrawer_nav_pagella" />
     </group>
 
