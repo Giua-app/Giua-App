@@ -173,20 +173,6 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
         swipeRefreshLayout.setRefreshing(false);
     }
 
-    @Override
-    public void nullAllReferenceWithFragmentViews() {
-        root = null;
-        threadManager.destroyAllAndNullMe();
-        /*viewsLayout = null;
-        obscureLayoutView = null;
-        voteVisualizer = null;
-        pbLoadingPage = null;
-        tvNoElements = null;
-        swipeRefreshLayout = null;
-        params = null;
-        allVotes = null;*/
-    }
-
     private void onRefresh() {
         refreshVotes = true;
         loadDataAndViews();
@@ -274,11 +260,5 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
         if (allVotes != null && !allVotes.isEmpty())
             AppData.saveVotesString(activity, new JsonHelper().saveVotesToString(allVotes));
         super.onStop();
-    }
-
-    @Override
-    public void onDestroyView() {
-        nullAllReferenceWithFragmentViews();
-        super.onDestroyView();
     }
 }

@@ -123,18 +123,6 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
 
     }
 
-    @Override
-    public void nullAllReferenceWithFragmentViews() {
-        root = null;
-        threadManager.destroyAllAndNullMe();
-        /*viewsLayout = null;
-        tvCurrentQuarter = null;
-        pbLoadingPage = null;
-        tvNoElements = null;
-        btnChangeQuarter = null;
-        reportCard = null;*/
-    }
-
     //region Listeners
 
     private void changeQuarterOnClick(View view) {
@@ -154,11 +142,4 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
     private void setErrorMessage(String message, View root) {
         Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
-
-    @Override
-    public void onDestroyView() {
-        nullAllReferenceWithFragmentViews();
-        super.onDestroyView();
-    }
-
 }

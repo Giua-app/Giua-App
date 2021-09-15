@@ -127,9 +127,9 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         visualizerLayout.setOnClickListener((view) -> {/*Serve ad evitare che quando si clicca il layout questo non sparisca*/});
         obscureLayoutView.setOnClickListener(this::obscureLayoutOnClick);
 
-        if (Integer.parseInt(getCurrentMonth()) >= 6 && Integer.parseInt(getCurrentMonth()) <= 9)
+        if (Integer.parseInt(getCurrentMonth()) >= 6 && Integer.parseInt(getCurrentMonth()) <= 8)
             ivNextMonth.setVisibility(View.GONE);
-        if (Integer.parseInt(getCurrentMonth()) == 7)
+        if (Integer.parseInt(getCurrentMonth()) == 7 || Integer.parseInt(getCurrentMonth()) == 1 || Integer.parseInt(getCurrentMonth()) == 9)
             ivPrevMonth.setVisibility(View.GONE);
 
         loadDataAndViews();
@@ -230,36 +230,12 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         isLoadingData = false;
     }
 
-    @Override
-    public void nullAllReferenceWithFragmentViews() {
-        root = null;
-        threadManager.destroyAll();
-        /*viewsLayout = null;
-        tvTodayText = null;
-        tvNoElements = null;
-        ivNextMonth = null;
-        ivPrevMonth = null;
-        visualizerLayout = null;
-        tvVisualizerType = null;
-        tvVisualizerSubject = null;
-        tvVisualizerCreator = null;
-        tvVisualizerText = null;
-        tvVisualizerDate = null;
-        obscureLayoutView = null;
-        ivVisualizerPrevBtn = null;
-        ivVisualizerNextBtn = null;
-        pbForDetails = null;
-        swipeRefreshLayout = null;
-        allHomeworks = null;
-        allTests = null;*/
-    }
-
     //region Listeners
     @SuppressLint("SetTextI18n")
     private void btnPrevMonthOnClick(View view) {
         if (!isLoadingData) {
             currentDate = getPrevMonth(currentDate);
-            if (Integer.parseInt(getCurrentMonth()) < 6 || Integer.parseInt(getCurrentMonth()) > 9)
+            if (Integer.parseInt(getCurrentMonth()) < 6 || Integer.parseInt(getCurrentMonth()) > 8)
                 ivNextMonth.setVisibility(View.VISIBLE);
             if (Integer.parseInt(getCurrentMonth()) == 9)
                 ivPrevMonth.setVisibility(View.GONE);
@@ -274,7 +250,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         if (!isLoadingData) {
             currentDate = getNextMonth(currentDate);
             ivPrevMonth.setVisibility(View.VISIBLE);
-            if (Integer.parseInt(getCurrentMonth()) >= 6 && Integer.parseInt(getCurrentMonth()) <= 9)
+            if (Integer.parseInt(getCurrentMonth()) >= 6 && Integer.parseInt(getCurrentMonth()) <= 8)
                 ivNextMonth.setVisibility(View.GONE);
             tvTodayText.setText(getMonthFromNumber(Integer.parseInt(getCurrentMonth())) + " " + getCurrentYear());
             viewsLayout.removeAllViews();
@@ -497,10 +473,4 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
     //endregion
-
-    @Override
-    public void onDestroyView() {
-        nullAllReferenceWithFragmentViews();
-        super.onDestroyView();
-    }
 }

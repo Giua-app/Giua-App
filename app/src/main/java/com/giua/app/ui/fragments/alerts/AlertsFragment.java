@@ -195,24 +195,6 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
         finishedLoading();
     }
 
-    @Override
-    public void nullAllReferenceWithFragmentViews() {
-        /*root = null;
-        detailsLayout = null;
-        threadManager.destroyAllAndNullMe();
-        fabGoUp = null;
-        viewsLayout = null;
-        pbLoadingPage = null;
-        scrollView = null;
-        tvNoElements = null;
-        swipeRefreshLayout = null;
-        obscureLayoutView = null;
-        attachmentLayout = null;
-        pbLoadingContent = null;
-        allAlerts = null;
-        allAlertsToSave = null;*/
-    }
-
     //region Listeners
     private void alertViewOnClick(View view) {
         pbLoadingPage.setVisibility(View.VISIBLE);
@@ -385,12 +367,6 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
         if (!allAlertsToSave.isEmpty() && !offlineMode)
             AppData.saveAlertsString(activity, new JsonHelper().saveAlertsToString(allAlertsToSave));
         super.onStop();
-    }
-
-    @Override
-    public void onDestroyView() {
-        nullAllReferenceWithFragmentViews();
-        super.onDestroyView();
     }
     //endregion
 }

@@ -202,27 +202,6 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         swipeRefreshLayout.setRefreshing(false);
     }
 
-    @Override
-    public void nullAllReferenceWithFragmentViews() {
-        root = null;
-        threadManager.destroyAllAndNullMe();
-        /*tvCurrentDate = null;
-        viewsLayout = null;
-        calendarView = null;
-        obscureLayoutView = null;
-        frameLayout = null;
-        tvNoElements = null;
-        pbLoadingContent = null;
-        visualizerLayout = null;
-        tvVisualizerArguments = null;
-        tvVisualizerActivities = null;
-        bottomCardView = null;
-        btnConfirmDate = null;
-        ivCalendarImage = null;
-        swipeRefreshLayout = null;
-        allLessons = null;*/
-    }
-
     //region Listeners
 
     private void onRefresh() {
@@ -345,10 +324,4 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
     }
 
     //endregion
-
-    @Override
-    public void onDestroyView() {
-        nullAllReferenceWithFragmentViews();
-        super.onDestroyView();
-    }
 }

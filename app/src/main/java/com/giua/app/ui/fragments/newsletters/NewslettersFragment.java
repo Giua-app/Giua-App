@@ -253,22 +253,6 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         swipeRefreshLayout.setRefreshing(false);
     }
 
-    @Override
-    public void nullAllReferenceWithFragmentViews() {
-        threadManager.destroyAllAndNullMe();
-        /*root = null;
-        attachmentLayout = null;
-        filterLayout = null;
-        layout = null;
-        pbLoadingPage = null;
-        scrollView = null;
-        obscureLayoutView = null;
-        tvNoElements = null;
-        ivFilter = null;
-        swipeRefreshLayout = null;
-        allNewsletter = null;*/
-    }
-
     //region Listeners
     private void onClickSingleAttachment(String url) {
         if (!isDownloading) {
@@ -470,11 +454,5 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         if (!allNewsletterToSave.isEmpty() && !offlineMode)
             AppData.saveNewslettersString(activity, new JsonHelper().saveNewslettersToString(allNewsletterToSave));
         super.onStop();
-    }
-
-    @Override
-    public void onDestroyView() {
-        nullAllReferenceWithFragmentViews();
-        super.onDestroyView();
     }
 }
