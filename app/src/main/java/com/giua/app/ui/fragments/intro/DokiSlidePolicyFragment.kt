@@ -23,6 +23,7 @@ package com.giua.app.ui.fragments.intro
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
@@ -36,7 +37,6 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import com.github.appintro.SlidePolicy
 import com.giua.app.R
-import com.giua.app.ui.activities.CustomDokiActivity
 
 class DokiSlidePolicyFragment : Fragment(), SlidePolicy {
 
@@ -70,7 +70,8 @@ class DokiSlidePolicyFragment : Fragment(), SlidePolicy {
                 "Segui le istruzioni prima di chiudere!",
                 Toast.LENGTH_LONG
             ).show()
-            startActivity(Intent(activity, CustomDokiActivity::class.java))
+
+            startActivity(Intent(Settings.ACTION_BATTERY_SAVER_SETTINGS))
         }
 
         title.text = "Ottimizzazione batteria"
