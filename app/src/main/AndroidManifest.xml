@@ -6,6 +6,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <application
         android:allowBackup="true"
@@ -13,11 +16,12 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.GiuaApp"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true">
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.giua.app.provider"
+            android:authorities="com.giua.app.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -99,6 +103,10 @@
         <activity
             android:name=".ui.activities.AboutActivity"
             android:theme="@style/AppTheme.MaterialAboutActivity" />
+
+        <activity
+            android:name=".ui.activities.TransparentUpdateDialogActivity"
+            android:theme="@style/Theme.AppCompat.Transparent.NoActionBar" />
 
         <activity
             android:name="com.giua.app.ui.activities.AppIntroActivity"

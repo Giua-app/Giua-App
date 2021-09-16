@@ -103,7 +103,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.14.2'
 
     //--Giua scraper
-    implementation 'com.github.Giua-app:Giua-Webscraper:1.1.3-beta'
+    implementation 'com.github.Giua-app:Giua-Webscraper:1.1.6-beta'
     //implementation fileTree(dir: 'libs', include: ['*.jar'])     //DEBUG
 
     //--Error handler lib

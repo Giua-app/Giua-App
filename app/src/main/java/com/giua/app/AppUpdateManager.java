@@ -20,20 +20,24 @@
 package com.giua.app;
 
 
+import android.app.PendingIntent;
 import android.content.Context;
-import android.util.Log;
+import android.content.Intent;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.giua.app.ui.activities.TransparentUpdateDialogActivity;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Objects;
 
 public class AppUpdateManager {
@@ -41,9 +45,10 @@ public class AppUpdateManager {
     Connection session = Jsoup.newSession().ignoreContentType(true);
     byte[] apkFile;
     private NotificationManagerCompat notificationManager;
-    String[] updateVer;
+    Integer[] updateVer = {0,0,0};
     String tagName;
-    String[] currentVer;
+    Integer[] currentVer = {0,0,0};
+    String downloadUrl;
 
     public void checkForAppUpdates(Context context){
 
@@ -79,82 +84,78 @@ public class AppUpdateManager {
         String assetsUrl = assetsNode.asText();
         tagName = rootNode.findPath("tag_name").asText();
 
-        //DEBUG
-        /*try {
-            response = session
-                    .url(assetsUrl)
-                    .get().text();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
-        String downloadUrl = rootNode.findPath("browser_download_url").asText();
+        downloadUrl = rootNode.findPath("browser_download_url").asText();
         String contentType = rootNode.findPath("content_type").asText();
 
         String semverRegex = "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$";
 
-        currentVer = BuildConfig.VERSION_NAME.split("-")[0].split("\\.");
+        String[] temp = BuildConfig.VERSION_NAME.split("-")[0].split("\\.");
+        currentVer[0] = Integer.parseInt(temp[0]);
+        currentVer[1] = Integer.parseInt(temp[1]);
+        currentVer[2] = Integer.parseInt(temp[2]);
         if(tagName.matches(semverRegex)){
-            updateVer = tagName.split("-")[0].split("\\.");
+            temp = tagName.split("-")[0].split("\\.");
+            updateVer[0] = Integer.parseInt(temp[0]);
+            updateVer[1] = Integer.parseInt(temp[1]);
+            updateVer[2] = Integer.parseInt(temp[2]);
         } else {
             //Non è una versione, esci silenziosamente
             return;
         }
 
-        Log.d("LOOK", "-> " + Arrays.toString(updateVer) + " " + Arrays.toString(currentVer));
+        if(!contentType.equals("application/vnd.android.package-archive")){
+            //Il file non è un apk, ignora
+            return;
+        }
+
 
         if (currentVer[0].equals(updateVer[0]) && currentVer[1].equals(updateVer[1]) && currentVer[2].equals(updateVer[2])) {
             //Nessun aggiornamento, esci silenziosamente
             return;
         }
 
-        if (AppData.getLastUpdateVersionKey(context).equals(tagName)) {
-            //Questo aggiornamento è già stato notificato all'utente, esci silenziosamente
+        if(currentVer[0] > updateVer[0] || currentVer[1] > updateVer[1] || currentVer[2] > updateVer[2]){
+            //Versione vecchia, esci silenziosamente
+            //return;
+        }
+
+        Date date = Calendar.getInstance().getTime();
+        Date lastUpdateDate = date;
+        try {
+            lastUpdateDate = AppData.getLastUpdateReminder(context);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+        if (date.after(lastUpdateDate)) {
+            //Aggiornamento gia notificato, nextUpdateDate è la prossimo giorno in cui notificare
             return;
         }
 
         //Se siamo arrivati fino a qui vuol dire che c'è un aggiornamento
-        sendUpdateNotific(context);
+        createNotification(context);
         AppData.saveLastUpdateVersionString(context, tagName);
-
-        //TODO: una volta scaricato l'apk chiedere all'utente di installare
-        /*Uri uri = Uri.parse("file://" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/giua_update.apk");
-
-        //set downloadmanager
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(downloadUrl));
-        request.setDescription("Scarico aggiornamento Giua App");
-        request.setTitle("Download Giua App " + tagName);
-
-        //set destination
-        request.setDestinationUri(uri);
-
-        // get download service and enqueue file
-        final DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-        final long downloadId = manager.enqueue(request);
-
-        //set BroadcastReceiver to install app when .apk is downloaded
-        BroadcastReceiver onComplete = new BroadcastReceiver() {
-            public void onReceive(Context ctxt, Intent intent) {
-                sendUpdateNotific(context, tagName);
-                context.unregisterReceiver(this);
-            }
-        };
-
-        //register receiver for when .apk download is compete
-        context.registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));*/
-
-    }
-
-    private void sendUpdateNotific(Context context){
-        createNotification(context,"Nuova versione rilevata", "Hai la versione " + BuildConfig.VERSION_NAME + "\nLa nuova versione è " + tagName);
     }
 
 
-    private void createNotification(Context context, String title, String description){
+    private void createNotification(Context context){
+
+        String title = "Nuova versione rilevata";
+        String description = "Clicca per informazioni";
+
+        Intent intent = new Intent(context, TransparentUpdateDialogActivity.class);
+        intent.putExtra("url", downloadUrl);
+        intent.putExtra("newVersion", tagName);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
                 .setSmallIcon(R.drawable.ic_giuaschool_logo1)
+                .setAutoCancel(true)
                 .setContentTitle(title)
-                //.setContentIntent()
+                .setContentIntent(pendingIntent)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(description))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 

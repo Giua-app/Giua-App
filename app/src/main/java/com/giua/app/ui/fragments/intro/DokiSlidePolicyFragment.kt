@@ -71,7 +71,7 @@ class DokiSlidePolicyFragment : Fragment(), SlidePolicy {
                 Toast.LENGTH_LONG
             ).show()
 
-            startActivity(Intent(Settings.ACTION_BATTERY_SAVER_SETTINGS))
+            startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
         }
 
         title.text = "Ottimizzazione batteria"

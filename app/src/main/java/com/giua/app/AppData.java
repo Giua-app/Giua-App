@@ -19,12 +19,17 @@
 
 package com.giua.app;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class AppData {
 
@@ -38,6 +43,7 @@ public class AppData {
     private static final String numberNewslettersKey = "number_newsletters";
     private static final String numberAlertsKey = "number_alerts";
     private static final String lastUpdateVersionKey = "last_update_version";
+    private static final String nextUpdateReminder = "next_update_reminder";
 
     private static SharedPreferences getSharedPreferences(final Context context) {
         return context.getSharedPreferences(appDataPreferenceKey, Context.MODE_PRIVATE);
@@ -111,6 +117,27 @@ public class AppData {
 
     public static String getLastUpdateVersionKey(final Context context) {
         return getSharedPreferences(context).getString(lastUpdateVersionKey, "");
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    public static void setLastUpdateReminder(final Context context, final Date date) {
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        String value = format.format(date);
+        getSharedPreferences(context).edit()
+                .putString(nextUpdateReminder, value)
+                .apply();
+        Log.d("TEST", "date: " + value);
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    public static Date getLastUpdateReminder(final Context context) throws ParseException {
+        String value =  getSharedPreferences(context).getString(nextUpdateReminder, "err");
+        if(value.equals("err")){
+            return new Date();
+        }
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        Log.d("TEST", "getdate: " + value);
+        return format.parse(value);
     }
 
     //endregion
