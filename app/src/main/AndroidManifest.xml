@@ -103,6 +103,10 @@
             android:theme="@style/AppTheme.MaterialAboutActivity" />
 
         <activity
+            android:name=".ui.activities.AboutLicenseActivity"
+            android:theme="@style/AppTheme.MaterialAboutActivity" />
+
+        <activity
             android:name=".ui.activities.TransparentUpdateDialogActivity"
             android:theme="@style/Theme.AppCompat.Transparent.NoActionBar" />
 

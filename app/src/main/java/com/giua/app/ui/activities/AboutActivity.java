@@ -20,7 +20,7 @@
 package com.giua.app.ui.activities;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -29,9 +29,11 @@ import androidx.annotation.Nullable;
 import com.danielstone.materialaboutlibrary.ConvenienceBuilder;
 import com.danielstone.materialaboutlibrary.MaterialAboutActivity;
 import com.danielstone.materialaboutlibrary.items.MaterialAboutActionItem;
+import com.danielstone.materialaboutlibrary.items.MaterialAboutItemOnClickAction;
 import com.danielstone.materialaboutlibrary.items.MaterialAboutTitleItem;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutCard;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutList;
+import com.danielstone.materialaboutlibrary.util.OpenSourceLicense;
 import com.giua.app.AppData;
 import com.giua.app.R;
 import com.google.android.material.snackbar.Snackbar;
@@ -48,8 +50,6 @@ public class AboutActivity extends MaterialAboutActivity {
 
         importantInteger = 20000 - 300 - 20000 + 160 + 120 + 20;
 
-        Context c = getBaseContext();
-
         MaterialAboutCard.Builder appCardBuilder = new MaterialAboutCard.Builder();
 
         // Add items to card
@@ -60,8 +60,8 @@ public class AboutActivity extends MaterialAboutActivity {
                 .icon(R.mipmap.ic_launcher)
                 .build());
 
-        appCardBuilder.addItem(ConvenienceBuilder.createVersionActionItem(c,
-                new IconicsDrawable(c)
+        appCardBuilder.addItem(ConvenienceBuilder.createVersionActionItem(this,
+                new IconicsDrawable(this)
                         .icon(CommunityMaterial.Icon2.cmd_information_outline)
                         .sizeDp(18),
                 "Versione",
@@ -77,19 +77,25 @@ public class AboutActivity extends MaterialAboutActivity {
 
         appCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text("Changelog")
-                .icon(new IconicsDrawable(c)
+                .icon(new IconicsDrawable(this)
                         .icon(CommunityMaterial.Icon2.cmd_history)
                         .sizeDp(18))
-                .setOnClickAction(ConvenienceBuilder.createWebsiteOnClickAction(c, Uri.parse("https://github.com/Giua-app/Giua-App/releases")))
+                .setOnClickAction(ConvenienceBuilder.createWebViewDialogOnClickAction(this,"", "Chiudi",
+                        "https://github.com/Giua-app/Giua-App/releases", true, false))
                 .build());
 
         appCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text("Licenze")
-                .icon(new IconicsDrawable(c)
+                .icon(new IconicsDrawable(this)
                         .icon(CommunityMaterial.Icon.cmd_book)
                         .sizeDp(18))
-                .setOnClickAction(() -> {
-
+                .setOnClickAction(new MaterialAboutItemOnClickAction() {
+                    @Override
+                    public void onClick() {
+                        Intent intent = new Intent(getBaseContext(), AboutLicenseActivity.class);
+                        intent.putExtra("", getIntent().getIntExtra("", 0));
+                        context.startActivity(intent);
+                    }
                 })
                 .build());
 
@@ -100,7 +106,7 @@ public class AboutActivity extends MaterialAboutActivity {
         authorCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text("Hiem")
                 //.subText("United Kingdom")
-                .icon(new IconicsDrawable(c)
+                .icon(new IconicsDrawable(this)
                         .icon(CommunityMaterial.Icon.cmd_account)
                         .sizeDp(18))
                 .build());
@@ -108,88 +114,97 @@ public class AboutActivity extends MaterialAboutActivity {
         authorCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text("Franck1421")
                 //.subText("United Kingdom")
-                .icon(new IconicsDrawable(c)
+                .icon(new IconicsDrawable(this)
                         .icon(CommunityMaterial.Icon.cmd_account)
                         .sizeDp(18))
                 .build());
 
         authorCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text("Source code su GitHub")
-                .icon(new IconicsDrawable(c)
+                .icon(new IconicsDrawable(this)
                         .icon(CommunityMaterial.Icon.cmd_github_circle)
                         .sizeDp(18))
-                .setOnClickAction(ConvenienceBuilder.createWebsiteOnClickAction(c, Uri.parse("https://github.com/Giua-app/Giua-App")))
+                .setOnClickAction(ConvenienceBuilder.createWebViewDialogOnClickAction(this,"", "Chiudi",
+                        "https://github.com/Giua-app/Giua-App", true, false))
                 .build());
 
-        //MaterialAboutCard.Builder convenienceCardBuilder = new MaterialAboutCard.Builder();
-
-        /*convenienceCardBuilder.title("Convenience Builder");
-
-        convenienceCardBuilder.addItem(ConvenienceBuilder.createVersionActionItem(c,
-                new IconicsDrawable(c)
-                        .icon(CommunityMaterial.Icon2.cmd_information_outline)
-                        .sizeDp(18),
-                "Version",
-                false));
-
-        convenienceCardBuilder.addItem(ConvenienceBuilder.createWebsiteActionItem(c,
-                new IconicsDrawable(c)
-                        .icon(CommunityMaterial.Icon.cmd_earth)
-                        .sizeDp(18),
-                "Visit Website",
-                true,
-                Uri.parse("http://danstone.uk")));
-
-        convenienceCardBuilder.addItem(ConvenienceBuilder.createRateActionItem(c,
-                new IconicsDrawable(c)
-                        .icon(CommunityMaterial.Icon2.cmd_star)
-                        .sizeDp(18),
-                "Rate this app",
-                null
-        ));
-
-        convenienceCardBuilder.addItem(ConvenienceBuilder.createEmailItem(c,
-                new IconicsDrawable(c)
-                        .icon(CommunityMaterial.Icon.cmd_email)
-                        .sizeDp(18),
-                "Send an email",
-                true,
-                "apps@danstone.uk",
-                "Question concerning MaterialAboutLibrary"));
-
-        convenienceCardBuilder.addItem(ConvenienceBuilder.createPhoneItem(c,
-                new IconicsDrawable(c)
-                        .icon(CommunityMaterial.Icon2.cmd_phone)
-                        .sizeDp(18),
-                "Call me",
-                true,
-                "+44 12 3456 7890"));
-
-        convenienceCardBuilder.addItem(ConvenienceBuilder.createMapItem(c,
-                new IconicsDrawable(c)
-                        .icon(CommunityMaterial.Icon2.cmd_map)
-                        .sizeDp(18),
-                "Visit London",
-                null,
-                "London Eye"));*/
 
         MaterialAboutCard.Builder otherCardBuilder = new MaterialAboutCard.Builder();
         otherCardBuilder.title("Other");
-        //otherCardBuilder.outline(false);
-
-        otherCardBuilder.cardColor(Color.parseColor("#c0cfff"));
 
         otherCardBuilder.addItem(new MaterialAboutActionItem.Builder()
-                .icon(new IconicsDrawable(c)
-                        .icon(CommunityMaterial.Icon2.cmd_language_html5)
+                .text("Guarda gli analytics pubblici")
+                .subText("più un \"contatore di visite\" rispettoso della privacy che un vero e proprio analytics")
+                .icon(new IconicsDrawable(this)
+                        .icon(CommunityMaterial.Icon.cmd_google_analytics)
                         .sizeDp(18))
-                .text("HTML Formatted Sub Text")
-                .subTextHtml("This is <b>HTML</b> formatted <i>text</i> <br /> This is very cool because it allows lines to get very long which can lead to all kinds of possibilities. <br /> And line breaks. <br /> Oh and by the way, this card has a custom defined background.")
-                .setIconGravity(MaterialAboutActionItem.GRAVITY_TOP)
-                .build()
-        );
+                .setOnClickAction(ConvenienceBuilder.createWebsiteOnClickAction(this, Uri.parse("https://app.piratepx.com/shared/x9v-IWrD1ZG_Jvk6vyAT53tdz5wCCijE55V9pn060ZfuUJRXT9rcqTwPnR_PWz7R")))
+                .build());
+
+
 
         return new MaterialAboutList(appCardBuilder.build(), authorCardBuilder.build(), otherCardBuilder.build());
+    }
+
+    public static MaterialAboutList createMaterialAboutLicenseList(final Context c) {
+
+        MaterialAboutCard appIntroLicenseCard = ConvenienceBuilder.createLicenseCard(c,
+                new IconicsDrawable(c)
+                        .icon(CommunityMaterial.Icon.cmd_book)
+                        .sizeDp(18),
+                "AppIntro", "2015-2020", "AppIntro Developers",
+                OpenSourceLicense.APACHE_2);
+
+        MaterialAboutCard giuaScraperLicenseCard = ConvenienceBuilder.createLicenseCard(c,
+                new IconicsDrawable(c)
+                        .icon(CommunityMaterial.Icon.cmd_book)
+                        .sizeDp(18),
+                "Giua Webscraper", "2021", "Hiem, Franck1421 and contributors",
+                OpenSourceLicense.GNU_GPL_3);
+
+        MaterialAboutCard caocLicenseCard = ConvenienceBuilder.createLicenseCard(c,
+                new IconicsDrawable(c)
+                        .icon(CommunityMaterial.Icon.cmd_book)
+                        .sizeDp(18),
+                "CustomActivityOnCrash", "", "Eduard Ereza Martínez",
+                OpenSourceLicense.MIT);
+
+        MaterialAboutCard jsoupLicenseCard = ConvenienceBuilder.createLicenseCard(c,
+                new IconicsDrawable(c)
+                        .icon(CommunityMaterial.Icon.cmd_book)
+                        .sizeDp(18),
+                "JSoup", "2009-2021", "Jonathan Hedley",
+                OpenSourceLicense.MIT);
+
+        MaterialAboutCard materialAboutLibraryLicenseCard = ConvenienceBuilder.createLicenseCard(c,
+                new IconicsDrawable(c)
+                        .icon(CommunityMaterial.Icon.cmd_book)
+                        .sizeDp(18),
+                "material-about-library", "2016", "Daniel Stone",
+                OpenSourceLicense.APACHE_2);
+
+        MaterialAboutCard androidIconicsLicenseCard = ConvenienceBuilder.createLicenseCard(c,
+                new IconicsDrawable(c)
+                        .icon(CommunityMaterial.Icon.cmd_book)
+                        .sizeDp(18),
+                "Android Iconics", "2016", "Mike Penz",
+                OpenSourceLicense.APACHE_2);
+
+        MaterialAboutCard leakCanaryLicenseCard = ConvenienceBuilder.createLicenseCard(c,
+                new IconicsDrawable(c)
+                        .icon(CommunityMaterial.Icon.cmd_book)
+                        .sizeDp(18),
+                "LeakCanary", "2015", "Square, Inc",
+                OpenSourceLicense.APACHE_2);
+
+
+        return new MaterialAboutList(giuaScraperLicenseCard,
+                appIntroLicenseCard,
+                caocLicenseCard,
+                jsoupLicenseCard,
+                materialAboutLibraryLicenseCard,
+                androidIconicsLicenseCard,
+                leakCanaryLicenseCard);
     }
 
     @Nullable
