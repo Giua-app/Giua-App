@@ -128,6 +128,7 @@ public class ActivityManager extends AppCompatActivity {
             // or other notification behaviors after this
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
+            notificationManager.cancel(0);  //Cancella la notifica se cè
 
             CharSequence name2 = "Giua App Aggiornamenti";
             String description2 = "Aggiornamenti dell'app da github";

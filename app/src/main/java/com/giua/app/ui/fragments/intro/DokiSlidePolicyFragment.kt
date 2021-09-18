@@ -65,11 +65,6 @@ class DokiSlidePolicyFragment : Fragment(), SlidePolicy {
         //Pulsante istruzioni
         button.setOnClickListener {
             dokiViewed = true
-            Toast.makeText(
-                requireContext(),
-                "Segui le istruzioni prima di chiudere!",
-                Toast.LENGTH_LONG
-            ).show()
 
             startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
         }

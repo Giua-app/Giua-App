@@ -57,22 +57,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="5dp"
+        app:contentPadding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.067"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:contentPadding="8dp"
-        app:cardCornerRadius="10dp">
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/report_card_current_quarter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/varelaroundregular"
             android:layout_gravity="center|start"
+            android:fontFamily="@font/varelaroundregular"
+            android:text="@string/report_card_btn_first_quarter"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:text="@string/report_card_btn_first_quarter" />
+            android:textStyle="bold" />
 
         <ImageButton
             android:id="@+id/report_card_btn_change_quarter"
@@ -92,14 +93,13 @@
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="24dp"
         android:scrollbars="none"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/report_card_quarter_container"
-        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
         tools:ignore="SpeakableTextPresentCheck">
 
         <LinearLayout
@@ -109,5 +109,38 @@
             android:orientation="vertical"
             android:padding="10dp" />
     </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/corner_radius_10dp"
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:backgroundTint="@color/general_view_color"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        android:elevation="5dp"
+        app:layout_constraintStart_toStartOf="@+id/report_card_quarter_container"
+        app:layout_constraintTop_toBottomOf="@+id/report_card_quarter_container">
+
+        <TextView
+            android:id="@+id/report_card_txt_final_result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/varelaroundregular"
+            android:textSize="16sp"
+            android:text="Esito finale: " />
+
+        <TextView
+            android:id="@+id/report_card_txt_credits"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/varelaroundregular"
+            android:textSize="16sp"
+            android:text="Crediti: " />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -83,9 +83,16 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
         threadManager.addAndRun(() -> {
             try {
                 reportCard = GlobalVariables.gS.getReportCard(isFirstQuarter, true);
-                if (reportCard.exists)
+                if (reportCard.exists) {
                     activity.runOnUiThread(this::addViews);
-                else
+                    if (reportCard.finalResult.equals("AMMESSO")) {
+                        ((TextView) root.findViewById(R.id.report_card_txt_final_result)).setTextColor(getResources().getColor(R.color.good_vote, requireContext().getTheme()));
+                    } else {
+                        ((TextView) root.findViewById(R.id.report_card_txt_final_result)).setTextColor(getResources().getColor(R.color.bad_vote, requireContext().getTheme()));
+                    }
+                    activity.runOnUiThread(() -> ((TextView) root.findViewById(R.id.report_card_txt_final_result)).setText("Esito finale: " + reportCard.finalResult));
+                    activity.runOnUiThread(() -> ((TextView) root.findViewById(R.id.report_card_txt_credits)).setText("Crediti: " + reportCard.credits));
+                } else
                     activity.runOnUiThread(() -> tvNoElements.setVisibility(View.VISIBLE));
 
                 activity.runOnUiThread(() -> pbLoadingPage.setVisibility(View.GONE));

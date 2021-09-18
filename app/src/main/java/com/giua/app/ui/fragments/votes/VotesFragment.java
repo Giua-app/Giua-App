@@ -145,10 +145,10 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
             for (Vote vote : Objects.requireNonNull(allVotes.get(subject))) {      //Cicla ogni voto della materia
                 if (vote.value.length() > 0 && vote.isFirstQuarterly) {
-                    meanFirstQuarter += getNumberFromVote(vote);
+                    meanFirstQuarter += vote.toFloat();
                     voteCounterFirstQuarter++;
                 } else if (vote.value.length() > 0) {
-                    meanSecondQuarter += getNumberFromVote(vote);
+                    meanSecondQuarter += vote.toFloat();
                     voteCounterSecondQuarter++;
                 }
             }
@@ -219,24 +219,6 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
             detailVoteJudge.setVisibility(View.VISIBLE);
             detailVoteJudge.setText(Html.fromHtml("<b>" + res.getString(R.string.detail_vote_judge) + "</b> " + _view.vote.judgement, Html.FROM_HTML_MODE_COMPACT));
         }
-    }
-
-    private float getNumberFromVote(Vote vote) {
-        if (vote.isAsterisk)
-            return -1f;
-
-        char lastChar = vote.value.charAt(vote.value.length() - 1);
-        if (lastChar == '+')
-            return (vote.value.length() == 2) ? Character.getNumericValue(vote.value.charAt(0)) + 0.15f : Integer.parseInt(vote.value.substring(0, 2)) + 0.15f;
-
-        else if (lastChar == '-')
-            return (vote.value.length() == 2) ? Character.getNumericValue(vote.value.charAt(0)) - 1 + 0.85f : Integer.parseInt(vote.value.substring(0, 2)) - 1 + 0.85f;
-
-        else if (lastChar == '½')
-            return (vote.value.length() == 2) ? Character.getNumericValue(vote.value.charAt(0)) + 0.5f : Integer.parseInt(vote.value.substring(0, 2)) + 0.5f;
-
-        else
-            return Integer.parseInt(vote.value);
     }
 
     @SuppressLint("ClickableViewAccessibility")
