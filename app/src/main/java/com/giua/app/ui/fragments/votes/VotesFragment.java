@@ -261,4 +261,10 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
             AppData.saveVotesString(activity, new JsonHelper().saveVotesToString(allVotes));
         super.onStop();
     }
+
+    @Override
+    public void onDestroyView() {
+        threadManager.destroyAllAndNullMe();
+        super.onDestroyView();
+    }
 }

@@ -324,4 +324,11 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
     }
 
     //endregion
+
+
+    @Override
+    public void onDestroyView() {
+        threadManager.destroyAllAndNullMe();
+        super.onDestroyView();
+    }
 }

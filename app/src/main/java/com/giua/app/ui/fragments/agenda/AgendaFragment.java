@@ -473,4 +473,10 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
     //endregion
+
+    @Override
+    public void onDestroyView() {
+        threadManager.destroyAllAndNullMe();
+        super.onDestroyView();
+    }
 }

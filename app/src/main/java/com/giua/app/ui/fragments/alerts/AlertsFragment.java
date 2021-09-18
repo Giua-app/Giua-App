@@ -316,7 +316,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
      */
     private void openFile(String fileName, String fileExtension) {
         Intent target = new Intent(Intent.ACTION_VIEW);
-        target.setData(FileProvider.getUriForFile(activity, "com.giua.app.provider", new File(requireContext().getFilesDir() + "/" + fileName)));
+        target.setData(FileProvider.getUriForFile(activity, "com.giua.app.fileprovider", new File(requireContext().getFilesDir() + "/" + fileName)));
         target.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         Intent intent = Intent.createChooser(target, "Apri con:");
@@ -369,4 +369,10 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
         super.onStop();
     }
     //endregion
+
+    @Override
+    public void onDestroyView() {
+        threadManager.destroyAllAndNullMe();
+        super.onDestroyView();
+    }
 }

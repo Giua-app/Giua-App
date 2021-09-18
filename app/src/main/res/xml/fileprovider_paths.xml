@@ -19,6 +19,13 @@
   -->
 
 <paths>
-    <external-path name="external_files" path="."/>
-    <external-path name="external_download" path="Download"/>
+    <external-path
+        name="external_files"
+        path="." />
+    <root-path
+        name="external_files"
+        path="/" />
+    <external-path
+        name="external_download"
+        path="Download" />
 </paths>

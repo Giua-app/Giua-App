@@ -142,4 +142,10 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
     private void setErrorMessage(String message, View root) {
         Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
+
+    @Override
+    public void onDestroyView() {
+        threadManager.destroyAllAndNullMe();
+        super.onDestroyView();
+    }
 }
