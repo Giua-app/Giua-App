@@ -67,7 +67,7 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
                 "Nota: I tuoi dati NON VERRANNO cancellati, il file occupa circa 9MB")
 
                 .setPositiveButton("Si", (dialog, id) -> new Thread(this::downloadInstallApk).start())
-                .setNegativeButton("Ricorda tra un giorno", (dialog, id) -> {AppData.setLastUpdateReminder(TransparentUpdateDialogActivity.this, time);})
+                .setNegativeButton("Ricorda tra un giorno", (dialog, id) -> AppData.setLastUpdateReminder(TransparentUpdateDialogActivity.this, time))
                 .setOnCancelListener(dialog -> finish())
                 .setOnDismissListener(dialog -> finish());
 
@@ -76,14 +76,10 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
 
 
     private void downloadInstallApk(){
-        String fileName = "giua_update";
-        String fileExt = ".apk";
-        String downloadLocation = getExternalFilesDir(null) + "/" + fileName + fileExt;
+        String downloadLocation = getExternalFilesDir(null) + "/giua_update.apk";
 
         File file = new File(downloadLocation);
         Uri uri = Uri.parse("file://" + file.getAbsolutePath());
-
-        Log.d("TEST", file.getAbsolutePath());
 
 
         if(!file.delete()){
@@ -91,23 +87,22 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
         }
 
 
-        //set downloadmanager
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
         request.setDescription(newVer);
         request.setTitle("Download Giua App");
 
-        //set destination
+
         request.setDestinationUri(uri);
 
-        // get download service and enqueue file
+
         final DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
         final long downloadId = manager.enqueue(request);
 
-        //set BroadcastReceiver to install app when .apk is downloaded
+        //Eseguito quando finisce di scaricare
         BroadcastReceiver onComplete = new BroadcastReceiver() {
             @SuppressLint("ObsoleteSdkInt")
             public void onReceive(Context ctxt, Intent intent) {
-                //check if the broadcast message is for our Enqueued download
+                //Controlla se il broadcast ha lo stesso id del download (cioe se è nostro o no)
                 long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
                 if (downloadId == referenceId) {
 
@@ -134,12 +129,13 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
                         startActivity(installIntent);
                     }
                 }
+                //L'installazione è gia iniziata quando si arriva qui, praticamente sono gli ultimi instanti dell'app
                 AppData.setLastUpdateReminder(TransparentUpdateDialogActivity.this, time);
                 finish();
             }
         };
 
-        //register receiver for when .apk download is compete
+
         registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 }

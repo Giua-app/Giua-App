@@ -73,7 +73,7 @@ class DokiSlidePolicyFragment : Fragment(), SlidePolicy {
 
         description.text = Html.fromHtml("<p> " +
                 "Per poter ricevere notifiche dal registro devi disattivare l'ottimizzazione batteria </p>" +
-                "<p> <b>Clicca il pulsante qua sotto per vedere le istruzioni, poi seguile fino a disattivare l'ottimizzazione, e infine torna qui per andare avanti </b></p>",0)
+                "<p> <b>Clicca il pulsante qua sotto per andare nelle impostazioni, cerca l'app Giua App e disattiva l'ottimizzazione</b></p>",0)
 
         image.setImageDrawable(ResourcesCompat.getDrawable(resources, R.mipmap.battery_tutorial, null))
     }
