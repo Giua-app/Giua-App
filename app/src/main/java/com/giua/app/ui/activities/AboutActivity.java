@@ -67,13 +67,12 @@ public class AboutActivity extends MaterialAboutActivity {
                 "Versione",
                 false)
                 .setOnClickAction(() -> {
+                    importantInteger++;
                     if(importantInteger==3){
                         Snackbar.make(findViewById(android.R.id.content), ";)", Snackbar.LENGTH_SHORT).show();
                         new Thread(() -> AppData.increaseVisitCount(";)")).start();
                         importantInteger=0;
-                        return;
                     }
-                    importantInteger++;
                 }));
 
         appCardBuilder.addItem(new MaterialAboutActionItem.Builder()

@@ -19,23 +19,20 @@
 
 package com.giua.app.ui.activities;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 
 import com.giua.app.AppData;
@@ -67,48 +64,37 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Aggiornamento");
         builder.setMessage("La tua versione attuale è la " + BuildConfig.VERSION_NAME + "\nLa nuova versione è la " + newVer + "\n\nVuoi aggiornare l'app?\n" +
-                "Nota: I tuoi dati NON VERRANNO cancellati, l'app ti chiedera l'accesso alla memoria e poi il file verrà scaricato in background")
+                "Nota: I tuoi dati NON VERRANNO cancellati, il file occupa circa 9MB")
 
-                .setPositiveButton("Si", (dialog, id) -> {
-                    new Thread(() -> {
-                        ActivityCompat.requestPermissions(this,
-                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
-                                0);
-                        try {
-                            Thread.sleep(10000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-                        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-                            Toast.makeText(TransparentUpdateDialogActivity.this, "Errore, permesso negato", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        downloadInstallApk();
-
-                    }).start();
-                })
-                .setNegativeButton("Ricorda tra un giorno", (dialog, id) -> {AppData.setLastUpdateReminder(TransparentUpdateDialogActivity.this, time);});
+                .setPositiveButton("Si", (dialog, id) -> new Thread(this::downloadInstallApk).start())
+                .setNegativeButton("Ricorda tra un giorno", (dialog, id) -> {AppData.setLastUpdateReminder(TransparentUpdateDialogActivity.this, time);})
+                .setOnCancelListener(dialog -> finish())
+                .setOnDismissListener(dialog -> finish());
 
         builder.show();
     }
 
 
     private void downloadInstallApk(){
-        String downloadLocation = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/giua_update.apk";
-        File file = new File(downloadLocation);
-        Uri uri = Uri.parse("file://" + downloadLocation);
+        String fileName = "giua_update";
+        String fileExt = ".apk";
+        String downloadLocation = getExternalFilesDir(null) + "/" + fileName + fileExt;
 
-        if(file.exists()){
-            file.delete();
+        File file = new File(downloadLocation);
+        Uri uri = Uri.parse("file://" + file.getAbsolutePath());
+
+        Log.d("TEST", file.getAbsolutePath());
+
+
+        if(!file.delete()){
+            Log.w("TEST","Errore nel cancellare apk!");
         }
 
 
         //set downloadmanager
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-        request.setDescription("Scarico aggiornamento Giua App");
-        request.setTitle("Download Giua App " + newVer);
+        request.setDescription(newVer);
+        request.setTitle("Download Giua App");
 
         //set destination
         request.setDestinationUri(uri);
@@ -149,6 +135,7 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
                     }
                 }
                 AppData.setLastUpdateReminder(TransparentUpdateDialogActivity.this, time);
+                finish();
             }
         };
 

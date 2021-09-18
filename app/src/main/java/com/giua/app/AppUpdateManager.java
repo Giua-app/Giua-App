@@ -111,7 +111,7 @@ public class AppUpdateManager {
 
         if (currentVer[0].equals(updateVer[0]) && currentVer[1].equals(updateVer[1]) && currentVer[2].equals(updateVer[2])) {
             //Nessun aggiornamento, esci silenziosamente
-            return;
+            //return;
         }
 
         if(currentVer[0] > updateVer[0] || currentVer[1] > updateVer[1] || currentVer[2] > updateVer[2]){
@@ -129,8 +129,8 @@ public class AppUpdateManager {
 
 
         if (date.after(lastUpdateDate)) {
-            //Aggiornamento gia notificato, nextUpdateDate è la prossimo giorno in cui notificare
-            return;
+            //Aggiornamento gia notificato, nextUpdateDate è il prossimo giorno in cui notificare
+            //return;
         }
 
         //Se siamo arrivati fino a qui vuol dire che c'è un aggiornamento
