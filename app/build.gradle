@@ -106,6 +106,9 @@ dependencies {
     implementation 'com.github.Giua-app:Giua-Webscraper:1.1.8-beta'
     //implementation fileTree(dir: 'libs', include: ['*.jar'])     //DEBUG
 
+    //--Charts lib
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
     //--Error handler lib
     implementation 'cat.ereza:customactivityoncrash:2.3.0'
 

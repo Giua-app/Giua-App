@@ -99,13 +99,18 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                 //Errore di connessione
                 activity.runOnUiThread(() -> {
-                    setErrorMessage(getString(R.string.your_connection_error), root);
+                    setErrorMessage(activity.getString(R.string.your_connection_error), root);
                     pbLoadingPage.setVisibility(View.GONE);
                 });
             } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                 //Errore di connessione al sito
                 activity.runOnUiThread(() -> {
-                    setErrorMessage(getString(R.string.site_connection_error), root);
+                    setErrorMessage(activity.getString(R.string.site_connection_error), root);
+                    pbLoadingPage.setVisibility(View.GONE);
+                });
+            } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
+                activity.runOnUiThread(() -> {
+                    setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
                     pbLoadingPage.setVisibility(View.GONE);
                 });
             }

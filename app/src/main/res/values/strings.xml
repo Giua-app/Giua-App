@@ -41,6 +41,7 @@
     <string name="no_elements">Non ci sono elementi da visualizzare</string>
     <string name="your_connection_error">Sono stati riscontrati problemi con la tua connessione</string>
     <string name="site_connection_error">Il sito non sta funzionando, riprova tra poco!"</string>
+    <string name="maintenance_is_active_error">Il sito è in manutenzione, riprova tra poco!</string>
 
     <!-- Error activity strings -->
     <string name="customactivityoncrash_error_activity_error_occurred_explanation">C\'è stato un errore inaspettato.\nCi scusiamo per il disagio.</string>

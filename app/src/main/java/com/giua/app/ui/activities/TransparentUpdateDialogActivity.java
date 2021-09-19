@@ -67,7 +67,7 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
                 "Nota: I tuoi dati NON VERRANNO cancellati, il file occupa circa 9MB")
 
                 .setPositiveButton("Si", (dialog, id) -> new Thread(this::downloadInstallApk).start())
-                .setNegativeButton("Ricorda tra un giorno", (dialog, id) -> AppData.setLastUpdateReminder(TransparentUpdateDialogActivity.this, time))
+                .setNegativeButton("Ricorda tra un giorno", (dialog, id) -> AppData.setLastUpdateReminderDate(TransparentUpdateDialogActivity.this, time))
                 .setOnCancelListener(dialog -> finish())
                 .setOnDismissListener(dialog -> finish());
 
@@ -130,7 +130,7 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
                     }
                 }
                 //L'installazione è gia iniziata quando si arriva qui, praticamente sono gli ultimi instanti dell'app
-                AppData.setLastUpdateReminder(TransparentUpdateDialogActivity.this, time);
+                AppData.setLastUpdateReminderDate(TransparentUpdateDialogActivity.this, time);
                 finish();
             }
         };

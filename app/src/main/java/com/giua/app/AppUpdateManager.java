@@ -122,7 +122,7 @@ public class AppUpdateManager {
         Date date = Calendar.getInstance().getTime();
         Date lastUpdateDate = date;
         try {
-            lastUpdateDate = AppData.getLastUpdateReminder(context);
+            lastUpdateDate = AppData.getLastUpdateReminderDate(context);
         } catch (ParseException e) {
             e.printStackTrace();
         }

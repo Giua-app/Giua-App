@@ -198,7 +198,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                     }
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        setErrorMessage(getString(R.string.your_connection_error), root);
+                        setErrorMessage(activity.getString(R.string.your_connection_error), root);
                         if (currentPage == 1)
                             tvNoElements.setVisibility(View.VISIBLE);
                         pbLoadingPage.setVisibility(View.GONE);
@@ -208,7 +208,16 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        setErrorMessage(getString(R.string.site_connection_error), root);
+                        setErrorMessage(activity.getString(R.string.site_connection_error), root);
+                        if (currentPage == 1)
+                            tvNoElements.setVisibility(View.VISIBLE);
+                        pbLoadingPage.setVisibility(View.GONE);
+                        swipeRefreshLayout.setRefreshing(false);
+                    });
+                    allNewsletter = new Vector<>();
+                } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
+                    activity.runOnUiThread(() -> {
+                        setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
                         if (currentPage == 1)
                             tvNoElements.setVisibility(View.VISIBLE);
                         pbLoadingPage.setVisibility(View.GONE);
@@ -397,9 +406,11 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                     activity.runOnUiThread(() -> setErrorMessage("E' stato incontrato un errore di rete durante il download: riprovare", root));
                 }
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
-                activity.runOnUiThread(() -> setErrorMessage(getString(R.string.your_connection_error), root));
+                activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.your_connection_error), root));
             } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
-                activity.runOnUiThread(() -> setErrorMessage(getString(R.string.site_connection_error), root));
+                activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.site_connection_error), root));
+            } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
+                activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root));
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -133,10 +133,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         toggle.syncState();
         drawerLayout.addDrawerListener(toggle);
 
-        if (!offlineMode)
-            toolbar.setTitle("Home");
-        else
-            toolbar.setTitle("Home - Offline");
+        changeFragment(R.id.nav_home);
+
     }
 
     @Override

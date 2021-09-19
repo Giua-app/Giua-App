@@ -157,9 +157,9 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                         });
                     } else
                         activity.runOnUiThread(this::addViews);
-                } catch (GiuaScraperExceptions.YourConnectionProblems | NullPointerException e) {
+                } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        setErrorMessage(getString(R.string.your_connection_error), root);
+                        setErrorMessage(activity.getString(R.string.your_connection_error), root);
                         pbLoadingPage.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
@@ -167,7 +167,15 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                     });
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        setErrorMessage(getString(R.string.site_connection_error), root);
+                        setErrorMessage(activity.getString(R.string.site_connection_error), root);
+                        pbLoadingPage.setVisibility(View.GONE);
+                        tvNoElements.setVisibility(View.VISIBLE);
+                        swipeRefreshLayout.setRefreshing(false);
+                        isLoadingData = false;
+                    });
+                } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
+                    activity.runOnUiThread(() -> {
+                        setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
                         pbLoadingPage.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
@@ -323,13 +331,13 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                         visualizerHomeworks = GlobalVariables.gS.getHomework(agendaView.homework.date);
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        setErrorMessage(getString(R.string.your_connection_error), root);
+                        setErrorMessage(activity.getString(R.string.your_connection_error), root);
                         pbForDetails.setVisibility(View.GONE);
                     });
                     return;
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     activity.runOnUiThread(() -> {
-                        setErrorMessage(getString(R.string.site_connection_error), root);
+                        setErrorMessage(activity.getString(R.string.site_connection_error), root);
                         pbForDetails.setVisibility(View.GONE);
                     });
                     return;

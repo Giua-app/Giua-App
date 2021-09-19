@@ -144,10 +144,10 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
             voteCounterSecondQuarter = 0;
 
             for (Vote vote : Objects.requireNonNull(allVotes.get(subject))) {      //Cicla ogni voto della materia
-                if (vote.value.length() > 0 && vote.isFirstQuarterly) {
+                if (vote.value.length() > 0 && !vote.isAsterisk && vote.isFirstQuarterly) {
                     meanFirstQuarter += vote.toFloat();
                     voteCounterFirstQuarter++;
-                } else if (vote.value.length() > 0) {
+                } else if (vote.value.length() > 0 && !vote.isAsterisk) {
                     meanSecondQuarter += vote.toFloat();
                     voteCounterSecondQuarter++;
                 }

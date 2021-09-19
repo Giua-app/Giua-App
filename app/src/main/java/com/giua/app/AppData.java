@@ -115,12 +115,12 @@ public class AppData {
                 .apply();
     }
 
-    public static String getLastUpdateVersionKey(final Context context) {
+    public static String getLastUpdateVersionString(final Context context) {
         return getSharedPreferences(context).getString(lastUpdateVersionKey, "");
     }
 
     @SuppressLint("SimpleDateFormat")
-    public static void setLastUpdateReminder(final Context context, final Date date) {
+    public static void setLastUpdateReminderDate(final Context context, final Date date) {
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         String value = format.format(date);
         getSharedPreferences(context).edit()
@@ -130,9 +130,9 @@ public class AppData {
     }
 
     @SuppressLint("SimpleDateFormat")
-    public static Date getLastUpdateReminder(final Context context) throws ParseException {
-        String value =  getSharedPreferences(context).getString(nextUpdateReminder, "err");
-        if(value.equals("err")){
+    public static Date getLastUpdateReminderDate(final Context context) throws ParseException {
+        String value = getSharedPreferences(context).getString(nextUpdateReminder, "err");
+        if (value.equals("err")) {
             return new Date();
         }
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
@@ -143,13 +143,13 @@ public class AppData {
     //endregion
 
     /**
-     * Questa funzione facendo una richiesta web aumenta il numero di visite
+     * Questa funzione, facendo una richiesta HTTP, aumenta il numero di visite
      * Piratepx tiene traccia delle visite per 30 giorni
      * In questo momento stiamo contando le visite per:
-     *  - Nuove installazioni
-     *  - Login studente/genitore
-     *  - Errori di webview
-     *  - Easter egg
+     * - Nuove installazioni
+     * - Login studente/genitore
+     * - Errori di webview
+     * - Easter egg
      *
      * @param name Nome dell'oggetto su cui aumentare le visite
      */

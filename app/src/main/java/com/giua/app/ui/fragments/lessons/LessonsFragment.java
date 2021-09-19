@@ -150,7 +150,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     //Errore di connessione
                     activity.runOnUiThread(() -> {
-                        setErrorMessage(getString(R.string.your_connection_error), root);
+                        setErrorMessage(activity.getString(R.string.your_connection_error), root);
                         pbLoadingContent.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
@@ -158,7 +158,15 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     //Errore di connessione al registro
                     activity.runOnUiThread(() -> {
-                        setErrorMessage(getString(R.string.site_connection_error), root);
+                        setErrorMessage(activity.getString(R.string.site_connection_error), root);
+                        pbLoadingContent.setVisibility(View.GONE);
+                        tvNoElements.setVisibility(View.VISIBLE);
+                        swipeRefreshLayout.setRefreshing(false);
+                    });
+                } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
+                    //Errore di connessione al registro
+                    activity.runOnUiThread(() -> {
+                        setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
                         pbLoadingContent.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
