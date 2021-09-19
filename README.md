@@ -39,7 +39,7 @@ Questa app usa la libreria [Giua-Webscraper](https://github.com/Giua-app/Giua-We
 ### Bacheca
 - Controlla le nuovi circolari da leggere
 - Guarda i nuovi avvisi
-- L'app ti segnerà quali hai gia letto e quali no
+- Controlla quali circolari o avvisi hai gia letto oppure no
 - Guarda la tipologia degli avvisi e chi l'ha creato
 - L'app ti invierà una notifica per nuove circolari e avvisi (può ritardare fino a un'ora)
 ### Pagella
