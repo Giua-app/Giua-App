@@ -143,18 +143,18 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         float meanFirstQuarter = getMeanOfAllVotes(allVotes);
 
         if (meanFirstQuarter == 0f)
-            root.findViewById(R.id.home_txt_mean).setBackgroundTintList(getResources().getColorStateList(R.color.non_vote, activity.getTheme()));
+            ((TextView) root.findViewById(R.id.home_txt_mean)).setTextColor(getResources().getColorStateList(R.color.non_vote, activity.getTheme()));
         else if (meanFirstQuarter >= 6)
-            root.findViewById(R.id.home_txt_mean).setBackgroundTintList(getResources().getColorStateList(R.color.good_vote, activity.getTheme()));
+            ((TextView) root.findViewById(R.id.home_txt_mean)).setTextColor(getResources().getColorStateList(R.color.good_vote_darker, activity.getTheme()));
         else if (meanFirstQuarter < 6 && meanFirstQuarter >= 5)
-            root.findViewById(R.id.home_txt_mean).setBackgroundTintList(getResources().getColorStateList(R.color.middle_vote, activity.getTheme()));
+            ((TextView) root.findViewById(R.id.home_txt_mean)).setTextColor(getResources().getColorStateList(R.color.middle_vote, activity.getTheme()));
         else
-            root.findViewById(R.id.home_txt_mean).setBackgroundTintList(getResources().getColorStateList(R.color.bad_vote, activity.getTheme()));
+            ((TextView) root.findViewById(R.id.home_txt_mean)).setTextColor(getResources().getColorStateList(R.color.bad_vote, activity.getTheme()));
         if (meanFirstQuarter == 0f)
             ((TextView) root.findViewById(R.id.home_txt_mean)).setText("/");
         else
             ((TextView) root.findViewById(R.id.home_txt_mean)).setText(df.format(meanFirstQuarter));
-        ((TextView) root.findViewById(R.id.home_txt_mean)).setTextColor(getResources().getColorStateList(R.color.good_vote_darker, activity.getTheme()));
+
     }
 
     private float getMeanOfAllVotes(Map<String, List<Vote>> votes) {
