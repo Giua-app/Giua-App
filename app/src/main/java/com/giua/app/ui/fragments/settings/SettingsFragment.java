@@ -157,7 +157,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private boolean btnAboutScreenOnClick(Preference preference) {
-        SettingsData.saveSettingInt(requireContext(), SettingKey.INTRO_STATUS, 0);
         startActivity(new Intent(requireContext(), AboutActivity.class));
         return true;
     }

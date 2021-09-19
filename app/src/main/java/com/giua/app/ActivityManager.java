@@ -24,6 +24,7 @@ import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -73,7 +74,8 @@ public class ActivityManager extends AppCompatActivity {
         final int introStatus = SettingsData.getSettingInt(this, SettingKey.INTRO_STATUS);
         //introStatus = 0;         //DEBUG
 
-        // 1 = Intro già vista , 0 = Intro non vista , -1 = Intro mai vista
+        // 1 = Intro già vista , 0 = (Non usato) , -1 = Intro mai vista
+        Log.d("TEST", "Intro: " + introStatus);
         if (introStatus != 1) {
             new Thread(() -> AppData.increaseVisitCount("Primo avvio (nuove installazioni)")).start();
             startActivity(new Intent(ActivityManager.this, AppIntroActivity.class));

@@ -61,7 +61,7 @@
         <Preference
             app:key="introScreen"
             app:iconSpaceReserved="false"
-            app:title="Riguarda l'intro" />
+            app:title="Rivedi l'intro" />
         <Preference
             app:key="aboutScreen"
             app:title="About"

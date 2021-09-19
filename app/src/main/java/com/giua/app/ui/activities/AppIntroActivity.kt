@@ -132,13 +132,11 @@ class AppIntroActivity : AppIntro(){
     }
 
     public override fun onSkipPressed(currentFragment: Fragment?) {
-        SettingsData.saveSettingInt(this, SettingKey.INTRO_STATUS, 1)
         super.onSkipPressed(currentFragment)
         finishIntro()
     }
 
     public override fun onDonePressed(currentFragment: Fragment?) {
-        SettingsData.saveSettingInt(this, SettingKey.INTRO_STATUS, 1)
         super.onDonePressed(currentFragment)
         finishIntro()
     }

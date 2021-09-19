@@ -126,7 +126,7 @@ public class AppData {
         getSharedPreferences(context).edit()
                 .putString(nextUpdateReminder, value)
                 .apply();
-        Log.d("TEST", "date: " + value);
+        Log.d("TEST", "setdate: " + value);
     }
 
     @SuppressLint("SimpleDateFormat")
