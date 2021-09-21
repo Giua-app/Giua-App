@@ -63,23 +63,25 @@ public class CheckNewsReceiver extends BroadcastReceiver {
 
                 checkNewsAndSendNotifications();
 
-            } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.SiteConnectionProblems ingored) {
-                //DEBUG
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                        .setSmallIcon(R.drawable.ic_giuaschool_logo1)
-                        .setContentTitle("Si è verificato un errore di connessione")
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+            } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.SiteConnectionProblems e) {
+                if (SettingsData.getSettingBoolean(context, SettingKey.DEBUG_MODE)) {
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
+                            .setSmallIcon(R.drawable.ic_giuaschool_logo1)
+                            .setContentTitle("Si è verificato un errore di connessione")
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-                notificationManager.notify(10, builder.build());
+                    notificationManager.notify(10, builder.build());
+                }
             } catch (Exception e) {
-                //DEBUG
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                        .setSmallIcon(R.drawable.ic_giuaschool_logo2)
-                        .setContentTitle("Si è verificato un errore")
-                        .setStyle(new NotificationCompat.BigTextStyle().bigText(e.toString() + "; " + e.getMessage()))
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                if (SettingsData.getSettingBoolean(context, SettingKey.DEBUG_MODE)) {
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
+                            .setSmallIcon(R.drawable.ic_giuaschool_logo1)
+                            .setContentTitle("Si è verificato un errore")
+                            .setStyle(new NotificationCompat.BigTextStyle().bigText(e.toString()))
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-                notificationManager.notify(10, builder.build());
+                    notificationManager.notify(10, builder.build());
+                }
             }
         }).start();
     }
@@ -115,7 +117,6 @@ public class CheckNewsReceiver extends BroadcastReceiver {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
                     .setSmallIcon(R.drawable.ic_giuaschool_logo1)
                     .setContentTitle(numberNewsletters - numberNewslettersOld == 1 ? "Nuova circolare" : numberNewsletters - numberNewslettersOld + " nuove circolari")
-                    .setStyle(new NotificationCompat.BigTextStyle().bigText("Numero circolari: " + numberNewsletters + "\nNumero circolari vecchie: " + numberNewslettersOld))  //DEBUG
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
             notificationManager.notify(10, builder.build());
@@ -124,7 +125,6 @@ public class CheckNewsReceiver extends BroadcastReceiver {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
                     .setSmallIcon(R.drawable.ic_giuaschool_logo1)
                     .setContentTitle(numberAlerts - numberAlertsOld == 1 ? "Nuovo avviso" : numberAlerts - numberAlertsOld + " nuovi avvisi")
-                    .setStyle(new NotificationCompat.BigTextStyle().bigText("Numero avvisi: " + numberAlerts + "\nNumero avvisi vecchie: " + numberAlertsOld))  //DEBUG
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
             notificationManager.notify(11, builder.build());

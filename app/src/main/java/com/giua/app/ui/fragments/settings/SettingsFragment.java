@@ -52,9 +52,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void setupAllObjects(Context context) {
 
-        //region Funzionalità
+        //region Generale
 
         setupNotificationObject(context);
+        setupAboutScreenObject();
+        setupIntroScreenObject();
+        setupDebugModeObject(context);
 
         //endreigon
 
@@ -67,11 +70,25 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         //region Debug
 
         setupSiteUrlObject();
-        setupAboutScreenObject();
         setupCrashScreenObject();
-        setupIntroScreenObject();
+
+        if (SettingsData.getSettingBoolean(context, SettingKey.DEBUG_MODE)) {
+            findPreference("debugCategory").setVisible(true);
+        }
 
         //endregion
+    }
+
+    private void setupDebugModeObject(Context context) {
+        SwitchPreference swDebugMode = Objects.requireNonNull(findPreference("debugMode"));
+        swDebugMode.setChecked(SettingsData.getSettingBoolean(context, SettingKey.DEBUG_MODE));
+        swDebugMode.setOnPreferenceChangeListener(this::swDebugModeChangeListener);
+    }
+
+    private boolean swDebugModeChangeListener(Preference preference, Object o) {
+        SettingsData.saveSettingBoolean(requireContext(), SettingKey.DEBUG_MODE, (boolean) o);
+        findPreference("debugCategory").setVisible((boolean) o);
+        return true;
     }
 
     private void setupNotificationObject(Context context) {

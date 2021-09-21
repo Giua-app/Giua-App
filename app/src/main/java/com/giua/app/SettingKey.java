@@ -39,4 +39,9 @@ public abstract class SettingKey {
      * Indica se le notifiche sono attive
      */
     public static final String NOTIFICATION = "notification";
+
+    /**
+     * Indica se la modalità di debug è attiva
+     */
+    public static final String DEBUG_MODE = "debugMode";
 }

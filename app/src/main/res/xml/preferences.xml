@@ -20,14 +20,30 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
-        app:title="Funzionalità"
+        app:title="Generale"
         app:iconSpaceReserved="false">
 
         <SwitchPreference
             app:key="notification"
             app:title="Abilita le notifiche"
+            app:defaultValue="false"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            app:key="introScreen"
             app:iconSpaceReserved="false"
-            app:defaultValue="false" />
+            app:title="Rivedi l'intro" />
+
+        <Preference
+            app:key="aboutScreen"
+            app:title="Riguardo l'app"
+            app:iconSpaceReserved="false" />
+
+        <SwitchPreference
+            app:key="debugMode"
+            app:title="Modalità di debug (solo utenti esperti)"
+            app:defaultValue="false"
+            app:iconSpaceReserved="false" />
 
     </PreferenceCategory>
 
@@ -38,15 +54,17 @@
         <ListPreference
             app:key="theme"
             app:title="Scegli un tema"
-            app:iconSpaceReserved="false"
-            app:negativeButtonText="Annulla" />
+            app:negativeButtonText="Annulla"
+            app:iconSpaceReserved="false" />
 
     </PreferenceCategory>
 
     <PreferenceCategory
+        app:key="debugCategory"
         app:title="Debug"
         app:iconSpaceReserved="false"
-        app:allowDividerAbove="true">
+        app:allowDividerAbove="true"
+        app:isPreferenceVisible="false">
 
         <EditTextPreference
             app:key="siteUrl"
@@ -57,14 +75,6 @@
         <Preference
             app:key="crashScreen"
             app:title="Fai esplodere il mondo"
-            app:iconSpaceReserved="false" />
-        <Preference
-            app:key="introScreen"
-            app:iconSpaceReserved="false"
-            app:title="Rivedi l'intro" />
-        <Preference
-            app:key="aboutScreen"
-            app:title="About"
             app:iconSpaceReserved="false" />
     </PreferenceCategory>
 

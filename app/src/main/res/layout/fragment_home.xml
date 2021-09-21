@@ -48,7 +48,7 @@
             android:id="@+id/home_txt_mean"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="10.98"
+            android:text="/"
             android:textSize="22sp"
             android:layout_marginRight="40dp"
             android:layout_marginTop="10dp"

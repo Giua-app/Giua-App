@@ -43,7 +43,8 @@ public class AppData {
     private static final String numberNewslettersKey = "number_newsletters";
     private static final String numberAlertsKey = "number_alerts";
     private static final String lastUpdateVersionKey = "last_update_version";
-    private static final String nextUpdateReminder = "next_update_reminder";
+    private static final String nextUpdateReminderKey = "next_update_reminder";
+    public static final String debugModeKey = "debug_mode";
 
     private static SharedPreferences getSharedPreferences(final Context context) {
         return context.getSharedPreferences(appDataPreferenceKey, Context.MODE_PRIVATE);
@@ -124,14 +125,14 @@ public class AppData {
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         String value = format.format(date);
         getSharedPreferences(context).edit()
-                .putString(nextUpdateReminder, value)
+                .putString(nextUpdateReminderKey, value)
                 .apply();
         Log.d("TEST", "setdate: " + value);
     }
 
     @SuppressLint("SimpleDateFormat")
     public static Date getLastUpdateReminderDate(final Context context) throws ParseException {
-        String value = getSharedPreferences(context).getString(nextUpdateReminder, "err");
+        String value = getSharedPreferences(context).getString(nextUpdateReminderKey, "err");
         if (value.equals("err")) {
             return new Date();
         }

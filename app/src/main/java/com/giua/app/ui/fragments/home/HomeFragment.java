@@ -69,10 +69,12 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         Description desc = new Description();
         desc.setText("");
         chart.setDescription(desc);
-        chart.setActivated(false);
         chart.getLegend().setTextSize(13);
         chart.getLegend().setWordWrapEnabled(true);
-        chart.setOnTouchListener(null);
+        chart.setTouchEnabled(false);
+        chart.setDragEnabled(false);
+        chart.setScaleEnabled(false);
+        chart.setPinchZoom(false);
         chart.invalidate();
         threadManager = new ThreadManager();
         activity = requireActivity();
