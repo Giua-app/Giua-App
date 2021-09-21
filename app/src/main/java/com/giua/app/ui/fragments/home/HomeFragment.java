@@ -54,6 +54,8 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     ThreadManager threadManager;
     LineChart chart;
     Activity activity;
+    TextView tvHomeworks;
+    TextView tvTests;
     View root;
 
     @Nullable
@@ -79,6 +81,9 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         threadManager = new ThreadManager();
         activity = requireActivity();
 
+        tvHomeworks = root.findViewById(R.id.home_txt_homeworks);
+        tvTests = root.findViewById(R.id.home_txt_tests);
+
         loadDataAndViews();
         return root;
     }
@@ -87,8 +92,11 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     public void loadDataAndViews() {
         threadManager.addAndRun(() -> {
             Map<String, List<Vote>> allVotes = GlobalVariables.gS.getAllVotes(false);
+            int homeworks = GlobalVariables.gS.getNearHomeworks(false);
+            int tests = GlobalVariables.gS.getNearTests(false);
 
             requireActivity().runOnUiThread(() -> {
+                setupHomeworksTestsText(homeworks, tests);
                 setupMeanVotesText(allVotes);
                 chart.setData(generateLineData(allVotes));
                 chart.invalidate();
@@ -98,6 +106,27 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void addViews() {
+    }
+
+    private void setupHomeworksTestsText(int homeworks, int tests) {
+        if (homeworks == 0)
+            tvHomeworks.setText("Non ci sono compiti per domani");
+        else if (homeworks == 1)
+            tvHomeworks.setText("E' presente un compito per domani");
+        else
+            tvHomeworks.setText("Sono presenti " + homeworks + " compiti per domani");
+
+        if (tests == 0)
+            tvTests.setText("Non ci sono verifiche nei prossimi giorni");
+        else if (tests == 1)
+            tvTests.setText("E' presente una verifica nei prossimi giorni");
+        else
+            tvTests.setText("Sono presenti " + tests + " verifiche nei prossimi giorni");
+
+        tvHomeworks.setBackground(null);
+        tvTests.setBackground(null);
+        tvHomeworks.setMinWidth(0);
+        tvTests.setMinWidth(0);
     }
 
     private LineData generateLineData(Map<String, List<Vote>> allVotes) {

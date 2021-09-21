@@ -129,7 +129,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
 
             notificationManager.notify(11, builder.build());
         }
-        if (gS.checkForAbsenceUpdate()) {
+        if (gS.checkForAbsenceUpdate(false)) {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
                     .setSmallIcon(R.drawable.ic_giuaschool_logo1)
                     .setContentTitle("Nuova assenza")

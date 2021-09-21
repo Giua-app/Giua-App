@@ -25,6 +25,7 @@
     <color name="bad_vote">#A62321</color>
     <color name="middle_vote">#A66F21</color>
     <color name="non_vote">#878787</color>
+    <color name="loading_content">#6E6E6E</color>
     <color name="good_vote_lighter">#7BDF7B</color>
     <color name="bad_vote_lighter">#E4605D</color>
     <color name="middle_vote_lighter">#EAB365</color>
