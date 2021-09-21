@@ -108,8 +108,8 @@ public class CheckNewsReceiver extends BroadcastReceiver {
     private void checkNewsAndSendNotifications() {
         int numberNewslettersOld = AppData.getNumberNewslettersInt(context);
         int numberAlertsOld = AppData.getNumberAlertsInt(context);
-        int numberNewsletters = gS.checkForNewsletterUpdate();
-        int numberAlerts = gS.checkForAlertsUpdate();
+        int numberNewsletters = gS.checkForNewsletterUpdate(false);
+        int numberAlerts = gS.checkForAlertsUpdate(false);
         AppData.saveNumberNewslettersInt(context, numberNewsletters);
         AppData.saveNumberAlertsInt(context, numberAlerts);
 

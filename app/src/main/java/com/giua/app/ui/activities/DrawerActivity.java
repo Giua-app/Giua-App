@@ -275,11 +275,15 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
     @Override
     protected void onDestroy() {
+        new Thread(() -> {  //Questo serve a prevenire la perdita di news
+            AppData.saveNumberNewslettersInt(this, GlobalVariables.gS.checkForNewsletterUpdate(false));
+            AppData.saveNumberAlertsInt(this, GlobalVariables.gS.checkForAlertsUpdate(false));
+        }).start();
         alarmManager.cancel(pendingIntent);
         if (!LoginData.getUser(this).equals("") && SettingsData.getSettingBoolean(this, SettingKey.NOTIFICATION)) {
             alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
                     SystemClock.elapsedRealtime(),
-                    AlarmManager.INTERVAL_HOUR + ThreadLocalRandom.current().nextInt(0, 900000),   //Intervallo di 1 ora più numero random tra 0 e 15 minuti
+                    AlarmManager.INTERVAL_HOUR + ThreadLocalRandom.current().nextInt(0, 2_700_000),   //Intervallo di 1 ora più numero random tra 0 e 45 minuti più un tempo "random" dato da inexact
                     pendingIntent);
             //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000 , pendingIntent);    //DEBUG
         }
