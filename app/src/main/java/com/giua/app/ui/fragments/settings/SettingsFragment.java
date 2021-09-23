@@ -35,6 +35,7 @@ import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
 import com.giua.app.ui.activities.AboutActivity;
 import com.giua.app.ui.activities.AppIntroActivity;
+import com.giua.app.ui.activities.LogdogViewerActivity;
 import com.giua.webscraper.GiuaScraper;
 
 import java.util.Objects;
@@ -71,6 +72,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         setupSiteUrlObject();
         setupCrashScreenObject();
+        setupLogcatViewerObject();
 
         if (SettingsData.getSettingBoolean(context, SettingKey.DEBUG_MODE)) {
             findPreference("debugCategory").setVisible(true);
@@ -118,6 +120,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private void setupCrashScreenObject() {
         Preference btnCrashScreen = Objects.requireNonNull(findPreference("crashScreen"));
         btnCrashScreen.setOnPreferenceClickListener(this::btnCrashScreenOnClick);
+    }
+
+    private void setupLogcatViewerObject() {
+        Preference btnCrashScreen = Objects.requireNonNull(findPreference("viewLog"));
+        btnCrashScreen.setOnPreferenceClickListener(this::btnViewLogScreenOnClick);
     }
 
     private void setupAboutScreenObject() {
@@ -175,6 +182,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private boolean btnAboutScreenOnClick(Preference preference) {
         startActivity(new Intent(requireContext(), AboutActivity.class));
+        return true;
+    }
+
+    private boolean btnViewLogScreenOnClick(Preference preference) {
+        startActivity(new Intent(requireContext(), LogdogViewerActivity.class));
         return true;
     }
 

@@ -42,6 +42,8 @@ import cat.ereza.customactivityoncrash.config.CaocConfig;
  */
 public class ActivityManager extends AppCompatActivity {
 
+    LoggerManager loggerManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         switch (SettingsData.getSettingString(this, SettingKey.THEME)) {
@@ -59,6 +61,10 @@ public class ActivityManager extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setupCaoc(); //Crash handler
+        loggerManager = new LoggerManager("ActivityManager", this);
+        loggerManager.e("AAAAAAAAAAA");
+        loggerManager.w("fai skif");
+        loggerManager.d("nuuuu");
 
         GiuaScraper.setDebugMode(true);
 

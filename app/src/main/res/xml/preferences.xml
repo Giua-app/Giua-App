@@ -17,7 +17,8 @@
   ~     along with this program.  If not, see https://www.gnu.org/licenses/.
   -->
 
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
         app:title="Generale"
@@ -60,22 +61,28 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:key="debugCategory"
-        app:title="Debug"
-        app:iconSpaceReserved="false"
         app:allowDividerAbove="true"
-        app:isPreferenceVisible="false">
+        app:iconSpaceReserved="false"
+        app:isPreferenceVisible="false"
+        app:key="debugCategory"
+        app:title="Debug">
 
         <EditTextPreference
+            app:iconSpaceReserved="false"
             app:key="siteUrl"
             app:negativeButtonText="Annulla"
             app:positiveButtonText="Imposta"
-            app:title="Imposta l'url del sito"
-            app:iconSpaceReserved="false" />
+            app:title="Imposta l'url del sito" />
         <Preference
+            app:iconSpaceReserved="false"
             app:key="crashScreen"
-            app:title="Fai esplodere il mondo"
-            app:iconSpaceReserved="false" />
+            app:title="Fai esplodere il mondo" />
+        <Preference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:iconSpaceReserved="false"
+            app:key="viewLog"
+            app:title="Mostra logcat" />
     </PreferenceCategory>
 
 </PreferenceScreen>

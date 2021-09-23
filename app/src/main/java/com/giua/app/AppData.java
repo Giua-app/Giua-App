@@ -45,6 +45,7 @@ public class AppData {
     private static final String lastUpdateVersionKey = "last_update_version";
     private static final String nextUpdateReminderKey = "next_update_reminder";
     private static final String updatePresenceKey = "update_presence";
+    private static final String logsStorageKey = "logs_storage";
 
     private static SharedPreferences getSharedPreferences(final Context context) {
         return context.getSharedPreferences(appDataPreferenceKey, Context.MODE_PRIVATE);
@@ -152,6 +153,17 @@ public class AppData {
     }
 
     //endregion
+
+
+    public static void saveLogsString(final Context context, final String value) {
+        getSharedPreferences(context).edit()
+                .putString(logsStorageKey, value)
+                .apply();
+    }
+
+    public static String getLogsString(final Context context) {
+        return getSharedPreferences(context).getString(logsStorageKey, "");
+    }
 
     /**
      * Questa funzione, facendo una richiesta HTTP, aumenta il numero di visite
