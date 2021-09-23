@@ -44,6 +44,7 @@ import com.giua.app.ActivityManager;
 import com.giua.app.AppData;
 import com.giua.app.CheckNewsReceiver;
 import com.giua.app.GlobalVariables;
+import com.giua.app.LoggerManager;
 import com.giua.app.LoginData;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
@@ -72,6 +73,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     Toolbar toolbar;
     Bundle bundle;
     boolean offlineMode = false;
+    LoggerManager loggerManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +82,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         offlineMode = getIntent().getBooleanExtra("offline", false);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer);
+        loggerManager = new LoggerManager("DrawerActivity", this);
+        loggerManager.d("onCreate chiamato");
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -115,6 +119,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                 });
             }).start();
         } else {
+            loggerManager.d("Applicazione in offline mode");
             runOnUiThread(() -> tvUserType.setText("Offline"));
             runOnUiThread(() -> tvUsername.setText("Offline"));
         }
@@ -146,6 +151,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         } else if (item.getItemId() == R.id.nav_logout) {
             makeLogout();
         } else
+            loggerManager.d("Cambio fragment a " + item.getTitle());
             changeFragment(item.getItemId());
         closeNavDrawer();
 
@@ -160,6 +166,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     }
 
     private void makeLogout() {
+        loggerManager.d("Logout richiesto dall'utente");
         new Thread(() -> {
             AppData.increaseVisitCount("Log out");
         }).start();
@@ -170,6 +177,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     }
 
     private void startSettingsActivity() {
+        loggerManager.d("Avvio SettingsActivity");
         startActivity(new Intent(this, SettingsActivity.class));
     }
 
@@ -178,8 +186,10 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         Fragment fragment;
         String tag = getTagFromId(id);
 
-        if (tag.equals(""))  //Se tag è vuoto vuol dire che questo id non è stato ancora implementato quindi finisci
+        if (tag.equals("")) {  //Se tag è vuoto vuol dire che questo id non è stato ancora implementato quindi finisci
+            loggerManager.e("Tag vuoto, fragment non ancora implementato");
             return;
+        }
 
         if (id == R.id.nav_home) {
             fragment = manager.findFragmentByTag(tag);
@@ -275,6 +285,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
     @Override
     protected void onDestroy() {
+        loggerManager.d("onDestroy chiamato");
         new Thread(() -> {  //Questo serve a prevenire la perdita di news
             AppData.saveNumberNewslettersInt(this, GlobalVariables.gS.checkForNewsletterUpdate(false));
             AppData.saveNumberAlertsInt(this, GlobalVariables.gS.checkForAlertsUpdate(false));

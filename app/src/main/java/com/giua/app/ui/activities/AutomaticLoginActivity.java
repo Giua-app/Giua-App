@@ -30,6 +30,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.giua.app.GlobalVariables;
+import com.giua.app.LoggerManager;
 import com.giua.app.LoginData;
 import com.giua.app.R;
 import com.giua.webscraper.GiuaScraper;
@@ -42,11 +43,14 @@ public class AutomaticLoginActivity extends AppCompatActivity {
     Button btnOffline;
     ProgressBar pbLoadingScreen;
     TextView tvAutoLogin;
+    LoggerManager loggerManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_automatic_login);
+        loggerManager = new LoggerManager("AutomaticLoginActivity", this);
+        loggerManager.d("onCreate chiamato");
 
         btnLogout = findViewById(R.id.loading_screen_logout_btn);
         tvAutoLogin = findViewById(R.id.loading_screen_minor_text_view);
@@ -61,6 +65,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
     }
 
     private void loginWithPreviousCredentials() {
+        loggerManager.d("Login automatico con credenziali salvate in corso");
         new Thread(() -> {
             runOnUiThread(() -> pbLoadingScreen.setVisibility(View.VISIBLE));
             try {
@@ -69,6 +74,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                 LoginData.setCredentials(this, LoginData.getUser(this), LoginData.getPassword(this), GlobalVariables.gS.getCookie());
                 startDrawerActivity();
             } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.SiteConnectionProblems e) {
+                loggerManager.e("Errore di connessione - " + e.getMessage());
                 runOnUiThread(() -> btnLogout.setVisibility(View.VISIBLE));
                 runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));
 
@@ -88,9 +94,12 @@ public class AutomaticLoginActivity extends AppCompatActivity {
 
                 loginWithPreviousCredentials();
             } catch (GiuaScraperExceptions.SessionCookieEmpty sce) {     //Se il login non dovesse funzionare lancia l acitvity di login ed elimina le credenziali salvate
-                if (LoginData.getUser(this).equals("gsuite"))    //Questa condizione si verifica quando è presente un acccount studente con il cookie scaduto
+                if (LoginData.getUser(this).equals("gsuite")) {   //Questa condizione si verifica quando è presente un acccount studente con il cookie scaduto
+                    loggerManager.w("Cookie gS dell'account studente scaduto, avvio StudentLoginActivity");
                     startStudentLoginActivity();
+                }
                 else {
+                    loggerManager.w("Cookie gS scaduto, avvio MainLoginActivity");
                     LoginData.clearAll(this);
                     setErrorMessage("Le credenziali di accesso non sono più valide");
                     try {
@@ -101,6 +110,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                     startActivity(new Intent(AutomaticLoginActivity.this, MainLoginActivity.class));
                 }
             } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
+                loggerManager.e("Errore: sito in manutenzione");
                 runOnUiThread(() -> btnLogout.setVisibility(View.VISIBLE));
                 runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));
                 runOnUiThread(() -> pbLoadingScreen.setVisibility(View.GONE));
@@ -111,6 +121,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
     }
 
     private void btnLogoutOnClick(View view) {
+        loggerManager.d("Logout richiesto dall'utente, avvio MainLoginActivity");
         LoginData.clearAll(this);
         startActivity(new Intent(AutomaticLoginActivity.this, MainLoginActivity.class));
         finish();
@@ -134,11 +145,13 @@ public class AutomaticLoginActivity extends AppCompatActivity {
     }
 
     private void startStudentLoginActivity() {
+        loggerManager.d("Avvio StudentLoginActivity");
         startActivity(new Intent(AutomaticLoginActivity.this, StudentLoginActivity.class));
         finish();
     }
 
     private void startDrawerActivity() {
+        loggerManager.d("Avvio DrawerActivity");
         startActivity(new Intent(AutomaticLoginActivity.this, DrawerActivity.class));
         finish();
     }

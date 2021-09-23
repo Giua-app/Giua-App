@@ -26,10 +26,7 @@ import com.github.appintro.AppIntro
 import com.github.appintro.AppIntroFragment
 import com.github.appintro.AppIntroPageTransformerType
 import com.github.appintro.model.SliderPage
-import com.giua.app.ActivityManager
-import com.giua.app.R
-import com.giua.app.SettingKey
-import com.giua.app.SettingsData
+import com.giua.app.*
 import com.giua.app.ui.fragments.intro.DokiSlidePolicyFragment
 import com.mikepenz.iconics.context.IconicsLayoutInflater2
 
@@ -38,7 +35,6 @@ class AppIntroActivity : AppIntro(){
     override fun onCreate(savedInstanceState: Bundle?) {
         LayoutInflaterCompat.setFactory2(layoutInflater, IconicsLayoutInflater2(delegate))
         super.onCreate(savedInstanceState)
-
 
         setProgressIndicator() //Progress bar come barra anzichè pallini
         setImmersiveMode() //Fullscreen

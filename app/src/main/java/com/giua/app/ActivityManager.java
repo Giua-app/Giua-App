@@ -24,7 +24,6 @@ import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -46,6 +45,8 @@ public class ActivityManager extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        loggerManager = new LoggerManager("ActivityManager", this);
+        loggerManager.d("onCreate called");
         switch (SettingsData.getSettingString(this, SettingKey.THEME)) {
             case "0":
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -61,10 +62,6 @@ public class ActivityManager extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setupCaoc(); //Crash handler
-        loggerManager = new LoggerManager("ActivityManager", this);
-        loggerManager.e("AAAAAAAAAAA");
-        loggerManager.w("fai skif");
-        loggerManager.d("nuuuu");
 
         GiuaScraper.setDebugMode(true);
 
@@ -75,15 +72,18 @@ public class ActivityManager extends AppCompatActivity {
         if (!defaultUrl.equals(""))
             GiuaScraper.setSiteURL(defaultUrl);
 
+        loggerManager.d("defaultUrl is " + defaultUrl);
+
         //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
 
         final int introStatus = SettingsData.getSettingInt(this, SettingKey.INTRO_STATUS);
         //introStatus = 0;         //DEBUG
 
         // 1 = Intro già vista , 0 = (Non usato) , -1 = Intro mai vista
-        Log.d("TEST", "Intro: " + introStatus);
+        loggerManager.d("introStatus is " + introStatus);
         if (introStatus != 1) {
             new Thread(() -> AppData.increaseVisitCount("Primo avvio (nuove installazioni)")).start();
+            loggerManager.d("Starting App Intro Activity");
             startActivity(new Intent(ActivityManager.this, AppIntroActivity.class));
             return;
         }
@@ -97,16 +97,19 @@ public class ActivityManager extends AppCompatActivity {
     }
 
     private void startMainLoginActivity() {
+        loggerManager.d("Starting Main Login Activity");
         startActivity(new Intent(ActivityManager.this, MainLoginActivity.class));
         finish();
     }
 
     private void startAutomaticLoginActivity() {
+        loggerManager.d("Starting Automatic Login Activity");
         startActivity(new Intent(ActivityManager.this, AutomaticLoginActivity.class));
         finish();
     }
 
     private void checkForUpdates(){
+        loggerManager.d("Called check for app updates in thread");
         new Thread(() -> new AppUpdateManager().checkForAppUpdates(this, true)).start();
     }
 
@@ -123,6 +126,7 @@ public class ActivityManager extends AppCompatActivity {
                 .errorDrawable(R.drawable.ic_giuaschool_logo1)
                 //.errorActivity(ErrorActivity.class)
                 .apply();
+        loggerManager.d("CustomActivityOnCrach setup complete");
     }
 
     private void setupNotificationManager(){
@@ -147,6 +151,7 @@ public class ActivityManager extends AppCompatActivity {
             NotificationManager notificationManager2 = getSystemService(NotificationManager.class);
             notificationManager2.createNotificationChannel(channel2);
         }
+        loggerManager.d("Notification Manager setup complete");
     }
 
 

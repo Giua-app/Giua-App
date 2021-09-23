@@ -35,6 +35,7 @@ import com.danielstone.materialaboutlibrary.model.MaterialAboutCard;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutList;
 import com.danielstone.materialaboutlibrary.util.OpenSourceLicense;
 import com.giua.app.AppData;
+import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.google.android.material.snackbar.Snackbar;
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
@@ -43,10 +44,14 @@ import com.mikepenz.iconics.IconicsDrawable;
 public class AboutActivity extends MaterialAboutActivity {
 
     int importantInteger;
+    LoggerManager loggerManager;
 
     @NonNull
     @Override
     protected MaterialAboutList getMaterialAboutList(@NonNull Context context) {
+        loggerManager = new LoggerManager("AboutActivity", this);
+        loggerManager.d("getMaterialAboutList chiamato");
+        loggerManager.d("costruisco pagina about...");
 
         importantInteger = 20000 - 300 - 20000 + 160 + 120 + 20;
 
@@ -68,10 +73,12 @@ public class AboutActivity extends MaterialAboutActivity {
                 false)
                 .setOnClickAction(() -> {
                     importantInteger++;
+                    loggerManager.d("'_'");
                     if(importantInteger==3){
                         Snackbar.make(findViewById(android.R.id.content), ";)", Snackbar.LENGTH_SHORT).show();
                         new Thread(() -> AppData.increaseVisitCount(";)")).start();
                         importantInteger=0;
+                        loggerManager.d("\t(ﾉ◕ヮ◕)ﾉ");
                     }
                 }));
 
@@ -142,7 +149,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 .build());
 
 
-
+        loggerManager.d("Creazione pagina about completata");
         return new MaterialAboutList(appCardBuilder.build(), authorCardBuilder.build(), otherCardBuilder.build());
     }
 

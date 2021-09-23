@@ -49,8 +49,11 @@ public class AppUpdateManager {
     String tagName;
     Integer[] currentVer = {0,0,0};
     String downloadUrl;
+    LoggerManager loggerManager;
 
     public void checkForAppUpdates(Context context, boolean sendNotification) {
+        loggerManager = new LoggerManager("AppUpdateManager", context);
+        loggerManager.d("checking for updates...");
 
         //TODO: in futuro quando si scaricheranno gli apk
         /*if(BuildConfig.BUILD_TYPE.equals("debug")){
@@ -78,6 +81,7 @@ public class AppUpdateManager {
 
         if(assetsNode.isMissingNode()){
             //Assets non trovati, nessun apk
+            loggerManager.e("No assets found on release");
             return;
         }
 
@@ -100,22 +104,26 @@ public class AppUpdateManager {
             updateVer[2] = Integer.parseInt(temp[2]);
         } else {
             //Non è una versione, esci silenziosamente
+            loggerManager.e("Tag version found on github is not semver complaint, ignoring");
             return;
         }
 
         if(!contentType.equals("application/vnd.android.package-archive")){
             //Il file non è un apk, ignora
+            loggerManager.e("Asset on release is not an APK file, ignoring");
             return;
         }
 
 
         if (currentVer[0].equals(updateVer[0]) && currentVer[1].equals(updateVer[1]) && currentVer[2].equals(updateVer[2])) {
             //Nessun aggiornamento, esci silenziosamente
+            loggerManager.e("No new updates found, current version is " + BuildConfig.VERSION_NAME  + ", latest on github is " + tagName);
             return;
         }
 
         if(currentVer[0] > updateVer[0] || currentVer[1] > updateVer[1] || currentVer[2] > updateVer[2]){
             //Versione vecchia, esci silenziosamente
+            loggerManager.e("Current application is newer than github release, ignoring");
             return;
         }
 
@@ -130,6 +138,7 @@ public class AppUpdateManager {
 
         if (date.after(lastUpdateDate)) {
             //Aggiornamento gia notificato, nextUpdateDate è il prossimo giorno in cui notificare
+            loggerManager.e("Update already notified, ignoring");
             return;
         }
 
@@ -142,6 +151,8 @@ public class AppUpdateManager {
 
 
     private void createNotification(Context context){
+
+        loggerManager.d("Creating update notification...");
 
         String title = "Nuova versione rilevata";
         String description = "Clicca per informazioni";

@@ -22,7 +22,6 @@ package com.giua.app;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.webkit.CookieManager;
 
 import androidx.core.app.NotificationCompat;
@@ -42,11 +41,14 @@ public class CheckNewsReceiver extends BroadcastReceiver {
     private Context context;
     private NotificationManagerCompat notificationManager;
     private GiuaScraper gS;
+    LoggerManager loggerManager;
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        loggerManager = new LoggerManager("CheckNewsReceiver", context);
+        loggerManager.d("onReceive chiamato");
         if (SettingsData.getSettingBoolean(context, SettingKey.NOTIFICATION)) {
-            Log.d("", "Broadcast di background STARTATO");
+            loggerManager.d("Broadcast di background STARTATO");
             this.context = context;
             notificationManager = NotificationManagerCompat.from(context);
             checkNews();
@@ -55,7 +57,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
 
     private void checkNews() {
         new Thread(() -> {
-            Log.d("", "Servizio di background: controllo nuove cose");
+            loggerManager.d("Servizio di background: controllo nuove cose");
 
             try {
 
@@ -64,6 +66,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
                 checkNewsAndSendNotifications();
 
             } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.SiteConnectionProblems e) {
+                loggerManager.e("Errore di connessione - " + e.getMessage());
                 if (SettingsData.getSettingBoolean(context, SettingKey.DEBUG_MODE)) {
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
                             .setSmallIcon(R.drawable.ic_giuaschool_logo1)
@@ -73,6 +76,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
                     notificationManager.notify(10, builder.build());
                 }
             } catch (Exception e) {
+                loggerManager.e("Errore sconosciuto - " + e.getMessage());
                 if (SettingsData.getSettingBoolean(context, SettingKey.DEBUG_MODE)) {
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
                             .setSmallIcon(R.drawable.ic_giuaschool_logo1)
@@ -87,17 +91,22 @@ public class CheckNewsReceiver extends BroadcastReceiver {
     }
 
     private void checkAndMakeLogin() {
-        if (GlobalVariables.gS != null)     //Se un istanza di Giuascraper esiste già non ricrearla ed usa quella
+        if (GlobalVariables.gS != null) {    //Se un istanza di Giuascraper esiste già non ricrearla ed usa quella
             gS = GlobalVariables.gS;
+            loggerManager.d("Riutilizzo istanza gS");
+        }
         else if (!LoginData.getUser(context).equals("gsuite")) {  //Se l'account non è di gsuite fai il login normale
+            loggerManager.d("Account non google rilevato, eseguo login");
             gS = new GiuaScraper(LoginData.getUser(context), LoginData.getPassword(context), LoginData.getCookie(context), true);
             gS.login();
             LoginData.setCredentials(context, LoginData.getUser(context), LoginData.getPassword(context), gS.getCookie());
         } else {    //Se l'account è di gsuite fai il login con gsuite
             try {
+                loggerManager.d("Account google rilevato, provo ad entrare con cookie precedente");
                 gS = new GiuaScraper(LoginData.getUser(context), LoginData.getPassword(context), LoginData.getCookie(context), true);
                 gS.login();
             } catch (GiuaScraperExceptions.SessionCookieEmpty e) {
+                loggerManager.d("Cookie precedente non valido");
                 gS = new GiuaScraper(LoginData.getUser(context), LoginData.getPassword(context), makeGsuiteLogin(), true);
                 gS.login();
                 LoginData.setCredentials(context, LoginData.getUser(context), LoginData.getPassword(context), gS.getCookie());
@@ -106,6 +115,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
     }
 
     private void checkNewsAndSendNotifications() {
+        loggerManager.d("Controllo pagina home per le news");
         int numberNewslettersOld = AppData.getNumberNewslettersInt(context);
         int numberAlertsOld = AppData.getNumberAlertsInt(context);
         int numberNewsletters = gS.checkForNewsletterUpdate(false);
@@ -114,6 +124,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         AppData.saveNumberAlertsInt(context, numberAlerts);
 
         if (numberNewslettersOld != -1 && numberNewsletters - numberNewslettersOld > 0) {
+            loggerManager.d("Trovata nuova circolare");
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
                     .setSmallIcon(R.drawable.ic_giuaschool_logo1)
                     .setContentTitle(numberNewsletters - numberNewslettersOld == 1 ? "Nuova circolare" : numberNewsletters - numberNewslettersOld + " nuove circolari")
@@ -122,6 +133,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
             notificationManager.notify(10, builder.build());
         }
         if (numberAlertsOld != -1 && numberAlerts - numberAlertsOld > 0) {
+            loggerManager.d("Trovati nuovi avvisi");
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
                     .setSmallIcon(R.drawable.ic_giuaschool_logo1)
                     .setContentTitle(numberAlerts - numberAlertsOld == 1 ? "Nuovo avviso" : numberAlerts - numberAlertsOld + " nuovi avvisi")
@@ -130,6 +142,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
             notificationManager.notify(11, builder.build());
         }
         if (gS.checkForAbsenceUpdate(false)) {
+            loggerManager.d("Trovata nuova assenza");
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
                     .setSmallIcon(R.drawable.ic_giuaschool_logo1)
                     .setContentTitle("Nuova assenza")
@@ -150,9 +163,11 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         }
 
         try {
+            loggerManager.d("Eseguo login con cookie di google");
             session.newRequest().url("https://registro.giua.edu.it/login/gsuite").get();
             return session.cookieStore().get(new URI("https://registro.giua.edu.it")).toString().split("=")[1].replace("]", "");
-        } catch (IOException | URISyntaxException ignored) {
+        } catch (IOException | URISyntaxException e) {
+            loggerManager.e("Errore, cookie google e cookie giua non più validi, impossibile continuare");
             return "";
         }
     }
