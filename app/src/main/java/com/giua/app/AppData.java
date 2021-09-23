@@ -44,7 +44,7 @@ public class AppData {
     private static final String numberAlertsKey = "number_alerts";
     private static final String lastUpdateVersionKey = "last_update_version";
     private static final String nextUpdateReminderKey = "next_update_reminder";
-    public static final String debugModeKey = "debug_mode";
+    private static final String updatePresenceKey = "update_presence";
 
     private static SharedPreferences getSharedPreferences(final Context context) {
         return context.getSharedPreferences(appDataPreferenceKey, Context.MODE_PRIVATE);
@@ -118,6 +118,16 @@ public class AppData {
 
     public static String getLastUpdateVersionString(final Context context) {
         return getSharedPreferences(context).getString(lastUpdateVersionKey, "");
+    }
+
+    public static void saveUpdatePresence(final Context context, final boolean value) {
+        getSharedPreferences(context).edit()
+                .putBoolean(updatePresenceKey, value)
+                .apply();
+    }
+
+    public static boolean getUpdatePresence(final Context context) {
+        return getSharedPreferences(context).getBoolean(updatePresenceKey, false);
     }
 
     @SuppressLint("SimpleDateFormat")

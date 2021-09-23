@@ -50,7 +50,7 @@ public class AppUpdateManager {
     Integer[] currentVer = {0,0,0};
     String downloadUrl;
 
-    public void checkForAppUpdates(Context context){
+    public void checkForAppUpdates(Context context, boolean sendNotification) {
 
         //TODO: in futuro quando si scaricheranno gli apk
         /*if(BuildConfig.BUILD_TYPE.equals("debug")){
@@ -134,8 +134,10 @@ public class AppUpdateManager {
         }
 
         //Se siamo arrivati fino a qui vuol dire che c'è un aggiornamento
-        createNotification(context);
+        if (sendNotification)
+            createNotification(context);
         AppData.saveLastUpdateVersionString(context, tagName);
+        AppData.saveUpdatePresence(context, true);
     }
 
 

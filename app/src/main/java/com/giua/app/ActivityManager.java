@@ -101,7 +101,7 @@ public class ActivityManager extends AppCompatActivity {
     }
 
     private void checkForUpdates(){
-        new Thread(() -> new AppUpdateManager().checkForAppUpdates(this)).start();
+        new Thread(() -> new AppUpdateManager().checkForAppUpdates(this, true)).start();
     }
 
     private void setupCaoc() {

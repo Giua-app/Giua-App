@@ -90,6 +90,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         obscureLayoutView.setOnClickListener(this::obscureButtonOnClick);
 
+        swipeRefreshLayout.setRefreshing(true);
         loadDataAndViews();
 
         return root;

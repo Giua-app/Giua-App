@@ -25,17 +25,21 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.giua.app.AppData;
+import com.giua.app.AppUpdateManager;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
@@ -47,6 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.Vector;
 
 public class HomeFragment extends Fragment implements IGiuaAppFragment {
@@ -56,16 +61,24 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     Activity activity;
     TextView tvHomeworks;
     TextView tvTests;
+    SwipeRefreshLayout swipeRefreshLayout;
     View root;
+    boolean forceRefresh = false;
+    boolean canClickUpdateReminder = true;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_home, container, false);
 
+        threadManager = new ThreadManager();
+        activity = requireActivity();
+
         chart = root.findViewById(R.id.home_mean_chart);
         chart.getAxisLeft().setEnabled(false);
-        chart.getAxisRight().setEnabled(false);
+        chart.getAxisRight().setEnabled(true);
+        chart.getAxisRight().setTextSize(14);
+        chart.getAxisRight().setTextColor(getResources().getColor(R.color.night_white_light_black, activity.getTheme()));
         chart.getXAxis().setEnabled(false);
         chart.setNoDataText("Nessun voto");
         Description desc = new Description();
@@ -78,28 +91,54 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         chart.setScaleEnabled(false);
         chart.setPinchZoom(false);
         chart.invalidate();
-        threadManager = new ThreadManager();
-        activity = requireActivity();
 
         tvHomeworks = root.findViewById(R.id.home_txt_homeworks);
         tvTests = root.findViewById(R.id.home_txt_tests);
+        swipeRefreshLayout = root.findViewById(R.id.home_swipe_refresh_layout);
+
+        swipeRefreshLayout.setRefreshing(true);
+        swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
+
+        if (AppData.getUpdatePresence(activity)) {
+            root.findViewById(R.id.home_app_update_reminder).setVisibility(View.VISIBLE);
+            root.findViewById(R.id.home_app_update_reminder).setOnClickListener(this::updateReminderOnClick);
+        }
 
         loadDataAndViews();
         return root;
     }
 
+    private void updateReminderOnClick(View view) {
+        if (canClickUpdateReminder) {
+            canClickUpdateReminder = false;
+            new Thread(() -> {
+                new AppUpdateManager().checkForAppUpdates(activity, false);
+                canClickUpdateReminder = true;
+            }).start();
+        }
+    }
+
+    private void onRefresh() {
+        forceRefresh = true;
+        loadDataAndViews();
+    }
+
     @Override
     public void loadDataAndViews() {
         threadManager.addAndRun(() -> {
-            Map<String, List<Vote>> allVotes = GlobalVariables.gS.getAllVotes(false);
-            int homeworks = GlobalVariables.gS.getNearHomeworks(false);
-            int tests = GlobalVariables.gS.getNearTests(false);
+            Map<String, List<Vote>> allVotes = GlobalVariables.gS.getAllVotes(forceRefresh);
+            int homeworks = GlobalVariables.gS.getNearHomeworks(forceRefresh);
+            int tests = GlobalVariables.gS.getNearTests(forceRefresh);
 
-            requireActivity().runOnUiThread(() -> {
+            if (forceRefresh)
+                forceRefresh = false;
+
+            activity.runOnUiThread(() -> {
                 setupHomeworksTestsText(homeworks, tests);
                 setupMeanVotesText(allVotes);
                 chart.setData(generateLineData(allVotes));
                 chart.invalidate();
+                swipeRefreshLayout.setRefreshing(false);
             });
         });
     }
@@ -109,19 +148,38 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void setupHomeworksTestsText(int homeworks, int tests) {
-        if (homeworks == 0)
-            tvHomeworks.setText("Non ci sono compiti per domani");
-        else if (homeworks == 1)
-            tvHomeworks.setText("E' presente un compito per domani");
-        else
-            tvHomeworks.setText("Sono presenti " + homeworks + " compiti per domani");
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(0, 0, 0, 0);
 
-        if (tests == 0)
-            tvTests.setText("Non ci sono verifiche nei prossimi giorni");
-        else if (tests == 1)
+        if (homeworks == 0 && tests == 0) {
+            root.findViewById(R.id.home_agenda_alerts).setVisibility(View.VISIBLE);
+            root.findViewById(R.id.home_agenda_alerts).setBackgroundTintList(getResources().getColorStateList(R.color.general_view_color, activity.getTheme()));
+            tvHomeworks.setVisibility(View.VISIBLE);
+            tvHomeworks.setText("Non sono presenti attività nei prossimi giorni");
+        }
+
+        if (homeworks == 1) {
+            root.findViewById(R.id.home_agenda_alerts).setVisibility(View.VISIBLE);
+            tvHomeworks.setVisibility(View.VISIBLE);
+            tvHomeworks.setText("E' presente un compito per domani");
+        } else if (homeworks > 1) {
+            root.findViewById(R.id.home_agenda_alerts).setVisibility(View.VISIBLE);
+            tvHomeworks.setVisibility(View.VISIBLE);
+            tvHomeworks.setText("Sono presenti " + homeworks + " compiti per domani");
+        }
+
+        if (tests == 1) {
+            root.findViewById(R.id.home_agenda_alerts).setVisibility(View.VISIBLE);
+            tvTests.setVisibility(View.VISIBLE);
             tvTests.setText("E' presente una verifica nei prossimi giorni");
-        else
+        } else if (tests > 1) {
+            root.findViewById(R.id.home_agenda_alerts).setVisibility(View.VISIBLE);
+            tvTests.setVisibility(View.VISIBLE);
             tvTests.setText("Sono presenti " + tests + " verifiche nei prossimi giorni");
+        }
+
+        if (homeworks <= 0)
+            tvTests.setLayoutParams(params);
 
         tvHomeworks.setBackground(null);
         tvTests.setBackground(null);
@@ -132,16 +190,24 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     private LineData generateLineData(Map<String, List<Vote>> allVotes) {
         List<Entry> entriesFirstQuarter = new ArrayList<>();
         List<Entry> entriesSecondQuarter = new ArrayList<>();
-        int i = 0;
+        int voteCounter = 0;
 
-        for (String subject : allVotes.keySet()) {
-            for (Vote vote : Objects.requireNonNull(allVotes.get(subject))) {
-                if (!vote.isAsterisk) {
-                    if (vote.isFirstQuarterly)
-                        entriesFirstQuarter.add(new Entry(i, vote.toFloat()));
-                    else
-                        entriesSecondQuarter.add(new Entry(i, vote.toFloat()));
-                    i++;
+        if (allVotes.size() == 0) {   //Se non ci sono voti da visualizzare metti una linea continua per non lasciare spazio vuoto
+            entriesFirstQuarter.add(new Entry(0, 5));
+            entriesFirstQuarter.add(new Entry(1, 5));
+        } else {
+            Set<String> allSubjects = allVotes.keySet();
+            for (String subject : allSubjects) {
+                List<Vote> subjectVotes = allVotes.get(subject);
+                for (int i = subjectVotes.size() - 1; i >= 0; i--) {  //Dato che i voti sono messi in ordine dall'ultimo al primo per fare il grafico li aggiungeremo al contrario
+                    Vote vote = subjectVotes.get(i);
+                    if (!vote.isAsterisk) {
+                        if (vote.isFirstQuarterly)
+                            entriesFirstQuarter.add(new Entry(voteCounter, vote.toFloat()));
+                        else
+                            entriesSecondQuarter.add(new Entry(voteCounter, vote.toFloat()));
+                        voteCounter++;
+                    }
                 }
             }
         }
