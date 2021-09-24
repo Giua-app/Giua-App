@@ -38,6 +38,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
+import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.giua.app.ThreadManager;
 import com.giua.app.ui.fragments.ObscureLayoutView;
@@ -86,10 +87,13 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     int visualizerCounter = 0;
     boolean isLoadingData = false;
     boolean isLoadingDetails = false;
+    LoggerManager loggerManager;
 
     @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_agenda, container, false);
+        loggerManager = new LoggerManager("AgendaFragment", getContext());
+        loggerManager.d("onCreateView chiamato");
 
         viewsLayout = root.findViewById(R.id.agenda_views_layout);
         tvTodayText = root.findViewById(R.id.agenda_month_text);
@@ -139,6 +143,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void loadDataAndViews() {
+        loggerManager.d("Carico views...");
         if (!isLoadingData) {
             if (viewsLayout.indexOfChild(pbLoadingPage) == -1)
                 viewsLayout.addView(pbLoadingPage, 0);
@@ -189,6 +194,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void addViews() {
+        loggerManager.d("Aggiungo views...");
         viewsLayout.removeAllViews();
         tvNoElements.setVisibility(View.GONE);
         viewsLayout.scrollTo(0, 0);
@@ -243,6 +249,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     private void btnPrevMonthOnClick(View view) {
         if (!isLoadingData) {
             currentDate = getPrevMonth(currentDate);
+            loggerManager.d("Carico compiti del mese " + currentDate.toString());
             if (Integer.parseInt(getCurrentMonth()) < 6 || Integer.parseInt(getCurrentMonth()) > 8)
                 ivNextMonth.setVisibility(View.VISIBLE);
             if (Integer.parseInt(getCurrentMonth()) == 9)
@@ -255,8 +262,10 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
     @SuppressLint("SetTextI18n")
     private void btnNextMonthOnClick(View view) {
+        loggerManager.d("Car");
         if (!isLoadingData) {
             currentDate = getNextMonth(currentDate);
+            loggerManager.d("Carico compiti del mese " + currentDate.toString());
             ivPrevMonth.setVisibility(View.VISIBLE);
             if (Integer.parseInt(getCurrentMonth()) >= 6 && Integer.parseInt(getCurrentMonth()) <= 8)
                 ivNextMonth.setVisibility(View.GONE);
@@ -484,6 +493,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onDestroyView() {
+        loggerManager.d("onDestroyView chiamato");
         threadManager.destroyAllAndNullMe();
         super.onDestroyView();
     }

@@ -32,6 +32,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.giua.app.AppData;
 import com.giua.app.GlobalVariables;
+import com.giua.app.LoggerManager;
 import com.giua.app.LoginData;
 import com.giua.app.R;
 import com.giua.app.ui.fragments.ObscureLayoutView;
@@ -40,17 +41,19 @@ import com.google.android.material.snackbar.Snackbar;
 
 public class StudentLoginActivity extends AppCompatActivity {
 
-    String TAG = "StudentLoginActivity";
     WebView webView;
     ObscureLayoutView obscureLayoutView;
     String userAgent = "Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.91 Mobile Safari/537.36";
     String cookie = "";
+    LoggerManager loggerManager;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_login);
+        loggerManager = new LoggerManager("StudentLoginActivity", this);
+        loggerManager.d("onCreate chiamato");
 
         webView = findViewById(R.id.studentWebView);
         obscureLayoutView = findViewById(R.id.studentObscureLayoutView);
@@ -59,14 +62,17 @@ public class StudentLoginActivity extends AppCompatActivity {
 
         webView.setWebViewClient(new WebViewClient() {
             public boolean shouldOverrideUrlLoading(WebView webView, WebResourceRequest request) {
+                loggerManager.d("Richiesto caricamento dell'url " + request.getUrl().toString());
                 String requestedUrl = request.getUrl().toString();
                 if (requestedUrl.equals("https://registro.giua.edu.it/") || requestedUrl.equals("https://registro.giua.edu.it/#")) {
+                    loggerManager.d("Ottengo cookie del registro...");
                     String rawCookie = CookieManager.getInstance().getCookie("https://registro.giua.edu.it");
                     if (rawCookie != null) {
                         cookie = rawCookie.split("=")[1];
                         onStoppedWebView();
                         return true;
                     }
+                    loggerManager.e("Errore, cookie ottenuto è null. Impossibile continuare");
                     new Thread(() -> AppData.increaseVisitCount("WebView cookie error")).start();
                     Snackbar.make(findViewById(android.R.id.content), "Login studente fallito, contatta gli sviluppatori", Snackbar.LENGTH_LONG).show();
                 }
@@ -75,6 +81,7 @@ public class StudentLoginActivity extends AppCompatActivity {
 
             @Override
             public void onPageFinished(WebView view, String url) {
+                loggerManager.d("Caricamento pagina completato");
                 webView.setVisibility(View.VISIBLE);
             }
         });
@@ -87,13 +94,16 @@ public class StudentLoginActivity extends AppCompatActivity {
 
 
     private void onStoppedWebView() {
+        loggerManager.d("onStoppedWebView chiamato");
         new Thread(() -> AppData.increaseVisitCount("Login OK (Studente/Google)")).start();
         webView.setVisibility(View.INVISIBLE);
         obscureLayoutView.setVisibility(View.VISIBLE);
 
+        loggerManager.d("Creazione credenziali con cookie ottenuto da google");
         GlobalVariables.gS = new GiuaScraper("gsuite", "gsuite", cookie, true);
         LoginData.setCredentials(this, "gsuite", "gsuite", cookie);
         obscureLayoutView.setVisibility(View.GONE);
+        loggerManager.d("Avvio DrawerActivity");
         Intent intent = new Intent(StudentLoginActivity.this, DrawerActivity.class);
         startActivity(intent);
     }

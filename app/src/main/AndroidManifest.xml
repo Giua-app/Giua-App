@@ -16,9 +16,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GiuaApp"
         android:usesCleartextTraffic="true">
+
         <activity
             android:name=".ui.activities.LogdogViewerActivity"
-            android:exported="true" />
+            android:label="LogDot viewer"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.GiuaApp.NoActionBar"
+            tools:ignore="LockedOrientationActivity">
+        </activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -35,6 +35,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.giua.app.AppData;
 import com.giua.app.GlobalVariables;
+import com.giua.app.LoggerManager;
 import com.giua.app.LoginData;
 import com.giua.app.R;
 import com.giua.webscraper.GiuaScraper;
@@ -50,11 +51,14 @@ public class MainLoginActivity extends AppCompatActivity {
     TextView btnLoginAsStudent;
     boolean btnShowActivated = false;
     CheckBox chRememberCredentials;
+    LoggerManager loggerManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_normal_login);
+        loggerManager = new LoggerManager("MainLoginActivity", this);
+        loggerManager.d("onCreate chiamato");
 
         etUsername = findViewById(R.id.textUser);
         etPassword = findViewById(R.id.textPassword);
@@ -78,14 +82,17 @@ public class MainLoginActivity extends AppCompatActivity {
         btnLogin.setEnabled(false);
         new Thread(() -> {
             try {
+                loggerManager.d("Eseguo login...");
                 GlobalVariables.gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString(), LoginData.getCookie(this), true);
                 GlobalVariables.gS.login();
+                loggerManager.d("Devo ricordare le credenziali? " + chRememberCredentials.isChecked());
 
                 if (GlobalVariables.gS.checkLogin()) {
                     if (chRememberCredentials.isChecked())
                         LoginData.setCredentials(this, etUsername.getText().toString(), etPassword.getText().toString(), GlobalVariables.gS.getCookie());
                     startDrawerActivity();
                 } else {
+                    loggerManager.e("Errore sconosciuto, login eseguito ma checkLogin ritorna false");
                     setErrorMessage("Qualcosa e' andato storto!");
                     etPassword.setText("");
                     this.runOnUiThread(() -> pgProgressBar.setVisibility(View.INVISIBLE));
@@ -93,32 +100,38 @@ public class MainLoginActivity extends AppCompatActivity {
 
             } catch (GiuaScraperExceptions.SessionCookieEmpty e) {
                 if (!e.siteSays.equals("Tipo di utente non ammesso: usare l'autenticazione tramite GSuite.")) {
+                    loggerManager.e("Errore: credenziali errate");
                     setErrorMessage("Informazioni di login errate!");
                     this.runOnUiThread(() -> {
                         etPassword.setText("");
                         pgProgressBar.setVisibility(View.INVISIBLE);
                     });
                 } else
+                    loggerManager.d("Rilevato credenziali account google");
                     startStudentLoginActivity();
             } catch (GiuaScraperExceptions.UnableToLogin e) {
+                loggerManager.e("Errore sconosciuto - " + e.getMessage());
                 setErrorMessage("E' stato riscontrato qualche problema sconosciuto");
                 this.runOnUiThread(() -> {
                     etPassword.setText("");
                     pgProgressBar.setVisibility(View.INVISIBLE);
                 });
             } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
+                loggerManager.e("Errore: Manutenzione attiva");
                 setErrorMessage(getString(R.string.site_in_maintenace_error));
                 this.runOnUiThread(() -> {
                     etPassword.setText("");
                     pgProgressBar.setVisibility(View.INVISIBLE);
                 });
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
+                loggerManager.e("Errore di connessione dell'utente");
                 setErrorMessage(getString(R.string.your_connection_error));
                 this.runOnUiThread(() -> {
                     etPassword.setText("");
                     pgProgressBar.setVisibility(View.INVISIBLE);
                 });
             } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
+                loggerManager.e("Errore di connessione da parte del server");
                 setErrorMessage(getString(R.string.site_connection_error));
                 this.runOnUiThread(() -> {
                     etPassword.setText("");
@@ -129,10 +142,12 @@ public class MainLoginActivity extends AppCompatActivity {
     }
 
     private void startStudentLoginActivity() {
+        loggerManager.d("Avvio StudenteLoginActivity");
         startActivity(new Intent(MainLoginActivity.this, StudentLoginActivity.class));
     }
 
     private void startDrawerActivity() {
+        loggerManager.d("Avvio DrawerActivity");
         new Thread(() -> AppData.increaseVisitCount("Login OK (Genitore)")).start();
         Intent intent = new Intent(MainLoginActivity.this, DrawerActivity.class);
         startActivity(intent);
@@ -142,6 +157,7 @@ public class MainLoginActivity extends AppCompatActivity {
      * Settings button click listener
      */
     private void btnSettingOnClick(View view) {
+        loggerManager.d("Avvio SettingsActivity");
         startActivity(new Intent(this, SettingsActivity.class));
     }
 
@@ -149,6 +165,7 @@ public class MainLoginActivity extends AppCompatActivity {
      * Login click listener
      */
     private void btnLoginOnClick(View view) {
+        loggerManager.d("Login richiesto dall'utente");
         if (etPassword.getText().length() < 1) {
             setErrorMessage("Il campo della password non può essere vuoto!");
             return;
@@ -163,6 +180,7 @@ public class MainLoginActivity extends AppCompatActivity {
     }
 
     private void btnLoginAsStudentOnClick(View view) {
+        loggerManager.d("Login Studente richiesto dall'utente");
         startStudentLoginActivity();
     }
 
@@ -170,6 +188,7 @@ public class MainLoginActivity extends AppCompatActivity {
      * Show password click listener
      */
     private void showPasswordOnClick(View view) {
+        loggerManager.d("Mostra la password? " + !btnShowActivated);
         if (!btnShowActivated) {
             etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_NULL);      //Mostra la password
             btnShowPassword.setImageResource(R.drawable.ic_baseline_visibility_24);

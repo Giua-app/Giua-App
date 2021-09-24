@@ -24,7 +24,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -86,7 +85,7 @@ public class LoggerManager {
 
             try {
                 this.logs.add(new Log(logsSub[0], logsSub[1], logDateFormat.parse(logsSub[2]), logsSub[3]));
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
