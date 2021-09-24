@@ -45,6 +45,8 @@ import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
 import com.giua.app.ThreadManager;
 import com.giua.objects.Vote;
+import com.giua.webscraper.GiuaScraperExceptions;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -108,6 +110,47 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         return root;
     }
 
+    @Override
+    public void loadDataAndViews() {
+        threadManager.addAndRun(() -> {
+            try {
+                Map<String, List<Vote>> allVotes = GlobalVariables.gS.getAllVotes(forceRefresh);
+                int homeworks = GlobalVariables.gS.getNearHomeworks(forceRefresh);
+                int tests = GlobalVariables.gS.getNearTests(forceRefresh);
+
+                if (forceRefresh)
+                    forceRefresh = false;
+
+                activity.runOnUiThread(() -> {
+                    setupHomeworksTestsText(homeworks, tests);
+                    setupMeanVotesText(allVotes);
+                    chart.setData(generateLineData(allVotes));
+                    chart.invalidate();
+                    swipeRefreshLayout.setRefreshing(false);
+                });
+            } catch (GiuaScraperExceptions.YourConnectionProblems e) {
+                activity.runOnUiThread(() -> {
+                    setErrorMessage(activity.getString(R.string.your_connection_error), root);
+                    swipeRefreshLayout.setRefreshing(false);
+                });
+            } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
+                activity.runOnUiThread(() -> {
+                    setErrorMessage(activity.getString(R.string.site_connection_error), root);
+                    swipeRefreshLayout.setRefreshing(false);
+                });
+            } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
+                activity.runOnUiThread(() -> {
+                    setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
+                    swipeRefreshLayout.setRefreshing(false);
+                });
+            }
+        });
+    }
+
+    @Override
+    public void addViews() {
+    }
+
     private void updateReminderOnClick(View view) {
         if (canClickUpdateReminder) {
             canClickUpdateReminder = false;
@@ -123,33 +166,13 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         loadDataAndViews();
     }
 
-    @Override
-    public void loadDataAndViews() {
-        threadManager.addAndRun(() -> {
-            Map<String, List<Vote>> allVotes = GlobalVariables.gS.getAllVotes(forceRefresh);
-            int homeworks = GlobalVariables.gS.getNearHomeworks(forceRefresh);
-            int tests = GlobalVariables.gS.getNearTests(forceRefresh);
-
-            if (forceRefresh)
-                forceRefresh = false;
-
-            activity.runOnUiThread(() -> {
-                setupHomeworksTestsText(homeworks, tests);
-                setupMeanVotesText(allVotes);
-                chart.setData(generateLineData(allVotes));
-                chart.invalidate();
-                swipeRefreshLayout.setRefreshing(false);
-            });
-        });
-    }
-
-    @Override
-    public void addViews() {
-    }
-
     private void setupHomeworksTestsText(int homeworks, int tests) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.setMargins(0, 0, 0, 0);
+
+        root.findViewById(R.id.home_txt_homeworks).setVisibility(View.GONE);
+        root.findViewById(R.id.home_txt_tests).setVisibility(View.GONE);
+        root.findViewById(R.id.home_agenda_alerts).setBackgroundTintList(getResources().getColorStateList(R.color.middle_vote, activity.getTheme()));
 
         if (homeworks == 0 && tests == 0) {
             root.findViewById(R.id.home_agenda_alerts).setVisibility(View.VISIBLE);
@@ -252,6 +275,9 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         else
             ((TextView) root.findViewById(R.id.home_txt_mean)).setText(df.format(meanFirstQuarter));
 
+        root.findViewById(R.id.home_txt_mean).setBackground(null);
+        ((TextView) root.findViewById(R.id.home_txt_mean)).setMinWidth(0);
+
     }
 
     private float getMeanOfAllVotes(Map<String, List<Vote>> votes) {
@@ -282,6 +308,10 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
             return 0f;
 
         return meanOfMeans / allMeans.size();
+    }
+
+    private void setErrorMessage(String message, View root) {
+        Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

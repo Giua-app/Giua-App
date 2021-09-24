@@ -107,14 +107,21 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
                 activity.runOnUiThread(this::addViews);
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                 activity.runOnUiThread(() -> {
-                    setErrorMessage(getString(R.string.your_connection_error), root);
+                    setErrorMessage(activity.getString(R.string.your_connection_error), root);
                     pbLoadingPage.setVisibility(View.GONE);
                     tvNoElements.setVisibility(View.VISIBLE);
                     swipeRefreshLayout.setRefreshing(false);
                 });
             } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                 activity.runOnUiThread(() -> {
-                    setErrorMessage(getString(R.string.site_connection_error), root);
+                    setErrorMessage(activity.getString(R.string.site_connection_error), root);
+                    pbLoadingPage.setVisibility(View.GONE);
+                    tvNoElements.setVisibility(View.VISIBLE);
+                    swipeRefreshLayout.setRefreshing(false);
+                });
+            } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
+                activity.runOnUiThread(() -> {
+                    setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
                     pbLoadingPage.setVisibility(View.GONE);
                     tvNoElements.setVisibility(View.VISIBLE);
                     swipeRefreshLayout.setRefreshing(false);

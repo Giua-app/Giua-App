@@ -143,14 +143,13 @@ public class AppUpdateManager {
         }
 
         //Se siamo arrivati fino a qui vuol dire che c'è un aggiornamento
-        if (sendNotification)
-            createNotification(context);
+        createNotification(context, sendNotification);
         AppData.saveLastUpdateVersionString(context, tagName);
         AppData.saveUpdatePresence(context, true);
     }
 
 
-    private void createNotification(Context context){
+    private void createNotification(Context context, boolean sendNotification) {
 
         loggerManager.d("Creating update notification...");
 
@@ -163,16 +162,23 @@ public class AppUpdateManager {
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
+        if (sendNotification) {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
+                    .setSmallIcon(R.drawable.ic_giuaschool_logo1)
+                    .setAutoCancel(true)
+                    .setContentTitle(title)
+                    .setContentIntent(pendingIntent)
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(description))
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
-                .setSmallIcon(R.drawable.ic_giuaschool_logo1)
-                .setAutoCancel(true)
-                .setContentTitle(title)
-                .setContentIntent(pendingIntent)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(description))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-        notificationManager.notify(15, builder.build());
+            notificationManager.notify(15, builder.build());
+        } else {
+            try {
+                pendingIntent.send();
+            } catch (PendingIntent.CanceledException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }
