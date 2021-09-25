@@ -24,9 +24,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.CookieManager;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -46,6 +48,7 @@ public class StudentLoginActivity extends AppCompatActivity {
     String userAgent = "Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.91 Mobile Safari/537.36";
     String cookie = "";
     LoggerManager loggerManager;
+    ProgressBar progressBar;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -57,6 +60,7 @@ public class StudentLoginActivity extends AppCompatActivity {
 
         webView = findViewById(R.id.studentWebView);
         obscureLayoutView = findViewById(R.id.studentObscureLayoutView);
+        progressBar = findViewById(R.id.login_google_progress);
 
         obscureLayoutView.setVisibility(View.GONE);
 
@@ -83,6 +87,12 @@ public class StudentLoginActivity extends AppCompatActivity {
             public void onPageFinished(WebView view, String url) {
                 loggerManager.d("Caricamento pagina completato");
                 webView.setVisibility(View.VISIBLE);
+            }
+        });
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                progressBar.setProgress(newProgress);
             }
         });
 

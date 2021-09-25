@@ -25,7 +25,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_cool_blue"
-    android:backgroundTint="#5EFFFFFF"
+    android:backgroundTint="#4FFFFFFF"
     android:backgroundTintMode="src_over"
     tools:context=".ActivityManager">
 
@@ -70,10 +70,10 @@
                 android:minHeight="48dp"
                 app:layout_constraintBottom_toTopOf="@+id/login_button"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.483"
+                app:layout_constraintHorizontal_bias="0.472"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textUser"
-                app:layout_constraintVertical_bias="0.518" />
+                app:layout_constraintVertical_bias="0.532" />
 
             <TextView
                 android:id="@+id/btn_student_login"
@@ -93,10 +93,10 @@
                 android:layout_height="49dp"
                 app:layout_constraintBottom_toBottomOf="@+id/textPassword"
                 app:layout_constraintEnd_toStartOf="@+id/textPassword"
-                app:layout_constraintHorizontal_bias="0.764"
+                app:layout_constraintHorizontal_bias="0.795"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/textPassword"
-                app:layout_constraintVertical_bias="1.0"
+                app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/ic_passwordlock" />
 
             <ImageView
@@ -229,5 +229,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/main_card_view"
         app:layout_constraintVertical_bias="1.0" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="87dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

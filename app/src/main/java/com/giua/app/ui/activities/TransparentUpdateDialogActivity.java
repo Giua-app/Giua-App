@@ -77,8 +77,7 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
         if (hasReminder)
             builder.setNeutralButton("Ricorda tra un giorno", (dialog, id) -> AppData.saveLastUpdateReminderDate(TransparentUpdateDialogActivity.this, time));
 
-        builder.setNegativeButton("NO", (dialog, id) -> {
-        })
+        builder.setNegativeButton("NO", (dialog, id) -> {})
                 .setOnCancelListener(dialog -> finish())
                 .setOnDismissListener(dialog -> finish());
 
