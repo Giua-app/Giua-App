@@ -79,7 +79,6 @@ public class MainLoginActivity extends AppCompatActivity {
     }
 
     private void login() {
-        btnLogin.setEnabled(false);
         new Thread(() -> {
             try {
                 loggerManager.d("Eseguo login...");
@@ -95,6 +94,7 @@ public class MainLoginActivity extends AppCompatActivity {
                     loggerManager.e("Errore sconosciuto, login eseguito ma checkLogin ritorna false");
                     setErrorMessage("Qualcosa e' andato storto!");
                     etPassword.setText("");
+                    this.runOnUiThread(() -> btnLogin.setVisibility(View.VISIBLE));
                     this.runOnUiThread(() -> pgProgressBar.setVisibility(View.INVISIBLE));
                 }
 
@@ -105,6 +105,7 @@ public class MainLoginActivity extends AppCompatActivity {
                     this.runOnUiThread(() -> {
                         etPassword.setText("");
                         pgProgressBar.setVisibility(View.INVISIBLE);
+                        btnLogin.setVisibility(View.VISIBLE);
                     });
                 } else
                     loggerManager.d("Rilevato credenziali account google");
@@ -115,6 +116,7 @@ public class MainLoginActivity extends AppCompatActivity {
                 this.runOnUiThread(() -> {
                     etPassword.setText("");
                     pgProgressBar.setVisibility(View.INVISIBLE);
+                    btnLogin.setVisibility(View.VISIBLE);
                 });
             } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
                 loggerManager.e("Errore: Manutenzione attiva");
@@ -122,6 +124,7 @@ public class MainLoginActivity extends AppCompatActivity {
                 this.runOnUiThread(() -> {
                     etPassword.setText("");
                     pgProgressBar.setVisibility(View.INVISIBLE);
+                    btnLogin.setVisibility(View.VISIBLE);
                 });
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                 loggerManager.e("Errore di connessione dell'utente");
@@ -129,6 +132,7 @@ public class MainLoginActivity extends AppCompatActivity {
                 this.runOnUiThread(() -> {
                     etPassword.setText("");
                     pgProgressBar.setVisibility(View.INVISIBLE);
+                    btnLogin.setVisibility(View.VISIBLE);
                 });
             } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                 loggerManager.e("Errore di connessione da parte del server");
@@ -136,6 +140,7 @@ public class MainLoginActivity extends AppCompatActivity {
                 this.runOnUiThread(() -> {
                     etPassword.setText("");
                     pgProgressBar.setVisibility(View.INVISIBLE);
+                    btnLogin.setVisibility(View.VISIBLE);
                 });
             }
         }).start();
@@ -175,6 +180,7 @@ public class MainLoginActivity extends AppCompatActivity {
         }
 
         pgProgressBar.setVisibility(View.VISIBLE);
+        btnLogin.setVisibility(View.INVISIBLE);
 
         login();
     }
