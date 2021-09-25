@@ -164,7 +164,7 @@ public class AppUpdateManager {
 
         if (sendNotification) {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
-                    .setSmallIcon(R.drawable.ic_giuaschool_logo1)
+                    .setSmallIcon(R.drawable.ic_giuaschool_black)
                     .setAutoCancel(true)
                     .setContentTitle(title)
                     .setContentIntent(pendingIntent)

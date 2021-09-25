@@ -69,7 +69,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
                 loggerManager.e("Errore di connessione - " + e.getMessage());
                 if (SettingsData.getSettingBoolean(context, SettingKey.DEBUG_MODE)) {
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                            .setSmallIcon(R.drawable.ic_giuaschool_logo1)
+                            .setSmallIcon(R.drawable.ic_giuaschool_black)
                             .setContentTitle("Si è verificato un errore di connessione")
                             .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
@@ -79,7 +79,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
                 loggerManager.e("Errore sconosciuto - " + e.getMessage());
                 if (SettingsData.getSettingBoolean(context, SettingKey.DEBUG_MODE)) {
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                            .setSmallIcon(R.drawable.ic_giuaschool_logo1)
+                            .setSmallIcon(R.drawable.ic_giuaschool_black)
                             .setContentTitle("Si è verificato un errore")
                             .setStyle(new NotificationCompat.BigTextStyle().bigText(e.toString()))
                             .setPriority(NotificationCompat.PRIORITY_DEFAULT);
@@ -126,7 +126,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         if (numberNewslettersOld != -1 && numberNewsletters - numberNewslettersOld > 0) {
             loggerManager.d("Trovata nuova circolare");
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                    .setSmallIcon(R.drawable.ic_giuaschool_logo1)
+                    .setSmallIcon(R.drawable.ic_giuaschool_black)
                     .setContentTitle(numberNewsletters - numberNewslettersOld == 1 ? "Nuova circolare" : numberNewsletters - numberNewslettersOld + " nuove circolari")
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
@@ -135,7 +135,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         if (numberAlertsOld != -1 && numberAlerts - numberAlertsOld > 0) {
             loggerManager.d("Trovati nuovi avvisi");
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                    .setSmallIcon(R.drawable.ic_giuaschool_logo1)
+                    .setSmallIcon(R.drawable.ic_giuaschool_black)
                     .setContentTitle(numberAlerts - numberAlertsOld == 1 ? "Nuovo avviso" : numberAlerts - numberAlertsOld + " nuovi avvisi")
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
@@ -144,7 +144,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         if (gS.checkForAbsenceUpdate(false)) {
             loggerManager.d("Trovata nuova assenza");
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                    .setSmallIcon(R.drawable.ic_giuaschool_logo1)
+                    .setSmallIcon(R.drawable.ic_giuaschool_black)
                     .setContentTitle("Nuova assenza")
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
