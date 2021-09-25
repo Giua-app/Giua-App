@@ -32,15 +32,13 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/main_card_view"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="700dp"
+        android:layout_marginTop="90dp"
         app:cardCornerRadius="30dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtSubtitle"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintTop_toBottomOf="@+id/txtSubtitle">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -56,8 +54,10 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/textUser"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.497"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.481" />
 
             <EditText
                 android:id="@+id/textPassword"
@@ -70,10 +70,10 @@
                 android:minHeight="48dp"
                 app:layout_constraintBottom_toTopOf="@+id/login_button"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.504"
+                app:layout_constraintHorizontal_bias="0.483"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textUser"
-                app:layout_constraintVertical_bias="0.52" />
+                app:layout_constraintVertical_bias="0.518" />
 
             <TextView
                 android:id="@+id/btn_student_login"
@@ -93,7 +93,7 @@
                 android:layout_height="49dp"
                 app:layout_constraintBottom_toBottomOf="@+id/textPassword"
                 app:layout_constraintEnd_toStartOf="@+id/textPassword"
-                app:layout_constraintHorizontal_bias="0.765"
+                app:layout_constraintHorizontal_bias="0.764"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/textPassword"
                 app:layout_constraintVertical_bias="1.0"
@@ -151,10 +151,10 @@
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.483"
+                app:layout_constraintHorizontal_bias="0.447"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.587" />
+                app:layout_constraintVertical_bias="0.384" />
 
             <EditText
                 android:id="@+id/textUser"
@@ -168,25 +168,25 @@
                 android:minHeight="48dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.492"
+                app:layout_constraintHorizontal_bias="0.478"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.191" />
+                app:layout_constraintVertical_bias="0.131" />
 
             <CheckBox
                 android:id="@+id/checkbox_remember_credentials"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="true"
                 android:layout_marginStart="5dp"
                 android:layout_marginBottom="10dp"
+                android:checked="true"
                 android:text="@string/activitymain_checkbox_remember_credentials"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/btn_student_login"
-                app:layout_constraintVertical_bias="0.512" />
+                app:layout_constraintVertical_bias="0.097" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
