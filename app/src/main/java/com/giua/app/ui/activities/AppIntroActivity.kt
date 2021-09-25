@@ -44,7 +44,7 @@ class AppIntroActivity : AppIntro(){
             "Benvenuto!",
             "Segui questa breve introduzione per scoprire tutte le funzionalità di Giua App",
             imageDrawable = R.drawable.ic_giuaschool_logo1,
-            backgroundDrawable = R.drawable.intro_back_slide1,
+            backgroundDrawable = R.drawable.bg_intro_slide1,
             titleTypefaceFontRes = R.font.caviar_dreams_bold,
             descriptionTypefaceFontRes = R.font.caviar_dreams
         ))
@@ -53,7 +53,7 @@ class AppIntroActivity : AppIntro(){
             "Voti",
             "Puoi cliccare su un voto per vederne i dettagli",
             imageDrawable = R.mipmap.voti_tutorial,
-            backgroundDrawable = R.drawable.intro_back_slide2,
+            backgroundDrawable = R.drawable.bg_intro_slide2,
             titleTypefaceFontRes = R.font.caviar_dreams_bold,
             descriptionTypefaceFontRes = R.font.caviar_dreams
         )))
@@ -62,7 +62,7 @@ class AppIntroActivity : AppIntro(){
             "Bacheca (Circolari)",
             "Clicca su {cmd_file_document_outline} per visualizzare la circolare",
             imageDrawable = R.mipmap.circolari_tutorial,
-            backgroundDrawable = R.drawable.intro_back_slide3,
+            backgroundDrawable = R.drawable.bg_intro_slide3,
             titleTypefaceFontRes = R.font.caviar_dreams_bold,
             descriptionTypefaceFontRes = R.font.caviar_dreams
         ))
@@ -71,7 +71,7 @@ class AppIntroActivity : AppIntro(){
             "Bacheca (Circolari)",
             "Clicca su {gmd_attachment} per vedere i suoi allegati",
             imageDrawable = R.mipmap.circolari2_tutorial,
-            backgroundDrawable = R.drawable.intro_back_slide4,
+            backgroundDrawable = R.drawable.bg_intro_slide4,
             titleTypefaceFontRes = R.font.caviar_dreams_bold,
             descriptionTypefaceFontRes = R.font.caviar_dreams
         ))
@@ -80,7 +80,7 @@ class AppIntroActivity : AppIntro(){
             "Bacheca (Avvisi)",
             "Clicca su un avviso per vederne i dettagli",
             imageDrawable = R.mipmap.avvisi_tutorial,
-            backgroundDrawable = R.drawable.intro_back_slide6,
+            backgroundDrawable = R.drawable.bg_intro_slide6,
             titleTypefaceFontRes = R.font.caviar_dreams_bold,
             descriptionTypefaceFontRes = R.font.caviar_dreams
         ))
@@ -89,7 +89,7 @@ class AppIntroActivity : AppIntro(){
             "Lezioni",
             "Clicca su una lezione per vederne i dettagli",
             imageDrawable = R.mipmap.lezioni_tutorial,
-            backgroundDrawable = R.drawable.intro_back_slide7,
+            backgroundDrawable = R.drawable.bg_intro_slide7,
             titleTypefaceFontRes = R.font.caviar_dreams_bold,
             descriptionTypefaceFontRes = R.font.caviar_dreams
         ))
@@ -98,7 +98,7 @@ class AppIntroActivity : AppIntro(){
             "Lezioni",
             "Per cambiare giorno, clicca su {cmd_calendar_blank} per aprire il calendario",
             imageDrawable = R.mipmap.lezioni2_tutorial,
-            backgroundDrawable = R.drawable.intro_back_slide8,
+            backgroundDrawable = R.drawable.bg_intro_slide8,
             titleTypefaceFontRes = R.font.caviar_dreams_bold,
             descriptionTypefaceFontRes = R.font.caviar_dreams
         ))
@@ -107,7 +107,7 @@ class AppIntroActivity : AppIntro(){
             "Agenda",
             "Clicca su una verifica o compito per vedere i dettagli",
             imageDrawable = R.mipmap.agenda_tutorial,
-            backgroundDrawable = R.drawable.intro_back_slide9,
+            backgroundDrawable = R.drawable.bg_intro_slide9,
             titleTypefaceFontRes = R.font.caviar_dreams_bold,
             descriptionTypefaceFontRes = R.font.caviar_dreams
         ))
@@ -119,7 +119,7 @@ class AppIntroActivity : AppIntro(){
             "E' tutto pronto!",
             "Clicca \"FINE\" per passare alla pagina di login",
             imageDrawable = R.mipmap.fine_tutorial,
-            backgroundDrawable = R.drawable.intro_back_slide1,
+            backgroundDrawable = R.drawable.bg_intro_slide1,
             titleTypefaceFontRes = R.font.caviar_dreams_bold,
             descriptionTypefaceFontRes = R.font.caviar_dreams
         )))

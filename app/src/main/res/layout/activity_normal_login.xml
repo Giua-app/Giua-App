@@ -24,137 +24,194 @@
     android:id="@+id/main_activity_main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_cool_blue"
+    android:backgroundTint="#5EFFFFFF"
+    android:backgroundTintMode="src_over"
     tools:context=".ActivityManager">
 
-    <ImageView
-        android:id="@+id/login_user_icon"
-        android:layout_width="38dp"
-        android:layout_height="49dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textUser"
-        app:layout_constraintEnd_toStartOf="@+id/textUser"
-        app:layout_constraintHorizontal_bias="0.682"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textUser"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/ic_account_circle" />
-
-    <ImageView
-        android:id="@+id/login_pwd_icon"
-        android:layout_width="38dp"
-        android:layout_height="49dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textPassword"
-        app:layout_constraintEnd_toStartOf="@+id/textPassword"
-        app:layout_constraintHorizontal_bias="0.682"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textPassword"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/ic_passwordlock" />
-
-    <Button
-        android:id="@+id/login_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
-        android:backgroundTint="@color/main_color"
-        android:paddingStart="25dp"
-        android:paddingTop="15dp"
-        android:paddingEnd="25dp"
-        android:paddingBottom="15dp"
-        android:text="@string/activitymain_button_login"
-        android:textColor="@color/white"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textPassword" />
-
-    <CheckBox
-        android:id="@+id/checkbox_remember_credentials"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="52dp"
-        android:checked="true"
-        android:text="@string/activitymain_checkbox_remember_credentials"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_student_login"
-        app:layout_constraintVertical_bias="0.816" />
-
-    <EditText
-        android:id="@+id/textPassword"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/main_card_view"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:autofillHints="password"
-        android:fontFamily="sans-serif"
-        android:hint="@string/activitymain_pwdtextbox_hint"
-        android:inputType="textPassword"
-        android:minHeight="48dp"
-        app:layout_constraintEnd_toEndOf="@+id/textUser"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textUser"
-        app:layout_constraintTop_toBottomOf="@+id/textUser" />
-
-    <EditText
-        android:id="@+id/textUser"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:autofillHints="username"
-        android:ems="10"
-        android:fontFamily="sans-serif"
-        android:hint="@string/activitymain_usertextbox_hint"
-        android:inputType="textPersonName"
-        android:minHeight="48dp"
+        android:layout_height="637dp"
+        android:layout_marginTop="200dp"
+        app:cardCornerRadius="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtSubtitle"
-        app:layout_constraintVertical_bias="0.095" />
+        app:layout_constraintTop_toBottomOf="@+id/txtSubtitle">
 
-    <ImageButton
-        android:id="@+id/show_password_button"
-        android:layout_width="48dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="16dp"
-        android:backgroundTint="#00000000"
-        android:contentDescription="@string/activitymain_btn_showpassword"
-        android:scaleType="fitCenter"
-        app:layout_constraintBottom_toBottomOf="@+id/textPassword"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.351"
-        app:layout_constraintStart_toEndOf="@+id/textPassword"
-        app:layout_constraintTop_toTopOf="@+id/textPassword"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/ic_baseline_visibility_off_24" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="105dp"
-        android:layout_height="59dp"
-        android:layout_marginTop="36dp"
-        android:visibility="invisible"
+            <TextView
+                android:id="@+id/login_card_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Accesso al Registro"
+                android:textAllCaps="false"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/textUser"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/textPassword"
+                android:layout_width="209dp"
+                android:layout_height="50dp"
+                android:autofillHints="password"
+                android:fontFamily="sans-serif"
+                android:hint="@string/activitymain_pwdtextbox_hint"
+                android:inputType="textPassword"
+                android:minHeight="48dp"
+                app:layout_constraintBottom_toTopOf="@+id/login_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.504"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textUser"
+                app:layout_constraintVertical_bias="0.189" />
+
+            <TextView
+                android:id="@+id/btn_student_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:layout_marginBottom="20dp"
+                android:text="Sei uno studente?"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toTopOf="@+id/checkbox_remember_credentials"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/login_button" />
+
+            <ImageView
+                android:id="@+id/login_pwd_icon"
+                android:layout_width="38dp"
+                android:layout_height="49dp"
+                app:layout_constraintBottom_toBottomOf="@+id/textPassword"
+                app:layout_constraintEnd_toStartOf="@+id/textPassword"
+                app:layout_constraintHorizontal_bias="0.765"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textPassword"
+                app:layout_constraintVertical_bias="1.0"
+                app:srcCompat="@drawable/ic_passwordlock" />
+
+            <ImageView
+                android:id="@+id/login_user_icon"
+                android:layout_width="38dp"
+                android:layout_height="49dp"
+                app:layout_constraintBottom_toBottomOf="@+id/textUser"
+                app:layout_constraintEnd_toStartOf="@+id/textUser"
+                app:layout_constraintHorizontal_bias="0.796"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textUser"
+                app:layout_constraintVertical_bias="0.0"
+                app:srcCompat="@drawable/ic_account_circle" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="105dp"
+                android:layout_height="59dp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/login_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/login_button"
+                app:layout_constraintVertical_bias="1.0" />
+
+            <ImageButton
+                android:id="@+id/show_password_button"
+                android:layout_width="48dp"
+                android:layout_height="0dp"
+                android:backgroundTint="#00000000"
+                android:contentDescription="@string/activitymain_btn_showpassword"
+                android:scaleType="fitCenter"
+                app:layout_constraintBottom_toBottomOf="@+id/textPassword"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/textPassword"
+                app:layout_constraintTop_toTopOf="@+id/textPassword"
+                app:layout_constraintVertical_bias="0.0"
+                app:srcCompat="@drawable/ic_baseline_visibility_off_24" />
+
+            <Button
+                android:id="@+id/login_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/main_color"
+                android:paddingStart="25dp"
+                android:paddingTop="15dp"
+                android:paddingEnd="25dp"
+                android:paddingBottom="15dp"
+                android:text="@string/activitymain_button_login"
+                android:textColor="@color/white"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.362" />
+
+            <EditText
+                android:id="@+id/textUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:autofillHints="username"
+                android:ems="10"
+                android:fontFamily="sans-serif"
+                android:hint="@string/activitymain_usertextbox_hint"
+                android:inputType="textPersonName"
+                android:minHeight="48dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.49"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.127" />
+
+            <CheckBox
+                android:id="@+id/checkbox_remember_credentials"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="116dp"
+                android:checked="true"
+                android:text="@string/activitymain_checkbox_remember_credentials"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/login_button"
+                app:layout_constraintVertical_bias="0.512" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <ImageView
+        android:id="@+id/login_app_logo"
+        android:layout_width="135dp"
+        android:layout_height="119dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textPassword" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.072"
+        app:srcCompat="@drawable/ic_giuaschool_logo1" />
 
     <TextView
         android:id="@+id/txtSubtitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:text="@string/activitymain_textbox_screentitle"
+        android:fontFamily="@font/ubuntu_light"
+        android:text="Giua App"
         android:textAlignment="center"
         android:textSize="34sp"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.056" />
+        app:layout_constraintTop_toBottomOf="@+id/login_app_logo"
+        app:layout_constraintVertical_bias="0.034" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floating_settings_button"
@@ -169,21 +226,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkbox_remember_credentials"
+        app:layout_constraintTop_toTopOf="@+id/main_card_view"
         app:layout_constraintVertical_bias="1.0" />
-
-    <TextView
-        android:id="@+id/btn_student_login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Sei uno studente?"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/login_button"
-        app:layout_constraintHorizontal_bias="0.545"
-        app:layout_constraintStart_toStartOf="@+id/login_button"
-        app:layout_constraintTop_toBottomOf="@+id/login_button"
-        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

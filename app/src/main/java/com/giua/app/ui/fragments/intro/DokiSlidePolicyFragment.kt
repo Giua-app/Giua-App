@@ -61,7 +61,7 @@ class DokiSlidePolicyFragment : Fragment(), SlidePolicy {
         layout = view.findViewById(R.id.constraint_layout_slidepolicy)
 
         //Background
-        layout.background = ResourcesCompat.getDrawable(resources, R.drawable.intro_back_slide9, null)
+        layout.background = ResourcesCompat.getDrawable(resources, R.drawable.bg_intro_slide9, null)
         //Pulsante istruzioni
         button.setOnClickListener {
             dokiViewed = true
