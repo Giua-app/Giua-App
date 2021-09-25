@@ -91,6 +91,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
     }
 
     private void checkAndMakeLogin() {
+        //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090"); //DEBUG
         if (GlobalVariables.gS != null) {    //Se un istanza di Giuascraper esiste già non ricrearla ed usa quella
             gS = GlobalVariables.gS;
             loggerManager.d("Riutilizzo istanza gS");

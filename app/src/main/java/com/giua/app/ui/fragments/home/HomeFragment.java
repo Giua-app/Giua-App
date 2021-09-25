@@ -87,6 +87,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         desc.setText("");
         chart.setDescription(desc);
         chart.getLegend().setTextSize(13);
+        chart.getLegend().setTextColor(getResources().getColor(R.color.night_white_light_black, activity.getTheme()));
         chart.getLegend().setWordWrapEnabled(true);
         chart.setTouchEnabled(false);
         chart.setDragEnabled(false);
@@ -143,7 +144,8 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
                     setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
                     swipeRefreshLayout.setRefreshing(false);
                 });
-            }
+            } catch (IllegalStateException ignored) {
+            }   //Si verifica quando questa schermata è stata distrutta ma il thread cerca comunque di fare qualcosa
         });
     }
 

@@ -47,6 +47,7 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
 
     String url;
     String newVer;
+    boolean hasReminder;
     Date time;
     LoggerManager loggerManager;
 
@@ -59,20 +60,25 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
 
         url = getIntent().getStringExtra("url");
         newVer = getIntent().getStringExtra("newVersion");
+        hasReminder = getIntent().getBooleanExtra("hasReminder", false);
         time = Calendar.getInstance().getTime();
         showDialog();
     }
 
 
-    private void showDialog(){
+    private void showDialog() {
         loggerManager.d("Mostro dialogo per aggiornamento app");
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Aggiornamento");
         builder.setMessage("La tua versione attuale è la " + BuildConfig.VERSION_NAME + "\nLa nuova versione è la " + newVer + "\n\nVuoi aggiornare l'app?\n" +
                 "Nota: I tuoi dati NON VERRANNO cancellati, il file occupa circa 9MB")
+                .setPositiveButton("Si", (dialog, id) -> new Thread(this::downloadInstallApk).start());
 
-                .setPositiveButton("Si", (dialog, id) -> new Thread(this::downloadInstallApk).start())
-                .setNegativeButton("Ricorda tra un giorno", (dialog, id) -> AppData.setLastUpdateReminderDate(TransparentUpdateDialogActivity.this, time))
+        if (hasReminder)
+            builder.setNeutralButton("Ricorda tra un giorno", (dialog, id) -> AppData.saveLastUpdateReminderDate(TransparentUpdateDialogActivity.this, time));
+
+        builder.setNegativeButton("NO", (dialog, id) -> {
+        })
                 .setOnCancelListener(dialog -> finish())
                 .setOnDismissListener(dialog -> finish());
 
@@ -143,7 +149,7 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
                 }
                 loggerManager.d("Imposto LastUpdateReminder ed esco");
                 //L'installazione è gia iniziata quando si arriva qui, praticamente sono gli ultimi instanti dell'app
-                AppData.setLastUpdateReminderDate(TransparentUpdateDialogActivity.this, time);
+                AppData.saveLastUpdateReminderDate(TransparentUpdateDialogActivity.this, time);
                 finish();
             }
         };

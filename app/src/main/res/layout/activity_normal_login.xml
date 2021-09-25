@@ -32,13 +32,15 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/main_card_view"
         android:layout_width="0dp"
-        android:layout_height="637dp"
-        android:layout_marginTop="200dp"
+        android:layout_height="0dp"
         app:cardCornerRadius="30dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtSubtitle">
+        app:layout_constraintTop_toBottomOf="@+id/txtSubtitle"
+        app:layout_constraintVertical_bias="1.0">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -60,7 +62,7 @@
             <EditText
                 android:id="@+id/textPassword"
                 android:layout_width="209dp"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:autofillHints="password"
                 android:fontFamily="sans-serif"
                 android:hint="@string/activitymain_pwdtextbox_hint"
@@ -68,22 +70,21 @@
                 android:minHeight="48dp"
                 app:layout_constraintBottom_toTopOf="@+id/login_button"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.489"
+                app:layout_constraintHorizontal_bias="0.504"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textUser"
-                app:layout_constraintVertical_bias="0.162" />
+                app:layout_constraintVertical_bias="0.52" />
 
             <TextView
                 android:id="@+id/btn_student_login"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginBottom="20dp"
                 android:text="Sei uno studente?"
                 android:textSize="15sp"
-                app:layout_constraintBottom_toTopOf="@+id/checkbox_remember_credentials"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/login_button"
+                app:layout_constraintStart_toStartOf="@+id/login_button"
                 app:layout_constraintTop_toBottomOf="@+id/login_button" />
 
             <ImageView
@@ -92,7 +93,7 @@
                 android:layout_height="49dp"
                 app:layout_constraintBottom_toBottomOf="@+id/textPassword"
                 app:layout_constraintEnd_toStartOf="@+id/textPassword"
-                app:layout_constraintHorizontal_bias="0.803"
+                app:layout_constraintHorizontal_bias="0.765"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/textPassword"
                 app:layout_constraintVertical_bias="1.0"
@@ -114,7 +115,7 @@
                 android:id="@+id/progressBar"
                 android:layout_width="105dp"
                 android:layout_height="59dp"
-                android:visibility="invisible"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/login_button"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -150,13 +151,14 @@
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.483"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.362" />
+                app:layout_constraintVertical_bias="0.587" />
 
             <EditText
                 android:id="@+id/textUser"
-                android:layout_width="209dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:autofillHints="username"
                 android:ems="10"
@@ -166,23 +168,24 @@
                 android:minHeight="48dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.49"
+                app:layout_constraintHorizontal_bias="0.492"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.127" />
+                app:layout_constraintVertical_bias="0.191" />
 
             <CheckBox
                 android:id="@+id/checkbox_remember_credentials"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="116dp"
                 android:checked="true"
+                android:layout_marginStart="5dp"
+                android:layout_marginBottom="10dp"
                 android:text="@string/activitymain_checkbox_remember_credentials"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/login_button"
+                app:layout_constraintTop_toBottomOf="@+id/btn_student_login"
                 app:layout_constraintVertical_bias="0.512" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
@@ -195,7 +198,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.072"
+        app:layout_constraintVertical_bias="0.081"
         app:srcCompat="@drawable/ic_giuaschool_logo1" />
 
     <TextView
@@ -206,12 +209,10 @@
         android:text="Giua App"
         android:textAlignment="center"
         android:textSize="34sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/login_app_logo"
-        app:layout_constraintVertical_bias="0.034" />
+        app:layout_constraintTop_toBottomOf="@+id/login_app_logo" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floating_settings_button"

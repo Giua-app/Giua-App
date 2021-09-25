@@ -132,7 +132,7 @@ public class AppData {
     }
 
     @SuppressLint("SimpleDateFormat")
-    public static void setLastUpdateReminderDate(final Context context, final Date date) {
+    public static void saveLastUpdateReminderDate(final Context context, final Date date) {
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         String value = format.format(date);
         getSharedPreferences(context).edit()

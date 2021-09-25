@@ -135,22 +135,21 @@ public class AppUpdateManager {
             e.printStackTrace();
         }
 
+        //Se siamo arrivati fino a qui vuol dire che c'è un aggiornamento
+        AppData.saveLastUpdateVersionString(context, tagName);
+        AppData.saveUpdatePresence(context, true);
 
-        if (date.after(lastUpdateDate)) {
+        if (date.after(lastUpdateDate) && sendNotification) {
             //Aggiornamento gia notificato, nextUpdateDate è il prossimo giorno in cui notificare
             loggerManager.w("Update already notified, ignoring");
             return;
         }
 
-        //Se siamo arrivati fino a qui vuol dire che c'è un aggiornamento
         createNotification(context, sendNotification);
-        AppData.saveLastUpdateVersionString(context, tagName);
-        AppData.saveUpdatePresence(context, true);
     }
 
 
     private void createNotification(Context context, boolean sendNotification) {
-
         loggerManager.d("Creating update notification...");
 
         String title = "Nuova versione rilevata";
@@ -159,8 +158,13 @@ public class AppUpdateManager {
         Intent intent = new Intent(context, TransparentUpdateDialogActivity.class);
         intent.putExtra("url", downloadUrl);
         intent.putExtra("newVersion", tagName);
+        intent.putExtra("hasReminder", sendNotification);
+        PendingIntent pendingIntent;
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        if (sendNotification)
+            pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        else
+            pendingIntent = PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         if (sendNotification) {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
