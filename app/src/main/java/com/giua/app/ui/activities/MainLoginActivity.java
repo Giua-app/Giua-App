@@ -72,7 +72,7 @@ public class MainLoginActivity extends AppCompatActivity {
         etUsername.setText(LoginData.getUser(getApplicationContext()));     //Imposta lo username memorizzato
         etPassword.setText(LoginData.getPassword(getApplicationContext()));     //Imposta la password memorizzata
 
-        findViewById(R.id.floating_settings_button).setOnClickListener(this::btnSettingOnClick);
+        findViewById(R.id.login_btn_settings).setOnClickListener(this::btnSettingOnClick);
         btnLogin.setOnClickListener(this::btnLoginOnClick);
         btnShowPassword.setOnClickListener(this::showPasswordOnClick);
         btnLoginAsStudent.setOnClickListener(this::btnLoginAsStudentOnClick);
