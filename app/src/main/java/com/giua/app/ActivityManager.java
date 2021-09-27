@@ -47,9 +47,9 @@ public class ActivityManager extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         loggerManager = new LoggerManager("ActivityManager", this);
         loggerManager.d("---");
-        loggerManager.d("onCreate called");
+        loggerManager.d("onCreate chiamato");
         if (SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE))
-            loggerManager.w("DEMO MODE ACTIVATED");
+            loggerManager.w("DEMO MODE ATTIVO");
 
         switch (SettingsData.getSettingString(this, SettingKey.THEME)) {
             case "0":
@@ -76,7 +76,7 @@ public class ActivityManager extends AppCompatActivity {
         if (!defaultUrl.equals(""))
             GiuaScraper.setSiteURL(defaultUrl);
 
-        loggerManager.d("defaultUrl is " + defaultUrl);
+        loggerManager.d("defaultUrl è " + defaultUrl);
 
         //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
 
@@ -84,10 +84,10 @@ public class ActivityManager extends AppCompatActivity {
         //introStatus = 0;         //DEBUG
 
         // 1 = Intro già vista , 0 = (Non usato) , -1 = Intro mai vista
-        loggerManager.d("introStatus is " + introStatus);
+        loggerManager.d("introStatus è " + introStatus);
         if (introStatus != 1) {
             new Thread(() -> AppData.increaseVisitCount("Primo avvio (nuove installazioni)")).start();
-            loggerManager.d("Starting App Intro Activity");
+            loggerManager.d("Avvio App Intro Activity");
             startActivity(new Intent(ActivityManager.this, AppIntroActivity.class));
             return;
         }
@@ -101,19 +101,19 @@ public class ActivityManager extends AppCompatActivity {
     }
 
     private void startMainLoginActivity() {
-        loggerManager.d("Starting Main Login Activity");
+        loggerManager.d("Avvio Main Login Activity");
         startActivity(new Intent(ActivityManager.this, MainLoginActivity.class));
         finish();
     }
 
     private void startAutomaticLoginActivity() {
-        loggerManager.d("Starting Automatic Login Activity");
+        loggerManager.d("Avvio Automatic Login Activity");
         startActivity(new Intent(ActivityManager.this, AutomaticLoginActivity.class));
         finish();
     }
 
     private void checkForUpdates(){
-        loggerManager.d("Called check for app updates in thread");
+        loggerManager.d("Chiamo checkForAppUpdates");
         new Thread(() -> new AppUpdateManager().checkForAppUpdates(this, true)).start();
     }
 
@@ -130,7 +130,7 @@ public class ActivityManager extends AppCompatActivity {
                 .errorDrawable(R.drawable.ic_giuaschool_logo1)
                 //.errorActivity(ErrorActivity.class)
                 .apply();
-        loggerManager.d("CustomActivityOnCrach setup complete");
+        loggerManager.d("CustomActivityOnCrash setup completato");
     }
 
     private void setupNotificationManager(){
@@ -155,7 +155,7 @@ public class ActivityManager extends AppCompatActivity {
             NotificationManager notificationManager2 = getSystemService(NotificationManager.class);
             notificationManager2.createNotificationChannel(channel2);
         }
-        loggerManager.d("Notification Manager setup complete");
+        loggerManager.d("Notification Manager setup completato");
     }
 
 
