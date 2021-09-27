@@ -22,16 +22,16 @@ package com.giua.app.ui.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
-import android.text.InputType;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.giua.app.AppData;
 import com.giua.app.GlobalVariables;
@@ -41,15 +41,16 @@ import com.giua.app.R;
 import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 
 public class MainLoginActivity extends AppCompatActivity {
     EditText etUsername;
     EditText etPassword;
+    TextInputLayout txtLayoutUsername;
+    TextInputLayout txtLayoutPassword;
     ProgressBar pgProgressBar;
-    ImageButton btnShowPassword;
     Button btnLogin;
     TextView btnLoginAsStudent;
-    boolean btnShowActivated = false;
     CheckBox chRememberCredentials;
     LoggerManager loggerManager;
 
@@ -60,10 +61,12 @@ public class MainLoginActivity extends AppCompatActivity {
         loggerManager = new LoggerManager("MainLoginActivity", this);
         loggerManager.d("onCreate chiamato");
 
-        etUsername = findViewById(R.id.textUser);
-        etPassword = findViewById(R.id.textPassword);
+        txtLayoutUsername = findViewById(R.id.login_txtlayout_user);
+        txtLayoutPassword = findViewById(R.id.login_txtlayout_password);
+        etUsername = txtLayoutUsername.getEditText();
+        etPassword = txtLayoutPassword.getEditText();
+
         pgProgressBar = findViewById(R.id.progressBar);
-        btnShowPassword = findViewById(R.id.show_password_button);
         btnLogin = findViewById(R.id.login_button);
         chRememberCredentials = findViewById(R.id.checkbox_remember_credentials);
         btnLoginAsStudent = findViewById(R.id.btn_student_login);
@@ -74,8 +77,20 @@ public class MainLoginActivity extends AppCompatActivity {
 
         findViewById(R.id.login_btn_settings).setOnClickListener(this::btnSettingOnClick);
         btnLogin.setOnClickListener(this::btnLoginOnClick);
-        btnShowPassword.setOnClickListener(this::showPasswordOnClick);
         btnLoginAsStudent.setOnClickListener(this::btnLoginAsStudentOnClick);
+
+
+        DisplayMetrics realMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getRealMetrics(realMetrics);
+
+        loggerManager.d("Dimensioni schermo: " + realMetrics.widthPixels + "x" + realMetrics.heightPixels);
+        loggerManager.d("Login visibile? " + (realMetrics.widthPixels <= 1080 && realMetrics.heightPixels <= 1920 ? "Probabilmente no" : "Si"));
+        if(realMetrics.widthPixels <= 1080 && realMetrics.heightPixels <= 1920){
+            loggerManager.d("Aggiusto margini di card view per essere visibili");
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) findViewById(R.id.main_card_view).getLayoutParams();
+            params.setMargins(0,20,0,0);
+            findViewById(R.id.main_card_view).setLayoutParams(params);
+        }
     }
 
     private void login() {
@@ -93,17 +108,21 @@ public class MainLoginActivity extends AppCompatActivity {
                 } else {
                     loggerManager.e("Errore sconosciuto, login eseguito ma checkLogin ritorna false");
                     setErrorMessage("Qualcosa e' andato storto!");
-                    etPassword.setText("");
-                    this.runOnUiThread(() -> btnLogin.setVisibility(View.VISIBLE));
-                    this.runOnUiThread(() -> pgProgressBar.setVisibility(View.INVISIBLE));
+                    this.runOnUiThread(() -> {
+                        txtLayoutPassword.setError("Riprova");
+                        etPassword.setText("");
+                        btnLogin.setVisibility(View.VISIBLE);
+                        pgProgressBar.setVisibility(View.INVISIBLE);
+                    });
                 }
 
             } catch (GiuaScraperExceptions.SessionCookieEmpty e) {
+                loggerManager.e("Errore: il sito dice: " + e.siteSays);
                 if (!e.siteSays.equals("Tipo di utente non ammesso: usare l'autenticazione tramite GSuite.")) {
-                    loggerManager.e("Errore: credenziali errate");
                     setErrorMessage("Informazioni di login errate!");
                     this.runOnUiThread(() -> {
                         etPassword.setText("");
+                        txtLayoutPassword.setError("Password o Username errato");
                         pgProgressBar.setVisibility(View.INVISIBLE);
                         btnLogin.setVisibility(View.VISIBLE);
                     });
@@ -123,6 +142,7 @@ public class MainLoginActivity extends AppCompatActivity {
                 setErrorMessage(getString(R.string.site_in_maintenace_error));
                 this.runOnUiThread(() -> {
                     etPassword.setText("");
+                    txtLayoutPassword.setError("In manutenzione, riprova più tardi!");
                     pgProgressBar.setVisibility(View.INVISIBLE);
                     btnLogin.setVisibility(View.VISIBLE);
                 });
@@ -131,6 +151,7 @@ public class MainLoginActivity extends AppCompatActivity {
                 setErrorMessage(getString(R.string.your_connection_error));
                 this.runOnUiThread(() -> {
                     etPassword.setText("");
+                    txtLayoutPassword.setError("C'è un problema con la tua rete");
                     pgProgressBar.setVisibility(View.INVISIBLE);
                     btnLogin.setVisibility(View.VISIBLE);
                 });
@@ -139,6 +160,7 @@ public class MainLoginActivity extends AppCompatActivity {
                 setErrorMessage(getString(R.string.site_connection_error));
                 this.runOnUiThread(() -> {
                     etPassword.setText("");
+                    txtLayoutPassword.setError("Errore di connesione al registro");
                     pgProgressBar.setVisibility(View.INVISIBLE);
                     btnLogin.setVisibility(View.VISIBLE);
                 });
@@ -170,40 +192,27 @@ public class MainLoginActivity extends AppCompatActivity {
      * Login click listener
      */
     private void btnLoginOnClick(View view) {
+        txtLayoutPassword.setError("");
+        txtLayoutUsername.setError("");
         loggerManager.d("Login richiesto dall'utente");
         if (etPassword.getText().length() < 1) {
-            setErrorMessage("Il campo della password non può essere vuoto!");
-            return;
-        } else if (etUsername.getText().length() < 1) {
-            setErrorMessage("Il campo dello username non può essere vuoto!");
-            return;
+            txtLayoutPassword.setError("Inserisci la password");
+        }
+        if (etUsername.getText().length() < 1) {
+            txtLayoutUsername.setError("Inserisci l'username");
         }
 
-        pgProgressBar.setVisibility(View.VISIBLE);
-        btnLogin.setVisibility(View.INVISIBLE);
 
-        login();
+        if(etPassword.getText().length() > 0 && etUsername.getText().length() > 0){
+            pgProgressBar.setVisibility(View.VISIBLE);
+            btnLogin.setVisibility(View.INVISIBLE);
+            login();
+        }
     }
 
     private void btnLoginAsStudentOnClick(View view) {
         loggerManager.d("Login Studente richiesto dall'utente");
         startStudentLoginActivity();
-    }
-
-    /**
-     * Show password click listener
-     */
-    private void showPasswordOnClick(View view) {
-        loggerManager.d("Mostra la password? " + !btnShowActivated);
-        if (!btnShowActivated) {
-            etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_NULL);      //Mostra la password
-            btnShowPassword.setImageResource(R.drawable.ic_baseline_visibility_24);
-        } else {
-            etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);  //Nasconde la password
-            btnShowPassword.setImageResource(R.drawable.ic_baseline_visibility_off_24);
-        }
-        etPassword.setSelection(etPassword.getText().length());
-        btnShowActivated = !btnShowActivated;
     }
 
     private void setErrorMessage(String message) {
