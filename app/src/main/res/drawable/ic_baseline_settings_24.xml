@@ -17,8 +17,7 @@
   ~     along with this program.  If not, see https://www.gnu.org/licenses/.
   -->
 
-<vector android:alpha="0.9"
-    android:height="24dp"
+<vector android:height="24dp"
     android:tint="?attr/colorControlNormal"
     android:viewportHeight="24"
     android:viewportWidth="24"
