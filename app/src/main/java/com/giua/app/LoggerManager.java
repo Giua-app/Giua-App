@@ -75,7 +75,7 @@ public class LoggerManager {
 
     //$ - categoria
     //# - fine log
-    // tag$tipo$date$text#
+    // Esempio: tag$tipo$date$text#
     public void parseLogsFrom(String logs){
         String[] logsOb = logs.split("#");
 

@@ -30,6 +30,10 @@ androidGitVersion {
     baseCode 1
 }
 
+androidGitVersion {
+    untrackedIsDirty = false
+}
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"

@@ -25,26 +25,30 @@
         app:iconSpaceReserved="false">
 
         <SwitchPreference
-            app:key="notification"
-            app:title="Abilita le notifiche"
+            android:icon="@drawable/ic_baseline_notifications_none_24"
             app:defaultValue="false"
-            app:iconSpaceReserved="false" />
+            app:iconSpaceReserved="false"
+            app:key="notification"
+            app:title="Abilita le notifiche" />
 
         <Preference
-            app:key="introScreen"
+            app:icon="@drawable/ic_baseline_menu_book_24"
             app:iconSpaceReserved="false"
+            app:key="introScreen"
             app:title="Rivedi l'intro" />
 
         <Preference
+            app:icon="@drawable/ic_baseline_info_24"
+            app:iconSpaceReserved="false"
             app:key="aboutScreen"
-            app:title="Riguardo l'app"
-            app:iconSpaceReserved="false" />
+            app:title="Riguardo l'app" />
 
         <SwitchPreference
-            app:key="debugMode"
-            app:title="Modalità di debug (solo utenti esperti)"
             app:defaultValue="false"
-            app:iconSpaceReserved="false" />
+            app:icon="@drawable/ic_baseline_code_24"
+            app:iconSpaceReserved="false"
+            app:key="debugMode"
+            app:title="Modalità di debug (solo utenti esperti)" />
 
     </PreferenceCategory>
 
@@ -53,10 +57,11 @@
         app:iconSpaceReserved="false">
 
         <ListPreference
+            app:icon="@drawable/ic_baseline_brush_24"
+            app:iconSpaceReserved="false"
             app:key="theme"
-            app:title="Scegli un tema"
             app:negativeButtonText="Annulla"
-            app:iconSpaceReserved="false" />
+            app:title="Scegli un tema" />
 
     </PreferenceCategory>
 
@@ -86,7 +91,7 @@
             android:layout_height="wrap_content"
             app:iconSpaceReserved="false"
             app:key="viewLog"
-            app:title="Mostra logcat" />
+            app:title="Mostra LogDog" />
     </PreferenceCategory>
 
 </PreferenceScreen>

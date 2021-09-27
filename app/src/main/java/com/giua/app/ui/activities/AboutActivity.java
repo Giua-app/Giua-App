@@ -107,7 +107,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 .build());
 
         MaterialAboutCard.Builder authorCardBuilder = new MaterialAboutCard.Builder();
-        authorCardBuilder.title("Author");
+        authorCardBuilder.title("Sviluppatori");
 //        authorCardBuilder.titleColor(ContextCompat.getColor(c, R.color.colorAccent));
 
         authorCardBuilder.addItem(new MaterialAboutActionItem.Builder()
@@ -137,7 +137,7 @@ public class AboutActivity extends MaterialAboutActivity {
 
 
         MaterialAboutCard.Builder otherCardBuilder = new MaterialAboutCard.Builder();
-        otherCardBuilder.title("Other");
+        otherCardBuilder.title("Altro");
 
         otherCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text("Guarda gli analytics pubblici")
