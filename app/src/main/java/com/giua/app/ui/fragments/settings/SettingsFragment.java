@@ -30,6 +30,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 
+import com.giua.app.ActivityManager;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
@@ -70,6 +71,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         //region Debug
 
+        setupDemoModeObject(context);
         setupSiteUrlObject();
         setupCrashScreenObject();
         setupLogcatViewerObject();
@@ -79,6 +81,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
 
         //endregion
+    }
+
+    private void setupDemoModeObject(Context context) {
+        SwitchPreference swDemoMode = findPreference("demoMode");
+        swDemoMode.setChecked(SettingsData.getSettingBoolean(context, SettingKey.DEMO_MODE));
+        swDemoMode.setOnPreferenceChangeListener(this::swDemoModeChangeListener);
+    }
+
+    private boolean swDemoModeChangeListener(Preference preference, Object o) {
+        SettingsData.saveSettingBoolean(requireContext(), SettingKey.DEMO_MODE, (boolean) o);
+        startActivity(new Intent(requireActivity(), ActivityManager.class));
+        return true;
     }
 
     private void setupDebugModeObject(Context context) {

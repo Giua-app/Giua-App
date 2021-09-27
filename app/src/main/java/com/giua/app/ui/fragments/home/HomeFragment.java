@@ -81,6 +81,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         chart.getAxisRight().setEnabled(true);
         chart.getAxisRight().setTextSize(14);
         chart.getAxisRight().setTextColor(getResources().getColor(R.color.night_white_light_black, activity.getTheme()));
+        chart.getAxisRight().setLabelCount(5, true);
         chart.getXAxis().setEnabled(false);
         chart.setNoDataText("Nessun voto");
         Description desc = new Description();

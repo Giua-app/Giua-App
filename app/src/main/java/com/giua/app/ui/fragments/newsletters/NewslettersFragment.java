@@ -47,6 +47,8 @@ import com.giua.app.AppData;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
+import com.giua.app.SettingKey;
+import com.giua.app.SettingsData;
 import com.giua.app.ThreadManager;
 import com.giua.app.ui.fragments.ObscureLayoutView;
 import com.giua.objects.Newsletter;
@@ -91,8 +93,10 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     boolean offlineMode = false;
     String filterDate = "";
     String filterText = "";
+    boolean demoMode = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        demoMode = SettingsData.getSettingBoolean(requireContext(), SettingKey.DEMO_MODE);
         if (getArguments() != null)
             offlineMode = getArguments().getBoolean("offline");
         root = inflater.inflate(R.layout.fragment_newsletters, container, false);
@@ -462,7 +466,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onStop() {
-        if (!allNewsletterToSave.isEmpty() && !offlineMode)
+        if (!allNewsletterToSave.isEmpty() && !offlineMode && !demoMode)
             AppData.saveNewslettersString(activity, new JsonHelper().saveNewslettersToString(allNewsletterToSave));
         super.onStop();
     }

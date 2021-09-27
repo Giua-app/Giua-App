@@ -67,6 +67,10 @@
         app:key="debugCategory"
         app:title="Debug">
 
+        <SwitchPreference
+            app:iconSpaceReserved="false"
+            app:key="demoMode"
+            app:title="Modalità demo" />
         <EditTextPreference
             app:iconSpaceReserved="false"
             app:key="siteUrl"

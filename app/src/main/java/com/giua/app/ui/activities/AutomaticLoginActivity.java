@@ -33,6 +33,8 @@ import com.giua.app.GlobalVariables;
 import com.giua.app.LoggerManager;
 import com.giua.app.LoginData;
 import com.giua.app.R;
+import com.giua.app.SettingKey;
+import com.giua.app.SettingsData;
 import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
@@ -69,14 +71,14 @@ public class AutomaticLoginActivity extends AppCompatActivity {
         new Thread(() -> {
             runOnUiThread(() -> pbLoadingScreen.setVisibility(View.VISIBLE));
             try {
-                GlobalVariables.gS = new GiuaScraper(LoginData.getUser(this), LoginData.getPassword(this), LoginData.getCookie(this), true);
+                GlobalVariables.gS = new GiuaScraper(LoginData.getUser(this), LoginData.getPassword(this), LoginData.getCookie(this), true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE));
                 GlobalVariables.gS.login();
                 LoginData.setCredentials(this, LoginData.getUser(this), LoginData.getPassword(this), GlobalVariables.gS.getCookie());
                 startDrawerActivity();
             } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.SiteConnectionProblems e) {
                 loggerManager.e("Errore di connessione - " + e.getMessage());
                 runOnUiThread(() -> btnLogout.setVisibility(View.VISIBLE));
-                runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));
+                //runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));  //TODO: togliere il commento quando sarà realmente disponibile e funzionante
 
                 if (!GiuaScraper.isMyInternetWorking())
                     runOnUiThread(() -> setErrorMessage(getString(R.string.your_connection_error)));

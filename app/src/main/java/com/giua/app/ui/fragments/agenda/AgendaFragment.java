@@ -40,6 +40,8 @@ import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
+import com.giua.app.SettingKey;
+import com.giua.app.SettingsData;
 import com.giua.app.ThreadManager;
 import com.giua.app.ui.fragments.ObscureLayoutView;
 import com.giua.objects.Homework;
@@ -84,7 +86,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     ImageView ivVisualizerPrevBtn;
     ImageView ivVisualizerNextBtn;
     ThreadManager threadManager;
-    int visualizerCounter = 0;
+    int visualizerPointer = 0;
     boolean isLoadingData = false;
     boolean isLoadingDetails = false;
     LoggerManager loggerManager;
@@ -114,8 +116,14 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
         activity = requireActivity();
 
-        calendar = Calendar.getInstance();
-        currentDate = calendar.getTime();
+        if (SettingsData.getSettingBoolean(requireContext(), SettingKey.DEMO_MODE)) {
+            calendar = Calendar.getInstance();
+            calendar.set(2021, 11, 1);
+            currentDate = calendar.getTime();
+        } else {    //No demo
+            calendar = Calendar.getInstance();
+            currentDate = calendar.getTime();
+        }
 
         pbLoadingPage = new ProgressBar(requireContext(), null);
         threadManager = new ThreadManager();
@@ -276,17 +284,17 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void ivVisualizerNextBtnOnClick(View view) {
-        if (visualizerCounter < visualizerTests.size() + visualizerHomeworks.size() - 1)
-            visualizerCounter++;
-        if (visualizerCounter < visualizerTests.size()) {
+        if (visualizerPointer + 1 < visualizerTests.size() + visualizerHomeworks.size())  //Se si può ancora andare avanti punto il visualizerPointer al prossimo oggetto (quello che sta per essere visualizzato)
+            visualizerPointer++;
+        if (visualizerPointer < visualizerTests.size()) {
             tvVisualizerType.setText("Verifica");
-            tvVisualizerSubject.setText(visualizerTests.get(visualizerCounter).subject);
-            tvVisualizerCreator.setText(visualizerTests.get(visualizerCounter).creator);
-            tvVisualizerText.setText(visualizerTests.get(visualizerCounter).details);
-            tvVisualizerDate.setText(visualizerTests.get(visualizerCounter).date);
+            tvVisualizerSubject.setText(visualizerTests.get(visualizerPointer).subject);
+            tvVisualizerCreator.setText(visualizerTests.get(visualizerPointer).creator);
+            tvVisualizerText.setText(visualizerTests.get(visualizerPointer).details);
+            tvVisualizerDate.setText(visualizerTests.get(visualizerPointer).date);
             ivVisualizerPrevBtn.setVisibility(View.VISIBLE);
-        } else if (visualizerCounter - visualizerTests.size() < visualizerHomeworks.size()) {
-            int index = visualizerCounter - visualizerTests.size();
+        } else if (visualizerPointer - visualizerTests.size() < visualizerHomeworks.size()) {
+            int index = visualizerPointer - visualizerTests.size();
 
             tvVisualizerType.setText("Compiti");
             tvVisualizerSubject.setText(visualizerHomeworks.get(index).subject);
@@ -295,22 +303,24 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
             tvVisualizerDate.setText(visualizerHomeworks.get(index).date);
             ivVisualizerPrevBtn.setVisibility(View.VISIBLE);
         }
-        if (visualizerCounter >= visualizerTests.size() + visualizerHomeworks.size() - 1)
+        if (visualizerPointer >= visualizerTests.size() + visualizerHomeworks.size() - 1)
             ivVisualizerNextBtn.setVisibility(View.INVISIBLE);
     }
 
     private void ivVisualizerPrevBtnOnClick(View view) {
-        if (visualizerCounter > 0)
-            visualizerCounter--;
-        if (visualizerCounter >= 0 && !visualizerTests.isEmpty()) {
+        int testsSize = visualizerTests.size();
+        int homeworkSize = visualizerHomeworks.size();
+        if (visualizerPointer > 0)
+            visualizerPointer--;
+        if (visualizerPointer >= 0 && visualizerPointer < testsSize) {
             tvVisualizerType.setText("Verifica");
-            tvVisualizerSubject.setText(visualizerTests.get(visualizerCounter).subject);
-            tvVisualizerCreator.setText(visualizerTests.get(visualizerCounter).creator);
-            tvVisualizerText.setText(visualizerTests.get(visualizerCounter).details);
-            tvVisualizerDate.setText(visualizerTests.get(visualizerCounter).date);
+            tvVisualizerSubject.setText(visualizerTests.get(visualizerPointer).subject);
+            tvVisualizerCreator.setText(visualizerTests.get(visualizerPointer).creator);
+            tvVisualizerText.setText(visualizerTests.get(visualizerPointer).details);
+            tvVisualizerDate.setText(visualizerTests.get(visualizerPointer).date);
             ivVisualizerNextBtn.setVisibility(View.VISIBLE);
-        } else if (visualizerCounter - visualizerTests.size() >= 0 && !visualizerHomeworks.isEmpty()) {
-            int index = visualizerCounter - visualizerTests.size();
+        } else if (visualizerPointer - testsSize >= 0 && visualizerPointer - testsSize < homeworkSize && !visualizerHomeworks.isEmpty()) {
+            int index = visualizerPointer - testsSize;
 
             tvVisualizerType.setText("Compito");
             tvVisualizerSubject.setText(visualizerHomeworks.get(index).subject);
@@ -319,7 +329,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
             tvVisualizerDate.setText(visualizerHomeworks.get(index).date);
             ivVisualizerNextBtn.setVisibility(View.VISIBLE);
         }
-        if (visualizerCounter == 0)
+        if (visualizerPointer == 0)
             ivVisualizerPrevBtn.setVisibility(View.INVISIBLE);
     }
 
@@ -331,7 +341,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                 AgendaView agendaView = (AgendaView) view;
                 visualizerHomeworks = new Vector<>();
                 visualizerTests = new Vector<>();
-                visualizerCounter = 0;
+                visualizerPointer = 0;
 
                 try {
                     if (agendaView.test != null)

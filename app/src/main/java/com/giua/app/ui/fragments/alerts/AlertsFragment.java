@@ -43,6 +43,8 @@ import com.giua.app.AppData;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
+import com.giua.app.SettingKey;
+import com.giua.app.SettingsData;
 import com.giua.app.ThreadManager;
 import com.giua.app.ui.fragments.ObscureLayoutView;
 import com.giua.objects.Alert;
@@ -81,8 +83,10 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
     boolean canSendErrorMessage = true;
     boolean isDownloading = false;
     boolean offlineMode = false;
+    boolean demoMode = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        demoMode = SettingsData.getSettingBoolean(requireContext(), SettingKey.DEMO_MODE);
         if (getArguments() != null)
             offlineMode = getArguments().getBoolean("offline");
         root = inflater.inflate(R.layout.fragment_alerts, container, false);
@@ -376,7 +380,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onStop() {
-        if (!allAlertsToSave.isEmpty() && !offlineMode)
+        if (!allAlertsToSave.isEmpty() && !offlineMode && !demoMode)
             AppData.saveAlertsString(activity, new JsonHelper().saveAlertsToString(allAlertsToSave));
         super.onStop();
     }

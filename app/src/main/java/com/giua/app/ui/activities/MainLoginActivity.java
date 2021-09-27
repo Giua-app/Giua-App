@@ -38,6 +38,8 @@ import com.giua.app.GlobalVariables;
 import com.giua.app.LoggerManager;
 import com.giua.app.LoginData;
 import com.giua.app.R;
+import com.giua.app.SettingKey;
+import com.giua.app.SettingsData;
 import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
@@ -97,7 +99,7 @@ public class MainLoginActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 loggerManager.d("Eseguo login...");
-                GlobalVariables.gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString(), LoginData.getCookie(this), true);
+                GlobalVariables.gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString(), LoginData.getCookie(this), true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE));
                 GlobalVariables.gS.login();
                 loggerManager.d("Devo ricordare le credenziali? " + chRememberCredentials.isChecked());
 
@@ -118,7 +120,11 @@ public class MainLoginActivity extends AppCompatActivity {
 
             } catch (GiuaScraperExceptions.SessionCookieEmpty e) {
                 loggerManager.e("Errore: il sito dice: " + e.siteSays);
-                if (!e.siteSays.equals("Tipo di utente non ammesso: usare l'autenticazione tramite GSuite.")) {
+                if (e.siteSays.equals("Tipo di utente non ammesso: usare l'autenticazione tramite GSuite.")) {
+                    loggerManager.d("Rilevato credenziali account google");
+                    startStudentLoginActivity();
+                } else {
+                    loggerManager.e("Errore: credenziali errate");
                     setErrorMessage("Informazioni di login errate!");
                     this.runOnUiThread(() -> {
                         etPassword.setText("");
@@ -126,9 +132,7 @@ public class MainLoginActivity extends AppCompatActivity {
                         pgProgressBar.setVisibility(View.INVISIBLE);
                         btnLogin.setVisibility(View.VISIBLE);
                     });
-                } else
-                    loggerManager.d("Rilevato credenziali account google");
-                    startStudentLoginActivity();
+                }
             } catch (GiuaScraperExceptions.UnableToLogin e) {
                 loggerManager.e("Errore sconosciuto - " + e.getMessage());
                 setErrorMessage("E' stato riscontrato qualche problema sconosciuto");

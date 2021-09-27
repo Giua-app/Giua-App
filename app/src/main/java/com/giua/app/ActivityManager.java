@@ -48,6 +48,9 @@ public class ActivityManager extends AppCompatActivity {
         loggerManager = new LoggerManager("ActivityManager", this);
         loggerManager.d("---");
         loggerManager.d("onCreate called");
+        if (SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE))
+            loggerManager.w("DEMO MODE ACTIVATED");
+
         switch (SettingsData.getSettingString(this, SettingKey.THEME)) {
             case "0":
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);

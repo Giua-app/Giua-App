@@ -44,4 +44,9 @@ public abstract class SettingKey {
      * Indica se la modalità di debug è attiva
      */
     public static final String DEBUG_MODE = "debugMode";
+
+    /**
+     * Indica se la modlità demo è attiva
+     */
+    public static final String DEMO_MODE = "demoMode";
 }
