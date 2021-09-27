@@ -31,6 +31,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.giua.app.AppData;
+import com.giua.app.BuildConfig;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -70,7 +71,7 @@ public class LogdogViewerActivity extends AppCompatActivity {
         for(LoggerManager.Log log : logs){
             TextView textView = new TextView(this);
             if(log.text.equals("---")){
-                textView.setText("\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af");
+                textView.setText("\u23af\u23af\u23af\u23af\u23af" + BuildConfig.VERSION_NAME + "\u23af\u23af\u23af\u23af\u23af");
             } else {
                 textView.setText(dateFormat.format(log.date) + "|" + log.type + "| " + log.tag + ": ");
                 textView.append(Html.fromHtml("<b>" + log.text + "</b>", 0));

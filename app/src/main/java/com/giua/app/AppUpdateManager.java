@@ -53,7 +53,7 @@ public class AppUpdateManager {
 
     public void checkForAppUpdates(Context context, boolean sendNotification) {
         loggerManager = new LoggerManager("AppUpdateManager", context);
-        loggerManager.d("checking for updates...");
+        loggerManager.d("Controllo aggiornamenti...");
 
         //TODO: in futuro quando si scaricheranno gli apk
         /*if(BuildConfig.BUILD_TYPE.equals("debug")){
@@ -81,7 +81,7 @@ public class AppUpdateManager {
 
         if(assetsNode.isMissingNode()){
             //Assets non trovati, nessun apk
-            loggerManager.w("No assets found on release");
+            loggerManager.w("Assets non presenti sulla release");
             return;
         }
 
@@ -104,26 +104,26 @@ public class AppUpdateManager {
             updateVer[2] = Integer.parseInt(temp[2]);
         } else {
             //Non è una versione, esci silenziosamente
-            loggerManager.w("Tag version found on github is not semver complaint, ignoring");
+            loggerManager.w("Versione su Tag trovata su github non rispetta SemVer, annullo");
             return;
         }
 
         if(!contentType.equals("application/vnd.android.package-archive")){
             //Il file non è un apk, ignora
-            loggerManager.w("Asset on release is not an APK file, ignoring");
+            loggerManager.w("Asset sulla release non è un file APK, annullo");
             return;
         }
 
 
         if (currentVer[0].equals(updateVer[0]) && currentVer[1].equals(updateVer[1]) && currentVer[2].equals(updateVer[2])) {
             //Nessun aggiornamento, esci silenziosamente
-            loggerManager.w("No new updates found, current version is " + BuildConfig.VERSION_NAME  + ", latest on github is " + tagName);
+            loggerManager.w("Nessun aggiornamento trovato, versione corrente è " + BuildConfig.VERSION_NAME  + ", ultima su github è " + tagName);
             return;
         }
 
         if(currentVer[0] > updateVer[0] || currentVer[1] > updateVer[1] || currentVer[2] > updateVer[2]){
             //Versione vecchia, esci silenziosamente
-            loggerManager.w("Current application is newer than github release, ignoring");
+            loggerManager.w("Versione dell'app maggiore di quella su github, annullo");
             return;
         }
 
@@ -141,7 +141,7 @@ public class AppUpdateManager {
 
         if (date.after(lastUpdateDate) && sendNotification) {
             //Aggiornamento gia notificato, nextUpdateDate è il prossimo giorno in cui notificare
-            loggerManager.w("Update already notified, ignoring");
+            loggerManager.w("Aggiornamento già notificato, annullo");
             return;
         }
 
@@ -150,7 +150,7 @@ public class AppUpdateManager {
 
 
     private void createNotification(Context context, boolean sendNotification) {
-        loggerManager.d("Creating update notification...");
+        loggerManager.d("Creo notifica aggiornamento...");
 
         String title = "Nuova versione rilevata";
         String description = "Clicca per informazioni";
