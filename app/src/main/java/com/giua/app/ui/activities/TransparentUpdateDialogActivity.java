@@ -123,6 +123,7 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
                     Intent installIntent = new Intent(Intent.ACTION_VIEW);
                     Uri downloadUri = Uri.parse(downloadLocation);
 
+                    loggerManager.d("Lettura file...");
 
                     if (android.os.Build.VERSION.SDK_INT >= 24) {
 

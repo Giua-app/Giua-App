@@ -68,14 +68,22 @@ public class AppUpdateManager {
             response = session
                     .url("https://api.github.com/repos/giua-app/giua-app/releases/latest")
                     .get().text();
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) {
+            loggerManager.e("Impossibile contattare API di github! - " + e.getMessage());
+            e.printStackTrace();
+            return;
+        }
 
         ObjectMapper objectMapper = new ObjectMapper();
 
         JsonNode rootNode = null;
         try {
             rootNode = objectMapper.readTree(response);
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) {
+            loggerManager.e("Impossibile leggere json! - " + e.getMessage());
+            e.printStackTrace();
+            return;
+        }
 
         JsonNode assetsNode = Objects.requireNonNull(rootNode).findPath("assets_url");
 
@@ -132,6 +140,7 @@ public class AppUpdateManager {
         try {
             lastUpdateDate = AppData.getLastUpdateReminderDate(context);
         } catch (ParseException e) {
+            loggerManager.w("Impossibile leggere lastUpdateReminder! - " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -180,6 +189,7 @@ public class AppUpdateManager {
             try {
                 pendingIntent.send();
             } catch (PendingIntent.CanceledException e) {
+                loggerManager.e("Errore critico! Impossibile inviare pending intent - " + e.getMessage());
                 e.printStackTrace();
             }
         }

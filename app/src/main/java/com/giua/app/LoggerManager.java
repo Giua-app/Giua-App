@@ -87,6 +87,7 @@ public class LoggerManager {
                 this.logs.add(new Log(logsSub[0], logsSub[1], logDateFormat.parse(logsSub[2]), logsSub[3]));
             } catch (Exception e) {
                 e.printStackTrace();
+                android.util.Log.e("LogDog", "ERRORE CRITICO! LOGDOG PARSING FALLITO", e);
             }
 
         }

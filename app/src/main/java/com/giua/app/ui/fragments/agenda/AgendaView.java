@@ -28,6 +28,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.giua.objects.Homework;
 import com.giua.objects.Test;
@@ -40,6 +41,7 @@ import java.util.Date;
 public class AgendaView extends RelativeLayout {
     Homework homework = null;
     Test test = null;
+    LoggerManager loggerManager;
 
     public AgendaView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, Test test) {
         super(context, attrs);
@@ -68,6 +70,7 @@ public class AgendaView extends RelativeLayout {
 
     private void initializeComponent(Context context) {
         Calendar objectDay = Calendar.getInstance();        //Rappresenta il giorno del compito o della verifica
+        loggerManager = new LoggerManager("AgendaView", context);
 
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layoutInflater.inflate(R.layout.agenda_object_view, this);
@@ -77,17 +80,17 @@ public class AgendaView extends RelativeLayout {
         TextView tvType = findViewById(R.id.agenda_view_type);
 
         if (homework != null && test != null) {
-            objectDay.set(Integer.parseInt(homework.year), Integer.parseInt(homework.month), Integer.parseInt(homework.day), 0, 0, 0);
+            objectDay.set(Integer.parseInt(homework.year), Integer.parseInt(homework.month) - 1, Integer.parseInt(homework.day), 23, 59, 59);
             tvDate.setText(homework.day + "-" + homework.month + "-" + homework.year);
             tvType.setText(R.string.agenda_view_type_homework_and_tests);
             tvType.setTextColor(getResources().getColor(R.color.agenda_views_text_green, context.getTheme()));
         } else if (homework != null) {
-            objectDay.set(Integer.parseInt(homework.year), Integer.parseInt(homework.month), Integer.parseInt(homework.day), 0, 0, 0);
+            objectDay.set(Integer.parseInt(homework.year), Integer.parseInt(homework.month) -1, Integer.parseInt(homework.day), 23, 59, 59);
             tvDate.setText(homework.day + "-" + homework.month + "-" + homework.year);
             tvType.setText(R.string.agenda_view_type_homeworks);
             tvType.setTextColor(getResources().getColor(R.color.agenda_views_text_cyan, context.getTheme()));
         } else {
-            objectDay.set(Integer.parseInt(test.year), Integer.parseInt(test.month), Integer.parseInt(test.day), 0, 0, 0);
+            objectDay.set(Integer.parseInt(test.year), Integer.parseInt(test.month) -1, Integer.parseInt(test.day), 23, 59, 59);
             tvDate.setText(test.day + "-" + test.month + "-" + test.year);
             tvType.setText(R.string.agenda_view_type_tests);
             tvType.setTextColor(getResources().getColor(R.color.agenda_views_text_orange, context.getTheme()));

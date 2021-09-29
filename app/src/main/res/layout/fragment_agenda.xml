@@ -219,7 +219,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/varelaroundregular"
-        android:text="@string/no_elements"
+        android:text="Non ci sono compiti per questo mese"
         android:textSize="16sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
