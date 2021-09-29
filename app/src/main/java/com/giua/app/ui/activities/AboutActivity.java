@@ -43,7 +43,7 @@ import com.mikepenz.iconics.IconicsDrawable;
 
 public class AboutActivity extends MaterialAboutActivity {
 
-    int importantInteger;
+    int importantInteger = 20000 - 300 - 20001;
     LoggerManager loggerManager;
 
     @NonNull
@@ -53,7 +53,7 @@ public class AboutActivity extends MaterialAboutActivity {
         loggerManager.d("getMaterialAboutList chiamato");
         loggerManager.d("costruisco pagina about...");
 
-        importantInteger = 20000 - 300 - 20000 + 160 + 120 + 20;
+        importantInteger += 160 + 120 + 20 - 1;
 
         MaterialAboutCard.Builder appCardBuilder = new MaterialAboutCard.Builder();
 
@@ -71,16 +71,7 @@ public class AboutActivity extends MaterialAboutActivity {
                         .sizeDp(18),
                 "Versione",
                 false)
-                .setOnClickAction(() -> {
-                    importantInteger++;
-                    loggerManager.d("'_'");
-                    if(importantInteger==3){
-                        Snackbar.make(findViewById(android.R.id.content), ";)", Snackbar.LENGTH_SHORT).show();
-                        new Thread(() -> AppData.increaseVisitCount(";)")).start();
-                        importantInteger=0;
-                        loggerManager.d("\t(ﾉ◕ヮ◕)ﾉ");
-                    }
-                }));
+                .setOnClickAction(this::justANormalJavaFunction));
 
         appCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text("Changelog")
@@ -145,7 +136,8 @@ public class AboutActivity extends MaterialAboutActivity {
                 .icon(new IconicsDrawable(this)
                         .icon(CommunityMaterial.Icon.cmd_google_analytics)
                         .sizeDp(18))
-                .setOnClickAction(ConvenienceBuilder.createWebsiteOnClickAction(this, Uri.parse("https://app.piratepx.com/shared/x9v-IWrD1ZG_Jvk6vyAT53tdz5wCCijE55V9pn060ZfuUJRXT9rcqTwPnR_PWz7R")))
+                .setOnClickAction(ConvenienceBuilder.createWebsiteOnClickAction(this,
+                        Uri.parse("https://app.piratepx.com/shared/x9v-IWrD1ZG_Jvk6vyAT53tdz5wCCijE55V9pn060ZfuUJRXT9rcqTwPnR_PWz7R")))
                 .build());
 
 
@@ -218,5 +210,58 @@ public class AboutActivity extends MaterialAboutActivity {
     @Override
     protected CharSequence getActivityTitle() {
         return getString(R.string.mal_title_about);
+    }
+
+
+
+    private void justANormalJavaFunction(){
+        importantInteger++;
+        loggerManager.d("...");
+        switch(importantInteger){
+            case 3:
+                Snackbar.make(findViewById(android.R.id.content), ";)", Snackbar.LENGTH_SHORT).show();
+                new Thread(() -> AppData.increaseVisitCount(";)")).start();
+                loggerManager.d(";)");
+                break;
+            case 6:
+                Snackbar.make(findViewById(android.R.id.content), "(ﾉ◕ヮ◕)ﾉ", Snackbar.LENGTH_SHORT).show();
+                loggerManager.d("(ﾉ◕ヮ◕)ﾉ");
+                break;
+            case 9:
+                Snackbar.make(findViewById(android.R.id.content), "(｡◕‿‿◕｡)", Snackbar.LENGTH_SHORT).show();
+                loggerManager.d("(｡◕‿‿◕｡)");
+                break;
+            case 12:
+                Snackbar.make(findViewById(android.R.id.content), "(╯°□°）╯︵ ┻━┻  puoi smetterla?", Snackbar.LENGTH_SHORT).show();
+                loggerManager.d("(╯°□°）╯︵ ┻━┻");
+                break;
+            case 15:
+                Snackbar.make(findViewById(android.R.id.content), "TI HO DETTO DI SMETTERLA", Snackbar.LENGTH_SHORT).show();
+                break;
+            case 18:
+                Snackbar.make(findViewById(android.R.id.content), "NON MI TOCCARE", Snackbar.LENGTH_SHORT).show();
+                break;
+            case 21:
+                Snackbar.make(findViewById(android.R.id.content), "STAI FERMO ALTRIMENTI...", Snackbar.LENGTH_SHORT).show();
+                break;
+            case 24:
+                Snackbar.make(findViewById(android.R.id.content), "altrimenti....uhh....", Snackbar.LENGTH_SHORT).show();
+                break;
+            case 27:
+                Snackbar.make(findViewById(android.R.id.content), "TI FACCIO CRASHARE", Snackbar.LENGTH_SHORT).show();
+                break;
+            case 30:
+                Snackbar.make(findViewById(android.R.id.content), "SI HAI CAPITO BENE", Snackbar.LENGTH_SHORT).show();
+                break;
+            case 33:
+                Snackbar.make(findViewById(android.R.id.content), "TOCCAMI ANCORA E TI FARO' ESPLODERE IL TELEFONO", Snackbar.LENGTH_SHORT).show();
+                break;
+            case 36:
+                Snackbar.make(findViewById(android.R.id.content), "va bene si non posso farlo, PERO' POSSO FARE QUESTO!", Snackbar.LENGTH_SHORT).show();
+                break;
+            case 39:
+                finish();
+                break;
+        }
     }
 }
