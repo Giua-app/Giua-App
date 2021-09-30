@@ -18,17 +18,17 @@ Questa app usa la libreria [Giua-Webscraper](https://github.com/Giua-app/Giua-We
 
 [<img src="readme-assets/get-it-on-github.png" alt="Get it on GitHub" height="80">](https://github.com/Giua-app/Giua-App/releases)
 
-[<img src="readme-assets/0.jpeg" width=160>](readme-assets/0.jpeg)
-[<img src="readme-assets/1.jpeg" width=160>](readme-assets/1.jpeg)
-[<img src="readme-assets/2.jpeg" width=160>](readme-assets/2.jpeg)
-[<img src="readme-assets/3.jpeg" width=160>](readme-assets/3.jpeg)
-[<img src="readme-assets/4.jpeg" width=160>](readme-assets/4.jpeg)
-[<img src="readme-assets/5.jpeg" width=160>](readme-assets/5.jpeg)
-[<img src="readme-assets/6.jpeg" width=160>](readme-assets/6.jpeg)
-[<img src="readme-assets/7.jpeg" width=160>](readme-assets/7.jpeg)
-[<img src="readme-assets/8.jpeg" width=160>](readme-assets/8.jpeg)
-[<img src="readme-assets/9.jpeg" width=160>](readme-assets/9.jpeg)
-[<img src="readme-assets/10.jpeg" width=160>](readme-assets/10.jpeg)
+[<img src="readme-assets/0.png" width=160>](readme-assets/0.png)
+[<img src="readme-assets/1.png" width=160>](readme-assets/1.png)
+[<img src="readme-assets/2.png" width=160>](readme-assets/2.png)
+[<img src="readme-assets/3.png" width=160>](readme-assets/3.png)
+[<img src="readme-assets/4.png" width=160>](readme-assets/4.png)
+[<img src="readme-assets/5.png" width=160>](readme-assets/5.png)
+[<img src="readme-assets/6.png" width=160>](readme-assets/6.png)
+[<img src="readme-assets/7.png" width=160>](readme-assets/7.png)
+[<img src="readme-assets/8.png" width=160>](readme-assets/8.png)
+[<img src="readme-assets/9.png" width=160>](readme-assets/9.png)
+[<img src="readme-assets/10.png" width=160>](readme-assets/10.png)
 
 ## Features
 
