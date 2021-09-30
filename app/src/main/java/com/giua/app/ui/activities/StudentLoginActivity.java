@@ -45,7 +45,7 @@ public class StudentLoginActivity extends AppCompatActivity {
 
     WebView webView;
     ObscureLayoutView obscureLayoutView;
-    String userAgent = "Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.91 Mobile Safari/537.36";
+    final String userAgent = "Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.91 Mobile Safari/537.36";
     String cookie = "";
     LoggerManager loggerManager;
     ProgressBar progressBar;

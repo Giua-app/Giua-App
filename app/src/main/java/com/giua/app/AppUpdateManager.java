@@ -71,6 +71,7 @@ public class AppUpdateManager {
         } catch (IOException e) {
             loggerManager.e("Impossibile contattare API di github! - " + e.getMessage());
             e.printStackTrace();
+            AppData.saveUpdatePresence(context, false);
             return;
         }
 
@@ -82,6 +83,7 @@ public class AppUpdateManager {
         } catch (IOException e) {
             loggerManager.e("Impossibile leggere json! - " + e.getMessage());
             e.printStackTrace();
+            AppData.saveUpdatePresence(context, false);
             return;
         }
 
@@ -90,6 +92,7 @@ public class AppUpdateManager {
         if(assetsNode.isMissingNode()){
             //Assets non trovati, nessun apk
             loggerManager.w("Assets non presenti sulla release");
+            AppData.saveUpdatePresence(context, false);
             return;
         }
 
@@ -113,25 +116,29 @@ public class AppUpdateManager {
         } else {
             //Non è una versione, esci silenziosamente
             loggerManager.w("Versione su Tag trovata su github non rispetta SemVer, annullo");
+            AppData.saveUpdatePresence(context, false);
             return;
         }
 
         if(!contentType.equals("application/vnd.android.package-archive")){
             //Il file non è un apk, ignora
             loggerManager.w("Asset sulla release non è un file APK, annullo");
+            AppData.saveUpdatePresence(context, false);
             return;
         }
 
 
         if (currentVer[0].equals(updateVer[0]) && currentVer[1].equals(updateVer[1]) && currentVer[2].equals(updateVer[2])) {
             //Nessun aggiornamento, esci silenziosamente
-            loggerManager.w("Nessun aggiornamento trovato, versione corrente è " + BuildConfig.VERSION_NAME  + ", ultima su github è " + tagName);
+            loggerManager.w("Nessun aggiornamento trovato, versione corrente è " + BuildConfig.VERSION_NAME + ", ultima su github è " + tagName);
+            AppData.saveUpdatePresence(context, false);
             return;
         }
 
         if(currentVer[0] > updateVer[0] || currentVer[1] > updateVer[1] || currentVer[2] > updateVer[2]){
             //Versione vecchia, esci silenziosamente
             loggerManager.w("Versione dell'app maggiore di quella su github, annullo");
+            AppData.saveUpdatePresence(context, false);
             return;
         }
 

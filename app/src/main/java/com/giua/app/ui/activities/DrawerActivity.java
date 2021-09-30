@@ -25,16 +25,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.view.View;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -52,11 +49,21 @@ import com.giua.app.SettingsData;
 import com.giua.app.ui.fragments.agenda.AgendaFragment;
 import com.giua.app.ui.fragments.home.HomeFragment;
 import com.giua.app.ui.fragments.lessons.LessonsFragment;
+import com.giua.app.ui.fragments.not_implmented.NotImplementedFragment;
 import com.giua.app.ui.fragments.pinboard.PinboardFragment;
 import com.giua.app.ui.fragments.reportcard.ReportCardFragment;
 import com.giua.app.ui.fragments.votes.VotesFragment;
 import com.giua.webscraper.GiuaScraper;
 import com.google.android.material.navigation.NavigationView;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.ExpandableDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -74,6 +81,9 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     Bundle bundle;
     boolean offlineMode = false;
     LoggerManager loggerManager;
+    String userType = "";
+    String username = "";
+    Drawer mDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +97,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        NavigationView navigationView = findViewById(R.id.nav_view);    //Il navigation drawer vero e proprio
 
         bundle = new Bundle();
         bundle.putBoolean("offline", offlineMode);
@@ -96,43 +105,35 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         pendingIntent = PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        navigationView.setNavigationItemSelectedListener(this);
-
-        TextView tvUserType = navigationView.getHeaderView(0).findViewById(R.id.txtSubtitle);
-        TextView tvUsername = navigationView.getHeaderView(0).findViewById(R.id.txtTitle);
-
-        navigationView.setCheckedItem(R.id.nav_home);
-
-//        btnLogout.setOnClickListener(this::logoutButtonClick);
-//        btnSettings.setOnClickListener(this::settingsButtonClick);
+        changeFragment(R.id.nav_home);
 
         if (!offlineMode) {
             if (SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE)) {
-                tvUserType.setText("DEMO");
-                tvUsername.setText("DEMO");
+                userType = "DEMO";
+                username = "DEMO";
             }
             new Thread(() -> {
-                GiuaScraper.userTypes userType = GlobalVariables.gS.getUserTypeEnum();
+                GiuaScraper.userTypes _userType = GlobalVariables.gS.getUserTypeEnum();
                 String user = GlobalVariables.gS.loadUserFromDocument();
-                this.runOnUiThread(() -> {
-                    if (userType == GiuaScraper.userTypes.PARENT)
-                        runOnUiThread(() -> tvUserType.setText("Genitore"));
-                    else if (userType == GiuaScraper.userTypes.STUDENT)
-                        runOnUiThread(() -> tvUserType.setText("Studente"));
-                    runOnUiThread(() -> tvUsername.setText(user));
-                });
+                if (_userType == GiuaScraper.userTypes.PARENT)
+                    userType = "Genitore";
+                else if (_userType == GiuaScraper.userTypes.STUDENT)
+                    userType = "Studente";
+                username = user;
+                runOnUiThread(this::setupMaterialDrawer);
             }).start();
         } else {
             loggerManager.d("Applicazione in offline mode");
-            runOnUiThread(() -> tvUserType.setText("Offline"));
-            runOnUiThread(() -> tvUsername.setText("Offline"));
+            userType = "Offline";
+            username = "Offline";
+            runOnUiThread(this::setupMaterialDrawer);
         }
     }
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        /*DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         fragmentManager = getSupportFragmentManager();
         transaction = fragmentManager.beginTransaction();
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -142,16 +143,15 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         toggle.syncState();
         drawerLayout.addDrawerListener(toggle);
 
-        changeFragment(R.id.nav_home);
-
+        changeFragment(R.id.nav_home);*/
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull @NotNull MenuItem item) {
-        if (item.isChecked()) {
+        /*if (item.isChecked()) {
             closeNavDrawer();
         } else if (item.getItemId() == R.id.nav_settings) {
-            startSettingsActivity();
+            settingsItemOnClick();
         } else if (item.getItemId() == R.id.nav_logout) {
             makeLogout();
         } else
@@ -159,17 +159,123 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             changeFragment(item.getItemId());
         closeNavDrawer();
 
+        return true;*/
         return true;
     }
 
-    private void closeNavDrawer() {
-        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        }
+    private void setupMaterialDrawer() {
+        // Create the AccountHeader
+        AccountHeader accountHeader = new AccountHeaderBuilder()
+                .withActivity(this)
+                .withHeaderBackground(R.color.relative_main_color)
+                .withTextColor(getColor(R.color.white))
+                .addProfiles(
+                        new ProfileDrawerItem().withName(username).withEmail(userType).withIcon(R.mipmap.ic_launcher)
+                ).build();
+
+        mDrawer = new DrawerBuilder()
+                .withActivity(this)
+                .withTranslucentStatusBar(false)
+                .withActionBarDrawerToggle(true)
+                .withToolbar(toolbar)
+                .withAccountHeader(accountHeader)
+                .withSliderBackgroundColor(getResources().getColor(R.color.general_view_color, getTheme()))
+                .addDrawerItems(
+                        createDrawerMainItem(0, "Home", R.id.nav_home, true, false),
+                        createDrawerCategory(1, "Lezioni").withSubItems(
+                                createDrawerMainItem(2, "Lezioni svolte", R.id.nav_lessons, true, true),
+                                createDrawerMainItem(3, "Argomenti e attività", 0, "/genitori/argomenti", true, true)
+                        ),
+                        createDrawerCategory(4, "Situazione").withSubItems(
+                                createDrawerMainItem(5, "Voti", R.id.nav_votes, true, true),
+                                createDrawerMainItem(6, "Assenze", 0, "/genitori/assenze", true, true),
+                                createDrawerMainItem(7, "Note", 0, "/genitori/note/", true, true),
+                                createDrawerMainItem(8, "Osservazioni", 0, "/genitori/osservazioni/", !userType.equals("Studente"), true), //SOLO GENITORE,
+                                createDrawerMainItem(9, "Autorizzazioni", 0, "/genitori/deroghe/", true, true)
+                        ),
+                        createDrawerMainItem(10, "Pagella", R.id.nav_report_card, true, false),
+                        createDrawerMainItem(11, "Colloqui", 0, "/genitori/colloqui", !userType.equals("Studente"), false),    //SOLO GENITORE,
+                        createDrawerCategory(12, "Bacheca").withSubItems(
+                                createDrawerMainItem(13, "Circolari e avvisi", R.id.nav_pin_board, true, true),
+                                createDrawerMainItem(14, "Documenti", 0, "/documenti/bacheca", true, true)
+                        ),
+                        createDrawerMainItem(15, "Agenda", R.id.nav_agenda, true, false),
+
+                        new DividerDrawerItem(),
+
+                        createDrawerSecondaryItem(16, "Impostazioni")
+                                .withOnDrawerItemClickListener(this::settingsItemOnClick)
+                                .withSelectable(false),
+                        createDrawerSecondaryItem(17, "Esci")
+                                .withOnDrawerItemClickListener(this::logoutItemOnClick)
+                                .withSelectable(false)
+                )
+                .build();
     }
 
-    private void makeLogout() {
+    private ExpandableDrawerItem createDrawerCategory(int identifier, String name) {
+        return new ExpandableDrawerItem()
+                .withIdentifier(identifier)
+                .withIconTintingEnabled(true)
+                .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
+                .withArrowColor(getResources().getColor(R.color.night_white_light_black, getTheme()))
+                .withName(name);
+    }
+
+    private PrimaryDrawerItem createDrawerMainItem(int identifier, String name, @IdRes int id, boolean enabled, boolean withMoreSpace) {
+        PrimaryDrawerItem primaryDrawerItem = new PrimaryDrawerItem()
+                .withIdentifier(identifier)
+                .withIconTintingEnabled(true)
+                //.withIcon(icon)
+                .withName(name)
+                .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
+                .withEnabled(enabled)
+                .withOnDrawerItemClickListener((view, i, item) -> {
+                    changeFragment(id);
+                    return false;
+                });
+
+        if (withMoreSpace)
+            primaryDrawerItem.withIcon(R.color.transparent);
+
+        return primaryDrawerItem;
+    }
+
+    private PrimaryDrawerItem createDrawerMainItem(int identifier, String name, @IdRes int id, String url, boolean enabled, boolean withMoreSpace) {
+        PrimaryDrawerItem primaryDrawerItem = new PrimaryDrawerItem()
+                .withIdentifier(identifier)
+                .withIconTintingEnabled(true)
+                //.withIcon(icon)
+                .withName(name)
+                .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
+                .withEnabled(enabled)
+                .withOnDrawerItemClickListener((view, i, item) -> {
+                    changeToFragmentNotImplemented(name, url);
+                    return false;
+                });
+
+        if (withMoreSpace)
+            primaryDrawerItem.withIcon(R.color.transparent);
+
+        return primaryDrawerItem;
+    }
+
+    private PrimaryDrawerItem createDrawerSecondaryItem(int identifier, String name) {
+        return new PrimaryDrawerItem()
+                .withIdentifier(identifier)
+                .withName(name)
+                .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
+                .withIconTintingEnabled(true);
+    }
+
+    private void closeNavDrawer() {
+        /*DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        }*/
+    }
+
+    private boolean logoutItemOnClick(View view, int i, IDrawerItem item) {
         loggerManager.d("Logout richiesto dall'utente");
         new Thread(() -> {
             AppData.increaseVisitCount("Log out");
@@ -178,20 +284,39 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         LoginData.clearAll(this);
         startActivity(intent);
         finish();
+        return true;
     }
 
-    private void startSettingsActivity() {
+    private boolean settingsItemOnClick(View view, int i, IDrawerItem item) {
         loggerManager.d("Avvio SettingsActivity");
         startActivity(new Intent(this, SettingsActivity.class));
+        return true;
+    }
+
+    private void changeToFragmentNotImplemented(String toolbarTitle, String url) {
+        FragmentManager manager = getSupportFragmentManager();
+        Fragment fragment;
+        String tag = "FRAGMENT_NOT_IMPLEMENTED";
+
+        loggerManager.w("Pagina non ancora implementata, la faccio visualizzare dalla webview");
+        fragment = new NotImplementedFragment(GiuaScraper.getSiteURL() + url, GlobalVariables.gS.getCookie());
+        toolbar.setTitle(toolbarTitle);
+        toolbar.setSubtitle("Non ancora implementato!");
+        changeFragmentWithManager(fragment, tag);
     }
 
     private void changeFragment(@IdRes int id) {
         FragmentManager manager = getSupportFragmentManager();
         Fragment fragment;
         String tag = getTagFromId(id);
+        toolbar.setSubtitle("");
 
         if (tag.equals("")) {  //Se tag è vuoto vuol dire che questo id non è stato ancora implementato quindi finisci
             loggerManager.e("Tag vuoto, fragment non ancora implementato");
+            return;
+        }
+        if (id == 0) {
+            loggerManager.w("Dovrebbe essere chiamato changeToFragmentNotImplemented non changeFragment");
             return;
         }
 
@@ -253,6 +378,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     }
 
     private String getTagFromId(@IdRes int id) {
+        if (id == 0)
+            return "FRAGMENT_NOT_IMPLEMENTED";
         if (id == R.id.nav_home)
             return "FRAGMENT_HOME";
         if (id == R.id.nav_votes)
