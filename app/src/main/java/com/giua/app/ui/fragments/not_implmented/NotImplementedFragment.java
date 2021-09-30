@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.giua.app.R;
+import com.giua.webscraper.GiuaScraper;
 
 /**
  * Questo frammento viene visualizzato quando si cerca di visualizzare una schermata non ancora implementata
@@ -55,7 +56,7 @@ public class NotImplementedFragment extends Fragment {
         webView.setWebViewClient(new WebViewClient());
         webView.getSettings().setUserAgentString(userAgent);
         webView.getSettings().setJavaScriptEnabled(true);
-        CookieManager.getInstance().setCookie("https://registro.giua.edu.it", "PHPSESSID=" + cookie + ";path=/; HttpOnly; SameSite=lax");
+        CookieManager.getInstance().setCookie(GiuaScraper.getSiteURL(), "PHPSESSID=" + cookie + ";path=/; HttpOnly; SameSite=lax");
 
         webView.loadUrl(url);
 
