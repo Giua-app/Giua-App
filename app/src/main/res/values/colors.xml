@@ -52,4 +52,5 @@
     <color name="agenda_views_text_green">#35B039</color>
     <color name="agenda_views_text_orange">#FF9800</color>
     <color name="agenda_views_text_cyan">#00BCD4</color>
+    <color name="transparent">#00FFFFFF</color>
 </resources>

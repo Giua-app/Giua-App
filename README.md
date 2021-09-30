@@ -18,6 +18,17 @@ Questa app usa la libreria [Giua-Webscraper](https://github.com/Giua-app/Giua-We
 
 [<img src="readme-assets/get-it-on-github.png" alt="Get it on GitHub" height="80">](https://github.com/Giua-app/Giua-App/releases)
 
+[<img src="readme-assets/0.jpeg" width=160>](readme-assets/0.jpeg)
+[<img src="readme-assets/1.jpeg" width=160>](readme-assets/1.jpeg)
+[<img src="readme-assets/2.jpeg" width=160>](readme-assets/2.jpeg)
+[<img src="readme-assets/3.jpeg" width=160>](readme-assets/3.jpeg)
+[<img src="readme-assets/4.jpeg" width=160>](readme-assets/4.jpeg)
+[<img src="readme-assets/5.jpeg" width=160>](readme-assets/5.jpeg)
+[<img src="readme-assets/6.jpeg" width=160>](readme-assets/6.jpeg)
+[<img src="readme-assets/7.jpeg" width=160>](readme-assets/7.jpeg)
+[<img src="readme-assets/8.jpeg" width=160>](readme-assets/8.jpeg)
+[<img src="readme-assets/9.jpeg" width=160>](readme-assets/9.jpeg)
+[<img src="readme-assets/10.jpeg" width=160>](readme-assets/10.jpeg)
 
 ## Features
 
@@ -50,9 +61,6 @@ Questa app usa la libreria [Giua-Webscraper](https://github.com/Giua-app/Giua-We
 - L'app supporta anche gli studenti con il login Google
 - L'app può notificare in caso di nuovi aggiornamenti e installarli a seconda delle preferenze dell'utente
 - L'utente può disabilitare le notifiche dalle Impostazioni
-
-## Screenshots
-![Screenshots](/readme-assets/Screenshots.png "Screenshots")
 
 ## Come si scarica?
 Per scaricare versioni stabili andare sulle [Release](https://github.com/Giua-app/Giua-App/releases), in ogni release c'è allegato un apk dell'app
