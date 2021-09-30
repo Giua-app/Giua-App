@@ -87,13 +87,10 @@ public class AboutActivity extends MaterialAboutActivity {
                 .icon(new IconicsDrawable(this)
                         .icon(CommunityMaterial.Icon.cmd_book)
                         .sizeDp(18))
-                .setOnClickAction(new MaterialAboutItemOnClickAction() {
-                    @Override
-                    public void onClick() {
-                        Intent intent = new Intent(getBaseContext(), AboutLicenseActivity.class);
-                        intent.putExtra("", getIntent().getIntExtra("", 0));
-                        context.startActivity(intent);
-                    }
+                .setOnClickAction(() -> {
+                    Intent intent = new Intent(getBaseContext(), AboutLicenseActivity.class);
+                    intent.putExtra("", getIntent().getIntExtra("", 0));
+                    context.startActivity(intent);
                 })
                 .build());
 
