@@ -96,13 +96,18 @@ public class AgendaView extends RelativeLayout {
             tvType.setTextColor(getResources().getColor(R.color.agenda_views_text_orange, context.getTheme()));
         }
 
-        int timeDiff = calcTimeDifferenceInDay(Calendar.getInstance().getTime(), objectDay.getTime());
+        Calendar fake = Calendar.getInstance();
+        fake.set(Calendar.MONTH, 11);
+        fake.set(Calendar.DAY_OF_MONTH, 29);
+        int timeDiff = calcTimeDifferenceInDay(fake, objectDay);
+        loggerManager.d("differenza finale: " + timeDiff);
         if (timeDiff < 0)
             if (timeDiff == -1)
                 tvTime.setText("Ieri");
             else
                 tvTime.setText(Math.abs(timeDiff) + " giorni fa");
         else {
+            loggerManager.d("Entrato switch");
             switch (timeDiff) {
                 case 3:
                     tvTime.setTextColor(getResources().getColor(R.color.middle_vote_lighter, context.getTheme()));
@@ -127,8 +132,16 @@ public class AgendaView extends RelativeLayout {
         }
     }
 
-    private int calcTimeDifferenceInDay(Date day1, Date day2) {
-        long diffInMillis = day2.getTime() - day1.getTime();
-        return Math.round(diffInMillis / 86_400_000f);       //Una giornata sono 86_400_000 ms
+    private int calcTimeDifferenceInDay(Calendar now, Calendar homework) {
+        if(now.get(Calendar.YEAR) == homework.get(Calendar.YEAR)) {
+            return homework.get(Calendar.DAY_OF_YEAR) - now.get(Calendar.DAY_OF_YEAR);
+        }
+
+        long diffInMillis = homework.getTime().getTime() - now.getTime().getTime();
+        double diffInDays = diffInMillis / 86_400_000f;
+
+        loggerManager.d("la differenza in ms è " + diffInMillis);
+        loggerManager.d("in giorni è: " + diffInDays);
+        return Math.round(diffInDays);       //Una giornata sono 86_400_000 ms
     }
 }
