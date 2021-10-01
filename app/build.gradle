@@ -120,7 +120,7 @@ dependencies {
     implementation 'com.github.daniel-stoneuk:material-about-library:3.1.2'
 
     //--Material drawer
-    implementation 'com.mikepenz:materialdrawer:6.1.2'
+    implementation 'com.mikepenz:materialdrawer:8.4.4'
 
     //--App Intro
     implementation 'com.github.AppIntro:AppIntro:6.1.0'
