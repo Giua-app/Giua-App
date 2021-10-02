@@ -142,15 +142,6 @@ public class CheckNewsReceiver extends BroadcastReceiver {
 
             notificationManager.notify(11, builder.build());
         }
-        if (gS.checkForAbsenceUpdate(false)) {
-            loggerManager.d("Trovata nuova assenza");
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                    .setSmallIcon(R.drawable.ic_giuaschool_black)
-                    .setContentTitle("Nuova assenza")
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-            notificationManager.notify(12, builder.build());
-        }
     }
 
     private String makeGsuiteLogin() {

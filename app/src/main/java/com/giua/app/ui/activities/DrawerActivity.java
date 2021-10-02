@@ -24,12 +24,10 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -54,7 +52,6 @@ import com.giua.app.ui.fragments.pinboard.PinboardFragment;
 import com.giua.app.ui.fragments.reportcard.ReportCardFragment;
 import com.giua.app.ui.fragments.votes.VotesFragment;
 import com.giua.webscraper.GiuaScraper;
-import com.google.android.material.navigation.NavigationView;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -65,11 +62,9 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.ThreadLocalRandom;
 
-public class DrawerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class DrawerActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
 
@@ -130,45 +125,13 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         }
     }
 
-    @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        /*DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        fragmentManager = getSupportFragmentManager();
-        transaction = fragmentManager.beginTransaction();
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-
-        toggle.setDrawerIndicatorEnabled(true);
-        toggle.syncState();
-        drawerLayout.addDrawerListener(toggle);
-
-        changeFragment(R.id.nav_home);*/
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull @NotNull MenuItem item) {
-        /*if (item.isChecked()) {
-            closeNavDrawer();
-        } else if (item.getItemId() == R.id.nav_settings) {
-            settingsItemOnClick();
-        } else if (item.getItemId() == R.id.nav_logout) {
-            makeLogout();
-        } else
-            loggerManager.d("Cambio fragment a " + item.getTitle());
-            changeFragment(item.getItemId());
-        closeNavDrawer();
-
-        return true;*/
-        return true;
-    }
-
     private void setupMaterialDrawer() {
         // Create the AccountHeader
         AccountHeader accountHeader = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.color.relative_main_color)
                 .withTextColor(getColor(R.color.white))
+                .withSelectionListEnabled(false)
                 .addProfiles(
                         new ProfileDrawerItem().withName(username).withEmail(userType).withIcon(R.mipmap.ic_launcher)
                 ).build();
@@ -219,6 +182,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                 .withIconTintingEnabled(true)
                 .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
                 .withArrowColor(getResources().getColor(R.color.night_white_light_black, getTheme()))
+                .withSelectable(false)
                 .withName(name);
     }
 
@@ -298,11 +262,13 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         Fragment fragment;
         String tag = "FRAGMENT_NOT_IMPLEMENTED";
 
-        loggerManager.w("Pagina non ancora implementata, la faccio visualizzare dalla webview");
-        fragment = new NotImplementedFragment(GiuaScraper.getSiteURL() + url, GlobalVariables.gS.getCookie());
-        toolbar.setTitle(toolbarTitle);
-        toolbar.setSubtitle("Non ancora implementato!");
-        changeFragmentWithManager(fragment, tag);
+        if (!toolbarTitle.equals(toolbar.getTitle())) {  //Se l'elemento cliccato non è già visualizzato allora visualizzalo
+            loggerManager.w("Pagina non ancora implementata, la faccio visualizzare dalla webview");
+            fragment = new NotImplementedFragment(GiuaScraper.getSiteURL() + url, GlobalVariables.gS.getCookie());
+            toolbar.setTitle(toolbarTitle);
+            toolbar.setSubtitle("Non ancora implementato!");
+            changeFragmentWithManager(fragment, tag);
+        }
     }
 
     private void changeFragment(@IdRes int id) {
@@ -310,6 +276,9 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         Fragment fragment;
         String tag = getTagFromId(id);
         toolbar.setSubtitle("");
+
+        if (!manager.getFragments().isEmpty() && manager.getFragments().get(0).getTag().equals(tag)) //Se il fragment visualizzato è quello di id allora non fare nulla
+            return;
 
         if (tag.equals("")) {  //Se tag è vuoto vuol dire che questo id non è stato ancora implementato quindi finisci
             loggerManager.e("Tag vuoto, fragment non ancora implementato");
@@ -402,10 +371,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        changeFragment(R.id.nav_home);
     }
 
     @Override
