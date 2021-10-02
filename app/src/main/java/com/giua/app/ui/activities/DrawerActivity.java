@@ -45,6 +45,7 @@ import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
 import com.giua.app.ui.fragments.agenda.AgendaFragment;
+import com.giua.app.ui.fragments.autorizations.AuthorizationFragment;
 import com.giua.app.ui.fragments.home.HomeFragment;
 import com.giua.app.ui.fragments.lessons.LessonsFragment;
 import com.giua.app.ui.fragments.not_implmented.NotImplementedFragment;
@@ -154,7 +155,7 @@ public class DrawerActivity extends AppCompatActivity {
                                 createDrawerMainItem(6, "Assenze", 0, "/genitori/assenze", true, true),
                                 createDrawerMainItem(7, "Note", 0, "/genitori/note/", true, true),
                                 createDrawerMainItem(8, "Osservazioni", 0, "/genitori/osservazioni/", !userType.equals("Studente"), true), //SOLO GENITORE,
-                                createDrawerMainItem(9, "Autorizzazioni", 0, "/genitori/deroghe/", true, true)
+                                createDrawerMainItem(9, "Autorizzazioni", R.id.nav_authorization, true, true)
                         ),
                         createDrawerMainItem(10, "Pagella", R.id.nav_report_card, true, false),
                         createDrawerMainItem(11, "Colloqui", 0, "/genitori/colloqui", !userType.equals("Studente"), false),    //SOLO GENITORE,
@@ -298,6 +299,15 @@ public class DrawerActivity extends AppCompatActivity {
                 toolbar.setTitle("Home");
             else
                 toolbar.setTitle("Home - Offline");
+        } else if (id == R.id.nav_authorization) {
+            fragment = manager.findFragmentByTag(tag);
+            if (fragment == null)
+                fragment = new AuthorizationFragment();
+            changeFragmentWithManager(fragment, tag);
+            if (!offlineMode)
+                toolbar.setTitle("Autorizzazioni");
+            else
+                toolbar.setTitle("Autorizzazioni - Offline");
         } else if (id == R.id.nav_votes) {
             fragment = manager.findFragmentByTag(tag);
             if (fragment == null)
@@ -361,6 +371,8 @@ public class DrawerActivity extends AppCompatActivity {
             return "FRAGMENT_PIN_BOARD";
         if (id == R.id.nav_report_card)
             return "FRAGMENT_REPORT_CARD";
+        if (id == R.id.nav_authorization)
+            return "FRAGMENT_AUTHORIZATIONS";
         return "";
     }
 

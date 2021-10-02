@@ -109,5 +109,7 @@
     <string name="report_card_btn_second_quarter">2° Quadrimestre</string>
     <string name="site_in_maintenace_error">Il sito è in manutenzione, riprova più tardi</string>
     <string name="activitymaindrawer_nav_home">Home</string>
+    <string name="authorizations_exit">Autorizzazione in deroga all\'orario di uscita:</string>
+    <string name="authorizations_entry">Autorizzazione in deroga all\'orario di entrata:</string>
 
 </resources>
