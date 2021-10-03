@@ -42,6 +42,7 @@ import com.giua.app.AppData;
 import com.giua.app.AppUpdateManager;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
+import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.giua.app.ThreadManager;
 import com.giua.objects.Vote;
@@ -50,6 +51,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -65,6 +67,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     TextView tvTests;
     SwipeRefreshLayout swipeRefreshLayout;
     View root;
+    LoggerManager loggerManager;
     boolean forceRefresh = false;
     boolean canClickUpdateReminder = true;
 
@@ -75,6 +78,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
 
         threadManager = new ThreadManager();
         activity = requireActivity();
+        loggerManager = new LoggerManager("HomeFragment", activity);
 
         chart = root.findViewById(R.id.home_mean_chart);
         chart.getAxisLeft().setEnabled(false);
@@ -82,6 +86,8 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         chart.getAxisRight().setTextSize(14);
         chart.getAxisRight().setTextColor(getResources().getColor(R.color.night_white_light_black, activity.getTheme()));
         chart.getAxisRight().setLabelCount(5, true);
+        chart.getAxisRight().setAxisMaximum(10f);
+        chart.getAxisRight().setAxisMinimum(0f);
         chart.getXAxis().setEnabled(false);
         chart.setNoDataText("Nessun voto");
         Description desc = new Description();
@@ -222,19 +228,13 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
             entriesFirstQuarter.add(new Entry(0, 5));
             entriesFirstQuarter.add(new Entry(1, 5));
         } else {
-            Set<String> allSubjects = allVotes.keySet();
-            for (String subject : allSubjects) {
-                List<Vote> subjectVotes = allVotes.get(subject);
-                for (int i = subjectVotes.size() - 1; i >= 0; i--) {  //Dato che i voti sono messi in ordine dall'ultimo al primo per fare il grafico li aggiungeremo al contrario
-                    Vote vote = subjectVotes.get(i);
-                    if (!vote.isAsterisk) {
-                        if (vote.isFirstQuarterly)
-                            entriesFirstQuarter.add(new Entry(voteCounter, vote.toFloat()));
-                        else
-                            entriesSecondQuarter.add(new Entry(voteCounter, vote.toFloat()));
-                        voteCounter++;
-                    }
-                }
+            List<Vote> allVotesSorted = sortVotes(allVotes);
+            for (Vote vote : allVotesSorted) {
+                if (vote.isFirstQuarterly)
+                    entriesFirstQuarter.add(new Entry(voteCounter, vote.toFloat()));
+                else
+                    entriesSecondQuarter.add(new Entry(voteCounter, vote.toFloat()));
+                voteCounter++;
             }
         }
 
@@ -261,6 +261,63 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         return new LineData(lineDataSetFirstQuarter, lineDataSetSecondQuarter);
     }
 
+    /**
+     * Riordina in una lista tutti i voti di tutte le materie secondo le date
+     *
+     * @param allVotes I voti
+     * @return La lista dei voti ordinata per data
+     */
+    private List<Vote> sortVotes(Map<String, List<Vote>> allVotes) {
+
+        List<Vote> listToSort = new Vector<>();
+        Set<String> allSubjects = allVotes.keySet();
+        for (String subject : allSubjects) {
+            List<Vote> subjectVotes = allVotes.get(subject);
+            for (Vote vote : subjectVotes) {
+                if (!vote.isAsterisk) {
+                    listToSort.add(vote);
+                }
+            }
+        }
+
+        listToSort.sort(new Comparator<Vote>() {
+            @Override
+            public int compare(Vote firstVote, Vote secondVote) {
+                int firstDay = Integer.parseInt(firstVote.date.split(" ")[0]);
+                int firstMonth = getNumberFromMonth(firstVote.date.split(" ")[1]);
+                int firstYear = 0;   //Non interessa l'anno vero serve solo per il sorting
+
+                if (firstMonth < 9)
+                    firstYear = 1;  //1 se è il secondo anno dell'anno scolastico
+
+                int secondDay = Integer.parseInt(secondVote.date.split(" ")[0]);
+                int secondMonth = getNumberFromMonth(secondVote.date.split(" ")[1]);
+                int secondYear = 0;
+
+                if (secondMonth < 9)
+                    secondYear = 1;
+
+                if (firstYear == secondYear) {
+                    if (firstMonth == secondMonth) {
+                        if (firstDay == secondDay)
+                            return 0;   //I giorni sono uguali
+                        if (firstDay > secondDay)
+                            return 1;   //Il primo giorno è maggiore rispetto al primo
+                        return -1; //Il primo giorno è minore rispetto al primo
+                    }
+                    if (firstMonth > secondMonth)
+                        return 1;
+                    return -1;
+                }
+                if (firstYear > secondYear)
+                    return 1;
+                return -1;
+            }
+        });
+
+        return listToSort;
+    }
+
     private void setupMeanVotesText(Map<String, List<Vote>> allVotes) {
         DecimalFormat df = new DecimalFormat("0.00");
         float meanFirstQuarter = getMeanOfAllVotes(allVotes);
@@ -281,6 +338,37 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         root.findViewById(R.id.home_txt_mean).setBackground(null);
         ((TextView) root.findViewById(R.id.home_txt_mean)).setMinWidth(0);
 
+    }
+
+    private int getNumberFromMonth(String month) {
+        switch (month) {
+            case "Gennaio":
+                return 1;
+            case "Febbraio":
+                return 2;
+            case "Marzo":
+                return 3;
+            case "Aprile":
+                return 4;
+            case "Maggio":
+                return 5;
+            case "Giugno":
+                return 6;
+            case "Luglio":
+                return 7;
+            case "Agosto":
+                return 8;
+            case "Settembre":
+                return 9;
+            case "Ottobre":
+                return 10;
+            case "Novembre":
+                return 11;
+            case "Dicembre":
+                return 12;
+        }
+        loggerManager.e("E' stato rilevato un mese che non ho capito: " + month);
+        return -1;
     }
 
     private float getMeanOfAllVotes(Map<String, List<Vote>> votes) {

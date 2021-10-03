@@ -36,7 +36,6 @@ import com.giua.objects.Test;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Calendar;
-import java.util.Date;
 
 public class AgendaView extends RelativeLayout {
     Homework homework = null;
@@ -142,6 +141,6 @@ public class AgendaView extends RelativeLayout {
 
         loggerManager.d("la differenza in ms è " + diffInMillis);
         loggerManager.d("in giorni è: " + diffInDays);
-        return Math.round(diffInDays);       //Una giornata sono 86_400_000 ms
+        return Math.round(diffInMillis / 86_400_000f);       //Una giornata sono 86_400_000 ms
     }
 }

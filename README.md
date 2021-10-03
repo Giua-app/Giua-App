@@ -1,5 +1,6 @@
 # Giua-App
 
+
 <p align='center'>
   <a href='https://github.com/Giua-app/Giua-App/blob/master/LICENSE'><img src='https://img.shields.io/github/license/Giua-app/Giua-App'/></a>
   <img src='https://img.shields.io/github/v/tag/Giua-app/Giua-App?label=version&include_prereleases&color=success'/>
@@ -7,7 +8,7 @@
 </p>
 
 <p align='center'>
-  <img src='https://img.shields.io/badge/In--app%20giua--webscraper-v1.1.8--beta-orange'/>
+  <img src='https://img.shields.io/badge/In--app%20giua--webscraper-v1.1.15--beta-orange'/>
   <a href='https://github.com/Giua-app/Giua-Webscraper'><img src='https://img.shields.io/github/v/release/Giua-app/Giua-Webscraper?color=success&include_prereleases&label=Github%20giua-webscraper'/></a>
 </p>
 

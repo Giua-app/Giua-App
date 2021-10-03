@@ -25,6 +25,12 @@
     app:startDestination="@+id/nav_home">
 
     <fragment
+        android:id="@+id/nav_authorization"
+        android:name="com.giua.app.ui.fragments.autorizations.AuthorizationFragment"
+        android:label="Autorizzazioni"
+        tools:layout="@layout/fragment_autorizations" />
+
+    <fragment
         android:id="@+id/nav_home"
         android:name="com.giua.app.ui.fragments.home.HomeFragment"
         android:label="@string/activitymaindrawer_nav_home"

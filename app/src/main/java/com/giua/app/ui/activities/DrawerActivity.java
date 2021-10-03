@@ -24,12 +24,10 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -47,6 +45,7 @@ import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
 import com.giua.app.ui.fragments.agenda.AgendaFragment;
+import com.giua.app.ui.fragments.autorizations.AuthorizationFragment;
 import com.giua.app.ui.fragments.home.HomeFragment;
 import com.giua.app.ui.fragments.lessons.LessonsFragment;
 import com.giua.app.ui.fragments.not_implmented.NotImplementedFragment;
@@ -54,7 +53,6 @@ import com.giua.app.ui.fragments.pinboard.PinboardFragment;
 import com.giua.app.ui.fragments.reportcard.ReportCardFragment;
 import com.giua.app.ui.fragments.votes.VotesFragment;
 import com.giua.webscraper.GiuaScraper;
-import com.google.android.material.navigation.NavigationView;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -65,11 +63,9 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.ThreadLocalRandom;
 
-public class DrawerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class DrawerActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
 
@@ -130,45 +126,13 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         }
     }
 
-    @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        /*DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        fragmentManager = getSupportFragmentManager();
-        transaction = fragmentManager.beginTransaction();
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-
-        toggle.setDrawerIndicatorEnabled(true);
-        toggle.syncState();
-        drawerLayout.addDrawerListener(toggle);
-
-        changeFragment(R.id.nav_home);*/
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull @NotNull MenuItem item) {
-        /*if (item.isChecked()) {
-            closeNavDrawer();
-        } else if (item.getItemId() == R.id.nav_settings) {
-            settingsItemOnClick();
-        } else if (item.getItemId() == R.id.nav_logout) {
-            makeLogout();
-        } else
-            loggerManager.d("Cambio fragment a " + item.getTitle());
-            changeFragment(item.getItemId());
-        closeNavDrawer();
-
-        return true;*/
-        return true;
-    }
-
     private void setupMaterialDrawer() {
         // Create the AccountHeader
         AccountHeader accountHeader = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.color.relative_main_color)
                 .withTextColor(getColor(R.color.white))
+                .withSelectionListEnabled(false)
                 .addProfiles(
                         new ProfileDrawerItem().withName(username).withEmail(userType).withIcon(R.mipmap.ic_launcher)
                 ).build();
@@ -191,7 +155,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                                 createDrawerMainItem(6, "Assenze", 0, "/genitori/assenze", true, true),
                                 createDrawerMainItem(7, "Note", 0, "/genitori/note/", true, true),
                                 createDrawerMainItem(8, "Osservazioni", 0, "/genitori/osservazioni/", !userType.equals("Studente"), true), //SOLO GENITORE,
-                                createDrawerMainItem(9, "Autorizzazioni", 0, "/genitori/deroghe/", true, true)
+                                createDrawerMainItem(9, "Autorizzazioni", R.id.nav_authorization, true, true)
                         ),
                         createDrawerMainItem(10, "Pagella", R.id.nav_report_card, true, false),
                         createDrawerMainItem(11, "Colloqui", 0, "/genitori/colloqui", !userType.equals("Studente"), false),    //SOLO GENITORE,
@@ -219,6 +183,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                 .withIconTintingEnabled(true)
                 .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
                 .withArrowColor(getResources().getColor(R.color.night_white_light_black, getTheme()))
+                .withSelectable(false)
                 .withName(name);
     }
 
@@ -298,11 +263,13 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         Fragment fragment;
         String tag = "FRAGMENT_NOT_IMPLEMENTED";
 
-        loggerManager.w("Pagina non ancora implementata, la faccio visualizzare dalla webview");
-        fragment = new NotImplementedFragment(GiuaScraper.getSiteURL() + url, GlobalVariables.gS.getCookie());
-        toolbar.setTitle(toolbarTitle);
-        toolbar.setSubtitle("Non ancora implementato!");
-        changeFragmentWithManager(fragment, tag);
+        if (!toolbarTitle.equals(toolbar.getTitle())) {  //Se l'elemento cliccato non è già visualizzato allora visualizzalo
+            loggerManager.w("Pagina non ancora implementata, la faccio visualizzare dalla webview");
+            fragment = new NotImplementedFragment(GiuaScraper.getSiteURL() + url, GlobalVariables.gS.getCookie());
+            toolbar.setTitle(toolbarTitle);
+            toolbar.setSubtitle("Non ancora implementato!");
+            changeFragmentWithManager(fragment, tag);
+        }
     }
 
     private void changeFragment(@IdRes int id) {
@@ -310,6 +277,9 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         Fragment fragment;
         String tag = getTagFromId(id);
         toolbar.setSubtitle("");
+
+        if (!manager.getFragments().isEmpty() && manager.getFragments().get(0).getTag().equals(tag)) //Se il fragment visualizzato è quello di id allora non fare nulla
+            return;
 
         if (tag.equals("")) {  //Se tag è vuoto vuol dire che questo id non è stato ancora implementato quindi finisci
             loggerManager.e("Tag vuoto, fragment non ancora implementato");
@@ -329,6 +299,15 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                 toolbar.setTitle("Home");
             else
                 toolbar.setTitle("Home - Offline");
+        } else if (id == R.id.nav_authorization) {
+            fragment = manager.findFragmentByTag(tag);
+            if (fragment == null)
+                fragment = new AuthorizationFragment();
+            changeFragmentWithManager(fragment, tag);
+            if (!offlineMode)
+                toolbar.setTitle("Autorizzazioni");
+            else
+                toolbar.setTitle("Autorizzazioni - Offline");
         } else if (id == R.id.nav_votes) {
             fragment = manager.findFragmentByTag(tag);
             if (fragment == null)
@@ -392,6 +371,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             return "FRAGMENT_PIN_BOARD";
         if (id == R.id.nav_report_card)
             return "FRAGMENT_REPORT_CARD";
+        if (id == R.id.nav_authorization)
+            return "FRAGMENT_AUTHORIZATIONS";
         return "";
     }
 
@@ -402,10 +383,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        changeFragment(R.id.nav_home);
     }
 
     @Override
