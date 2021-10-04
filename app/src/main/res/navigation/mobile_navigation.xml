@@ -25,8 +25,14 @@
     app:startDestination="@+id/nav_home">
 
     <fragment
+        android:id="@+id/nav_absences"
+        android:name="com.giua.app.ui.fragments.absences.AbsencesFragment"
+        android:label="Assenze"
+        tools:layout="@layout/fragment_absences" />
+
+    <fragment
         android:id="@+id/nav_authorization"
-        android:name="com.giua.app.ui.fragments.autorizations.AuthorizationFragment"
+        android:name="com.giua.app.ui.fragments.authorizations.AuthorizationFragment"
         android:label="Autorizzazioni"
         tools:layout="@layout/fragment_autorizations" />
 

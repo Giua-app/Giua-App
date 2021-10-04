@@ -51,7 +51,7 @@ public class ReportCardView extends ConstraintLayout {
 
     private void initializeComponent(Context context) {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        layoutInflater.inflate(R.layout.report_card_view, this);
+        layoutInflater.inflate(R.layout.view_report_card, this);
 
         ((TextView) findViewById(R.id.report_card_view_subject)).setText(subject);
         ((TextView) findViewById(R.id.report_card_view_vote)).setText(vote.get(0));

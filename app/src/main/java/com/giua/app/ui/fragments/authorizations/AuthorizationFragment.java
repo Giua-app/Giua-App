@@ -17,7 +17,7 @@
  *     along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 
-package com.giua.app.ui.fragments.autorizations;
+package com.giua.app.ui.fragments.authorizations;
 
 import android.app.Activity;
 import android.os.Bundle;

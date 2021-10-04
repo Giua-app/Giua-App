@@ -72,7 +72,7 @@ public class AgendaView extends RelativeLayout {
         loggerManager = new LoggerManager("AgendaView", context);
 
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        layoutInflater.inflate(R.layout.agenda_object_view, this);
+        layoutInflater.inflate(R.layout.view_agenda, this);
 
         TextView tvTime = findViewById(R.id.agenda_view_time);
         TextView tvDate = findViewById(R.id.agenda_view_date);

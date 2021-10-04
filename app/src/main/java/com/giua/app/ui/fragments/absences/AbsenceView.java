@@ -17,50 +17,37 @@
  *     along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 
-package com.giua.app.ui.fragments;
+package com.giua.app.ui.fragments.absences;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.giua.app.LoggerManager;
 import com.giua.app.R;
+import com.giua.objects.Absence;
 
-import org.jetbrains.annotations.NotNull;
+public class AbsenceView extends ConstraintLayout {
 
-public class ObscureLayoutView extends ConstraintLayout {
+    Absence absence;
+    LoggerManager loggerManager;
 
-    TextView tvCancel;
-
-    public ObscureLayoutView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs) {
+    public AbsenceView(@NonNull Context context, @Nullable AttributeSet attrs, Absence absence) {
         super(context, attrs);
 
+        this.absence = absence;
+
+        initializeComponent(context);
+    }
+
+    private void initializeComponent(Context context) {
+        loggerManager = new LoggerManager("AbsenceView", context);
+
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        layoutInflater.inflate(R.layout.view_obscure_layout, this);
-
-        tvCancel = findViewById(R.id.obscure_layout_cancel_texview);
-
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ObscureLayoutView);
-        final int N = a.getIndexCount();
-
-        if (N > 0) {
-            for (int i = 0; i < N; ++i) {
-                int attr = a.getIndex(i);
-                if (attr == R.styleable.ObscureLayoutView_hasCancelText && a.getBoolean(attr, true))
-                    tvCancel.setVisibility(VISIBLE);
-                else
-                    tvCancel.setVisibility(GONE);
-                if (attr == R.styleable.ObscureLayoutView_cancelText)
-                    tvCancel.setText(a.getString(attr));
-                if (tvCancel.getText().equals(""))
-                    tvCancel.setText("Annulla");
-            }
-        }
-        a.recycle();
+        layoutInflater.inflate(R.layout.view_agenda, this);
     }
 }

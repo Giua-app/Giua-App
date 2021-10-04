@@ -44,8 +44,9 @@ import com.giua.app.LoginData;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
+import com.giua.app.ui.fragments.absences.AbsencesFragment;
 import com.giua.app.ui.fragments.agenda.AgendaFragment;
-import com.giua.app.ui.fragments.autorizations.AuthorizationFragment;
+import com.giua.app.ui.fragments.authorizations.AuthorizationFragment;
 import com.giua.app.ui.fragments.home.HomeFragment;
 import com.giua.app.ui.fragments.lessons.LessonsFragment;
 import com.giua.app.ui.fragments.not_implmented.NotImplementedFragment;
@@ -152,7 +153,7 @@ public class DrawerActivity extends AppCompatActivity {
                         ),
                         createDrawerCategory(4, "Situazione").withSubItems(
                                 createDrawerMainItem(5, "Voti", R.id.nav_votes, true, true),
-                                createDrawerMainItem(6, "Assenze", 0, "/genitori/assenze", true, true),
+                                createDrawerMainItem(6, "Assenze", R.id.nav_absences, true, true),
                                 createDrawerMainItem(7, "Note", 0, "/genitori/note/", true, true),
                                 createDrawerMainItem(8, "Osservazioni", 0, "/genitori/osservazioni/", !userType.equals("Studente"), true), //SOLO GENITORE,
                                 createDrawerMainItem(9, "Autorizzazioni", R.id.nav_authorization, true, true)
@@ -290,70 +291,66 @@ public class DrawerActivity extends AppCompatActivity {
             return;
         }
 
+        fragment = manager.findFragmentByTag(tag);
+
         if (id == R.id.nav_home) {
-            fragment = manager.findFragmentByTag(tag);
             if (fragment == null)
                 fragment = new HomeFragment();
-            changeFragmentWithManager(fragment, tag);
             if (!offlineMode)
                 toolbar.setTitle("Home");
             else
                 toolbar.setTitle("Home - Offline");
+        } else if (id == R.id.nav_absences) {
+            if (fragment == null)
+                fragment = new AbsencesFragment();
+            if (!offlineMode)
+                toolbar.setTitle("Assenze");
+            else
+                toolbar.setTitle("Assenze - Offline");
         } else if (id == R.id.nav_authorization) {
-            fragment = manager.findFragmentByTag(tag);
             if (fragment == null)
                 fragment = new AuthorizationFragment();
-            changeFragmentWithManager(fragment, tag);
             if (!offlineMode)
                 toolbar.setTitle("Autorizzazioni");
             else
                 toolbar.setTitle("Autorizzazioni - Offline");
         } else if (id == R.id.nav_votes) {
-            fragment = manager.findFragmentByTag(tag);
             if (fragment == null)
                 fragment = new VotesFragment();
-            changeFragmentWithManager(fragment, tag);
             if (!offlineMode)
                 toolbar.setTitle("Voti");
             else
                 toolbar.setTitle("Voti - Offline");
         } else if (id == R.id.nav_agenda) {
-            fragment = manager.findFragmentByTag(tag);
             if (fragment == null)
                 fragment = new AgendaFragment();
-            changeFragmentWithManager(fragment, tag);
             if (!offlineMode)
                 toolbar.setTitle("Agenda");
             else
                 toolbar.setTitle("Agenda - Offline");
         } else if (id == R.id.nav_lessons) {
-            fragment = manager.findFragmentByTag(tag);
             if (fragment == null)
                 fragment = new LessonsFragment();
-            changeFragmentWithManager(fragment, tag);
             if (!offlineMode)
                 toolbar.setTitle("Lezioni");
             else
                 toolbar.setTitle("Lezioni - Offline");
         } else if (id == R.id.nav_pin_board) {
-            fragment = manager.findFragmentByTag(tag);
             if (fragment == null)
                 fragment = new PinboardFragment();
-            changeFragmentWithManager(fragment, tag);
             if (!offlineMode)
                 toolbar.setTitle("Bacheca");
             else
                 toolbar.setTitle("Bacheca - Offline");
         } else if (id == R.id.nav_report_card) {
-            fragment = manager.findFragmentByTag(tag);
             if (fragment == null)
                 fragment = new ReportCardFragment();
-            changeFragmentWithManager(fragment, tag);
             if (!offlineMode)
                 toolbar.setTitle("Pagella");
             else
                 toolbar.setTitle("Pagella - Offline");
         }
+        changeFragmentWithManager(fragment, tag);
     }
 
     private String getTagFromId(@IdRes int id) {
@@ -373,6 +370,8 @@ public class DrawerActivity extends AppCompatActivity {
             return "FRAGMENT_REPORT_CARD";
         if (id == R.id.nav_authorization)
             return "FRAGMENT_AUTHORIZATIONS";
+        if (id == R.id.nav_absences)
+            return "FRAGMENT_ABSENCES";
         return "";
     }
 

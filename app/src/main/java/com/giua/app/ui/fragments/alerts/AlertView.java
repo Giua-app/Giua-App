@@ -48,7 +48,7 @@ public class AlertView extends ConstraintLayout {
 
     private void initializeComponent(Context context) {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        layoutInflater.inflate(R.layout.alert_view, this);
+        layoutInflater.inflate(R.layout.view_alert, this);
 
         TextView tvStatus = findViewById(R.id.alert_status_text_view);
         TextView tvDate = findViewById(R.id.alert_date_text_view);

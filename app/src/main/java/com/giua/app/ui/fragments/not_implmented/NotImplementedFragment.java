@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -53,7 +54,11 @@ public class NotImplementedFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_not_implemented, container, false);
 
         WebView webView = root.findViewById(R.id.not_implemented_webview);
-        webView.setWebViewClient(new WebViewClient());
+        webView.setWebViewClient(new WebViewClient() {
+            public boolean shouldOverrideUrlLoading(WebView webView, WebResourceRequest request) {
+                return request.getUrl().toString().equals(GiuaScraper.getSiteURL() + "/logout/");
+            }
+        });
         webView.getSettings().setUserAgentString(userAgent);
         webView.getSettings().setJavaScriptEnabled(true);
         CookieManager.getInstance().setCookie(GiuaScraper.getSiteURL(), "PHPSESSID=" + cookie + ";path=/; HttpOnly; SameSite=lax");

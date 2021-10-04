@@ -48,7 +48,7 @@ public class NewsletterView extends ConstraintLayout {
 
     private void initializeComponent(Context context) {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        layoutInflater.inflate(R.layout.newsletter_view, this);
+        layoutInflater.inflate(R.layout.view_newsletter, this);
 
         TextView tvStatus = findViewById(R.id.newsletter_status_text_view);
         TextView tvNumberID = findViewById(R.id.newsletter_numberid_text_view);
