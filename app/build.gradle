@@ -104,7 +104,7 @@ dependencies {
     //implementation 'com.squareup.leakcanary:leakcanary-android:2.7'  //DEBUG
 
     //--jsoup HTML parser library @ https://jsoup.org/
-    implementation 'org.jsoup:jsoup:1.14.2'
+    implementation 'org.jsoup:jsoup:1.14.3'
 
     //--Giua scraper
     implementation 'com.github.Giua-app:Giua-Webscraper:1.1.15-beta'
