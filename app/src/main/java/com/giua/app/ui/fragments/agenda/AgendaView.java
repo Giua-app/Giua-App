@@ -96,10 +96,12 @@ public class AgendaView extends RelativeLayout {
         }
 
         Calendar fake = Calendar.getInstance();
-        fake.set(Calendar.MONTH, 11);
-        fake.set(Calendar.DAY_OF_MONTH, 29);
-        int timeDiff = calcTimeDifferenceInDay(fake, objectDay);
-        loggerManager.d("differenza finale: " + timeDiff);
+        //fake.set(Calendar.MONTH, 11);
+        //fake.set(Calendar.DAY_OF_MONTH, 29);
+        int timeDiff = calcTimeDifferenceInDay(Calendar.getInstance(), objectDay);
+        loggerManager.d("mancano " + timeDiff + " giorni al compito del " + objectDay.get(Calendar.DAY_OF_MONTH) + "/"
+                + objectDay.get(Calendar.MONTH) + "/" + objectDay.get(Calendar.YEAR));
+
         if (timeDiff < 0)
             if (timeDiff == -1)
                 tvTime.setText("Ieri");
