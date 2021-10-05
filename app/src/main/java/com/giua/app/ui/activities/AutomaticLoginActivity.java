@@ -130,6 +130,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
     }
 
     private void btnOfflineOnClick(View view) {
+        loggerManager.d("Modalità offline richiesta dall'utente");
         startActivity(new Intent(AutomaticLoginActivity.this, DrawerActivity.class).putExtra("offline", true));
         finish();
     }

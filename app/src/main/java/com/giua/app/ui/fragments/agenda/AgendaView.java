@@ -95,7 +95,7 @@ public class AgendaView extends RelativeLayout {
             tvType.setTextColor(getResources().getColor(R.color.agenda_views_text_orange, context.getTheme()));
         }
 
-        Calendar fake = Calendar.getInstance();
+        //Calendar fake = Calendar.getInstance();
         //fake.set(Calendar.MONTH, 11);
         //fake.set(Calendar.DAY_OF_MONTH, 29);
         int timeDiff = calcTimeDifferenceInDay(Calendar.getInstance(), objectDay);
@@ -108,7 +108,6 @@ public class AgendaView extends RelativeLayout {
             else
                 tvTime.setText(Math.abs(timeDiff) + " giorni fa");
         else {
-            loggerManager.d("Entrato switch");
             switch (timeDiff) {
                 case 3:
                     tvTime.setTextColor(getResources().getColor(R.color.middle_vote_lighter, context.getTheme()));

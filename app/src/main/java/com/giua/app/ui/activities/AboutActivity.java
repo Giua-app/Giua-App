@@ -29,12 +29,12 @@ import androidx.annotation.Nullable;
 import com.danielstone.materialaboutlibrary.ConvenienceBuilder;
 import com.danielstone.materialaboutlibrary.MaterialAboutActivity;
 import com.danielstone.materialaboutlibrary.items.MaterialAboutActionItem;
-import com.danielstone.materialaboutlibrary.items.MaterialAboutItemOnClickAction;
 import com.danielstone.materialaboutlibrary.items.MaterialAboutTitleItem;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutCard;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutList;
 import com.danielstone.materialaboutlibrary.util.OpenSourceLicense;
 import com.giua.app.AppData;
+import com.giua.app.BuildConfig;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.google.android.material.snackbar.Snackbar;
@@ -79,7 +79,7 @@ public class AboutActivity extends MaterialAboutActivity {
                         .icon(CommunityMaterial.Icon2.cmd_history)
                         .sizeDp(18))
                 .setOnClickAction(ConvenienceBuilder.createWebViewDialogOnClickAction(this,"", "Chiudi",
-                        "https://github.com/Giua-app/Giua-App/releases", true, false))
+                        "https://github.com/Giua-app/Giua-App/releases/tag/" + BuildConfig.VERSION_NAME.split("-")[0], true, false))
                 .build());
 
         appCardBuilder.addItem(new MaterialAboutActionItem.Builder()

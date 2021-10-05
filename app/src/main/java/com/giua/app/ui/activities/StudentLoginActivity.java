@@ -78,14 +78,14 @@ public class StudentLoginActivity extends AppCompatActivity {
                     }
                     loggerManager.e("Errore, cookie ottenuto è null. Impossibile continuare");
                     new Thread(() -> AppData.increaseVisitCount("WebView cookie error")).start();
-                    Snackbar.make(findViewById(android.R.id.content), "Login studente fallito, contatta gli sviluppatori", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(android.R.id.content), "Login studente non disponibile, contatta gli sviluppatori", Snackbar.LENGTH_LONG).show();
                 }
                 return false;
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                loggerManager.d("Caricamento pagina completato");
+                loggerManager.d("Caricamento pagina " + url + " completato");
                 webView.setVisibility(View.VISIBLE);
             }
         });
