@@ -1,15 +1,15 @@
 name: 'CI'
 on:
   push:
-    branches: [ stable ]
+    branches: [ master ]
 
 jobs:
-  make_changelog_and_ver:
+  gen_ver:
     if: startsWith(github.event.head_commit.message, 'patch:') || startsWith(github.event.head_commit.message, 'minor:') || startsWith(github.event.head_commit.message, 'major:')
     runs-on: ubuntu-latest
     outputs:
       tag_version: ${{steps.tag_version.outputs.new_tag}}
-      changelog: ${{steps.github_release.outputs.changelog}}
+      #changelog: ${{steps.github_release.outputs.changelog}}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -21,16 +21,16 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tag_prefix: ""
           custom_release_rules: patch:patch,minor:minor,major:major
-          release_branches: stable
+          release_branches: master
           dry_run: true
 
-      - name: "Build Changelog"
-        id: github_release
-        uses: mikepenz/release-changelog-builder-action@v2
-        with:
-          configuration: ".github/changelog-config/configuration.json"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #- name: "Build Changelog"
+      #  id: github_release
+      #  uses: mikepenz/release-changelog-builder-action@v2
+      #  with:
+      #    configuration: ".github/changelog-config/configuration.json"
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
           
@@ -87,19 +87,19 @@ jobs:
           
   make_release:
     runs-on: ubuntu-latest
-    needs: [ build_and_sign, make_changelog_and_ver ]
+    needs: [ build_and_sign, gen_ver ]
     steps:
       - uses: actions/download-artifact@v2
         with:
           name: apk_signed
-          path: ./giua-app.apk
-          
+          path: ./final_apk
+
       - name: Create Release
         uses: softprops/action-gh-release@6034af24fba4e5a8e975aaa6056554efe4c794d0
         with:
-          body: ${{ needs.make_changelog_and_ver.outputs.changelog }}
-          prerelease: ${{ contains(github.ref, '-rc') || contains(github.ref, '-b') || contains(github.ref, '-a') }}
-          tag_name: ${{ needs.make_changelog_and_ver.outputs.tag_version }}
-          files: "/home/runner/work/Giua-App/Giua-App/giua-app.apk"
+          #body_path: ${{ github.workspace }}/CHANGELOG.txt
+          #prerelease: ${{ contains(github.ref, '-rc') || contains(github.ref, '-b') || contains(github.ref, '-a') }}
+          tag_name: ${{ needs.gen_ver.outputs.tag_version }}
+          files: "/home/runner/work/Giua-App/Giua-App/final_apk/app-release.apk"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
