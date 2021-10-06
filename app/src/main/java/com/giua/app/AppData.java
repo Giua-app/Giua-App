@@ -22,14 +22,10 @@ package com.giua.app;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class AppData {
 
@@ -132,24 +128,15 @@ public class AppData {
     }
 
     @SuppressLint("SimpleDateFormat")
-    public static void saveLastUpdateReminderDate(final Context context, final Date date) {
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-        String value = format.format(date);
+    public static void saveLastUpdateReminderDate(final Context context, final int day) {
         getSharedPreferences(context).edit()
-                .putString(nextUpdateReminderKey, value)
+                .putInt(nextUpdateReminderKey, day)
                 .apply();
-        Log.d("TEST", "setdate: " + value);
     }
 
     @SuppressLint("SimpleDateFormat")
-    public static Date getLastUpdateReminderDate(final Context context) throws ParseException {
-        String value = getSharedPreferences(context).getString(nextUpdateReminderKey, "err");
-        if (value.equals("err")) {
-            return new Date();
-        }
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-        Log.d("TEST", "getdate: " + value);
-        return format.parse(value);
+    public static int getLastUpdateReminderDate(final Context context) {
+        return getSharedPreferences(context).getInt(nextUpdateReminderKey, -1);
     }
 
     //endregion

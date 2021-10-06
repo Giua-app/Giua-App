@@ -113,8 +113,12 @@ public class ActivityManager extends AppCompatActivity {
     }
 
     private void checkForUpdates(){
-        loggerManager.d("Chiamo checkForAppUpdates");
-        new Thread(() -> new AppUpdateManager().checkForAppUpdates(this, true)).start();
+        new Thread(() -> {
+            AppUpdateManager manager = new AppUpdateManager(ActivityManager.this);
+            if(manager.checkForUpdates() && manager.checkUpdateReminderDate()){
+                manager.createNotification();
+            }
+        }).start();
     }
 
     private void setupCaoc() {

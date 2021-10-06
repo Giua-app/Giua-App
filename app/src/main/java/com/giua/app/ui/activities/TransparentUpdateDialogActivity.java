@@ -34,21 +34,24 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.giua.app.AppData;
 import com.giua.app.BuildConfig;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.Objects;
 
 public class TransparentUpdateDialogActivity extends AppCompatActivity {
 
     String url;
     String newVer;
-    boolean hasReminder;
-    Date time;
+    //boolean hasReminder;
+    int day;
     LoggerManager loggerManager;
 
     @Override
@@ -58,10 +61,22 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
         loggerManager = new LoggerManager("TrasparentUpdateDialogActivity", this);
         loggerManager.d("onCreate chiamato");
 
-        url = getIntent().getStringExtra("url");
-        newVer = getIntent().getStringExtra("newVersion");
+        String json = getIntent().getStringExtra("json");
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        JsonNode rootNode = null;
+        try {
+            rootNode = objectMapper.readTree(json);
+        } catch (IOException e) {
+            loggerManager.e("Impossibile leggere json! - " + e.getMessage());
+            e.printStackTrace();
+        }
+        url = Objects.requireNonNull(rootNode).findPath("browser_download_url").asText();
+        newVer = rootNode.findPath("tag_name").asText();
+        day = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+        /*newVer = getIntent().getStringExtra("newVersion");
         hasReminder = getIntent().getBooleanExtra("hasReminder", false);
-        time = Calendar.getInstance().getTime();
+        time = Calendar.getInstance().getTime();*/
         showDialog();
     }
 
@@ -71,13 +86,12 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Aggiornamento");
         builder.setMessage("La tua versione attuale è la " + BuildConfig.VERSION_NAME + "\nLa nuova versione è la " + newVer + "\n\nVuoi aggiornare l'app?\n" +
-                "Nota: I tuoi dati NON VERRANNO cancellati, il file occupa circa 9MB")
+                "Nota: I tuoi dati NON VERRANNO cancellati, verranno scaricati circa 10MB")
                 .setPositiveButton("Si", (dialog, id) -> new Thread(this::downloadInstallApk).start());
 
-        if (hasReminder)
-            builder.setNeutralButton("Ricorda tra un giorno", (dialog, id) -> AppData.saveLastUpdateReminderDate(TransparentUpdateDialogActivity.this, time));
+        builder.setNeutralButton("Ricorda domani", (dialog, id) -> AppData.saveLastUpdateReminderDate(TransparentUpdateDialogActivity.this, day));
 
-        builder.setNegativeButton("NO", (dialog, id) -> {})
+        builder.setNegativeButton("No", (dialog, id) -> {})
                 .setOnCancelListener(dialog -> finish())
                 .setOnDismissListener(dialog -> finish());
 
@@ -149,7 +163,7 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
                 }
                 loggerManager.d("Imposto LastUpdateReminder ed esco");
                 //L'installazione è gia iniziata quando si arriva qui, praticamente sono gli ultimi instanti dell'app
-                AppData.saveLastUpdateReminderDate(TransparentUpdateDialogActivity.this, time);
+                AppData.saveLastUpdateReminderDate(TransparentUpdateDialogActivity.this, day);
                 finish();
             }
         };

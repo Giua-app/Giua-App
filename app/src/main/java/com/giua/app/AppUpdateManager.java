@@ -35,31 +35,119 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Objects;
 
 public class AppUpdateManager {
 
-    Connection session = Jsoup.newSession().ignoreContentType(true);
-    byte[] apkFile;
-    private NotificationManagerCompat notificationManager;
+    final Connection session = Jsoup.newSession().ignoreContentType(true);
     Integer[] updateVer = {0,0,0};
     String tagName;
     Integer[] currentVer = {0,0,0};
-    String downloadUrl;
     LoggerManager loggerManager;
+    Context context;
+    final String semverRegex = "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$";
 
-    public void checkForAppUpdates(Context context, boolean sendNotification) {
-        loggerManager = new LoggerManager("AppUpdateManager", context);
+
+    public AppUpdateManager(Context context){
+        this.context = context;
+        loggerManager = new LoggerManager("AppUpdateManager", this.context);
+    }
+
+    public boolean checkForUpdates(){
+        loggerManager.d("Controllo aggiornamenti...");
+
+        JsonNode rootNode = getReleasesJson();
+
+        tagName = rootNode.findPath("tag_name").asText();
+
+
+        loggerManager.d("Versione tag github: " + tagName);
+        loggerManager.d("Versione app: " + BuildConfig.VERSION_NAME);
+        String[] temp = BuildConfig.VERSION_NAME.split("-")[0].split("\\.");
+        currentVer[0] = Integer.parseInt(temp[0]);
+        currentVer[1] = Integer.parseInt(temp[1]);
+        currentVer[2] = Integer.parseInt(temp[2]);
+        if(tagName.matches(semverRegex)){
+            temp = tagName.split("-")[0].split("\\.");
+            updateVer[0] = Integer.parseInt(temp[0]);
+            updateVer[1] = Integer.parseInt(temp[1]);
+            updateVer[2] = Integer.parseInt(temp[2]);
+        } else {
+            //Non è una versione, esci silenziosamente
+            loggerManager.w("Versione tag trovata su github non rispetta SemVer, annullo");
+            return false;
+        }
+
+        if(isUpdateNewerThanApp()){
+            loggerManager.w("Rilevata nuova versione");
+            return true;
+        }
+        loggerManager.w("Nessuna nuova versione rilevata");
+        return false;
+    }
+
+    public JsonNode getReleasesJson(){
+        String response = "";
+        try {
+            response = session
+                    .url("https://api.github.com/repos/giua-app/giua-app/releases/latest")
+                    .get().text();
+        } catch (IOException e) {
+            loggerManager.e("Impossibile contattare API di github! - " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        JsonNode rootNode = null;
+        try {
+            rootNode = objectMapper.readTree(response);
+        } catch (IOException e) {
+            loggerManager.e("Impossibile leggere json! - " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+
+        return rootNode;
+    }
+
+    private boolean isUpdateNewerThanApp(){
+        if (currentVer[0].equals(updateVer[0]) && currentVer[1].equals(updateVer[1]) && currentVer[2].equals(updateVer[2])) {
+            //Nessun aggiornamento
+            return false;
+        }
+
+        //false = versione vecchia, true = versione nuova
+        return currentVer[0] <= updateVer[0] && currentVer[1] <= updateVer[1] && currentVer[2] <= updateVer[2];
+    }
+
+    /**
+     * Controlla LastUpdateReminderDate
+     * @return true se si può inviare l'update, false se bisogna aspettare ad un altro giorno
+     */
+    public boolean checkUpdateReminderDate(){
+        /*boolean thing = Calendar.getInstance().get(Calendar.DAY_OF_YEAR) > AppData.getLastUpdateReminderDate(context);
+        loggerManager.d("Devo ricordare l'update? " + thing + ", ultima volta che lo ricordato: " + AppData.getLastUpdateReminderDate(context));
+
+        if(Calendar.getInstance().get(Calendar.DAY_OF_YEAR) == 0){
+            loggerManager.e("Errore, è possibile che oggi sia un anno nuovo. Non è possibile confrontare ReminderDate, " +
+                    "ignoro, cambio reminder a oggi e avviso l'utente dell'update");
+            AppData.saveLastUpdateReminderDate(context, 0);
+            return true;
+        }
+        return thing;*/
+        return true;
+    }
+
+
+    /*public void checkForAppUpdates(Context context, boolean sendNotification) {
         loggerManager.d("Controllo aggiornamenti...");
 
         //TODO: in futuro quando si scaricheranno gli apk
         /*if(BuildConfig.BUILD_TYPE.equals("debug")){
             //Non si possono aggiornare le build di debug, annulla silenziosamente
             //return;
-        }*/
+        }
 
         String response = "";
         notificationManager = NotificationManagerCompat.from(context);
@@ -162,44 +250,32 @@ public class AppUpdateManager {
         }
 
         createNotification(context, sendNotification);
-    }
+    }*/
 
 
-    private void createNotification(Context context, boolean sendNotification) {
+    public void createNotification() {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         loggerManager.d("Creo notifica aggiornamento...");
 
-        String title = "Nuova versione rilevata";
+        String title = "Nuova versione rilevata (" + tagName + ")";
         String description = "Clicca per informazioni";
 
         Intent intent = new Intent(context, TransparentUpdateDialogActivity.class);
-        intent.putExtra("url", downloadUrl);
-        intent.putExtra("newVersion", tagName);
-        intent.putExtra("hasReminder", sendNotification);
+        //intent.putExtra("url", downloadUrl);
+        intent.putExtra("json", getReleasesJson().toString());
         PendingIntent pendingIntent;
 
-        if (sendNotification)
-            pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        else
-            pendingIntent = PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        if (sendNotification) {
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
-                    .setSmallIcon(R.drawable.ic_giuaschool_black)
-                    .setAutoCancel(true)
-                    .setContentTitle(title)
-                    .setContentIntent(pendingIntent)
-                    .setStyle(new NotificationCompat.BigTextStyle().bigText(description))
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
+                .setSmallIcon(R.drawable.ic_giuaschool_black)
+                .setAutoCancel(true)
+                .setContentTitle(title)
+                .setContentIntent(pendingIntent)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(description))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-            notificationManager.notify(15, builder.build());
-        } else {
-            try {
-                pendingIntent.send();
-            } catch (PendingIntent.CanceledException e) {
-                loggerManager.e("Errore critico! Impossibile inviare pending intent - " + e.getMessage());
-                e.printStackTrace();
-            }
-        }
+        notificationManager.notify(15, builder.build());
     }
 
 }

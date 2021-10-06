@@ -39,7 +39,6 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.giua.app.AppData;
-import com.giua.app.AppUpdateManager;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.LoggerManager;
@@ -164,7 +163,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         if (canClickUpdateReminder) {
             canClickUpdateReminder = false;
             new Thread(() -> {
-                new AppUpdateManager().checkForAppUpdates(activity, false);
+                //new AppUpdateManager(activity).checkForAppUpdates(activity, false);
                 canClickUpdateReminder = true;
             }).start();
         }
