@@ -38,7 +38,7 @@ import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.giua.app.AppData;
+import com.giua.app.AppUpdateManager;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.LoggerManager;
@@ -68,7 +68,6 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     View root;
     LoggerManager loggerManager;
     boolean forceRefresh = false;
-    boolean canClickUpdateReminder = true;
 
     @Nullable
     @Override
@@ -108,10 +107,18 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         swipeRefreshLayout.setRefreshing(true);
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
 
-        if (AppData.getUpdatePresence(activity)) {
-            root.findViewById(R.id.home_app_update_reminder).setVisibility(View.VISIBLE);
-            root.findViewById(R.id.home_app_update_reminder).setOnClickListener(this::updateReminderOnClick);
-        }
+        new Thread(() -> {
+            //TODO: Mettere la cache for check updates (almeno tra activity manager e home fragemnt visto che in ogni caso viene chiamata due volte)
+            AppUpdateManager manager = new AppUpdateManager(activity);
+            if (manager.checkForUpdates()) {
+                activity.runOnUiThread(() -> {
+                    loggerManager.d("Rendo visibile avviso su home dell'aggiornamento");
+                    root.findViewById(R.id.home_app_update_reminder).setVisibility(View.VISIBLE);
+                    root.findViewById(R.id.home_app_update_reminder).setOnClickListener(this::updateReminderOnClick);
+                });
+            }
+        }).start();
+
 
         loadDataAndViews();
         return root;
@@ -160,13 +167,8 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void updateReminderOnClick(View view) {
-        if (canClickUpdateReminder) {
-            canClickUpdateReminder = false;
-            new Thread(() -> {
-                //new AppUpdateManager(activity).checkForAppUpdates(activity, false);
-                canClickUpdateReminder = true;
-            }).start();
-        }
+        loggerManager.d("Aggiornamento app richiesto dall'utente tramite Home");
+        new Thread(() -> new AppUpdateManager(activity).startUpdateDialog()).start();
     }
 
     private void onRefresh() {

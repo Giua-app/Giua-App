@@ -118,16 +118,6 @@ public class AppData {
         return getSharedPreferences(context).getString(lastUpdateVersionKey, "");
     }
 
-    public static void saveUpdatePresence(final Context context, final boolean value) {
-        getSharedPreferences(context).edit()
-                .putBoolean(updatePresenceKey, value)
-                .apply();
-    }
-
-    public static boolean getUpdatePresence(final Context context) {
-        return getSharedPreferences(context).getBoolean(updatePresenceKey, false);
-    }
-
     @SuppressLint("SimpleDateFormat")
     public static void saveLastUpdateReminderDate(final Context context, final Calendar date) {
         getSharedPreferences(context).edit()

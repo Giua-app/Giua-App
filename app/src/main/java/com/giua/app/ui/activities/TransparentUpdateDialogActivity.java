@@ -50,7 +50,6 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
 
     String url;
     String newVer;
-    //boolean hasReminder;
     Calendar date;
     LoggerManager loggerManager;
 
@@ -74,9 +73,6 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
         url = Objects.requireNonNull(rootNode).findPath("browser_download_url").asText();
         newVer = rootNode.findPath("tag_name").asText();
         date = Calendar.getInstance();
-        /*newVer = getIntent().getStringExtra("newVersion");
-        hasReminder = getIntent().getBooleanExtra("hasReminder", false);
-        time = Calendar.getInstance().getTime();*/
         showDialog();
     }
 
@@ -89,17 +85,29 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
                 "Nota: I tuoi dati NON VERRANNO cancellati, verranno scaricati circa 10MB")
                 .setPositiveButton("Si", (dialog, id) -> new Thread(this::downloadInstallApk).start());
 
-        builder.setNeutralButton("Ricorda domani", (dialog, id) -> AppData.saveLastUpdateReminderDate(TransparentUpdateDialogActivity.this, date));
+        builder.setNeutralButton("Ricorda domani", (dialog, id) -> {
+            loggerManager.d("Aggiornamento posticipato dall'utente a domani");
+            AppData.saveLastUpdateReminderDate(TransparentUpdateDialogActivity.this, date);
+        });
 
-        builder.setNegativeButton("No", (dialog, id) -> {})
-                .setOnCancelListener(dialog -> finish())
-                .setOnDismissListener(dialog -> finish());
+        builder.setNegativeButton("No", (dialog, id) -> {
+            loggerManager.d("Aggiornamento negato senza postipazione dall'utente");
+        })
+                .setOnCancelListener(dialog -> {
+                    loggerManager.d("Dialogo aggiornamento cancellato");
+                    finish();
+                })
+                .setOnDismissListener(dialog -> {
+                    loggerManager.d("Dialogo aggiornamento dismesso");
+                    finish();
+                });
 
         builder.show();
     }
 
 
     private void downloadInstallApk(){
+        loggerManager.d("Aggiornamento richiesto dall'utente");
         loggerManager.d("Scarico aggiornamento...");
         String downloadLocation = getExternalFilesDir(null) + "/giua_update.apk";
 

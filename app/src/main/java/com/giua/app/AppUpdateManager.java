@@ -171,7 +171,6 @@ public class AppUpdateManager {
         String description = "Clicca per informazioni";
 
         Intent intent = new Intent(context, TransparentUpdateDialogActivity.class);
-        //intent.putExtra("url", downloadUrl);
         intent.putExtra("json", getReleasesJson().toString());
         PendingIntent pendingIntent;
 
@@ -186,6 +185,12 @@ public class AppUpdateManager {
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         notificationManager.notify(15, builder.build());
+    }
+
+    public void startUpdateDialog(){
+        Intent intent = new Intent(context, TransparentUpdateDialogActivity.class);
+        intent.putExtra("json", getReleasesJson().toString());
+        context.startActivity(intent);
     }
 
 }
