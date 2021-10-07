@@ -26,6 +26,7 @@ import android.content.SharedPreferences;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 public class AppData {
 
@@ -128,15 +129,15 @@ public class AppData {
     }
 
     @SuppressLint("SimpleDateFormat")
-    public static void saveLastUpdateReminderDate(final Context context, final int day) {
+    public static void saveLastUpdateReminderDate(final Context context, final Calendar date) {
         getSharedPreferences(context).edit()
-                .putInt(nextUpdateReminderKey, day)
+                .putString(nextUpdateReminderKey, date.get(Calendar.DAY_OF_YEAR) + "#" + date.get(Calendar.YEAR))
                 .apply();
     }
 
     @SuppressLint("SimpleDateFormat")
-    public static int getLastUpdateReminderDate(final Context context) {
-        return getSharedPreferences(context).getInt(nextUpdateReminderKey, -1);
+    public static String getLastUpdateReminderDate(final Context context) {
+        return getSharedPreferences(context).getString(nextUpdateReminderKey, "");
     }
 
     //endregion

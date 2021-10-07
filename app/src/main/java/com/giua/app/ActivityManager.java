@@ -49,7 +49,7 @@ public class ActivityManager extends AppCompatActivity {
         loggerManager.d("---");
         loggerManager.d("onCreate chiamato");
         if (SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE))
-            loggerManager.w("DEMO MODE ATTIVO");
+            loggerManager.w("DEMO ATTIVATA");
 
         switch (SettingsData.getSettingString(this, SettingKey.THEME)) {
             case "0":

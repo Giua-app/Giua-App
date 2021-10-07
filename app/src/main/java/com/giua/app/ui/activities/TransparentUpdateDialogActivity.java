@@ -51,7 +51,7 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
     String url;
     String newVer;
     //boolean hasReminder;
-    int day;
+    Calendar date;
     LoggerManager loggerManager;
 
     @Override
@@ -73,7 +73,7 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
         }
         url = Objects.requireNonNull(rootNode).findPath("browser_download_url").asText();
         newVer = rootNode.findPath("tag_name").asText();
-        day = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+        date = Calendar.getInstance();
         /*newVer = getIntent().getStringExtra("newVersion");
         hasReminder = getIntent().getBooleanExtra("hasReminder", false);
         time = Calendar.getInstance().getTime();*/
@@ -89,7 +89,7 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
                 "Nota: I tuoi dati NON VERRANNO cancellati, verranno scaricati circa 10MB")
                 .setPositiveButton("Si", (dialog, id) -> new Thread(this::downloadInstallApk).start());
 
-        builder.setNeutralButton("Ricorda domani", (dialog, id) -> AppData.saveLastUpdateReminderDate(TransparentUpdateDialogActivity.this, day));
+        builder.setNeutralButton("Ricorda domani", (dialog, id) -> AppData.saveLastUpdateReminderDate(TransparentUpdateDialogActivity.this, date));
 
         builder.setNegativeButton("No", (dialog, id) -> {})
                 .setOnCancelListener(dialog -> finish())
@@ -163,7 +163,7 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
                 }
                 loggerManager.d("Imposto LastUpdateReminder ed esco");
                 //L'installazione è gia iniziata quando si arriva qui, praticamente sono gli ultimi instanti dell'app
-                AppData.saveLastUpdateReminderDate(TransparentUpdateDialogActivity.this, day);
+                AppData.saveLastUpdateReminderDate(TransparentUpdateDialogActivity.this, date);
                 finish();
             }
         };

@@ -35,6 +35,7 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 public class AppUpdateManager {
 
@@ -128,131 +129,38 @@ public class AppUpdateManager {
      * @return true se si può inviare l'update, false se bisogna aspettare ad un altro giorno
      */
     public boolean checkUpdateReminderDate(){
-        /*boolean thing = Calendar.getInstance().get(Calendar.DAY_OF_YEAR) > AppData.getLastUpdateReminderDate(context);
-        loggerManager.d("Devo ricordare l'update? " + thing + ", ultima volta che lo ricordato: " + AppData.getLastUpdateReminderDate(context));
-
-        if(Calendar.getInstance().get(Calendar.DAY_OF_YEAR) == 0){
-            loggerManager.e("Errore, è possibile che oggi sia un anno nuovo. Non è possibile confrontare ReminderDate, " +
-                    "ignoro, cambio reminder a oggi e avviso l'utente dell'update");
-            AppData.saveLastUpdateReminderDate(context, 0);
+        int dayOfYear;
+        int year;
+        Calendar yesterdayCal = Calendar.getInstance();
+        yesterdayCal.set(Calendar.DAY_OF_YEAR, Calendar.getInstance().get(Calendar.DAY_OF_YEAR)-1);
+        try {
+            dayOfYear = Integer.parseInt(AppData.getLastUpdateReminderDate(context).split("#")[0]);
+            year = Integer.parseInt(AppData.getLastUpdateReminderDate(context).split("#")[1]);
+        } catch(Exception e){
+            loggerManager.e("Errore critico nel parsing di LastUpdateReminder, è possibile che non sia mai stato notificato?");
+            loggerManager.e("Sovrascrivo LastReminder con la data di ieri e notifico l'update");
+            AppData.saveLastUpdateReminderDate(context, yesterdayCal);
             return true;
         }
-        return thing;*/
-        return true;
+        loggerManager.d("L'ultima volta che ho ricordato l'aggiornamento è stato il " + dayOfYear + "° giorno dell'anno " + year);
+        loggerManager.d("Oggi è " + Calendar.getInstance().get(Calendar.DAY_OF_YEAR) + ", ieri invece era il " + yesterdayCal.get(Calendar.DAY_OF_YEAR));
+
+
+        if(Calendar.getInstance().get(Calendar.YEAR) != year){
+            loggerManager.e("Errore, anno diverso da quello corrente. " +
+                    "Non è possibile confrontare ReminderDate, cambio reminder a ieri e avviso l'utente dell'update");
+            AppData.saveLastUpdateReminderDate(context, yesterdayCal);
+            return true;
+        }
+
+        if(Calendar.getInstance().get(Calendar.DAY_OF_YEAR) > dayOfYear){
+            loggerManager.d("Reminder passato, bisogna ricordare l'utente dell'update");
+            return true;
+        }
+
+        loggerManager.w("Il LastReminder è di oggi (o indietro nel tempo). Update gia notificato non c'è bisogno di rifarlo di nuovo");
+        return false;
     }
-
-
-    /*public void checkForAppUpdates(Context context, boolean sendNotification) {
-        loggerManager.d("Controllo aggiornamenti...");
-
-        //TODO: in futuro quando si scaricheranno gli apk
-        /*if(BuildConfig.BUILD_TYPE.equals("debug")){
-            //Non si possono aggiornare le build di debug, annulla silenziosamente
-            //return;
-        }
-
-        String response = "";
-        notificationManager = NotificationManagerCompat.from(context);
-
-        try {
-            response = session
-                    .url("https://api.github.com/repos/giua-app/giua-app/releases/latest")
-                    .get().text();
-        } catch (IOException e) {
-            loggerManager.e("Impossibile contattare API di github! - " + e.getMessage());
-            e.printStackTrace();
-            AppData.saveUpdatePresence(context, false);
-            return;
-        }
-
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        JsonNode rootNode = null;
-        try {
-            rootNode = objectMapper.readTree(response);
-        } catch (IOException e) {
-            loggerManager.e("Impossibile leggere json! - " + e.getMessage());
-            e.printStackTrace();
-            AppData.saveUpdatePresence(context, false);
-            return;
-        }
-
-        JsonNode assetsNode = Objects.requireNonNull(rootNode).findPath("assets_url");
-
-        if(assetsNode.isMissingNode()){
-            //Assets non trovati, nessun apk
-            loggerManager.w("Assets non presenti sulla release");
-            AppData.saveUpdatePresence(context, false);
-            return;
-        }
-
-        String assetsUrl = assetsNode.asText();
-        tagName = rootNode.findPath("tag_name").asText();
-
-        downloadUrl = rootNode.findPath("browser_download_url").asText();
-        String contentType = rootNode.findPath("content_type").asText();
-
-        String semverRegex = "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$";
-
-        String[] temp = BuildConfig.VERSION_NAME.split("-")[0].split("\\.");
-        currentVer[0] = Integer.parseInt(temp[0]);
-        currentVer[1] = Integer.parseInt(temp[1]);
-        currentVer[2] = Integer.parseInt(temp[2]);
-        if(tagName.matches(semverRegex)){
-            temp = tagName.split("-")[0].split("\\.");
-            updateVer[0] = Integer.parseInt(temp[0]);
-            updateVer[1] = Integer.parseInt(temp[1]);
-            updateVer[2] = Integer.parseInt(temp[2]);
-        } else {
-            //Non è una versione, esci silenziosamente
-            loggerManager.w("Versione su Tag trovata su github non rispetta SemVer, annullo");
-            AppData.saveUpdatePresence(context, false);
-            return;
-        }
-
-        if(!contentType.equals("application/vnd.android.package-archive")){
-            //Il file non è un apk, ignora
-            loggerManager.w("Asset sulla release non è un file APK, annullo");
-            AppData.saveUpdatePresence(context, false);
-            return;
-        }
-
-
-        if (currentVer[0].equals(updateVer[0]) && currentVer[1].equals(updateVer[1]) && currentVer[2].equals(updateVer[2])) {
-            //Nessun aggiornamento, esci silenziosamente
-            loggerManager.w("Nessun aggiornamento trovato, versione corrente è " + BuildConfig.VERSION_NAME + ", ultima su github è " + tagName);
-            AppData.saveUpdatePresence(context, false);
-            return;
-        }
-
-        if(currentVer[0] > updateVer[0] || currentVer[1] > updateVer[1] || currentVer[2] > updateVer[2]){
-            //Versione vecchia, esci silenziosamente
-            loggerManager.w("Versione dell'app maggiore di quella su github, annullo");
-            AppData.saveUpdatePresence(context, false);
-            return;
-        }
-
-        Date date = Calendar.getInstance().getTime();
-        Date lastUpdateDate = date;
-        try {
-            lastUpdateDate = AppData.getLastUpdateReminderDate(context);
-        } catch (ParseException e) {
-            loggerManager.w("Impossibile leggere lastUpdateReminder! - " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        //Se siamo arrivati fino a qui vuol dire che c'è un aggiornamento
-        AppData.saveLastUpdateVersionString(context, tagName);
-        AppData.saveUpdatePresence(context, true);
-
-        if (date.after(lastUpdateDate) && sendNotification) {
-            //Aggiornamento gia notificato, nextUpdateDate è il prossimo giorno in cui notificare
-            loggerManager.w("Aggiornamento già notificato, annullo");
-            return;
-        }
-
-        createNotification(context, sendNotification);
-    }*/
 
 
     public void createNotification() {
