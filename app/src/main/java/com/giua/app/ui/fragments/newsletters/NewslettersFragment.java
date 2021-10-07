@@ -139,22 +139,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         });
         ivFilter.setOnClickListener(this::btnFilterOnClick);
 
-        obscureLayoutView.setOnClickListener((view) -> {
-            if (filterLayout.getVisibility() == View.VISIBLE) {
-                filterLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
-                filterLayout.setVisibility(View.GONE);
-            }
-            obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
-            obscureLayoutView.setVisibility(View.GONE);
-            if (attachmentLayout.getVisibility() == View.VISIBLE) {
-                attachmentLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
-                attachmentLayout.setVisibility(View.GONE);
-            }
-            attachmentLayout.removeAllViews();
-            ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).setChecked(onlyNotRead);
-            ((EditText) root.findViewById(R.id.newsletter_filter_date)).setText(filterDate);
-            ((EditText) root.findViewById(R.id.newsletter_filter_text)).setText(filterText);
-        });
+        obscureLayoutView.setOnClickListener(this::obscureViewOnClick);
 
         root.findViewById(R.id.newsletter_fragment_btn_go_up).setOnClickListener((view -> scrollView.smoothScrollTo(0, 0)));
 
@@ -300,9 +285,8 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         }
 
         attachmentLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
-        obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
         attachmentLayout.setVisibility(View.VISIBLE);
-        obscureLayoutView.setVisibility(View.VISIBLE);
+        obscureLayoutView.show(activity);
     }
 
     private void onClickDocument(Newsletter newsletter) {
@@ -348,9 +332,8 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             filterText = filterTextTemp;
             layout.removeViews(1, layout.getChildCount() - 1);
             filterLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
-            obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
             filterLayout.setVisibility(View.GONE);
-            obscureLayoutView.setVisibility(View.GONE);
+            obscureLayoutView.hide(activity);
             isFilterApplied = false;
             currentPage = 1;
             loadedAllPages = false;
@@ -358,17 +341,31 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             loadDataAndViews();
         } else {
             filterLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
-            obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
             filterLayout.setVisibility(View.GONE);
-            obscureLayoutView.setVisibility(View.GONE);
+            obscureLayoutView.hide(activity);
         }
     }
 
     private void btnFilterOnClick(View view) {
         filterLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
-        obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
-        obscureLayoutView.setVisibility(View.VISIBLE);
         filterLayout.setVisibility(View.VISIBLE);
+        obscureLayoutView.show(activity);
+        ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).setChecked(onlyNotRead);
+        ((EditText) root.findViewById(R.id.newsletter_filter_date)).setText(filterDate);
+        ((EditText) root.findViewById(R.id.newsletter_filter_text)).setText(filterText);
+    }
+
+    private void obscureViewOnClick(View view) {
+        if (filterLayout.getVisibility() == View.VISIBLE) {
+            filterLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
+            filterLayout.setVisibility(View.GONE);
+        }
+        obscureLayoutView.hide(activity);
+        if (attachmentLayout.getVisibility() == View.VISIBLE) {
+            attachmentLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
+            attachmentLayout.setVisibility(View.GONE);
+        }
+        attachmentLayout.removeAllViews();
         ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).setChecked(onlyNotRead);
         ((EditText) root.findViewById(R.id.newsletter_filter_date)).setText(filterDate);
         ((EditText) root.findViewById(R.id.newsletter_filter_text)).setText(filterText);

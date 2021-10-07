@@ -80,9 +80,9 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                 runOnUiThread(() -> btnLogout.setVisibility(View.VISIBLE));
                 //runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));  //TODO: togliere il commento quando sarà realmente disponibile e funzionante
 
-                if (!GiuaScraper.isMyInternetWorking())
+                if (e.getClass() == GiuaScraperExceptions.YourConnectionProblems.class)
                     runOnUiThread(() -> setErrorMessage(getString(R.string.your_connection_error)));
-                else if (!GiuaScraper.isSiteWorking())
+                else if (e.getClass() == GiuaScraperExceptions.SiteConnectionProblems.class)
                     runOnUiThread(() -> setErrorMessage(getString(R.string.site_connection_error)));
                 else
                     runOnUiThread(() -> setErrorMessage("E' stato riscontrato qualche problema sconosciuto riguardo la rete"));
@@ -114,7 +114,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
             } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
                 loggerManager.e("Errore: sito in manutenzione");
                 runOnUiThread(() -> btnLogout.setVisibility(View.VISIBLE));
-                runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));
+                //runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));
                 runOnUiThread(() -> pbLoadingScreen.setVisibility(View.GONE));
                 runOnUiThread(() -> tvAutoLogin.setText("Accesso fallito."));
                 runOnUiThread(() -> setErrorMessage(getString(R.string.site_in_maintenace_error)));

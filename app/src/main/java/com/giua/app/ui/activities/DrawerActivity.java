@@ -77,6 +77,7 @@ public class DrawerActivity extends AppCompatActivity {
     Toolbar toolbar;
     Bundle bundle;
     boolean offlineMode = false;
+    boolean demoMode = false;
     LoggerManager loggerManager;
     String userType = "";
     String username = "";
@@ -87,6 +88,7 @@ public class DrawerActivity extends AppCompatActivity {
         if (savedInstanceState != null)
             savedInstanceState.clear();
         offlineMode = getIntent().getBooleanExtra("offline", false);
+        demoMode = SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer);
         loggerManager = new LoggerManager("DrawerActivity", this);
@@ -149,20 +151,20 @@ public class DrawerActivity extends AppCompatActivity {
                         createDrawerMainItem(0, "Home", R.id.nav_home, true, false),
                         createDrawerCategory(1, "Lezioni").withSubItems(
                                 createDrawerMainItem(2, "Lezioni svolte", R.id.nav_lessons, true, true),
-                                createDrawerMainItem(3, "Argomenti e attività", 0, "/genitori/argomenti", true, true)
+                                createDrawerMainItem(3, "Argomenti e attività", "/genitori/argomenti", true, true)
                         ),
                         createDrawerCategory(4, "Situazione").withSubItems(
                                 createDrawerMainItem(5, "Voti", R.id.nav_votes, true, true),
                                 createDrawerMainItem(6, "Assenze", R.id.nav_absences, true, true),
-                                createDrawerMainItem(7, "Note", 0, "/genitori/note/", true, true),
-                                createDrawerMainItem(8, "Osservazioni", 0, "/genitori/osservazioni/", !userType.equals("Studente"), true), //SOLO GENITORE,
+                                createDrawerMainItem(7, "Note", "/genitori/note/", true, true),
+                                createDrawerMainItem(8, "Osservazioni", "/genitori/osservazioni/", !userType.equals("Studente"), true), //SOLO GENITORE,
                                 createDrawerMainItem(9, "Autorizzazioni", R.id.nav_authorization, true, true)
                         ),
-                        createDrawerMainItem(10, "Pagella", R.id.nav_report_card, true, false),
-                        createDrawerMainItem(11, "Colloqui", 0, "/genitori/colloqui", !userType.equals("Studente"), false),    //SOLO GENITORE,
+                        createDrawerMainItem(10, "Pagella", "/genitori/pagelle", true, false),
+                        createDrawerMainItem(11, "Colloqui", "/genitori/colloqui", !userType.equals("Studente"), false),    //SOLO GENITORE,
                         createDrawerCategory(12, "Bacheca").withSubItems(
                                 createDrawerMainItem(13, "Circolari e avvisi", R.id.nav_pin_board, true, true),
-                                createDrawerMainItem(14, "Documenti", 0, "/documenti/bacheca", true, true)
+                                createDrawerMainItem(14, "Documenti", "/documenti/bacheca", true, true)
                         ),
                         createDrawerMainItem(15, "Agenda", R.id.nav_agenda, true, false),
 
@@ -207,7 +209,10 @@ public class DrawerActivity extends AppCompatActivity {
         return primaryDrawerItem;
     }
 
-    private PrimaryDrawerItem createDrawerMainItem(int identifier, String name, @IdRes int id, String url, boolean enabled, boolean withMoreSpace) {
+    private PrimaryDrawerItem createDrawerMainItem(int identifier, String name, String url, boolean enabled, boolean withMoreSpace) {
+        if (demoMode)    //Nella modalità demo si possono vedere solo le schermate implementate
+            enabled = false;
+
         PrimaryDrawerItem primaryDrawerItem = new PrimaryDrawerItem()
                 .withIdentifier(identifier)
                 .withIconTintingEnabled(true)
@@ -232,13 +237,6 @@ public class DrawerActivity extends AppCompatActivity {
                 .withName(name)
                 .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
                 .withIconTintingEnabled(true);
-    }
-
-    private void closeNavDrawer() {
-        /*DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        }*/
     }
 
     private boolean logoutItemOnClick(View view, int i, IDrawerItem item) {
@@ -296,61 +294,49 @@ public class DrawerActivity extends AppCompatActivity {
         if (id == R.id.nav_home) {
             if (fragment == null)
                 fragment = new HomeFragment();
-            if (!offlineMode)
-                toolbar.setTitle("Home");
-            else
-                toolbar.setTitle("Home - Offline");
+            setTextToolbar("Home");
         } else if (id == R.id.nav_absences) {
             if (fragment == null)
                 fragment = new AbsencesFragment();
-            if (!offlineMode)
-                toolbar.setTitle("Assenze");
-            else
-                toolbar.setTitle("Assenze - Offline");
+            setTextToolbar("Assenze");
         } else if (id == R.id.nav_authorization) {
             if (fragment == null)
                 fragment = new AuthorizationFragment();
-            if (!offlineMode)
-                toolbar.setTitle("Autorizzazioni");
-            else
-                toolbar.setTitle("Autorizzazioni - Offline");
+            setTextToolbar("Autorizzazioni");
         } else if (id == R.id.nav_votes) {
             if (fragment == null)
                 fragment = new VotesFragment();
-            if (!offlineMode)
-                toolbar.setTitle("Voti");
-            else
-                toolbar.setTitle("Voti - Offline");
+            setTextToolbar("Voti");
         } else if (id == R.id.nav_agenda) {
             if (fragment == null)
                 fragment = new AgendaFragment();
-            if (!offlineMode)
-                toolbar.setTitle("Agenda");
-            else
-                toolbar.setTitle("Agenda - Offline");
+            setTextToolbar("Agenda");
         } else if (id == R.id.nav_lessons) {
             if (fragment == null)
                 fragment = new LessonsFragment();
-            if (!offlineMode)
-                toolbar.setTitle("Lezioni");
-            else
-                toolbar.setTitle("Lezioni - Offline");
+            setTextToolbar("Lezioni");
         } else if (id == R.id.nav_pin_board) {
             if (fragment == null)
                 fragment = new PinboardFragment();
-            if (!offlineMode)
-                toolbar.setTitle("Bacheca");
-            else
-                toolbar.setTitle("Bacheca - Offline");
+            setTextToolbar("Bacheca");
         } else if (id == R.id.nav_report_card) {
             if (fragment == null)
                 fragment = new ReportCardFragment();
-            if (!offlineMode)
-                toolbar.setTitle("Pagella");
-            else
-                toolbar.setTitle("Pagella - Offline");
+            setTextToolbar("Pagella");
         }
         changeFragmentWithManager(fragment, tag);
+    }
+
+    private void setTextToolbar(String defaultName) {
+        if (offlineMode) {
+            toolbar.setTitle(defaultName + " - Offline");
+            return;
+        }
+        if (demoMode) {
+            toolbar.setTitle(defaultName + " - DEMO");
+            return;
+        }
+        toolbar.setTitle(defaultName);
     }
 
     private String getTagFromId(@IdRes int id) {
@@ -382,7 +368,15 @@ public class DrawerActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        changeFragment(R.id.nav_home);
+        if (!toolbar.getTitle().toString().contains("Home")) {
+            mDrawer.setSelection(0, false);
+            changeFragment(R.id.nav_home);
+        } else {   //Vai alla home del telefono se sei già nella home dell'app
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -400,9 +394,9 @@ public class DrawerActivity extends AppCompatActivity {
         }).start();
         alarmManager.cancel(pendingIntent);
         if (!LoginData.getUser(this).equals("") && SettingsData.getSettingBoolean(this, SettingKey.NOTIFICATION)) {
-            alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
+            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
                     SystemClock.elapsedRealtime(),
-                    AlarmManager.INTERVAL_HOUR + ThreadLocalRandom.current().nextInt(0, 2_700_000),   //Intervallo di 1 ora più numero random tra 0 e 45 minuti più un tempo "random" dato da inexact
+                    AlarmManager.INTERVAL_HOUR + ThreadLocalRandom.current().nextInt(0, 3_600_000),   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
                     pendingIntent);
             //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000 , pendingIntent);    //DEBUG
         }

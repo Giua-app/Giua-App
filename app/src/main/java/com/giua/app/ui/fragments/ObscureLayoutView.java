@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -62,5 +63,15 @@ public class ObscureLayoutView extends ConstraintLayout {
             }
         }
         a.recycle();
+    }
+
+    public void hide(Context context) {
+        startAnimation(AnimationUtils.loadAnimation(context, R.anim.visualizer_hide_effect));
+        setVisibility(GONE);
+    }
+
+    public void show(Context context) {
+        startAnimation(AnimationUtils.loadAnimation(context, R.anim.visualizer_show_effect));
+        setVisibility(VISIBLE);
     }
 }

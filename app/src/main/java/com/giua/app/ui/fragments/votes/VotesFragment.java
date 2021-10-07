@@ -188,9 +188,8 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
     public void obscureButtonOnClick(View view) {
         voteVisualizer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
-        obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
         voteVisualizer.setVisibility(View.GONE);
-        obscureLayoutView.setVisibility(View.GONE);
+        obscureLayoutView.hide(activity);
     }
 
     private void singleVoteOnClick(View view) {
@@ -207,9 +206,8 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
         detailVoteArguments.setVisibility(View.GONE);
         detailVoteJudge.setVisibility(View.GONE);
         voteVisualizer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
-        obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
         voteVisualizer.setVisibility(View.VISIBLE);
-        obscureLayoutView.setVisibility(View.VISIBLE);
+        obscureLayoutView.show(activity);
 
         if (!_view.vote.date.equals("")) {
             detailVoteDate.setVisibility(View.VISIBLE);

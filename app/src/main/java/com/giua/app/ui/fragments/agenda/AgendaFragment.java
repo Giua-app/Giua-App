@@ -384,9 +384,8 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                     } else
                         ivVisualizerNextBtn.setVisibility(View.VISIBLE);
                     visualizerLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
-                    obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
                     visualizerLayout.setVisibility(View.VISIBLE);
-                    obscureLayoutView.setVisibility(View.VISIBLE);
+                    obscureLayoutView.show(activity);
 
                     isLoadingDetails = false;
                     pbForDetails.setVisibility(View.GONE);
@@ -397,9 +396,8 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
     private void obscureLayoutOnClick(View view) {
         visualizerLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
-        obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
         visualizerLayout.setVisibility(View.GONE);
-        obscureLayoutView.setVisibility(View.GONE);
+        obscureLayoutView.hide(activity);
     }
 
     private void onRefresh() {

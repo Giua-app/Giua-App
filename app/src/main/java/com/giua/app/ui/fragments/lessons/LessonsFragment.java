@@ -228,9 +228,8 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
     private void lessonViewOnClick(View view) {
         //Dettagli delle lezioni
         visualizerLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
-        obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
         visualizerLayout.setVisibility(View.VISIBLE);
-        obscureLayoutView.setVisibility(View.VISIBLE);
+        obscureLayoutView.show(activity);
         bottomCardView.setZ(-10f);
         btnConfirmDate.setZ(-10f);
         ivCalendarImage.setZ(-10f);
@@ -260,8 +259,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
     private void obscureLayoutOnClick(View view) {
         frameLayout.setVisibility(View.GONE);
         visualizerLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
-        obscureLayoutView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
-        obscureLayoutView.setVisibility(View.GONE);
+        obscureLayoutView.hide(activity);
         visualizerLayout.setVisibility(View.GONE);
         ivCalendarImage.setZ(13.75f);
         bottomCardView.setZ(13.75f);
@@ -270,7 +268,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
 
     private void tvCurrentDateOnClick(View view) {
         frameLayout.setVisibility(View.VISIBLE);
-        obscureLayoutView.setVisibility(View.VISIBLE);
+        obscureLayoutView.show(activity);
         ivCalendarImage.setZ(-10f);
         bottomCardView.setZ(-10f);
         btnConfirmDate.setZ(-10f);

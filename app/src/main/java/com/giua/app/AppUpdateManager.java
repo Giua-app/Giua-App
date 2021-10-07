@@ -57,8 +57,10 @@ public class AppUpdateManager {
 
         JsonNode rootNode = getReleasesJson();
 
-        tagName = rootNode.findPath("tag_name").asText();
+        if (rootNode == null)    //Si è verificato un errore di qualche tipo
+            return false;
 
+        tagName = rootNode.findPath("tag_name").asText();
 
         loggerManager.d("Versione tag github: " + tagName);
         loggerManager.d("Versione app: " + BuildConfig.VERSION_NAME);
@@ -66,7 +68,7 @@ public class AppUpdateManager {
         currentVer[0] = Integer.parseInt(temp[0]);
         currentVer[1] = Integer.parseInt(temp[1]);
         currentVer[2] = Integer.parseInt(temp[2]);
-        if(tagName.matches(semverRegex)){
+        if (tagName.matches(semverRegex)) {
             temp = tagName.split("-")[0].split("\\.");
             updateVer[0] = Integer.parseInt(temp[0]);
             updateVer[1] = Integer.parseInt(temp[1]);
