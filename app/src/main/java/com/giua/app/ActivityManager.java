@@ -69,6 +69,9 @@ public class ActivityManager extends AppCompatActivity {
 
         GiuaScraper.setDebugMode(true);
 
+        if (!SettingsData.getSettingBoolean(this, SettingKey.NOT_FIRST_START))
+            firstStart();
+
         final String defaultUrl = SettingsData.getSettingString(this, SettingKey.DEFAULT_URL);
 
         setupNotificationManager();
@@ -100,6 +103,14 @@ public class ActivityManager extends AppCompatActivity {
             startAutomaticLoginActivity();
     }
 
+    //Questa funzione viene chiamata solo al primo avvio di sempre dell'app
+    private void firstStart() {
+        SettingsData.saveSettingBoolean(this, SettingKey.NOT_FIRST_START, true);
+        SettingsData.saveSettingBoolean(this, SettingKey.NEWSLETTER_NOTIFICATION, true);
+        SettingsData.saveSettingBoolean(this, SettingKey.ALERTS_NOTIFICATION, true);
+        SettingsData.saveSettingBoolean(this, SettingKey.UPDATES_NOTIFICATION, true);
+    }
+
     private void startMainLoginActivity() {
         loggerManager.d("Avvio Main Login Activity");
         startActivity(new Intent(ActivityManager.this, MainLoginActivity.class));
@@ -115,7 +126,7 @@ public class ActivityManager extends AppCompatActivity {
     private void checkForUpdates(){
         new Thread(() -> {
             AppUpdateManager manager = new AppUpdateManager(ActivityManager.this);
-            if(manager.checkForUpdates() && manager.checkUpdateReminderDate()){
+            if (SettingsData.getSettingBoolean(this, SettingKey.UPDATES_NOTIFICATION) && manager.checkForUpdates() && manager.checkUpdateReminderDate()) {
                 manager.createNotification();
             }
         }).start();

@@ -26,6 +26,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
+import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
@@ -39,7 +40,9 @@ import com.giua.app.ui.activities.AppIntroActivity;
 import com.giua.app.ui.activities.LogdogViewerActivity;
 import com.giua.webscraper.GiuaScraper;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
@@ -57,6 +60,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         //region Generale
 
         setupNotificationObject(context);
+        setupNotificationManager(context);
         setupAboutScreenObject();
         setupIntroScreenObject();
         setupDebugModeObject(context);
@@ -81,6 +85,33 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
 
         //endregion
+    }
+
+    private void setupNotificationManager(Context context) {
+        MultiSelectListPreference multiSelectListPreference = findPreference("notification_manager");
+        multiSelectListPreference.setEntries(new CharSequence[]{"Circolari", "Avvisi", "Aggiornamenti"});
+        multiSelectListPreference.setEntryValues(new CharSequence[]{"0", "1", "2"});
+        multiSelectListPreference.setOnPreferenceChangeListener(this::setupNotificationManagerChangeListener);
+        multiSelectListPreference.setOnPreferenceClickListener(this::setupNotificationManagerOnClick);
+    }
+
+    private boolean setupNotificationManagerOnClick(Preference preference) {
+        Set<String> l = new HashSet<>();
+        if (SettingsData.getSettingBoolean(requireContext(), SettingKey.NEWSLETTER_NOTIFICATION))
+            l.add("0");
+        if (SettingsData.getSettingBoolean(requireContext(), SettingKey.ALERTS_NOTIFICATION))
+            l.add("1");
+        if (SettingsData.getSettingBoolean(requireContext(), SettingKey.UPDATES_NOTIFICATION))
+            l.add("2");
+        ((MultiSelectListPreference) preference).setValues(l);
+        return true;
+    }
+
+    private boolean setupNotificationManagerChangeListener(Preference preference, Object o) {
+        SettingsData.saveSettingBoolean(requireContext(), SettingKey.NEWSLETTER_NOTIFICATION, ((HashSet) o).contains("0"));
+        SettingsData.saveSettingBoolean(requireContext(), SettingKey.ALERTS_NOTIFICATION, ((HashSet) o).contains("1"));
+        SettingsData.saveSettingBoolean(requireContext(), SettingKey.UPDATES_NOTIFICATION, ((HashSet) o).contains("2"));
+        return true;
     }
 
     private void setupDemoModeObject(Context context) {

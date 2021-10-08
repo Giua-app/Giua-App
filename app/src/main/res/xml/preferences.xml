@@ -27,26 +27,26 @@
         <SwitchPreference
             android:icon="@drawable/ic_baseline_notifications_none_24"
             app:defaultValue="false"
-            app:iconSpaceReserved="false"
             app:key="notification"
             app:title="Abilita le notifiche" />
 
+        <MultiSelectListPreference
+            android:key="notification_manager"
+            app:title="Gestione notifiche" />
+
         <Preference
             app:icon="@drawable/ic_baseline_menu_book_24"
-            app:iconSpaceReserved="false"
             app:key="introScreen"
             app:title="Rivedi l'intro" />
 
         <Preference
             app:icon="@drawable/ic_baseline_info_24"
-            app:iconSpaceReserved="false"
             app:key="aboutScreen"
             app:title="Riguardo l'app" />
 
         <SwitchPreference
             app:defaultValue="false"
             app:icon="@drawable/ic_baseline_code_24"
-            app:iconSpaceReserved="false"
             app:key="debugMode"
             app:title="Modalità di debug (solo utenti esperti)" />
 
@@ -58,7 +58,6 @@
 
         <ListPreference
             app:icon="@drawable/ic_baseline_brush_24"
-            app:iconSpaceReserved="false"
             app:key="theme"
             app:negativeButtonText="Annulla"
             app:title="Scegli un tema" />

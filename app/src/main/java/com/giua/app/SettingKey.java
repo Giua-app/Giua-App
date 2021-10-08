@@ -41,6 +41,26 @@ public abstract class SettingKey {
     public static final String NOTIFICATION = "notification";
 
     /**
+     * Indica se la notifica per le circolari è abilitata
+     */
+    public static final String NEWSLETTER_NOTIFICATION = "newsletter_notification";
+
+    /**
+     * Indica se la notifica per gli avvisi è abilitata
+     */
+    public static final String ALERTS_NOTIFICATION = "alerts_notification";
+
+    /**
+     * Indica se la notifica per gli aggiornamenti è abilitata
+     */
+    public static final String UPDATES_NOTIFICATION = "updates_notification";
+
+    /**
+     * Indica se è il primo avvio dell'app
+     */
+    public static final String NOT_FIRST_START = "not_first_start";
+
+    /**
      * Indica se la modalità di debug è attiva
      */
     public static final String DEBUG_MODE = "debugMode";

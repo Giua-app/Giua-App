@@ -117,12 +117,23 @@ public class CheckNewsReceiver extends BroadcastReceiver {
 
     private void checkNewsAndSendNotifications() {
         loggerManager.d("Controllo pagina home per le news");
-        int numberNewslettersOld = AppData.getNumberNewslettersInt(context);
-        int numberAlertsOld = AppData.getNumberAlertsInt(context);
-        int numberNewsletters = gS.checkForNewsletterUpdate(false);
-        int numberAlerts = gS.checkForAlertsUpdate(false);
-        AppData.saveNumberNewslettersInt(context, numberNewsletters);
-        AppData.saveNumberAlertsInt(context, numberAlerts);
+
+        int numberNewslettersOld = -1;
+        int numberNewsletters = -1;
+        int numberAlertsOld = -1;
+        int numberAlerts = -1;
+
+        //Se la notifica non può essere mandata non faccio nemmeno controllare i check
+        if (SettingsData.getSettingBoolean(context, SettingKey.NEWSLETTER_NOTIFICATION)) {
+            numberNewslettersOld = AppData.getNumberNewslettersInt(context);
+            numberNewsletters = gS.checkForNewsletterUpdate(false);
+            AppData.saveNumberNewslettersInt(context, numberNewsletters);
+        }
+        if (SettingsData.getSettingBoolean(context, SettingKey.NEWSLETTER_NOTIFICATION)) {
+            numberAlertsOld = AppData.getNumberAlertsInt(context);
+            numberAlerts = gS.checkForAlertsUpdate(false);
+            AppData.saveNumberAlertsInt(context, numberAlerts);
+        }
 
         if (numberNewslettersOld != -1 && numberNewsletters - numberNewslettersOld > 0) {
             loggerManager.d("Trovata nuova circolare");

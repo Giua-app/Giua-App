@@ -20,7 +20,6 @@
 package com.giua.app.ui.activities;
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
@@ -66,39 +65,39 @@ public class LogdogViewerActivity extends AppCompatActivity {
 
 
         List<LoggerManager.Log> logs = loggerManager.getLogs();
-
+        TextView textView = new TextView(this);
+        CharSequence text = "";
         linearLayout.removeAllViews();
-        for(LoggerManager.Log log : logs){
-            TextView textView = new TextView(this);
-            if(log.text.equals("---")){
-                textView.setText("\u23af\u23af\u23af\u23af\u23af" + BuildConfig.VERSION_NAME + "\u23af\u23af\u23af\u23af\u23af");
+        for (LoggerManager.Log log : logs) {
+            if (log.text.equals("---")) {
+                text += "-----" + BuildConfig.VERSION_NAME + "-----";
             } else {
-                textView.setText(dateFormat.format(log.date) + "|" + log.type + "| " + log.tag + ": ");
-                textView.append(Html.fromHtml("<b>" + log.text + "</b>", 0));
-                switch (log.type){
+                text += dateFormat.format(log.date) + "|" + log.type + "| " + log.tag + ": ";
+                switch (log.type) {
                     case "ERROR":
-                        textView.setTextColor(Color.RED);
+                        text += "<font color='red'><b>" + log.text + "</b></font>";
                         break;
                     case "WARNING":
-                        textView.setTextColor(Color.parseColor("#ffa500"));
+                        text += "<font color='#FFA500'><b>" + log.text + "</b></font>";
                         break;
                     case "DEBUG":
-                        textView.setTextColor(Color.GRAY);
+                        text += "<font color='gray'><b>" + log.text + "</b></font>";
                         break;
                     default:
-                        textView.setTextColor(Color.BLACK);
+                        text += "<font color='black'><b>" + log.text + "</b></font>";
                         break;
                 }
             }
 
-            linearLayout.addView(textView);
+            text += "<br>";
         }
 
-        if(linearLayout.getChildCount() == 0){
-            TextView textView = new TextView(LogdogViewerActivity.this);
-            textView.setText(Html.fromHtml("<b>\u23af\u23af\u23af  Nessun log trovato!  \u23af\u23af\u23af</b>",0));
-            linearLayout.addView(textView);
+        if (logs.isEmpty()) {
+            text = "<b>---  Nessun log trovato!  ---</b>";
         }
+
+        textView.setText(Html.fromHtml(text.toString(), 0));
+        linearLayout.addView(textView);
     }
 
     private void onClickDeleteLogs(View v){
