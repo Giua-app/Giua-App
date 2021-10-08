@@ -225,18 +225,13 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         List<Entry> entriesSecondQuarter = new ArrayList<>();
         int voteCounter = 0;
 
-        if (allVotes.size() == 0) {   //Se non ci sono voti da visualizzare metti una linea continua per non lasciare spazio vuoto
-            entriesFirstQuarter.add(new Entry(0, 5));
-            entriesFirstQuarter.add(new Entry(1, 5));
-        } else {
-            List<Vote> allVotesSorted = sortVotes(allVotes);
-            for (Vote vote : allVotesSorted) {
-                if (vote.isFirstQuarterly)
-                    entriesFirstQuarter.add(new Entry(voteCounter, vote.toFloat()));
-                else
-                    entriesSecondQuarter.add(new Entry(voteCounter, vote.toFloat()));
-                voteCounter++;
-            }
+        List<Vote> allVotesSorted = sortVotes(allVotes);
+        for (Vote vote : allVotesSorted) {
+            if (vote.isFirstQuarterly)
+                entriesFirstQuarter.add(new Entry(voteCounter, vote.toFloat()));
+            else
+                entriesSecondQuarter.add(new Entry(voteCounter, vote.toFloat()));
+            voteCounter++;
         }
 
         LineDataSet lineDataSetFirstQuarter = new LineDataSet(entriesFirstQuarter, "Primo quadrimestre");
