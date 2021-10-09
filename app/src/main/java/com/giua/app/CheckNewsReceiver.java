@@ -19,6 +19,7 @@
 
 package com.giua.app;
 
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -73,7 +74,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
                             .setContentTitle("Si è verificato un errore di connessione")
                             .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-                    notificationManager.notify(10, builder.build());
+                    notificationManager.notify(12, builder.build());
                 }
             } catch (Exception e) {
                 loggerManager.e("Errore sconosciuto - " + e.getMessage());
@@ -84,7 +85,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
                             .setStyle(new NotificationCompat.BigTextStyle().bigText(e.toString()))
                             .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-                    notificationManager.notify(10, builder.build());
+                    notificationManager.notify(12, builder.build());
                 }
             }
         }).start();
@@ -137,7 +138,9 @@ public class CheckNewsReceiver extends BroadcastReceiver {
 
         if (numberNewslettersOld != -1 && numberNewsletters - numberNewslettersOld > 0) {
             loggerManager.d("Trovata nuova circolare");
+            Intent intent = new Intent(context, ActivityManager.class).putExtra("goTo", "Newsletters");
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
+                    .setContentIntent(PendingIntent.getActivity(context, 2, intent, PendingIntent.FLAG_CANCEL_CURRENT))
                     .setSmallIcon(R.drawable.ic_giuaschool_black)
                     .setContentTitle(numberNewsletters - numberNewslettersOld == 1 ? "Nuova circolare" : numberNewsletters - numberNewslettersOld + " nuove circolari")
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
@@ -146,7 +149,9 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         }
         if (numberAlertsOld != -1 && numberAlerts - numberAlertsOld > 0) {
             loggerManager.d("Trovati nuovi avvisi");
+            Intent intent = new Intent(context, ActivityManager.class).putExtra("goTo", "Alerts");
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
+                    .setContentIntent(PendingIntent.getActivity(context, 2, intent, PendingIntent.FLAG_CANCEL_CURRENT))
                     .setSmallIcon(R.drawable.ic_giuaschool_black)
                     .setContentTitle(numberAlerts - numberAlertsOld == 1 ? "Nuovo avviso" : numberAlerts - numberAlertsOld + " nuovi avvisi")
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);

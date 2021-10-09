@@ -155,7 +155,10 @@ public class AutomaticLoginActivity extends AppCompatActivity {
 
     private void startDrawerActivity() {
         loggerManager.d("Avvio DrawerActivity");
-        startActivity(new Intent(AutomaticLoginActivity.this, DrawerActivity.class));
+        String goTo = getIntent().getStringExtra("goTo");
+        if (goTo == null)
+            goTo = "";
+        startActivity(new Intent(AutomaticLoginActivity.this, DrawerActivity.class).putExtra("goTo", goTo));
         finish();
     }
 

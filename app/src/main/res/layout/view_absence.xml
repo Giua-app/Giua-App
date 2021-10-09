@@ -27,7 +27,7 @@
 
     <TextView
         android:id="@+id/absence_view_date"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/corner_radius_5dp"
         android:backgroundTint="@color/loading_content"

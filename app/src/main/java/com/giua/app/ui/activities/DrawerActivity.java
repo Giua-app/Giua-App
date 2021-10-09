@@ -78,6 +78,7 @@ public class DrawerActivity extends AppCompatActivity {
     Bundle bundle;
     boolean offlineMode = false;
     boolean demoMode = false;
+    String goTo = "";
     LoggerManager loggerManager;
     String userType = "";
     String username = "";
@@ -89,6 +90,7 @@ public class DrawerActivity extends AppCompatActivity {
             savedInstanceState.clear();
         offlineMode = getIntent().getBooleanExtra("offline", false);
         demoMode = SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE);
+        goTo = getIntent().getStringExtra("goTo");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer);
         loggerManager = new LoggerManager("DrawerActivity", this);
@@ -104,7 +106,10 @@ public class DrawerActivity extends AppCompatActivity {
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         pendingIntent = PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        changeFragment(R.id.nav_home);
+        if (goTo == null || goTo.equals(""))
+            changeFragment(R.id.nav_home);
+        else if (goTo.equals("Newsletters") || goTo.equals("Alerts"))
+            changeFragment(R.id.nav_pin_board);
 
         if (!offlineMode) {
             if (SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE)) {
@@ -317,7 +322,7 @@ public class DrawerActivity extends AppCompatActivity {
             setTextToolbar("Lezioni");
         } else if (id == R.id.nav_pin_board) {
             if (fragment == null)
-                fragment = new PinboardFragment();
+                fragment = new PinboardFragment(goTo);
             setTextToolbar("Bacheca");
         } else if (id == R.id.nav_report_card) {
             if (fragment == null)

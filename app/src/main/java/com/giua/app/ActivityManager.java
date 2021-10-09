@@ -119,7 +119,10 @@ public class ActivityManager extends AppCompatActivity {
 
     private void startAutomaticLoginActivity() {
         loggerManager.d("Avvio Automatic Login Activity");
-        startActivity(new Intent(ActivityManager.this, AutomaticLoginActivity.class));
+        String goTo = getIntent().getStringExtra("goTo");
+        if (goTo == null)
+            goTo = "";
+        startActivity(new Intent(ActivityManager.this, AutomaticLoginActivity.class).putExtra("goTo", goTo));
         finish();
     }
 

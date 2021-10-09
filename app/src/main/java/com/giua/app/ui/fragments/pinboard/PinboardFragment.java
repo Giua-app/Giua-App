@@ -19,6 +19,8 @@
 
 package com.giua.app.ui.fragments.pinboard;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +39,12 @@ import java.util.Objects;
 
 public class PinboardFragment extends Fragment {
 
+    String goTo = "";
+
+    public PinboardFragment(String goTo) {
+        this.goTo = goTo;
+    }
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_pinboard, container, false);
 
@@ -44,20 +52,44 @@ public class PinboardFragment extends Fragment {
 
         Bundle bundle = getArguments();
         FragmentManager fragmentManager = getChildFragmentManager();
-        Fragment fragment = fragmentManager.findFragmentByTag("FRAGMENT_NEWSLETTER");
-        if (fragment == null) {
-            fragmentManager.beginTransaction()
-                    .addToBackStack(null)
-                    .setReorderingAllowed(true)
-                    .replace(R.id.fragment_tabs_circolari_avvisi_framelayout, NewslettersFragment.class, bundle, "FRAGMENT_NEWSLETTER")
-                    .commit();
-        } else {
-            fragmentManager.beginTransaction()
-                    .addToBackStack(null)
-                    .setReorderingAllowed(true)
-                    .replace(R.id.fragment_tabs_circolari_avvisi_framelayout, fragment, "FRAGMENT_NEWSLETTER")
-                    .commit();
+
+        if (goTo == null || goTo.equals("") || goTo.equals("Newsletters")) {
+            Fragment fragment = fragmentManager.findFragmentByTag("FRAGMENT_NEWSLETTER");
+            if (fragment == null) {
+                fragmentManager.beginTransaction()
+                        .addToBackStack(null)
+                        .setReorderingAllowed(true)
+                        .replace(R.id.fragment_tabs_circolari_avvisi_framelayout, NewslettersFragment.class, bundle, "FRAGMENT_NEWSLETTER")
+                        .commit();
+            } else {
+                fragmentManager.beginTransaction()
+                        .addToBackStack(null)
+                        .setReorderingAllowed(true)
+                        .replace(R.id.fragment_tabs_circolari_avvisi_framelayout, fragment, "FRAGMENT_NEWSLETTER")
+                        .commit();
+            }
+        } else if (goTo.equals("Alerts")) {
+            Fragment fragment = fragmentManager.findFragmentByTag("FRAGMENT_ALERTS");
+            if (fragment == null) {
+                fragmentManager.beginTransaction()
+                        .addToBackStack(null)
+                        .setReorderingAllowed(true)
+                        .replace(R.id.fragment_tabs_circolari_avvisi_framelayout, AlertsFragment.class, bundle, "FRAGMENT_ALERTS")
+                        .commit();
+            } else {
+                fragmentManager.beginTransaction()
+                        .addToBackStack(null)
+                        .setReorderingAllowed(true)
+                        .replace(R.id.fragment_tabs_circolari_avvisi_framelayout, fragment, "FRAGMENT_ALERTS")
+                        .commit();
+            }
         }
+
+        //Elimina le notifiche delle circolari e degli avvisi se ce ne sono
+        NotificationManager notificationManager = (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(10);
+        notificationManager.cancel(11);
+
         //End
 
 

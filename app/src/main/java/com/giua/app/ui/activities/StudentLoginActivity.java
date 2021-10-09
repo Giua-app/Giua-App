@@ -115,7 +115,10 @@ public class StudentLoginActivity extends AppCompatActivity {
         LoginData.setCredentials(this, "gsuite", "gsuite", cookie);
         obscureLayoutView.setVisibility(View.GONE);
         loggerManager.d("Avvio DrawerActivity");
-        Intent intent = new Intent(StudentLoginActivity.this, DrawerActivity.class);
+        String goTo = getIntent().getStringExtra("goTo");
+        if (goTo == null)
+            goTo = "";
+        Intent intent = new Intent(StudentLoginActivity.this, DrawerActivity.class).putExtra("goTo", goTo);
         startActivity(intent);
     }
 }
