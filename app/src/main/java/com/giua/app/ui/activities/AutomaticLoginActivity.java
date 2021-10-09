@@ -149,7 +149,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
 
     private void startStudentLoginActivity() {
         loggerManager.d("Avvio StudentLoginActivity");
-        startActivity(new Intent(AutomaticLoginActivity.this, StudentLoginActivity.class));
+        startActivity(new Intent(AutomaticLoginActivity.this, StudentLoginActivity.class).putExtra("sender", "AutomaticLogin"));
         finish();
     }
 

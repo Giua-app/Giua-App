@@ -73,7 +73,7 @@ public class StudentLoginActivity extends AppCompatActivity {
                     String rawCookie = CookieManager.getInstance().getCookie("https://registro.giua.edu.it");
                     if (rawCookie != null) {
                         cookie = rawCookie.split("=")[1];
-                        onStoppedWebView();
+                        onStoppedWebView(getIntent().getStringExtra("sender").equals("MainLogin")); //Aumenta il conteggio solo se StudentLogin viene chiamata dal MainLogin
                         return true;
                     }
                     loggerManager.e("Errore, cookie ottenuto è null. Impossibile continuare");
@@ -103,9 +103,10 @@ public class StudentLoginActivity extends AppCompatActivity {
     }
 
 
-    private void onStoppedWebView() {
+    private void onStoppedWebView(boolean increaseVisitCount) {
         loggerManager.d("onStoppedWebView chiamato");
-        new Thread(() -> AppData.increaseVisitCount("Login OK (Studente/Google)")).start();
+        if (increaseVisitCount)
+            new Thread(() -> AppData.increaseVisitCount("Login OK (Studente/Google)")).start();
         webView.setVisibility(View.INVISIBLE);
         obscureLayoutView.setVisibility(View.VISIBLE);
 

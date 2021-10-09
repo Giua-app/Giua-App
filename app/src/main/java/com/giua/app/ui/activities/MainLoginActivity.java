@@ -174,7 +174,7 @@ public class MainLoginActivity extends AppCompatActivity {
 
     private void startStudentLoginActivity() {
         loggerManager.d("Avvio StudenteLoginActivity");
-        startActivity(new Intent(MainLoginActivity.this, StudentLoginActivity.class));
+        startActivity(new Intent(MainLoginActivity.this, StudentLoginActivity.class).putExtra("sender", "MainLogin"));
     }
 
     private void startDrawerActivity() {
