@@ -72,28 +72,29 @@ public class LogdogViewerActivity extends AppCompatActivity {
             if (log.text.equals("---")) {
                 text += "-----" + BuildConfig.VERSION_NAME + "-----";
             } else {
-                text += dateFormat.format(log.date) + "|" + log.type + "| " + log.tag + ": ";
                 switch (log.type) {
                     case "ERROR":
-                        text += "<font color='red'><b>" + log.text + "</b></font>";
+                        text += "<font color='red'>";
                         break;
                     case "WARNING":
-                        text += "<font color='#FFA500'><b>" + log.text + "</b></font>";
+                        text += "<font color='#FFA500'>";
                         break;
                     case "DEBUG":
-                        text += "<font color='gray'><b>" + log.text + "</b></font>";
+                        text += "<font color='gray'>";
                         break;
                     default:
-                        text += "<font color='black'><b>" + log.text + "</b></font>";
+                        text += "<font color='black'>";
                         break;
                 }
+                text += dateFormat.format(log.date) + "|" + log.type + "| " + log.tag + ": <b>" + log.text + "</b></font>";
+
             }
 
             text += "<br>";
         }
 
         if (logs.isEmpty()) {
-            text = "<b>---  Nessun log trovato!  ---</b>";
+            text = "<b>\u23af\u23af\u23af  Nessun log trovato!  \u23af\u23af\u23af</b>";
         }
 
         textView.setText(Html.fromHtml(text.toString(), 0));
