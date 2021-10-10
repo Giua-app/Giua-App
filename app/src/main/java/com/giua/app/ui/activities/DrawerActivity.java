@@ -32,8 +32,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.ui.AppBarConfiguration;
 
 import com.giua.app.ActivityManager;
 import com.giua.app.AppData;
@@ -68,12 +66,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class DrawerActivity extends AppCompatActivity {
 
-    private AppBarConfiguration mAppBarConfiguration;
-
     AlarmManager alarmManager;
     PendingIntent pendingIntent;
-    FragmentTransaction transaction;
-    FragmentManager fragmentManager;
     Toolbar toolbar;
     Bundle bundle;
     boolean offlineMode = false;
@@ -102,6 +96,7 @@ public class DrawerActivity extends AppCompatActivity {
         bundle = new Bundle();
         bundle.putBoolean("offline", offlineMode);
 
+        //Setup CheckNewsReceiver
         Intent iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         pendingIntent = PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -127,7 +122,7 @@ public class DrawerActivity extends AppCompatActivity {
                 runOnUiThread(this::setupMaterialDrawer);
             }).start();
         } else {
-            loggerManager.d("Applicazione in offline mode");
+            loggerManager.w("Applicazione in offline mode");
             userType = "Offline";
             username = "Offline";
             runOnUiThread(this::setupMaterialDrawer);
@@ -160,7 +155,7 @@ public class DrawerActivity extends AppCompatActivity {
                         ),
                         createDrawerCategory(4, "Situazione").withSubItems(
                                 createDrawerMainItem(5, "Voti", R.id.nav_votes, true, true),
-                                createDrawerMainItem(6, "Assenze", R.id.nav_absences, true, true),
+                                createDrawerMainItem(6, "Assenze", "/genitori/assenze/", R.id.nav_absences, true, true),
                                 createDrawerMainItem(7, "Note", "/genitori/note/", true, true),
                                 createDrawerMainItem(8, "Osservazioni", "/genitori/osservazioni/", !userType.equals("Studente"), true), //SOLO GENITORE,
                                 createDrawerMainItem(9, "Autorizzazioni", R.id.nav_authorization, true, true)
@@ -195,6 +190,7 @@ public class DrawerActivity extends AppCompatActivity {
                 .withName(name);
     }
 
+    //Usato per fragment implementati
     private PrimaryDrawerItem createDrawerMainItem(int identifier, String name, @IdRes int id, boolean enabled, boolean withMoreSpace) {
         PrimaryDrawerItem primaryDrawerItem = new PrimaryDrawerItem()
                 .withIdentifier(identifier)
@@ -214,6 +210,7 @@ public class DrawerActivity extends AppCompatActivity {
         return primaryDrawerItem;
     }
 
+    //Usato per fragment non implementati
     private PrimaryDrawerItem createDrawerMainItem(int identifier, String name, String url, boolean enabled, boolean withMoreSpace) {
         if (demoMode)    //Nella modalità demo si possono vedere solo le schermate implementate
             enabled = false;
@@ -235,6 +232,31 @@ public class DrawerActivity extends AppCompatActivity {
 
         return primaryDrawerItem;
     }
+
+    //Usato per funzionalità sperimentali
+    private PrimaryDrawerItem createDrawerMainItem(int identifier, String name, String url, @IdRes int id, boolean enabled, boolean withMoreSpace) {
+        PrimaryDrawerItem primaryDrawerItem = new PrimaryDrawerItem()
+                .withIdentifier(identifier)
+                .withIconTintingEnabled(true)
+                //.withIcon(icon)
+                .withName(name)
+                .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
+                .withEnabled(enabled)
+                .withOnDrawerItemClickListener((view, i, item) -> {
+                    if(SettingsData.getSettingBoolean(this, SettingKey.EXP_MODE)){
+                        changeFragment(id, "Funzione Sperimentale!");
+                        return false;
+                    }
+                    changeToFragmentNotImplemented(name, url);
+                    return false;
+                });
+
+        if (withMoreSpace)
+            primaryDrawerItem.withIcon(R.color.transparent);
+
+        return primaryDrawerItem;
+    }
+
 
     private PrimaryDrawerItem createDrawerSecondaryItem(int identifier, String name) {
         return new PrimaryDrawerItem()
@@ -263,12 +285,11 @@ public class DrawerActivity extends AppCompatActivity {
     }
 
     private void changeToFragmentNotImplemented(String toolbarTitle, String url) {
-        FragmentManager manager = getSupportFragmentManager();
         Fragment fragment;
         String tag = "FRAGMENT_NOT_IMPLEMENTED";
 
-        if (!toolbarTitle.equals(toolbar.getTitle())) {  //Se l'elemento cliccato non è già visualizzato allora visualizzalo
-            loggerManager.w("Pagina non ancora implementata, la faccio visualizzare dalla webview");
+        if (!toolbarTitle.contentEquals(toolbar.getTitle())) {  //Se l'elemento cliccato non è già visualizzato allora visualizzalo
+            loggerManager.w("Pagina " + toolbarTitle + " non ancora implementata, la faccio visualizzare dalla webview");
             fragment = new NotImplementedFragment(GiuaScraper.getSiteURL() + url, GlobalVariables.gS.getCookie());
             toolbar.setTitle(toolbarTitle);
             toolbar.setSubtitle("Non ancora implementato!");
@@ -277,10 +298,14 @@ public class DrawerActivity extends AppCompatActivity {
     }
 
     private void changeFragment(@IdRes int id) {
+        changeFragment(id, "");
+    }
+
+    private void changeFragment(@IdRes int id, String subtitle) {
         FragmentManager manager = getSupportFragmentManager();
         Fragment fragment;
         String tag = getTagFromId(id);
-        toolbar.setSubtitle("");
+        toolbar.setSubtitle(subtitle);
 
         if (!manager.getFragments().isEmpty() && manager.getFragments().get(0).getTag().equals(tag)) //Se il fragment visualizzato è quello di id allora non fare nulla
             return;
@@ -302,16 +327,9 @@ public class DrawerActivity extends AppCompatActivity {
                 fragment = new HomeFragment();
             setTextToolbar("Home");
         } else if (id == R.id.nav_absences) {
-            //TODO: L'ideale sarebbe avere una lista delle funzionalità sperimentali e controllare quella
-            //anziche mettere questo if ovunque
-            if(!SettingsData.getSettingBoolean(this, SettingKey.EXP_MODE)){
-                loggerManager.w("Fragment Assenze è una funzionalità sperimentale, lo apro in webview");
-                changeToFragmentNotImplemented("Assenze","/genitori/assenze");
-                return;
-            }
             if (fragment == null)
                 fragment = new AbsencesFragment();
-            setTextToolbar("Assenze - Sperimentale");
+            setTextToolbar("Assenze");
         } else if (id == R.id.nav_authorization) {
             if (fragment == null)
                 fragment = new AuthorizationFragment();
@@ -375,6 +393,7 @@ public class DrawerActivity extends AppCompatActivity {
     }
 
     private void changeFragmentWithManager(Fragment fragment, String tag) {
+        loggerManager.d("Cambio fragment a " + tag);
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.content_main, fragment, tag).commit();
     }
@@ -407,10 +426,12 @@ public class DrawerActivity extends AppCompatActivity {
         }).start();
         alarmManager.cancel(pendingIntent);
         if (!LoginData.getUser(this).equals("") && SettingsData.getSettingBoolean(this, SettingKey.NOTIFICATION)) {
+            long interval = AlarmManager.INTERVAL_HOUR + ThreadLocalRandom.current().nextInt(0, 3_600_000);
             alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
                     SystemClock.elapsedRealtime(),
-                    AlarmManager.INTERVAL_HOUR + ThreadLocalRandom.current().nextInt(0, 3_600_000),   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
+                    interval,   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
                     pendingIntent);
+            loggerManager.d("Alarm per CheckNews settato a " + (interval / 60_000) + " minuti");
             //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000 , pendingIntent);    //DEBUG
         }
         super.onDestroy();

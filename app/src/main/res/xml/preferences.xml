@@ -77,7 +77,7 @@
     <PreferenceCategory
         app:allowDividerAbove="true"
         app:iconSpaceReserved="false"
-        app:isPreferenceVisible="true"
+        app:isPreferenceVisible="false"
         app:key="debugCategory"
         app:title="Debug">
 
