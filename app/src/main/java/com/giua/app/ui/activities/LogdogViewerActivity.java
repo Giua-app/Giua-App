@@ -70,7 +70,8 @@ public class LogdogViewerActivity extends AppCompatActivity {
         linearLayout.removeAllViews();
         for (LoggerManager.Log log : logs) {
             if (log.text.equals("---")) {
-                text += "-----" + BuildConfig.VERSION_NAME + "-----";
+                //TODO: La versione è sempre uguale alla versione corrente invece di essere salvata nei log, modificare
+                text += "\u23af\u23af\u23af  " + BuildConfig.VERSION_NAME + " Build:" + BuildConfig.BUILD_TYPE + "  \u23af\u23af\u23af";
             } else {
                 switch (log.type) {
                     case "ERROR":

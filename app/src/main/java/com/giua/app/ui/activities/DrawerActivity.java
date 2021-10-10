@@ -296,14 +296,22 @@ public class DrawerActivity extends AppCompatActivity {
 
         fragment = manager.findFragmentByTag(tag);
 
+        //FIXME: Troppi if, lo switch non si può usare perchè R.id.x non è final
         if (id == R.id.nav_home) {
             if (fragment == null)
                 fragment = new HomeFragment();
             setTextToolbar("Home");
         } else if (id == R.id.nav_absences) {
+            //TODO: L'ideale sarebbe avere una lista delle funzionalità sperimentali e controllare quella
+            //anziche mettere questo if ovunque
+            if(!SettingsData.getSettingBoolean(this, SettingKey.EXP_MODE)){
+                loggerManager.w("Fragment Assenze è una funzionalità sperimentale, lo apro in webview");
+                changeToFragmentNotImplemented("Assenze","/genitori/assenze");
+                return;
+            }
             if (fragment == null)
                 fragment = new AbsencesFragment();
-            setTextToolbar("Assenze");
+            setTextToolbar("Assenze - Sperimentale");
         } else if (id == R.id.nav_authorization) {
             if (fragment == null)
                 fragment = new AuthorizationFragment();

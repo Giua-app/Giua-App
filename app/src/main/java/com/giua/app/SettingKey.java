@@ -69,4 +69,9 @@ public abstract class SettingKey {
      * Indica se la modlità demo è attiva
      */
     public static final String DEMO_MODE = "demoMode";
+
+    /**
+     * Indica se le funzionalià sperimentali sono attive
+     */
+    public static final String EXP_MODE = "experimentalMode";
 }

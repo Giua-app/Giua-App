@@ -21,8 +21,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
-        app:title="Generale"
-        app:iconSpaceReserved="false">
+        app:iconSpaceReserved="false"
+        app:title="Generale">
+
+        <Preference
+            app:icon="@drawable/ic_baseline_info_24"
+            app:key="aboutScreen"
+            app:title="Riguardo l'app" />
+        <Preference
+            app:icon="@drawable/ic_baseline_menu_book_24"
+            app:key="introScreen"
+            app:title="Rivedi l'intro" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_test_tube"
+            android:key="experimentalMode"
+            android:title="Abilita funzionalità sperimentali" />
+        <SwitchPreference
+            app:defaultValue="false"
+            app:icon="@drawable/ic_baseline_code_24"
+            app:key="debugMode"
+            app:title="Modalità di debug (solo utenti esperti)" />
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="Notifiche">
 
         <SwitchPreference
             android:icon="@drawable/ic_baseline_notifications_none_24"
@@ -31,24 +56,9 @@
             app:title="Abilita le notifiche" />
 
         <MultiSelectListPreference
+            android:icon="@drawable/ic_timer_cog"
             android:key="notification_manager"
             app:title="Gestione notifiche" />
-
-        <Preference
-            app:icon="@drawable/ic_baseline_menu_book_24"
-            app:key="introScreen"
-            app:title="Rivedi l'intro" />
-
-        <Preference
-            app:icon="@drawable/ic_baseline_info_24"
-            app:key="aboutScreen"
-            app:title="Riguardo l'app" />
-
-        <SwitchPreference
-            app:defaultValue="false"
-            app:icon="@drawable/ic_baseline_code_24"
-            app:key="debugMode"
-            app:title="Modalità di debug (solo utenti esperti)" />
 
     </PreferenceCategory>
 
@@ -67,7 +77,7 @@
     <PreferenceCategory
         app:allowDividerAbove="true"
         app:iconSpaceReserved="false"
-        app:isPreferenceVisible="false"
+        app:isPreferenceVisible="true"
         app:key="debugCategory"
         app:title="Debug">
 

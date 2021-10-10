@@ -32,6 +32,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 
 import com.giua.app.ActivityManager;
+import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
@@ -59,13 +60,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         //region Generale
 
-        setupNotificationObject(context);
-        setupNotificationManager(context);
         setupAboutScreenObject();
         setupIntroScreenObject();
+        setupExpModeObject(context);
         setupDebugModeObject(context);
 
-        //endreigon
+        //endregion
+
+        //region Notifiche
+        setupNotificationObject(context);
+        setupNotificationManager();
+        //endregion
 
         //region Personalizzazione
 
@@ -87,7 +92,19 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         //endregion
     }
 
-    private void setupNotificationManager(Context context) {
+    private void setupExpModeObject(Context context) {
+        SwitchPreference swDemoMode = findPreference("experimentalMode");
+        swDemoMode.setChecked(SettingsData.getSettingBoolean(context, SettingKey.EXP_MODE));
+        swDemoMode.setOnPreferenceChangeListener(this::swExpModeChangeListener);
+    }
+
+    private boolean swExpModeChangeListener(Preference preference, Object o) {
+        SettingsData.saveSettingBoolean(requireContext(), SettingKey.EXP_MODE, (boolean) o);
+        new LoggerManager("SettigsFragment", getContext()).w("Funzionalità Sperimentali: " + (boolean) o);
+        return true;
+    }
+
+    private void setupNotificationManager() {
         MultiSelectListPreference multiSelectListPreference = findPreference("notification_manager");
         multiSelectListPreference.setEntries(new CharSequence[]{"Circolari", "Avvisi", "Aggiornamenti"});
         multiSelectListPreference.setEntryValues(new CharSequence[]{"0", "1", "2"});
