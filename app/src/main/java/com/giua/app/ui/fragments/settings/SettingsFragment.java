@@ -22,6 +22,7 @@ package com.giua.app.ui.fragments.settings;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.EditTextPreference;
@@ -40,6 +41,7 @@ import com.giua.app.ui.activities.AboutActivity;
 import com.giua.app.ui.activities.AppIntroActivity;
 import com.giua.app.ui.activities.LogdogViewerActivity;
 import com.giua.webscraper.GiuaScraper;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -263,8 +265,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             SettingsData.saveSettingString(requireContext(), SettingKey.DEFAULT_URL, (String) o);
         } else {
             ((EditTextPreference) preference).setText("https://registro.giua.edu.it");
+            setErrorMessage("Url sito non valido", requireView());
         }
-        //TODO: Fai capire che ce stato un errore
         return true;
+    }
+
+    private void setErrorMessage(String message, View root) {
+        Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
 }

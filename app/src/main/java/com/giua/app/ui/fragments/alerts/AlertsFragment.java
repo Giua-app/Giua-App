@@ -349,7 +349,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
     }
 
     public void setErrorMessage(String message, View root) {
-        if (canSendErrorMessage)
+        if (!threadManager.isDestroyed() && canSendErrorMessage)
             Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
 

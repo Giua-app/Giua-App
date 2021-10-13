@@ -152,7 +152,8 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
     //endregion
 
     private void setErrorMessage(String message, View root) {
-        Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
+        if (!threadManager.isDestroyed())
+            Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

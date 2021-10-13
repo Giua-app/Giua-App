@@ -104,6 +104,8 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
                 /*else
                     allVotes = new JsonHelper().parseJsonForVotes(AppData.getVotesString(requireContext()));*/
                 refreshVotes = false;
+                if (threadManager.isDestroyed())
+                    return;
                 activity.runOnUiThread(this::addViews);
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                 activity.runOnUiThread(() -> {
@@ -240,7 +242,8 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void setErrorMessage(String message, View root) {
-        Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
+        if (!threadManager.isDestroyed())
+            Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

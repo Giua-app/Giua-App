@@ -135,6 +135,9 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
                 if (forceRefresh)
                     forceRefresh = false;
 
+                if (threadManager.isDestroyed())
+                    return;
+
                 activity.runOnUiThread(() -> {
                     setupHomeworksTestsText(homeworks, tests);
                     setupMeanVotesText(allVotes);
@@ -398,7 +401,8 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void setErrorMessage(String message, View root) {
-        Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
+        if (!threadManager.isDestroyed())
+            Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

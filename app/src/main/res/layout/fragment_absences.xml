@@ -24,6 +24,21 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
+    <TextView
+        android:id="@+id/absences_no_elements_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/varelaroundregular"
+        android:text="@string/no_elements"
+        android:textSize="16sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.441" />
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/absences_refresh_layout"
         android:layout_width="match_parent"
@@ -88,7 +103,8 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp"
                 android:text="Conferma"
-                android:textAllCaps="false" />
+                android:textAllCaps="false"
+                android:fontFamily="@font/varelaroundregular" />
 
         </LinearLayout>
     </com.giua.app.ui.fragments.ObscureLayoutView>

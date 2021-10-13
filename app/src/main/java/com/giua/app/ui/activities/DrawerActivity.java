@@ -52,6 +52,7 @@ import com.giua.app.ui.fragments.pinboard.PinboardFragment;
 import com.giua.app.ui.fragments.reportcard.ReportCardFragment;
 import com.giua.app.ui.fragments.votes.VotesFragment;
 import com.giua.webscraper.GiuaScraper;
+import com.giua.webscraper.GiuaScraperExceptions;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -74,9 +75,10 @@ public class DrawerActivity extends AppCompatActivity {
     boolean demoMode = false;
     String goTo = "";
     LoggerManager loggerManager;
-    String userType = "";
-    String username = "";
+    String userType = "Tipo utente";
+    String username = "Nome utente";
     Drawer mDrawer;
+    Intent iCheckNewsReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +99,7 @@ public class DrawerActivity extends AppCompatActivity {
         bundle.putBoolean("offline", offlineMode);
 
         //Setup CheckNewsReceiver
-        Intent iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
+        iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         pendingIntent = PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -110,22 +112,27 @@ public class DrawerActivity extends AppCompatActivity {
             if (SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE)) {
                 userType = "DEMO";
                 username = "DEMO";
+                return;
             }
             new Thread(() -> {
-                GiuaScraper.userTypes _userType = GlobalVariables.gS.getUserTypeEnum();
-                String user = GlobalVariables.gS.loadUserFromDocument();
-                if (_userType == GiuaScraper.userTypes.PARENT)
-                    userType = "Genitore";
-                else if (_userType == GiuaScraper.userTypes.STUDENT)
-                    userType = "Studente";
-                username = user;
-                runOnUiThread(this::setupMaterialDrawer);
+                try {
+                    runOnUiThread(this::setupMaterialDrawer);
+                    GiuaScraper.userTypes _userType = GlobalVariables.gS.getUserTypeEnum();
+                    String user = GlobalVariables.gS.loadUserFromDocument();
+                    if (_userType == GiuaScraper.userTypes.PARENT)
+                        userType = "Genitore";
+                    else if (_userType == GiuaScraper.userTypes.STUDENT)
+                        userType = "Studente";
+                    username = user;
+                    runOnUiThread(this::setupMaterialDrawer);
+                } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.MaintenanceIsActiveException | GiuaScraperExceptions.SiteConnectionProblems ignored) {
+                }
             }).start();
         } else {
             loggerManager.w("Applicazione in offline mode");
             userType = "Offline";
             username = "Offline";
-            runOnUiThread(this::setupMaterialDrawer);
+            setupMaterialDrawer();
         }
     }
 
@@ -424,15 +431,19 @@ public class DrawerActivity extends AppCompatActivity {
             AppData.saveNumberNewslettersInt(this, GlobalVariables.gS.checkForNewsletterUpdate(false));
             AppData.saveNumberAlertsInt(this, GlobalVariables.gS.checkForAlertsUpdate(false));
         }).start();
-        alarmManager.cancel(pendingIntent);
-        if (!LoginData.getUser(this).equals("") && SettingsData.getSettingBoolean(this, SettingKey.NOTIFICATION)) {
+
+        boolean alarmUp = (PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE) != null);  //Controlla se l'allarme è già settato
+        if (!alarmUp && !LoginData.getUser(this).equals("") && SettingsData.getSettingBoolean(this, SettingKey.NOTIFICATION)) {
+
             long interval = AlarmManager.INTERVAL_HOUR + ThreadLocalRandom.current().nextInt(0, 3_600_000);
+
             alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
                     SystemClock.elapsedRealtime(),
                     interval,   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
                     pendingIntent);
             loggerManager.d("Alarm per CheckNews settato a " + (interval / 60_000) + " minuti");
             //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000 , pendingIntent);    //DEBUG
+
         }
         super.onDestroy();
     }

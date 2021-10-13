@@ -114,7 +114,7 @@ public class AgendaView extends RelativeLayout {
                     tvTime.setText("Tra " + timeDiff + " giorni");
                     break;
                 case 2:
-                    tvTime.setTextColor(getResources().getColor(R.color.middle_vote, context.getTheme()));
+                    tvTime.setTextColor(getResources().getColor(R.color.middle_vote_no_night, context.getTheme()));
                     tvTime.setText("Tra " + timeDiff + " giorni");
                     break;
                 case 1:

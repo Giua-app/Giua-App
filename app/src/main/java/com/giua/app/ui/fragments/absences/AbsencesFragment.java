@@ -40,6 +40,8 @@ import com.giua.app.R;
 import com.giua.app.ThreadManager;
 import com.giua.app.ui.fragments.ObscureLayoutView;
 import com.giua.objects.Absence;
+import com.giua.webscraper.GiuaScraperExceptions;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
@@ -55,7 +57,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
     Button btnConfirm;
     ObscureLayoutView obscureLayoutView;
     AbsenceView latestAbsenceViewClicked;
-
+    boolean confirmActionIsDelete;  //Indica cosa deve fare il bottone di conferma una volta cliccato. true: elimina la giustificazione ; false: la modifica/pubblica
     boolean refresh = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -83,9 +85,35 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void loadDataAndViews() {
+        if (threadManager.isDestroyed())
+            return;
+
         threadManager.addAndRun(() -> {
-            absences = GlobalVariables.gS.getAllAbsences(refresh);
-            activity.runOnUiThread(this::addViews);
+            try {
+                absences = GlobalVariables.gS.getAllAbsences(refresh);
+                if (absences.isEmpty())
+                    activity.runOnUiThread(() -> root.findViewById(R.id.absences_no_elements_text).setVisibility(View.VISIBLE));
+                else
+                    activity.runOnUiThread(this::addViews);
+            } catch (GiuaScraperExceptions.YourConnectionProblems e) {
+                activity.runOnUiThread(() -> {
+                    setErrorMessage(activity.getString(R.string.your_connection_error), root);
+                    root.findViewById(R.id.absences_no_elements_text).setVisibility(View.VISIBLE);
+                    swipeRefreshLayout.setRefreshing(false);
+                });
+            } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
+                activity.runOnUiThread(() -> {
+                    setErrorMessage(activity.getString(R.string.site_connection_error), root);
+                    root.findViewById(R.id.absences_no_elements_text).setVisibility(View.VISIBLE);
+                    swipeRefreshLayout.setRefreshing(false);
+                });
+            } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
+                activity.runOnUiThread(() -> {
+                    setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
+                    root.findViewById(R.id.absences_no_elements_text).setVisibility(View.VISIBLE);
+                    swipeRefreshLayout.setRefreshing(false);
+                });
+            }
         });
 
     }
@@ -99,7 +127,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
 
         int counter = 0;
         for (Absence absence : absences) {
-            AbsenceView absenceView = new AbsenceView(activity, null, absence, this::viewJustifyOnClick);
+            AbsenceView absenceView = new AbsenceView(activity, null, absence, this::viewJustifyOnClick, this::viewDeleteOnClick);
 
             if (counter != 0)
                 absenceView.setLayoutParams(params);
@@ -114,13 +142,22 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
 
     private void onRefresh() {
         refresh = true;
+        root.findViewById(R.id.absences_no_elements_text).setVisibility(View.GONE);
         loadDataAndViews();
+    }
+
+    private void viewDeleteOnClick(View view) {
+        latestAbsenceViewClicked = ((AbsenceView) view);
+        tvConfirmText.setText(Html.fromHtml("Sei sicuro di voler cancellare la giustificazione del <b>" + latestAbsenceViewClicked.absence.date + "</b> ?", 0));
+        confirmActionIsDelete = true;
+        obscureLayoutView.show(activity);
     }
 
     public void viewJustifyOnClick(View view) {
         if (((AbsenceView) view).justifyText.length() > 0) { //Se non c'è scritto nulla come testo della giustificazione potrebbe essere un click involontario quindi non fare nulla
             latestAbsenceViewClicked = ((AbsenceView) view);
             tvConfirmText.setText(Html.fromHtml("Sei sicuro di voler giustificare con: <b>" + ((AbsenceView) view).justifyText + "</b> ?", 0));
+            confirmActionIsDelete = false;
             obscureLayoutView.show(activity);
         }
     }
@@ -131,16 +168,41 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void btnConfirmOnClick(View view) {
-        threadManager.addAndRun(() -> {
-            if (latestAbsenceViewClicked != null) {
-                GlobalVariables.gS.justifyAbsence(latestAbsenceViewClicked.absence, "", latestAbsenceViewClicked.justifyText);
-                latestAbsenceViewClicked = null;
-            }
-            activity.runOnUiThread(() -> {
-                swipeRefreshLayout.setRefreshing(true);
-                onRefresh();
+        if (latestAbsenceViewClicked != null) {
+            AbsenceView absenceView = latestAbsenceViewClicked;
+            latestAbsenceViewClicked = null;
+
+            threadManager.addAndRun(() -> {
+                activity.runOnUiThread(() -> swipeRefreshLayout.setRefreshing(true));
+                try {
+                    if (!confirmActionIsDelete)
+                        GlobalVariables.gS.justifyAbsence(absenceView.absence, "", absenceView.justifyText);
+                    else
+                        GlobalVariables.gS.deleteJustificationAbsence(absenceView.absence);
+                } catch (GiuaScraperExceptions.YourConnectionProblems e) {
+                    activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.your_connection_error), root));
+                    return;
+                } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
+                    activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.site_connection_error), root));
+                    return;
+                } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
+                    activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root));
+                    return;
+                }
+                activity.runOnUiThread(this::onRefresh);
             });
-        });
+        }
         obscureLayoutView.hide(activity);
+    }
+
+    private void setErrorMessage(String message, View root) {
+        if (!threadManager.isDestroyed())
+            Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDestroyView() {
+        threadManager.destroyAllAndNullMe();
+        super.onDestroyView();
     }
 }

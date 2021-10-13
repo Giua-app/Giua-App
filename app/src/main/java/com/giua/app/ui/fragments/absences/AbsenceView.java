@@ -24,7 +24,10 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,7 +36,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.giua.app.GlobalVariables;
-import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.giua.objects.Absence;
 import com.giua.webscraper.GiuaScraper;
@@ -44,28 +46,54 @@ public class AbsenceView extends ConstraintLayout {
     public String justifyText = "";
     private final Context context;
     private final OnClickListener onJustifyClick;
+    private final OnClickListener onDeleteClick;
+    private static final String[] spinnerNames = new String[]{
+            "Altro",
+            "Motivi di salute",
+            "Esigenze di famiglia",
+            "Problemi di trasporto",
+            "Attività sportiva",
+            "Problemi di connessione nella modalità a distanza"
+    };
 
-    public AbsenceView(@NonNull Context context, @Nullable AttributeSet attrs, Absence absence, OnClickListener onJustifyClick) {
+    public AbsenceView(@NonNull Context context, @Nullable AttributeSet attrs, Absence absence, OnClickListener onJustifyClick, OnClickListener onDeleteClick) {
         super(context, attrs);
 
         this.absence = absence;
         this.context = context;
         this.onJustifyClick = onJustifyClick;
+        this.onDeleteClick = onDeleteClick;
 
         initializeComponent(context, onJustifyClick);
     }
 
     private void initializeComponent(Context context, OnClickListener onJustifyClick) {
-        LoggerManager loggerManager = new LoggerManager("AbsenceView", context);
-
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layoutInflater.inflate(R.layout.view_absence, this);
 
         TextView tvDate = findViewById(R.id.absence_view_date);
         TextView tvType = findViewById(R.id.absence_view_type);
         TextView tvText = findViewById(R.id.absence_view_text);
-        TextView tvJustify = findViewById(R.id.absence_view_btn_justife);
+        TextView tvJustify = findViewById(R.id.absence_view_btn_justify);
+        TextView tvDelete = findViewById(R.id.absence_view_btn_delete);
         EditText etJustifyText = findViewById(R.id.absence_view_justify_text);
+        Spinner spinner = findViewById(R.id.absences_spinner);
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, spinnerNames);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(arrayAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                if (!spinnerNames[position].equals("Altro"))
+                    ((EditText) findViewById(R.id.absence_view_justify_text)).setText(spinnerNames[position]);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         tvDate.setText(absence.date);
         tvType.setText(absence.type);
@@ -74,6 +102,7 @@ public class AbsenceView extends ConstraintLayout {
         tvType.setBackground(null);
         tvText.setBackground(null);
         tvJustify.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.corner_radius_10dp, context.getTheme()));
+        tvDelete.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.corner_radius_10dp, context.getTheme()));
 
         if (absence.notes.length() == 0)
             tvText.setVisibility(GONE);
@@ -84,9 +113,14 @@ public class AbsenceView extends ConstraintLayout {
                 tvJustify.setBackgroundTintList(getResources().getColorStateList(R.color.main_color, context.getTheme()));
                 tvJustify.setForeground(ResourcesCompat.getDrawable(getResources(), R.drawable.ripple_effect, context.getTheme()));
                 tvJustify.setOnClickListener(this::onJustify);
+                tvDelete.setBackgroundTintList(getResources().getColorStateList(R.color.bad_vote_lighter, context.getTheme()));
+                tvDelete.setForeground(ResourcesCompat.getDrawable(getResources(), R.drawable.ripple_effect, context.getTheme()));
+                tvDelete.setOnClickListener(this::onDelete);
+                tvDelete.setVisibility(VISIBLE);
             } else {
                 tvJustify.setText("Giustificata");
-                etJustifyText.setVisibility(INVISIBLE);
+                etJustifyText.setVisibility(GONE);
+                spinner.setVisibility(GONE);
             }
         } else {
             if (GlobalVariables.gS.getUserTypeEnum() == GiuaScraper.userTypes.PARENT) {
@@ -97,15 +131,20 @@ public class AbsenceView extends ConstraintLayout {
             } else {
                 tvJustify.setText("Da giustificare");
                 tvJustify.setBackgroundTintList(getResources().getColorStateList(R.color.bad_vote_lighter, context.getTheme()));
-                etJustifyText.setVisibility(INVISIBLE);
+                etJustifyText.setVisibility(GONE);
+                spinner.setVisibility(GONE);
             }
         }
 
     }
 
+    private void onDelete(View view) {
+        onDeleteClick.onClick(this);
+    }
+
     private void onJustify(View view) {
         justifyText = ((EditText) findViewById(R.id.absence_view_justify_text)).getText().toString();
-        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);   //Nascondi la tastiera
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         onJustifyClick.onClick(this);
     }

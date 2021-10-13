@@ -24,6 +24,7 @@ import java.util.Vector;
 
 public class ThreadManager {
     private List<Thread> allThreads;
+    private boolean isDestroyed = false;
 
     public ThreadManager() {
         allThreads = new Vector<>();
@@ -42,7 +43,7 @@ public class ThreadManager {
     /**
      * Interrompe tutti i thread startati
      */
-    public void destroyAll() {
+    public void clearThreads() {
         for (Thread thread : allThreads) {
             if (thread.isAlive())
                 thread.interrupt();
@@ -61,6 +62,14 @@ public class ThreadManager {
             }
         }
         allThreads = null;
+        isDestroyed = true;
     }
 
+    public List<Thread> getAllThreads() {
+        return allThreads;
+    }
+
+    public boolean isDestroyed() {
+        return isDestroyed;
+    }
 }

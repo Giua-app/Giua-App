@@ -19,10 +19,12 @@
 
 package com.giua.app;
 
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.SystemClock;
 import android.webkit.CookieManager;
 
 import androidx.core.app.NotificationCompat;
@@ -37,6 +39,7 @@ import org.jsoup.Jsoup;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class CheckNewsReceiver extends BroadcastReceiver {
     private Context context;
@@ -88,6 +91,16 @@ public class CheckNewsReceiver extends BroadcastReceiver {
                     notificationManager.notify(12, builder.build());
                 }
             }
+
+            //Risetta l'allarme con un nuovo intervallo random
+            long interval = AlarmManager.INTERVAL_HOUR + ThreadLocalRandom.current().nextInt(0, 3_600_000);
+            Intent iCheckNewsReceiver = new Intent(context, CheckNewsReceiver.class);
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, PendingIntent.FLAG_CANCEL_CURRENT);
+            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
+                    SystemClock.elapsedRealtime() + interval,
+                    interval,   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
+                    pendingIntent);
         }).start();
     }
 

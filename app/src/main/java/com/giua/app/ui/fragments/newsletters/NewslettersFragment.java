@@ -437,7 +437,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     }
 
     public void setErrorMessage(String message, View root) {
-        if (canSendErrorMessage)
+        if (!threadManager.isDestroyed() && canSendErrorMessage)
             Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
 
@@ -466,5 +466,11 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         if (!allNewsletterToSave.isEmpty() && !offlineMode && !demoMode)
             AppData.saveNewslettersString(activity, new JsonHelper().saveNewslettersToString(allNewsletterToSave));
         super.onStop();
+    }
+
+    @Override
+    public void onDestroyView() {
+        threadManager.destroyAllAndNullMe();
+        super.onDestroyView();
     }
 }

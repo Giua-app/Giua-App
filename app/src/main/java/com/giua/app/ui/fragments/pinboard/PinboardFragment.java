@@ -39,7 +39,7 @@ import java.util.Objects;
 
 public class PinboardFragment extends Fragment {
 
-    String goTo = "";
+    String goTo;
 
     public PinboardFragment(String goTo) {
         this.goTo = goTo;
@@ -70,6 +70,7 @@ public class PinboardFragment extends Fragment {
             }
         } else if (goTo.equals("Alerts")) {
             Fragment fragment = fragmentManager.findFragmentByTag("FRAGMENT_ALERTS");
+            tabLayout.selectTab(tabLayout.getTabAt(1));
             if (fragment == null) {
                 fragmentManager.beginTransaction()
                         .addToBackStack(null)

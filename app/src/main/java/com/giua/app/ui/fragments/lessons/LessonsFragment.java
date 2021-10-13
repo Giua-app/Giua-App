@@ -146,7 +146,8 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
                     if (allLessons == null)
                         return;
                     hasCompletedLoading = true;
-                    activity.runOnUiThread(this::addViews);
+                    if (!threadManager.isDestroyed())
+                        activity.runOnUiThread(this::addViews);
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     //Errore di connessione
                     activity.runOnUiThread(() -> {
@@ -326,7 +327,8 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void setErrorMessage(String message, View root) {
-        Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
+        if (!threadManager.isDestroyed())
+            Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
 
     //endregion

@@ -360,6 +360,12 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                         pbForDetails.setVisibility(View.GONE);
                     });
                     return;
+                } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
+                    activity.runOnUiThread(() -> {
+                        setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
+                        pbForDetails.setVisibility(View.GONE);
+                    });
+                    return;
                 }
 
                 activity.runOnUiThread(() -> {
@@ -495,7 +501,8 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void setErrorMessage(String message, View root) {
-        Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
+        if (!threadManager.isDestroyed())
+            Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
     //endregion
 

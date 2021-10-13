@@ -21,6 +21,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/corner_radius_10dp"
     android:backgroundTint="@color/general_view_color"
     android:padding="8dp">
@@ -54,7 +55,7 @@
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="24dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -73,7 +74,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="8dp">
 
             <EditText
                 android:id="@+id/absence_view_justify_text"
@@ -82,10 +83,46 @@
                 android:hint="Giustificazione"
                 android:layout_weight="1"
                 android:maxLines="1"
-                android:layout_marginEnd="20dp" />
+                android:fontFamily="@font/varelaroundregular"
+                android:inputType="textShortMessage" />
+
+            <Spinner
+                android:id="@+id/absences_spinner"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:spinnerMode="dropdown"
+                tools:listitem="@layout/spinner" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
 
             <TextView
-                android:id="@+id/absence_view_btn_justife"
+                android:id="@+id/absence_view_btn_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="Cancella"
+                android:background="@drawable/corner_radius_5dp"
+                android:backgroundTint="@color/loading_content"
+                android:fontFamily="@font/varelaroundregular"
+                android:minWidth="70dp"
+                android:textSize="16sp"
+                android:visibility="invisible" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/absence_view_btn_justify"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
