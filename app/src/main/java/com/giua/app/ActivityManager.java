@@ -19,11 +19,14 @@
 
 package com.giua.app;
 
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -32,6 +35,8 @@ import com.giua.app.ui.activities.AppIntroActivity;
 import com.giua.app.ui.activities.AutomaticLoginActivity;
 import com.giua.app.ui.activities.MainLoginActivity;
 import com.giua.webscraper.GiuaScraper;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 import cat.ereza.customactivityoncrash.config.CaocConfig;
 
@@ -75,6 +80,25 @@ public class ActivityManager extends AppCompatActivity {
         final String defaultUrl = SettingsData.getSettingString(this, SettingKey.DEFAULT_URL);
 
         setupNotificationManager();
+
+        //Setup CheckNewsReceiver
+        Intent iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_CANCEL_CURRENT);
+        boolean alarmUp = (PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE) != null);  //Controlla se l'allarme è già settato
+        loggerManager.d("L'allarme è già settato?: " + alarmUp);
+        if (!alarmUp && !LoginData.getUser(this).equals("") && SettingsData.getSettingBoolean(this, SettingKey.NOTIFICATION)) {
+
+            long interval = AlarmManager.INTERVAL_HOUR + ThreadLocalRandom.current().nextInt(0, 3_600_000);
+
+            /*alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
+                    SystemClock.elapsedRealtime(),
+                    interval,   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
+                    pendingIntent);*/
+            loggerManager.d("Alarm per CheckNews settato a " + (interval / 60_000) + " minuti");
+            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000, pendingIntent);    //DEBUG
+
+        }
 
         if (!defaultUrl.equals(""))
             GiuaScraper.setSiteURL(defaultUrl);
@@ -187,7 +211,4 @@ public class ActivityManager extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
-
-
-
 }

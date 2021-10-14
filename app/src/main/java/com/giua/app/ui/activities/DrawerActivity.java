@@ -23,7 +23,6 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.view.View;
 
 import androidx.annotation.IdRes;
@@ -35,7 +34,6 @@ import androidx.fragment.app.FragmentManager;
 
 import com.giua.app.ActivityManager;
 import com.giua.app.AppData;
-import com.giua.app.CheckNewsReceiver;
 import com.giua.app.GlobalVariables;
 import com.giua.app.LoggerManager;
 import com.giua.app.LoginData;
@@ -62,8 +60,6 @@ import com.mikepenz.materialdrawer.model.ExpandableDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 public class DrawerActivity extends AppCompatActivity {
 
@@ -97,11 +93,6 @@ public class DrawerActivity extends AppCompatActivity {
 
         bundle = new Bundle();
         bundle.putBoolean("offline", offlineMode);
-
-        //Setup CheckNewsReceiver
-        iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
-        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        pendingIntent = PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_UPDATE_CURRENT);
 
         if (goTo == null || goTo.equals(""))
             changeFragment(R.id.nav_home);
@@ -431,20 +422,6 @@ public class DrawerActivity extends AppCompatActivity {
             AppData.saveNumberNewslettersInt(this, GlobalVariables.gS.checkForNewsletterUpdate(false));
             AppData.saveNumberAlertsInt(this, GlobalVariables.gS.checkForAlertsUpdate(false));
         }).start();
-
-        boolean alarmUp = (PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE) != null);  //Controlla se l'allarme è già settato
-        if (!alarmUp && !LoginData.getUser(this).equals("") && SettingsData.getSettingBoolean(this, SettingKey.NOTIFICATION)) {
-
-            long interval = AlarmManager.INTERVAL_HOUR + ThreadLocalRandom.current().nextInt(0, 3_600_000);
-
-            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
-                    SystemClock.elapsedRealtime(),
-                    interval,   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
-                    pendingIntent);
-            loggerManager.d("Alarm per CheckNews settato a " + (interval / 60_000) + " minuti");
-            //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000 , pendingIntent);    //DEBUG
-
-        }
         super.onDestroy();
     }
 }
