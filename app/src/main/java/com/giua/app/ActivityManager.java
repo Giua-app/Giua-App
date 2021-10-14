@@ -81,25 +81,6 @@ public class ActivityManager extends AppCompatActivity {
 
         setupNotificationManager();
 
-        //Setup CheckNewsReceiver
-        Intent iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_CANCEL_CURRENT);
-        boolean alarmUp = (PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE) != null);  //Controlla se l'allarme è già settato
-        loggerManager.d("L'allarme è già settato?: " + alarmUp);
-        if (!alarmUp && !LoginData.getUser(this).equals("") && SettingsData.getSettingBoolean(this, SettingKey.NOTIFICATION)) {
-
-            long interval = AlarmManager.INTERVAL_HOUR + ThreadLocalRandom.current().nextInt(0, 3_600_000);
-
-            /*alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
-                    SystemClock.elapsedRealtime(),
-                    interval,   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
-                    pendingIntent);*/
-            loggerManager.d("Alarm per CheckNews settato a " + (interval / 60_000) + " minuti");
-            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000, pendingIntent);    //DEBUG
-
-        }
-
         if (!defaultUrl.equals(""))
             GiuaScraper.setSiteURL(defaultUrl);
 

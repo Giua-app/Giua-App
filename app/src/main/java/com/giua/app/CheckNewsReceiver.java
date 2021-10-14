@@ -96,13 +96,13 @@ public class CheckNewsReceiver extends BroadcastReceiver {
             long interval = AlarmManager.INTERVAL_HOUR + ThreadLocalRandom.current().nextInt(0, 3_600_000);
             Intent iCheckNewsReceiver = new Intent(context, CheckNewsReceiver.class);
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, PendingIntent.FLAG_CANCEL_CURRENT);
-            /*alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, 0);
+            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
                     SystemClock.elapsedRealtime() + interval,
                     interval,   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
-                    pendingIntent);*/
-            loggerManager.d("Risetto l'allarme");
-            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000, pendingIntent);    //DEBUG
+                    pendingIntent);
+            loggerManager.d("Risetto l'allarme con un nuovo intervallo random (" + (interval / 60_000) + " minuti)");
+            //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()+60000, 60000, pendingIntent);    //DEBUG
         }).start();
     }
 

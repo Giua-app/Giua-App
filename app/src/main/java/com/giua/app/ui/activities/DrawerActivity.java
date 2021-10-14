@@ -23,6 +23,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.View;
 
 import androidx.annotation.IdRes;
@@ -34,6 +35,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.giua.app.ActivityManager;
 import com.giua.app.AppData;
+import com.giua.app.CheckNewsReceiver;
 import com.giua.app.GlobalVariables;
 import com.giua.app.LoggerManager;
 import com.giua.app.LoginData;
@@ -61,6 +63,8 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public class DrawerActivity extends AppCompatActivity {
 
     AlarmManager alarmManager;
@@ -71,8 +75,8 @@ public class DrawerActivity extends AppCompatActivity {
     boolean demoMode = false;
     String goTo = "";
     LoggerManager loggerManager;
-    String userType = "Tipo utente";
-    String username = "Nome utente";
+    String userType = "Tipo utente non caricato";
+    String username = "Nome utente non caricato";
     Drawer mDrawer;
     Intent iCheckNewsReceiver;
 
@@ -98,6 +102,25 @@ public class DrawerActivity extends AppCompatActivity {
             changeFragment(R.id.nav_home);
         else if (goTo.equals("Newsletters") || goTo.equals("Alerts"))
             changeFragment(R.id.nav_pin_board);
+
+        //Setup CheckNewsReceiver
+        Intent iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        boolean alarmUp = (PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE) != null);  //Controlla se l'allarme è già settato
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, 0);
+        loggerManager.d("L'allarme è già settato?: " + alarmUp);
+        if (!alarmUp && !LoginData.getUser(this).equals("") && SettingsData.getSettingBoolean(this, SettingKey.NOTIFICATION)) {
+
+            long interval = AlarmManager.INTERVAL_HOUR + ThreadLocalRandom.current().nextInt(0, 3_600_000);
+
+            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
+                    SystemClock.elapsedRealtime(),
+                    interval,   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
+                    pendingIntent);
+            loggerManager.d("Alarm per CheckNews settato a " + (interval / 60_000) + " minuti");
+            //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000, pendingIntent);    //DEBUG
+
+        }
 
         if (!offlineMode) {
             if (SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE)) {
