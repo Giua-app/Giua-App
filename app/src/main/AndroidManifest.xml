@@ -16,14 +16,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GiuaApp"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".ui.activities.CaocActivity"
+            android:label="Errore"
+            android:process=":error_activity"/>
 
         <activity
             android:name=".ui.activities.LogdogViewerActivity"
             android:label="LogDot viewer"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.GiuaApp.NoActionBar"
-            tools:ignore="LockedOrientationActivity">
-        </activity>
+            tools:ignore="LockedOrientationActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

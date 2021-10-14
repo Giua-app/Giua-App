@@ -33,6 +33,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import com.giua.app.ui.activities.AppIntroActivity;
 import com.giua.app.ui.activities.AutomaticLoginActivity;
+import com.giua.app.ui.activities.CaocActivity;
 import com.giua.app.ui.activities.MainLoginActivity;
 import com.giua.webscraper.GiuaScraper;
 
@@ -151,7 +152,7 @@ public class ActivityManager extends AppCompatActivity {
                 //This shows a different image on the error activity, instead of the default upside-down bug.
                 //You may use a drawable or a mipmap.
                 .errorDrawable(R.drawable.ic_giuaschool_logo1)
-                //.errorActivity(ErrorActivity.class)
+                .errorActivity(CaocActivity.class)
                 .apply();
         loggerManager.d("CustomActivityOnCrash setup completato");
     }

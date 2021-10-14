@@ -123,6 +123,15 @@ public class AboutActivity extends MaterialAboutActivity {
                         "https://github.com/Giua-app/Giua-App", true, false))
                 .build());
 
+        authorCardBuilder.addItem(new MaterialAboutActionItem.Builder()
+                .text("Sito web ufficiale")
+                .icon(new IconicsDrawable(this)
+                        .icon(CommunityMaterial.Icon2.cmd_web)
+                        .sizeDp(18))
+                .setOnClickAction(ConvenienceBuilder.createWebsiteOnClickAction(this,
+                        Uri.parse("https://giua-app.github.io")))
+                .build());
+
 
         MaterialAboutCard.Builder otherCardBuilder = new MaterialAboutCard.Builder();
         otherCardBuilder.title("Altro");
