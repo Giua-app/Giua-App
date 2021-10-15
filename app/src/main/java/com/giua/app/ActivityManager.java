@@ -19,14 +19,11 @@
 
 package com.giua.app;
 
-import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -36,8 +33,6 @@ import com.giua.app.ui.activities.AutomaticLoginActivity;
 import com.giua.app.ui.activities.CaocActivity;
 import com.giua.app.ui.activities.MainLoginActivity;
 import com.giua.webscraper.GiuaScraper;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 import cat.ereza.customactivityoncrash.config.CaocConfig;
 
@@ -133,6 +128,12 @@ public class ActivityManager extends AppCompatActivity {
     }
 
     private void checkForUpdates(){
+        if(!SettingsData.getSettingString(this, SettingKey.APP_VER).equals(BuildConfig.VERSION_NAME)){
+            loggerManager.w("Aggiornamento installato rilevato");
+            loggerManager.d("Cancello apk dell'aggiornamento");
+            new AppUpdateManager(this).deleteOldApk();
+        }
+        SettingsData.saveSettingString(this, SettingKey.APP_VER, BuildConfig.VERSION_NAME);
         new Thread(() -> {
             AppUpdateManager manager = new AppUpdateManager(ActivityManager.this);
             if (SettingsData.getSettingBoolean(this, SettingKey.UPDATES_NOTIFICATION) && manager.checkForUpdates() && manager.checkUpdateReminderDate()) {

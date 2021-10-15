@@ -21,7 +21,8 @@ package com.giua.app.ui.activities;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.View;
@@ -48,67 +49,57 @@ public class CaocActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_caoc);
-        loggerManager = new LoggerManager("ErrorHandler(CAOC)", CaocActivity.this);
+        loggerManager = new LoggerManager("ErrorHandler", CaocActivity.this);
         loggerManager.d("onCreate chiamato");
-        loggerManager.e("ATTENZIONE: CRASH RILEVATO DA ERROR HANDLER");
+        loggerManager.e("====   CRASH   ====");
+        loggerManager.d("Costruzione activity error handler");
 
         //Close/restart button logic:
         //If a class if set, use restart.
         //Else, use close and just finish the app.
         //It is recommended that you follow this logic if implementing a custom error activity.
         Button restartButton = findViewById(R.id.caoc_restart_btn);
+        Button reportCrash = findViewById(R.id.caoc_report_btn);
 
         final CaocConfig config = CustomActivityOnCrash.getConfigFromIntent(getIntent());
 
         if (config == null) {
             //This should never happen - Just finish the activity to avoid a recursive crash.
+            loggerManager.e("Errore Critico: Config di CAOC è null. Impossibile continuare");
             finish();
             return;
         }
 
         if (config.isShowRestartButton() && config.getRestartActivityClass() != null) {
             restartButton.setText(R.string.customactivityoncrash_error_activity_restart_app);
-            restartButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    loggerManager.w("Riavvio app");
-                    CustomActivityOnCrash.restartApplication(CaocActivity.this, config);
-                }
+            restartButton.setOnClickListener(v -> {
+                loggerManager.w("Riavvio app");
+                CustomActivityOnCrash.restartApplication(CaocActivity.this, config);
             });
         } else {
-            restartButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    loggerManager.w("Chiusura app");
-                    CustomActivityOnCrash.closeApplication(CaocActivity.this, config);
-                }
+            restartButton.setOnClickListener(v -> {
+                loggerManager.w("Chiusura app");
+                CustomActivityOnCrash.closeApplication(CaocActivity.this, config);
             });
         }
 
         Button moreInfoButton = findViewById(R.id.caoc_error_info_btn);
+        //String stackTrace = CustomActivityOnCrash.getStackTraceFromIntent(getIntent());
+        //loggerManager.e("Stacktrace:\n" + stackTrace);
 
         if (config.isShowErrorDetails()) {
-            moreInfoButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //We retrieve all the error data and show it
+            moreInfoButton.setOnClickListener(v -> {
 
-                    AlertDialog dialog = new AlertDialog.Builder(CaocActivity.this)
-                            .setTitle(R.string.customactivityoncrash_error_activity_error_details_title)
-                            .setMessage(CustomActivityOnCrash.getAllErrorDetailsFromIntent(CaocActivity.this, getIntent()))
-                            .setPositiveButton(R.string.customactivityoncrash_error_activity_error_details_close, null)
-                            .setNeutralButton(R.string.customactivityoncrash_error_activity_error_details_copy,
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            copyErrorToClipboard();
-                                        }
-                                    })
-                            .show();
-                    TextView textView = dialog.findViewById(android.R.id.message);
-                    if (textView != null) {
-                        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.customactivityoncrash_error_activity_error_details_text_size));
-                    }
+                AlertDialog dialog = new AlertDialog.Builder(CaocActivity.this)
+                        .setTitle(R.string.customactivityoncrash_error_activity_error_details_title)
+                        .setMessage(CustomActivityOnCrash.getAllErrorDetailsFromIntent(CaocActivity.this, getIntent()))
+                        .setPositiveButton(R.string.customactivityoncrash_error_activity_error_details_close, null)
+                        .setNeutralButton(R.string.customactivityoncrash_error_activity_error_details_copy,
+                                (dialog1, which) -> copyErrorToClipboard())
+                        .show();
+                TextView textView = dialog.findViewById(android.R.id.message);
+                if (textView != null) {
+                    textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.customactivityoncrash_error_activity_error_details_text_size));
                 }
             });
         } else {
@@ -122,6 +113,12 @@ public class CaocActivity extends AppCompatActivity {
             errorImageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), defaultErrorActivityDrawableId, getTheme()));
         }
 
+        reportCrash.setOnClickListener(v -> {
+            loggerManager.d("Apro github per inviare crash report");
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Giua-app/Giua-App/issues"));
+            startActivity(browserIntent);
+            copyErrorToClipboard();
+        });
 
     }
 

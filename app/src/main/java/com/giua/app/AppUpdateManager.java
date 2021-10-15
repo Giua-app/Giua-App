@@ -34,6 +34,7 @@ import com.giua.app.ui.activities.TransparentUpdateDialogActivity;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 
@@ -51,6 +52,15 @@ public class AppUpdateManager {
     public AppUpdateManager(Context context){
         this.context = context;
         loggerManager = new LoggerManager("AppUpdateManager", this.context);
+    }
+
+    public void deleteOldApk(){
+        String downloadLocation = context.getExternalFilesDir(null) + "/giua_update.apk";
+        File file = new File(downloadLocation);
+
+        if(!file.delete()){
+            loggerManager.w("Errore nel cancellare file apk dell'aggiornamento! Forse si è aggiornato manualmente?");
+        }
     }
 
     public boolean checkForUpdates(){

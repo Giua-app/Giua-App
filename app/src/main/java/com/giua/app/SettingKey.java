@@ -66,7 +66,7 @@ public abstract class SettingKey {
     public static final String DEBUG_MODE = "debugMode";
 
     /**
-     * Indica se la modlità demo è attiva
+     * Indica se la modalità demo è attiva
      */
     public static final String DEMO_MODE = "demoMode";
 
@@ -74,4 +74,9 @@ public abstract class SettingKey {
      * Indica se le funzionalià sperimentali sono attive
      */
     public static final String EXP_MODE = "experimentalMode";
+
+    /**
+     * Versione dell'app. Se è diversa da quella corrente allora c'è stato un aggiornamento
+     */
+    public static final String APP_VER = "appVersion";
 }
