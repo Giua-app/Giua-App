@@ -1,6 +1,5 @@
 # Giua-App
 
-
 <p align='center'>
   <a href='https://github.com/Giua-app/Giua-App/blob/master/LICENSE'><img src='https://img.shields.io/github/license/Giua-app/Giua-App'/></a>
   <img src='https://img.shields.io/github/v/tag/Giua-app/Giua-App?label=version&include_prereleases&color=success'/>
