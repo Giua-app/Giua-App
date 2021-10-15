@@ -39,6 +39,7 @@ import org.jsoup.Jsoup;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class CheckNewsReceiver extends BroadcastReceiver {
@@ -93,7 +94,8 @@ public class CheckNewsReceiver extends BroadcastReceiver {
             }
 
             //Risetta l'allarme con un nuovo intervallo random
-            long interval = AlarmManager.INTERVAL_HOUR + ThreadLocalRandom.current().nextInt(0, 3_600_000);
+            Random r = new Random(SystemClock.elapsedRealtime());
+            long interval = AlarmManager.INTERVAL_HOUR + r.nextInt(3_600_000);
             Intent iCheckNewsReceiver = new Intent(context, CheckNewsReceiver.class);
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, 0);

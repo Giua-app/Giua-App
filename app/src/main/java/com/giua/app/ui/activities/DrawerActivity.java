@@ -63,6 +63,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class DrawerActivity extends AppCompatActivity {
@@ -111,7 +112,8 @@ public class DrawerActivity extends AppCompatActivity {
         loggerManager.d("L'allarme è già settato?: " + alarmUp);
         if (!alarmUp && !LoginData.getUser(this).equals("") && SettingsData.getSettingBoolean(this, SettingKey.NOTIFICATION)) {
 
-            long interval = AlarmManager.INTERVAL_HOUR + ThreadLocalRandom.current().nextInt(0, 3_600_000);
+            Random r = new Random(SystemClock.elapsedRealtime());
+            long interval = AlarmManager.INTERVAL_HOUR + r.nextInt(3_600_000);
 
             alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
                     SystemClock.elapsedRealtime(),
@@ -294,6 +296,8 @@ public class DrawerActivity extends AppCompatActivity {
         }).start();
         Intent intent = new Intent(this, ActivityManager.class);
         LoginData.clearAll(this);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, new Intent(this, CheckNewsReceiver.class), 0);
+        alarmManager.cancel(pendingIntent);
         startActivity(intent);
         finish();
         return true;
