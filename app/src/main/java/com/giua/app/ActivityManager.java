@@ -47,7 +47,7 @@ public class ActivityManager extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         loggerManager = new LoggerManager("ActivityManager", this);
-        loggerManager.d("---");
+        loggerManager.d("--@" + BuildConfig.VERSION_NAME + "      Build type: " + BuildConfig.BUILD_TYPE);
         loggerManager.d("onCreate chiamato");
         if (SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE))
             loggerManager.w("DEMO ATTIVATA");

@@ -210,11 +210,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             lTheme.setValueIndex(2);
 
         lTheme.setOnPreferenceChangeListener(this::lThemeChangeListener);
+        if(requireActivity().getIntent().getBooleanExtra("fromCaoc", false)){
+            lTheme.setEnabled(false);
+        }
     }
 
     private void setupCrashScreenObject() {
         Preference btnCrashScreen = Objects.requireNonNull(findPreference("crashScreen"));
         btnCrashScreen.setOnPreferenceClickListener(this::btnCrashScreenOnClick);
+        if(requireActivity().getIntent().getBooleanExtra("fromCaoc", false)){
+            btnCrashScreen.setEnabled(false);
+        }
     }
 
     private void setupLogcatViewerObject() {
@@ -230,6 +236,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private void setupIntroScreenObject() {
         Preference btnIntroScreen = Objects.requireNonNull(findPreference("introScreen"));
         btnIntroScreen.setOnPreferenceClickListener(this::btnIntroScreenOnClick);
+        if(requireActivity().getIntent().getBooleanExtra("fromCaoc", false)){
+            btnIntroScreen.setEnabled(false);
+        }
     }
 
     private void setupSiteUrlObject() {

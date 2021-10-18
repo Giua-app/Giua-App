@@ -53,6 +53,15 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 	signingConfigs {
+        buildTypes {
+            debug {
+                buildConfigField("long", "BUILD_TIME", System.currentTimeMillis().toString())
+            }
+            release {
+                buildConfigField("long", "BUILD_TIME", System.currentTimeMillis().toString())
+            }
+        }
+
         release {
             def tmpFilePath = System.getProperty("user.home") + "/work/_temp/keystore/"
             def allFilesFromDir = new File(tmpFilePath).listFiles()
@@ -74,7 +83,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-	    signingConfig signingConfigs.release
+	        signingConfig signingConfigs.release
         }
 
         /*alpha {

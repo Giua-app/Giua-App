@@ -30,7 +30,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.giua.app.AppData;
-import com.giua.app.BuildConfig;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -69,9 +68,12 @@ public class LogdogViewerActivity extends AppCompatActivity {
         CharSequence text = "";
         linearLayout.removeAllViews();
         for (LoggerManager.Log log : logs) {
-            if (log.text.equals("---")) {
-                //TODO: La versione è sempre uguale alla versione corrente invece di essere salvata nei log, modificare
-                text += "\u23af\u23af\u23af  " + BuildConfig.VERSION_NAME + " Build:" + BuildConfig.BUILD_TYPE + "  \u23af\u23af\u23af";
+            // --@ = Avvio dell'app
+            // -.@ = Crash dell'app
+            if (log.text.startsWith("--@")) {
+                text += "<b>    \u23af\u23af\u23af     " + log.text.split("@")[1] + "     \u23af\u23af\u23af</b>";
+            } else if (log.text.startsWith("-.@")) {
+                text += "<font color='red'>    \u23af\u23af\u23af     " + log.text.split("@")[1] + "     \u23af\u23af\u23af </font>";
             } else {
                 switch (log.type) {
                     case "ERROR":

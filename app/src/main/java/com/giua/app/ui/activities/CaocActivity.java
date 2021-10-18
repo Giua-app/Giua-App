@@ -23,6 +23,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.View;
@@ -31,12 +32,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
+import com.giua.app.BuildConfig;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
 import cat.ereza.customactivityoncrash.config.CaocConfig;
@@ -51,13 +60,9 @@ public class CaocActivity extends AppCompatActivity {
         setContentView(R.layout.activity_caoc);
         loggerManager = new LoggerManager("ErrorHandler", CaocActivity.this);
         loggerManager.d("onCreate chiamato");
-        loggerManager.e("====   CRASH   ====");
+        loggerManager.e("-.@CRASH");
         loggerManager.d("Costruzione activity error handler");
 
-        //Close/restart button logic:
-        //If a class if set, use restart.
-        //Else, use close and just finish the app.
-        //It is recommended that you follow this logic if implementing a custom error activity.
         Button restartButton = findViewById(R.id.caoc_restart_btn);
         Button reportCrash = findViewById(R.id.caoc_report_btn);
 
@@ -84,27 +89,21 @@ public class CaocActivity extends AppCompatActivity {
         }
 
         Button moreInfoButton = findViewById(R.id.caoc_error_info_btn);
-        //String stackTrace = CustomActivityOnCrash.getStackTraceFromIntent(getIntent());
-        //loggerManager.e("Stacktrace:\n" + stackTrace);
 
-        if (config.isShowErrorDetails()) {
-            moreInfoButton.setOnClickListener(v -> {
+        moreInfoButton.setOnClickListener(v -> {
 
-                AlertDialog dialog = new AlertDialog.Builder(CaocActivity.this)
-                        .setTitle(R.string.customactivityoncrash_error_activity_error_details_title)
-                        .setMessage(CustomActivityOnCrash.getAllErrorDetailsFromIntent(CaocActivity.this, getIntent()))
-                        .setPositiveButton(R.string.customactivityoncrash_error_activity_error_details_close, null)
-                        .setNeutralButton(R.string.customactivityoncrash_error_activity_error_details_copy,
-                                (dialog1, which) -> copyErrorToClipboard())
-                        .show();
-                TextView textView = dialog.findViewById(android.R.id.message);
-                if (textView != null) {
-                    textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.customactivityoncrash_error_activity_error_details_text_size));
-                }
-            });
-        } else {
-            moreInfoButton.setVisibility(View.GONE);
-        }
+            AlertDialog dialog = new AlertDialog.Builder(CaocActivity.this)
+                    .setTitle(R.string.customactivityoncrash_error_activity_error_details_title)
+                    .setMessage(getAllErrorDetailsFromIntent(getIntent()))
+                    .setPositiveButton(R.string.customactivityoncrash_error_activity_error_details_close, null)
+                    .setNeutralButton(R.string.customactivityoncrash_error_activity_error_details_copy,
+                            (dialog1, which) -> copyErrorToClipboard())
+                    .show();
+            TextView textView = dialog.findViewById(android.R.id.message);
+            if (textView != null) {
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.customactivityoncrash_error_activity_error_details_text_size));
+            }
+        });
 
         Integer defaultErrorActivityDrawableId = config.getErrorDrawable();
         ImageView errorImageView = findViewById(R.id.caoc_image);
@@ -120,6 +119,8 @@ public class CaocActivity extends AppCompatActivity {
             copyErrorToClipboard();
         });
 
+        findViewById(R.id.caoc_settings_btn).setOnClickListener(this::btnSettingOnClick);
+
     }
 
 
@@ -132,7 +133,86 @@ public class CaocActivity extends AppCompatActivity {
         if (clipboard != null) {
             ClipData clip = ClipData.newPlainText(getString(R.string.customactivityoncrash_error_activity_error_details_clipboard_label), errorInformation);
             clipboard.setPrimaryClip(clip);
-            Toast.makeText(CaocActivity.this, R.string.customactivityoncrash_error_activity_error_details_copied, Toast.LENGTH_SHORT).show();
+            Toast.makeText(CaocActivity.this, "Errore copiato negli appunti", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void btnSettingOnClick(View view) {
+        loggerManager.d("Avvio SettingsActivity");
+        Intent settings = new Intent(this, SettingsActivity.class);
+        settings.putExtra("fromCaoc", true);
+        startActivity(settings);
+    }
+
+    /**
+     * Given an Intent, returns several error details including the stack trace extra from the intent.
+     *
+     * @param intent  The Intent. Must not be null.
+     * @author CAOC Developers
+     * @return The full error details.
+     */
+    @NonNull
+    private String getAllErrorDetailsFromIntent(@NonNull Intent intent) {
+        loggerManager.d("Visualizzo dettagli errore");
+        Date currentDate = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ITALY);
+
+
+        String errorDetails = "";
+
+        errorDetails += "Build version: " + BuildConfig.VERSION_NAME + " \n";
+        errorDetails += "Build date: " + dateFormat.format(new Date(BuildConfig.BUILD_TIME)) + " \n";
+        errorDetails += "Current date: " + dateFormat.format(currentDate) + " \n";
+        errorDetails += "Device: " + getDeviceModelName() + " \n";
+        errorDetails += "OS version: Android " + Build.VERSION.RELEASE + " (SDK " + Build.VERSION.SDK_INT + ") \n \n";
+
+        errorDetails += "Stack trace:  \n";
+        errorDetails += CustomActivityOnCrash.getStackTraceFromIntent(intent);
+
+        String activityLog = CustomActivityOnCrash.getActivityLogFromIntent(intent);
+
+        if (activityLog != null) {
+            errorDetails += "\nUser actions: \n";
+            errorDetails += activityLog;
+        }
+        return errorDetails;
+    }
+
+    /**
+     * INTERNAL method that returns the device model name with correct capitalization.
+     * Taken from: http://stackoverflow.com/a/12707479/1254846
+     *
+     * @author CAOC Developers
+     * @return The device model name (i.e., "LGE Nexus 5")
+     */
+    @NonNull
+    private String getDeviceModelName() {
+        String manufacturer = Build.MANUFACTURER;
+        String model = Build.MODEL;
+        if (model.startsWith(manufacturer)) {
+            return capitalize(model);
+        } else {
+            return capitalize(manufacturer) + " " + model;
+        }
+    }
+
+    /**
+     * INTERNAL method that capitalizes the first character of a string
+     *
+     * @author CAOC Developers
+     * @param s The string to capitalize
+     * @return The capitalized string
+     */
+    @NonNull
+    private String capitalize(@Nullable String s) {
+        if (s == null || s.length() == 0) {
+            return "";
+        }
+        char first = s.charAt(0);
+        if (Character.isUpperCase(first)) {
+            return s;
+        } else {
+            return Character.toUpperCase(first) + s.substring(1);
         }
     }
 
