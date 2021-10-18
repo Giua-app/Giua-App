@@ -37,6 +37,7 @@ import com.giua.app.ActivityManager;
 import com.giua.app.AppData;
 import com.giua.app.CheckNewsReceiver;
 import com.giua.app.GlobalVariables;
+import com.giua.app.IGiuaAppFragment;
 import com.giua.app.LoggerManager;
 import com.giua.app.LoginData;
 import com.giua.app.R;
@@ -69,7 +70,6 @@ import java.util.concurrent.ThreadLocalRandom;
 public class DrawerActivity extends AppCompatActivity {
 
     AlarmManager alarmManager;
-    PendingIntent pendingIntent;
     Toolbar toolbar;
     Bundle bundle;
     boolean offlineMode = false;
@@ -79,7 +79,6 @@ public class DrawerActivity extends AppCompatActivity {
     String userType = "Tipo utente non caricato";
     String username = "Nome utente non caricato";
     Drawer mDrawer;
-    Intent iCheckNewsReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,10 +104,10 @@ public class DrawerActivity extends AppCompatActivity {
             changeFragment(R.id.nav_pin_board);
 
         //Setup CheckNewsReceiver
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        boolean alarmUp = (PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE) != null);  //Controlla se l'allarme è già settato
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, 0);
+        boolean alarmUp = (PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE) != null);  //Controlla se l'allarme è già settato
         loggerManager.d("L'allarme è già settato?: " + alarmUp);
         if (!alarmUp && !LoginData.getUser(this).equals("") && SettingsData.getSettingBoolean(this, SettingKey.NOTIFICATION)) {
 
@@ -295,9 +294,12 @@ public class DrawerActivity extends AppCompatActivity {
             AppData.increaseVisitCount("Log out");
         }).start();
         Intent intent = new Intent(this, ActivityManager.class);
+        Intent iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, 0);
+        boolean alarmUp = (PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE) != null);  //Controlla se l'allarme è già settato
+        if(alarmUp)
+            alarmManager.cancel(pendingIntent);
         LoginData.clearAll(this);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, new Intent(this, CheckNewsReceiver.class), 0);
-        alarmManager.cancel(pendingIntent);
         startActivity(intent);
         finish();
         return true;
