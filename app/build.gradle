@@ -47,7 +47,8 @@ android {
         minSdkVersion 24
         targetSdkVersion 30
         versionCode androidGitVersion.code()
-        versionName androidGitVersion.name()
+        versionName "0.5.40-manual-build"
+        //versionName androidGitVersion.name()
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -107,7 +108,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.14.3'
 
     //--Giua scraper
-    implementation 'com.github.Giua-app:Giua-Webscraper:1.1.19-beta'
+    implementation 'com.github.Giua-app:Giua-Webscraper:1.1.20-beta'
     //implementation fileTree(dir: 'libs', include: ['*.jar'])     //DEBUG
 
     //--Charts lib
