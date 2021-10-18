@@ -19,11 +19,15 @@
 
 package com.giua.app.ui.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -72,27 +76,53 @@ public class MainLoginActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.login_button);
         chRememberCredentials = findViewById(R.id.checkbox_remember_credentials);
         btnLoginAsStudent = findViewById(R.id.btn_student_login);
-        btnLoginAsStudent.setText(Html.fromHtml("<p>Sei uno studente?\n<u><i>Clicca qui!</i></u></p>",0));
+        btnLoginAsStudent.setText(Html.fromHtml("<p>Sei uno studente?\n<u><i>Clicca qui!</i></u></p>", 0));
 
         etUsername.setText(LoginData.getUser(getApplicationContext()));     //Imposta lo username memorizzato
         etPassword.setText(LoginData.getPassword(getApplicationContext()));     //Imposta la password memorizzata
 
+        txtLayoutUsername.getEditText().addTextChangedListener(onTextChange(txtLayoutUsername));
+        txtLayoutPassword.getEditText().addTextChangedListener(onTextChange(txtLayoutPassword));
         findViewById(R.id.login_btn_settings).setOnClickListener(this::btnSettingOnClick);
         btnLogin.setOnClickListener(this::btnLoginOnClick);
         btnLoginAsStudent.setOnClickListener(this::btnLoginAsStudentOnClick);
-
 
         DisplayMetrics realMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getRealMetrics(realMetrics);
 
         loggerManager.d("Dimensioni schermo: " + realMetrics.widthPixels + "x" + realMetrics.heightPixels);
         loggerManager.d("Login visibile? " + (realMetrics.widthPixels <= 1080 && realMetrics.heightPixels <= 1920 ? "Probabilmente no" : "Si"));
-        if(realMetrics.widthPixels <= 1080 && realMetrics.heightPixels <= 1920){
+        if (realMetrics.widthPixels <= 1080 && realMetrics.heightPixels <= 1920) {
             loggerManager.d("Aggiusto margini di card view per essere visibili");
             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) findViewById(R.id.main_card_view).getLayoutParams();
-            params.setMargins(0,20,0,0);
+            params.setMargins(0, 20, 0, 0);
             findViewById(R.id.main_card_view).setLayoutParams(params);
         }
+    }
+
+    private TextWatcher onTextChange(final TextInputLayout view) {
+        return new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                if (view.getId() == txtLayoutUsername.getId()) {
+                    txtLayoutUsername.setError(null);
+                    txtLayoutUsername.setErrorEnabled(false);
+                } else if (view.getId() == txtLayoutPassword.getId()) {
+                    txtLayoutPassword.setError(null);
+                    txtLayoutPassword.setErrorEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        };
     }
 
     private void login() {
@@ -125,7 +155,7 @@ public class MainLoginActivity extends AppCompatActivity {
                     startStudentLoginActivity();
                 } else {
                     loggerManager.e("Errore: credenziali errate");
-                    setErrorMessage("Informazioni di login errate!");
+                    setErrorMessage("Credenziali di login errate!");
                     this.runOnUiThread(() -> {
                         etPassword.setText("");
                         txtLayoutPassword.setError("Password o Username errato");
@@ -210,6 +240,7 @@ public class MainLoginActivity extends AppCompatActivity {
         if(etPassword.getText().length() > 0 && etUsername.getText().length() > 0){
             pgProgressBar.setVisibility(View.VISIBLE);
             btnLogin.setVisibility(View.INVISIBLE);
+            hideKeyboard();
             login();
         }
     }
@@ -217,6 +248,11 @@ public class MainLoginActivity extends AppCompatActivity {
     private void btnLoginAsStudentOnClick(View view) {
         loggerManager.d("Login Studente richiesto dall'utente");
         startStudentLoginActivity();
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(this.btnLogin.getWindowToken(), 0);
     }
 
     private void setErrorMessage(String message) {

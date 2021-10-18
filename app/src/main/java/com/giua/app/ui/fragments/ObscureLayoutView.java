@@ -36,7 +36,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ObscureLayoutView extends ConstraintLayout {
 
-    TextView tvCancel;
+    private boolean isShown;
 
     public ObscureLayoutView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -44,7 +44,8 @@ public class ObscureLayoutView extends ConstraintLayout {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layoutInflater.inflate(R.layout.view_obscure_layout, this);
 
-        tvCancel = findViewById(R.id.obscure_layout_cancel_texview);
+        isShown = false;
+        TextView tvCancel = findViewById(R.id.obscure_layout_cancel_texview);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ObscureLayoutView);
         final int N = a.getIndexCount();
@@ -66,12 +67,18 @@ public class ObscureLayoutView extends ConstraintLayout {
     }
 
     public void hide(Context context) {
+        isShown = false;
         startAnimation(AnimationUtils.loadAnimation(context, R.anim.visualizer_hide_effect));
         setVisibility(GONE);
     }
 
     public void show(Context context) {
+        isShown = true;
         startAnimation(AnimationUtils.loadAnimation(context, R.anim.visualizer_show_effect));
         setVisibility(VISIBLE);
+    }
+
+    public boolean isShown() {
+        return isShown;
     }
 }

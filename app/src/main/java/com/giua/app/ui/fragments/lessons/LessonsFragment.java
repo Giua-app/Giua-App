@@ -211,6 +211,11 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         swipeRefreshLayout.setRefreshing(false);
     }
 
+    @Override
+    public boolean onBackPressed() {
+        return false;
+    }
+
     //region Listeners
 
     private void onRefresh() {

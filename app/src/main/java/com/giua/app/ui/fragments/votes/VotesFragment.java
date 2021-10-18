@@ -183,6 +183,11 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
         swipeRefreshLayout.setRefreshing(false);
     }
 
+    @Override
+    public boolean onBackPressed() {
+        return false;
+    }
+
     private void onRefresh() {
         refreshVotes = true;
         loadDataAndViews();

@@ -252,6 +252,11 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         isLoadingData = false;
     }
 
+    @Override
+    public boolean onBackPressed() {
+        return false;
+    }
+
     //region Listeners
     @SuppressLint("SetTextI18n")
     private void btnPrevMonthOnClick(View view) {

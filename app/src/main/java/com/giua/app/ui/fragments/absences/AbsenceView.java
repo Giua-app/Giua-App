@@ -103,6 +103,7 @@ public class AbsenceView extends ConstraintLayout {
         tvText.setBackground(null);
         tvJustify.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.corner_radius_10dp, context.getTheme()));
         tvDelete.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.corner_radius_10dp, context.getTheme()));
+        this.setOnClickListener(this::viewOnClick);
 
         if (absence.notes.length() == 0)
             tvText.setVisibility(GONE);
@@ -138,14 +139,24 @@ public class AbsenceView extends ConstraintLayout {
 
     }
 
+    private void viewOnClick(View view) {
+        findViewById(R.id.absence_view_justify_text).clearFocus();
+        hideKeyboard();
+    }
+
+
     private void onDelete(View view) {
         onDeleteClick.onClick(this);
     }
 
     private void onJustify(View view) {
         justifyText = ((EditText) findViewById(R.id.absence_view_justify_text)).getText().toString();
-        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);   //Nascondi la tastiera
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        hideKeyboard();
         onJustifyClick.onClick(this);
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(this.getWindowToken(), 0);
     }
 }

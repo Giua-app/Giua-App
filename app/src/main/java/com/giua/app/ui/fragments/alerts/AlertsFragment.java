@@ -204,6 +204,11 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
         finishedLoading();
     }
 
+    @Override
+    public boolean onBackPressed() {
+        return false;
+    }
+
     //region Listeners
     private void alertViewOnClick(View view) {
         pbLoadingPage.setVisibility(View.VISIBLE);

@@ -90,6 +90,11 @@ public class AuthorizationFragment extends Fragment implements IGiuaAppFragment 
         ((SwipeRefreshLayout) root.findViewById(R.id.authorizations_swipe_refresh)).setRefreshing(false);
     }
 
+    @Override
+    public boolean onBackPressed() {
+        return false;
+    }
+
     private void onRefresh() {
         refresh = true;
         loadDataAndViews();

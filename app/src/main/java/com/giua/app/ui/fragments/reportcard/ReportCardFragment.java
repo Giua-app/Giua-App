@@ -135,6 +135,11 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
 
     }
 
+    @Override
+    public boolean onBackPressed() {
+        return false;
+    }
+
     //region Listeners
 
     private void changeQuarterOnClick(View view) {

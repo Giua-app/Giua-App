@@ -169,6 +169,11 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     public void addViews() {
     }
 
+    @Override
+    public boolean onBackPressed() {
+        return false;
+    }
+
     private void updateReminderOnClick(View view) {
         loggerManager.d("Aggiornamento app richiesto dall'utente tramite Home");
         new Thread(() -> new AppUpdateManager(activity).startUpdateDialog()).start();

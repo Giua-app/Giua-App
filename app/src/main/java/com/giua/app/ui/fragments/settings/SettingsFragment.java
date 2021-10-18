@@ -19,9 +19,12 @@
 
 package com.giua.app.ui.fragments.settings;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatDelegate;
@@ -33,7 +36,9 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 
 import com.giua.app.ActivityManager;
+import com.giua.app.CheckNewsReceiver;
 import com.giua.app.LoggerManager;
+import com.giua.app.LoginData;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
@@ -45,44 +50,50 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
+
+    private Context context;
+    private LoggerManager loggerManager;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         // Load the preferences from an XML resource
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
-        setupAllObjects(requireContext());
+        this.context = requireContext();
+        loggerManager = new LoggerManager("SettingsFragment", context);
+        setupAllObjects();
     }
 
-    private void setupAllObjects(Context context) {
+    private void setupAllObjects() {
 
         //region Generale
 
         setupAboutScreenObject();
         setupIntroScreenObject();
-        setupExpModeObject(context);
-        setupDebugModeObject(context);
+        setupExpModeObject();
+        setupDebugModeObject();
 
         //endregion
 
         //region Notifiche
-        setupNotificationObject(context);
+        setupNotificationObject();
         setupNotificationManager();
         //endregion
 
         //region Personalizzazione
 
-        setupThemeObject(context);
+        setupThemeObject();
 
         //endregion
 
         //region Debug
 
-        setupDemoModeObject(context);
+        setupDemoModeObject();
         setupSiteUrlObject();
         setupCrashScreenObject();
         setupLogcatViewerObject();
@@ -94,7 +105,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         //endregion
     }
 
-    private void setupExpModeObject(Context context) {
+    private void setupExpModeObject() {
         SwitchPreference swDemoMode = findPreference("experimentalMode");
         swDemoMode.setChecked(SettingsData.getSettingBoolean(context, SettingKey.EXP_MODE));
         swDemoMode.setOnPreferenceChangeListener(this::swExpModeChangeListener);
@@ -133,7 +144,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         return true;
     }
 
-    private void setupDemoModeObject(Context context) {
+    private void setupDemoModeObject() {
         SwitchPreference swDemoMode = findPreference("demoMode");
         swDemoMode.setChecked(SettingsData.getSettingBoolean(context, SettingKey.DEMO_MODE));
         swDemoMode.setOnPreferenceChangeListener(this::swDemoModeChangeListener);
@@ -145,7 +156,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         return true;
     }
 
-    private void setupDebugModeObject(Context context) {
+    private void setupDebugModeObject() {
         SwitchPreference swDebugMode = Objects.requireNonNull(findPreference("debugMode"));
         swDebugMode.setChecked(SettingsData.getSettingBoolean(context, SettingKey.DEBUG_MODE));
         swDebugMode.setOnPreferenceChangeListener(this::swDebugModeChangeListener);
@@ -157,7 +168,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         return true;
     }
 
-    private void setupNotificationObject(Context context) {
+    private void setupNotificationObject() {
         SwitchPreference swNotification = Objects.requireNonNull(findPreference("notification"));
         swNotification.setChecked(SettingsData.getSettingBoolean(context, SettingKey.NOTIFICATION));
         swNotification.setOnPreferenceChangeListener(this::swNotificationChangeListener);
@@ -165,10 +176,30 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private boolean swNotificationChangeListener(Preference preference, Object o) {
         SettingsData.saveSettingBoolean(requireContext(), SettingKey.NOTIFICATION, (boolean) o);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent iCheckNewsReceiver = new Intent(context, CheckNewsReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, 0);
+        boolean alarmUp = (PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE) != null);  //Controlla se l'allarme è già settato
+        loggerManager.d("L'allarme è già settato?: " + alarmUp);
+
+        if ((boolean) o) {
+            if (!alarmUp && !LoginData.getUser(context).equals("")) {
+                Random r = new Random(SystemClock.elapsedRealtime());
+                long interval = AlarmManager.INTERVAL_HOUR + r.nextInt(3_600_000);
+
+                alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
+                        SystemClock.elapsedRealtime(),
+                        interval,   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
+                        pendingIntent);
+                loggerManager.d("Alarm per CheckNews settato a " + (interval / 60_000) + " minuti");
+            }
+        } else {
+            alarmManager.cancel(pendingIntent);
+        }
         return true;
     }
 
-    private void setupThemeObject(Context context) {
+    private void setupThemeObject() {
         ListPreference lTheme = Objects.requireNonNull(findPreference("theme"));
         lTheme.setEntries(new CharSequence[]{"Chiaro", "Scuro", "Segui il sistema"});
         lTheme.setEntryValues(new CharSequence[]{"0", "1", "2"});

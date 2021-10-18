@@ -65,7 +65,6 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class DrawerActivity extends AppCompatActivity {
 
@@ -127,6 +126,7 @@ public class DrawerActivity extends AppCompatActivity {
             if (SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE)) {
                 userType = "DEMO";
                 username = "DEMO";
+                setupMaterialDrawer();
                 return;
             }
             new Thread(() -> {
@@ -427,7 +427,17 @@ public class DrawerActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (!toolbar.getTitle().toString().contains("Home")) {
+        if (mDrawer.isDrawerOpen()) {
+            mDrawer.closeDrawer();
+            return;
+        }
+
+        Fragment fragment = getSupportFragmentManager().getFragments().get(0);
+        if (fragment.getTag() != null && !fragment.getTag().equals("FRAGMENT_NOT_IMPLEMENTED")) //Se il fragment corrente ha un tag ed è una schermata implementata
+            if (((IGiuaAppFragment) fragment).onBackPressed())   //Chiama il metodo onBackPressed e se la chiamata viene gestita (ritorna true) allora finisci
+                return;
+
+        if (!toolbar.getTitle().toString().contains("Home")) {  //Se non sei nella home vacci
             mDrawer.setSelection(0, false);
             changeFragment(R.id.nav_home);
         } else {   //Vai alla home del telefono se sei già nella home dell'app

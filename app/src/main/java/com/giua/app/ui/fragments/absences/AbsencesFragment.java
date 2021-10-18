@@ -140,6 +140,15 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
 
     }
 
+    @Override
+    public boolean onBackPressed() {
+        if (obscureLayoutView.isShown()) {
+            obscureLayoutView.hide(requireContext());
+            return true;
+        }
+        return false;
+    }
+
     private void onRefresh() {
         refresh = true;
         root.findViewById(R.id.absences_no_elements_text).setVisibility(View.GONE);

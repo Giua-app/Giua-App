@@ -26,4 +26,9 @@ public interface IGiuaAppFragment {
     void loadDataAndViews();
 
     void addViews();
+
+    /**
+     * @return true se è stato gestito, false altrimenti
+     */
+    boolean onBackPressed();
 }
