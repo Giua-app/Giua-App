@@ -142,7 +142,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
             threadManager.addAndRun(() -> {
                 lastCallTime = System.nanoTime();
                 try {
-                    allLessons = GlobalVariables.gS.getAllLessons(formatterForScraping.format(currentDate), true);
+                    allLessons = GlobalVariables.gS.getLessonsPage(true).getAllLessonsFromDate(currentDate);
                     if (allLessons == null)
                         return;
                     hasCompletedLoading = true;

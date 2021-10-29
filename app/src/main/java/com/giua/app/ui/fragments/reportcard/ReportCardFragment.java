@@ -23,8 +23,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -34,13 +32,10 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
 import com.giua.app.ThreadManager;
 import com.giua.objects.ReportCard;
-import com.giua.webscraper.GiuaScraperExceptions;
-import com.google.android.material.snackbar.Snackbar;
 
 public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
 
@@ -67,14 +62,29 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
         activity = requireActivity();
         threadManager = new ThreadManager();
 
-        btnChangeQuarter.setOnClickListener(this::changeQuarterOnClick);
-        tvCurrentQuarter.setOnClickListener(this::changeQuarterOnClick);
+        //btnChangeQuarter.setOnClickListener(this::changeQuarterOnClick);
+        //tvCurrentQuarter.setOnClickListener(this::changeQuarterOnClick);
 
         loadDataAndViews();
 
         return root;
     }
 
+    @Override
+    public void loadDataAndViews() { }
+
+    @Override
+    public void addViews() {
+
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        return false;
+    }
+
+
+/*
     @Override
     public void loadDataAndViews() {
         viewsLayout.removeAllViews();
@@ -165,5 +175,5 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
     public void onDestroyView() {
         threadManager.destroyAllAndNullMe();
         super.onDestroyView();
-    }
+    }*/
 }

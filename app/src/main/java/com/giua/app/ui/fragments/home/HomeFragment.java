@@ -128,9 +128,9 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     public void loadDataAndViews() {
         threadManager.addAndRun(() -> {
             try {
-                Map<String, List<Vote>> allVotes = GlobalVariables.gS.getAllVotes(forceRefresh);
-                int homeworks = GlobalVariables.gS.getNearHomeworks(forceRefresh);
-                int tests = GlobalVariables.gS.getNearTests(forceRefresh);
+                Map<String, List<Vote>> allVotes = GlobalVariables.gS.getVotesPage(forceRefresh).getAllVotes();
+                int homeworks = GlobalVariables.gS.getHomePage(forceRefresh).getNearHomeworks();
+                int tests = GlobalVariables.gS.getHomePage(forceRefresh).getNearTests();
 
                 if (forceRefresh)
                     forceRefresh = false;
@@ -235,7 +235,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
 
         List<Vote> allVotesSorted = sortVotes(allVotes);
         for (Vote vote : allVotesSorted) {
-            if (vote.isFirstQuarterly)
+            if (vote.quarterlyToInt() == 1) //FIXME: Da rifare per supportare più quadrimestri/trimestri. Prima era "if(vote.isQuarterly)"
                 entriesFirstQuarter.add(new Entry(voteCounter, vote.toFloat()));
             else
                 entriesSecondQuarter.add(new Entry(voteCounter, vote.toFloat()));

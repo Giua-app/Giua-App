@@ -22,96 +22,17 @@ package com.giua.app;
 import android.annotation.SuppressLint;
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Vector;
-
-public class LoggerManager {
-    String tag;
-    List<Log> logs;
+public class LoggerManager extends com.giua.utils.LoggerManager {
     Context c;
     @SuppressLint("SimpleDateFormat")
-    SimpleDateFormat logDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     public LoggerManager(String tag, Context c) {
-        this.tag = tag;
-        logs = new Vector<>();
+        super(tag);
         this.c = c;
-    }
 
-    public void d(String text){
-        Date now = Calendar.getInstance().getTime();
-        Log log = new Log(tag, "DEBUG", now, text);
-        logs.add(log);
-        saveToAppData(log);
-    }
-
-    public void w(String text){
-        Date now = Calendar.getInstance().getTime();
-        Log log = new Log(tag, "WARNING", now, text);
-        logs.add(log);
-        saveToAppData(log);
-    }
-
-    public void e(String text){
-        Date now = Calendar.getInstance().getTime();
-        Log log = new Log(tag, "ERROR", now, text);
-        logs.add(log);
-        saveToAppData(log);
-    }
-
-    public void saveToAppData(Log log){
-        String old = AppData.getLogsString(c);
-        AppData.saveLogsString(c, log.toString() + old);
-    }
-
-    public List<Log> getLogs(){
-        return logs;
-    }
-
-    //$ - categoria
-    //# - fine log
-    // Esempio: tag$tipo$date$text#
-    public void parseLogsFrom(String logs){
-        String[] logsOb = logs.split("#");
-
-
-        for (String s : logsOb) {
-            String[] logsSub = s.split("\\$");
-
-            try {
-                this.logs.add(new Log(logsSub[0], logsSub[1], logDateFormat.parse(logsSub[2]), logsSub[3]));
-            } catch (Exception e) {
-                e.printStackTrace();
-                android.util.Log.e("LogDog", "ERRORE CRITICO! LOGDOG PARSING FALLITO", e);
-            }
-
-        }
-    }
-
-    public static class Log{
-        public String tag;
-        public String type;
-        public Date date;
-        public String text;
-        @SuppressLint("SimpleDateFormat")
-        SimpleDateFormat logDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-
-        public Log(String tag, String type, Date date, String text){
-            this.tag = tag;
-            this.type = type;
-            this.date = date;
-            this.text = text;
-        }
-
-        @NonNull
-        @Override
-        public String toString() {
-            return this.tag + "$" + this.type + "$" + logDateFormat.format(this.date) + "$" + this.text + "#";
-        }
+        addOnSaveLogEventListener((log) -> {
+            String old = AppData.getLogsString(c);
+            AppData.saveLogsString(c, log.toString() + old);
+        });
     }
 }

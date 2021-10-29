@@ -36,7 +36,7 @@ import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
 import com.giua.app.ThreadManager;
-import com.giua.objects.Autorization;
+import com.giua.objects.Authorization;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -44,7 +44,7 @@ public class AuthorizationFragment extends Fragment implements IGiuaAppFragment 
 
     View root;
     ThreadManager threadManager;
-    Autorization autorization;
+    Authorization authorization;
     Activity activity;
     boolean demoMode = false;
     boolean offlineMode = false;
@@ -69,7 +69,7 @@ public class AuthorizationFragment extends Fragment implements IGiuaAppFragment 
     public void loadDataAndViews() {
         threadManager.addAndRun(() -> {
             try {
-                autorization = GlobalVariables.gS.getAutorizations(refresh);
+                authorization = GlobalVariables.gS.getAuthorizationsPage(refresh).getAuthorizations();
                 activity.runOnUiThread(this::addViews);
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                 activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.your_connection_error), root));
@@ -83,8 +83,8 @@ public class AuthorizationFragment extends Fragment implements IGiuaAppFragment 
 
     @Override
     public void addViews() {
-        ((TextView) root.findViewById(R.id.authorizations_entry)).setText(getText(R.string.authorizations_entry) + autorization.entry);
-        ((TextView) root.findViewById(R.id.authorizations_exit)).setText(getText(R.string.authorizations_exit) + autorization.exit);
+        ((TextView) root.findViewById(R.id.authorizations_entry)).setText(getText(R.string.authorizations_entry) + authorization.entry);
+        ((TextView) root.findViewById(R.id.authorizations_exit)).setText(getText(R.string.authorizations_exit) + authorization.exit);
 
         refresh = false;
         ((SwipeRefreshLayout) root.findViewById(R.id.authorizations_swipe_refresh)).setRefreshing(false);

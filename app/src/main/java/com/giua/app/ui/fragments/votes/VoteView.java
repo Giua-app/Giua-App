@@ -109,7 +109,7 @@ public class VoteView extends ConstraintLayout {
             else
                 tvVote.setText("*");
             tvVote.setBackgroundTintList(getColorFromVote(getNumberFromVote(vote)));
-            if(vote.isFirstQuarterly)
+            if(vote.quarterlyToInt() == 1) //FIXME: prima era vote.isQuartely
                 listVoteLayout1.addView(tvVote);
             else
                 listVoteLayout2.addView(tvVote);

@@ -40,7 +40,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class CheckNewsReceiver extends BroadcastReceiver {
     private Context context;
@@ -144,12 +143,12 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         //Se la notifica non può essere mandata non faccio nemmeno controllare i check
         if (SettingsData.getSettingBoolean(context, SettingKey.NEWSLETTER_NOTIFICATION)) {
             numberNewslettersOld = AppData.getNumberNewslettersInt(context);
-            numberNewsletters = gS.checkForNewsletterUpdate(false);
+            numberNewsletters = gS.getHomePage(false).checkForNewsletterUpdate();
             AppData.saveNumberNewslettersInt(context, numberNewsletters);
         }
         if (SettingsData.getSettingBoolean(context, SettingKey.NEWSLETTER_NOTIFICATION)) {
             numberAlertsOld = AppData.getNumberAlertsInt(context);
-            numberAlerts = gS.checkForAlertsUpdate(false);
+            numberAlerts = gS.getHomePage(false).checkForAlertsUpdate();
             AppData.saveNumberAlertsInt(context, numberAlerts);
         }
 

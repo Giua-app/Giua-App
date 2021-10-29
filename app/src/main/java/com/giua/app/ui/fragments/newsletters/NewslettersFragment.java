@@ -162,10 +162,10 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                         if (!isFilterApplied) {
                             if (!allNewsletter.isEmpty())
                                 allNewsletterOld = allNewsletter;
-                            allNewsletter = GlobalVariables.gS.getAllNewslettersWithFilter(onlyNotRead, filterDate, filterText, currentPage, true);
+                            allNewsletter = GlobalVariables.gS.getNewslettersPage(true).getAllNewslettersWithFilter(onlyNotRead, filterDate, filterText, currentPage);
                             isFilterApplied = true;
                         } else
-                            allNewsletter = GlobalVariables.gS.getAllNewsletters(currentPage, true);
+                            allNewsletter = GlobalVariables.gS.getNewslettersPage(true).getAllNewsletters(currentPage);
                     } else {
                         loadedAllPages = true;
                         try {

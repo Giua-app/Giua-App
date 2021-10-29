@@ -158,8 +158,8 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
             threadManager.addAndRun(() -> {
                 try {
                     isLoadingData = true;
-                    allTests = GlobalVariables.gS.getAllTestsWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())), true);
-                    allHomeworks = GlobalVariables.gS.getAllHomeworksWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())), true);
+                    allTests = GlobalVariables.gS.getPinBoardPage(true).getAllTestsWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())));
+                    allHomeworks = GlobalVariables.gS.getPinBoardPage(true).getAllHomeworksWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())));
 
                     if (allTests.isEmpty() && allHomeworks.isEmpty()) {
                         activity.runOnUiThread(() -> {
@@ -350,9 +350,9 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
                 try {
                     if (agendaView.test != null)
-                        visualizerTests = GlobalVariables.gS.getTest(agendaView.test.date);
+                        visualizerTests = GlobalVariables.gS.getPinBoardPage(false).getTest(agendaView.test.date);
                     if (agendaView.homework != null)
-                        visualizerHomeworks = GlobalVariables.gS.getHomework(agendaView.homework.date);
+                        visualizerHomeworks = GlobalVariables.gS.getPinBoardPage(false).getHomework(agendaView.homework.date);
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
                         setErrorMessage(activity.getString(R.string.your_connection_error), root);

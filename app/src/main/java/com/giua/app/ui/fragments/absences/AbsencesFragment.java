@@ -90,7 +90,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
 
         threadManager.addAndRun(() -> {
             try {
-                absences = GlobalVariables.gS.getAllAbsences(refresh);
+                absences = GlobalVariables.gS.getAbsencesPage(refresh).getAllAbsences();
                 if (absences.isEmpty())
                     activity.runOnUiThread(() -> root.findViewById(R.id.absences_no_elements_text).setVisibility(View.VISIBLE));
                 else
@@ -185,9 +185,11 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
                 activity.runOnUiThread(() -> swipeRefreshLayout.setRefreshing(true));
                 try {
                     if (!confirmActionIsDelete)
-                        GlobalVariables.gS.justifyAbsence(absenceView.absence, "", absenceView.justifyText);
+                        //FIXME: non so se forceRefresh deve essere true
+                        GlobalVariables.gS.getAbsencesPage(true).justifyAbsence(absenceView.absence, "", absenceView.justifyText);
                     else
-                        GlobalVariables.gS.deleteJustificationAbsence(absenceView.absence);
+                        //FIXME: non so se forceRefresh deve essere true di nuovo
+                        GlobalVariables.gS.getAbsencesPage(true).deleteJustificationAbsence(absenceView.absence);
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.your_connection_error), root));
                     return;

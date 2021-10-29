@@ -100,7 +100,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
     public void loadDataAndViews() {
         threadManager.addAndRun(() -> {
             try {
-                allVotes = GlobalVariables.gS.getAllVotes(refreshVotes);
+                allVotes = GlobalVariables.gS.getVotesPage(refreshVotes).getAllVotes();
                 /*else
                     allVotes = new JsonHelper().parseJsonForVotes(AppData.getVotesString(requireContext()));*/
                 refreshVotes = false;
@@ -154,7 +154,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
             voteCounterSecondQuarter = 0;
 
             for (Vote vote : Objects.requireNonNull(allVotes.get(subject))) {      //Cicla ogni voto della materia
-                if (vote.value.length() > 0 && !vote.isAsterisk && vote.isFirstQuarterly) {
+                if (vote.value.length() > 0 && !vote.isAsterisk && vote.quarterlyToInt() == 1) { //FIXME: prima era vote.isQuartely
                     meanFirstQuarter += vote.toFloat();
                     voteCounterFirstQuarter++;
                 } else if (vote.value.length() > 0 && !vote.isAsterisk) {

@@ -458,8 +458,8 @@ public class DrawerActivity extends AppCompatActivity {
     protected void onDestroy() {
         loggerManager.d("onDestroy chiamato");
         new Thread(() -> {  //Questo serve a prevenire la perdita di news
-            AppData.saveNumberNewslettersInt(this, GlobalVariables.gS.checkForNewsletterUpdate(false));
-            AppData.saveNumberAlertsInt(this, GlobalVariables.gS.checkForAlertsUpdate(false));
+            AppData.saveNumberNewslettersInt(this, GlobalVariables.gS.getHomePage(false).checkForNewsletterUpdate());
+            AppData.saveNumberAlertsInt(this, GlobalVariables.gS.getHomePage(false).checkForAlertsUpdate());
         }).start();
         super.onDestroy();
     }
