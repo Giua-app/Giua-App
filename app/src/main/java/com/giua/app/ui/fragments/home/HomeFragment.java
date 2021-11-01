@@ -35,6 +35,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -50,7 +51,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -83,9 +83,9 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         chart.getAxisRight().setEnabled(true);
         chart.getAxisRight().setTextSize(14);
         chart.getAxisRight().setTextColor(getResources().getColor(R.color.night_white_light_black, activity.getTheme()));
-        chart.getAxisRight().setLabelCount(5, true);
-        chart.getAxisRight().setAxisMaximum(10f);
         chart.getAxisRight().setAxisMinimum(0f);
+        chart.getAxisRight().setAxisMaximum(10f);
+        chart.getAxisRight().setLabelCount(5, false);
         chart.getXAxis().setEnabled(false);
         chart.setNoDataText("Nessun voto");
         Description desc = new Description();
@@ -130,7 +130,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
             try {
                 Map<String, List<Vote>> allVotes = GlobalVariables.gS.getVotesPage(forceRefresh).getAllVotes();
                 int homeworks = GlobalVariables.gS.getHomePage(forceRefresh).getNearHomeworks();
-                int tests = GlobalVariables.gS.getHomePage(forceRefresh).getNearTests();
+                int tests = GlobalVariables.gS.getHomePage(false).getNearTests();
 
                 if (forceRefresh)
                     forceRefresh = false;
@@ -141,8 +141,10 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
                 activity.runOnUiThread(() -> {
                     setupHomeworksTestsText(homeworks, tests);
                     setupMeanVotesText(allVotes);
-                    chart.setData(generateLineData(allVotes));
-                    chart.invalidate();
+                    if (!allVotes.isEmpty()) {
+                        chart.setData(generateLineData(allVotes));
+                        chart.invalidate();
+                    }
                     swipeRefreshLayout.setRefreshing(false);
                 });
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
@@ -242,6 +244,9 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
             voteCounter++;
         }
 
+        if (voteCounter == 1)    //Se si ha solamente un voto allora duplicalo nel grafico per far visualizzare almeno una riga
+            entriesFirstQuarter.add(new Entry(voteCounter, allVotesSorted.get(0).toFloat()));
+
         LineDataSet lineDataSetFirstQuarter = new LineDataSet(entriesFirstQuarter, "Primo quadrimestre");
         lineDataSetFirstQuarter.setDrawCircles(false);
         lineDataSetFirstQuarter.setDrawCircleHole(false);
@@ -251,6 +256,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         lineDataSetFirstQuarter.setColor(Color.argb(255, 5, 157, 192));
         lineDataSetFirstQuarter.setFillColor(Color.argb(255, 5, 157, 192));
         lineDataSetFirstQuarter.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        lineDataSetFirstQuarter.setAxisDependency(YAxis.AxisDependency.RIGHT);
 
         LineDataSet lineDataSetSecondQuarter = new LineDataSet(entriesSecondQuarter, "Secondo quadrimestre");
         lineDataSetSecondQuarter.setDrawCircles(false);
@@ -261,6 +267,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         lineDataSetSecondQuarter.setColor(Color.argb(255, 0, 88, 189));
         lineDataSetSecondQuarter.setFillColor(Color.argb(255, 0, 88, 189));
         lineDataSetSecondQuarter.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        lineDataSetSecondQuarter.setAxisDependency(YAxis.AxisDependency.RIGHT);
 
         return new LineData(lineDataSetFirstQuarter, lineDataSetSecondQuarter);
     }
@@ -284,39 +291,36 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
             }
         }
 
-        listToSort.sort(new Comparator<Vote>() {
-            @Override
-            public int compare(Vote firstVote, Vote secondVote) {
-                int firstDay = Integer.parseInt(firstVote.date.split(" ")[0]);
-                int firstMonth = getNumberFromMonth(firstVote.date.split(" ")[1]);
-                int firstYear = 0;   //Non interessa l'anno vero serve solo per il sorting
+        listToSort.sort((firstVote, secondVote) -> {
+            int firstDay = Integer.parseInt(firstVote.date.split(" ")[0]);
+            int firstMonth = getNumberFromMonth(firstVote.date.split(" ")[1]);
+            int firstYear = 0;   //Non interessa l'anno vero serve solo per il sorting
 
-                if (firstMonth < 9)
-                    firstYear = 1;  //1 se è il secondo anno dell'anno scolastico
+            if (firstMonth < 9)
+                firstYear = 1;  //1 se è il secondo anno dell'anno scolastico
 
-                int secondDay = Integer.parseInt(secondVote.date.split(" ")[0]);
-                int secondMonth = getNumberFromMonth(secondVote.date.split(" ")[1]);
-                int secondYear = 0;
+            int secondDay = Integer.parseInt(secondVote.date.split(" ")[0]);
+            int secondMonth = getNumberFromMonth(secondVote.date.split(" ")[1]);
+            int secondYear = 0;
 
-                if (secondMonth < 9)
-                    secondYear = 1;
+            if (secondMonth < 9)
+                secondYear = 1;
 
-                if (firstYear == secondYear) {
-                    if (firstMonth == secondMonth) {
-                        if (firstDay == secondDay)
-                            return 0;   //I giorni sono uguali
-                        if (firstDay > secondDay)
-                            return 1;   //Il primo giorno è maggiore rispetto al primo
-                        return -1; //Il primo giorno è minore rispetto al primo
-                    }
-                    if (firstMonth > secondMonth)
-                        return 1;
-                    return -1;
+            if (firstYear == secondYear) {
+                if (firstMonth == secondMonth) {
+                    if (firstDay == secondDay)
+                        return 0;   //I giorni sono uguali
+                    if (firstDay > secondDay)
+                        return 1;   //Il primo giorno è maggiore rispetto al primo
+                    return -1; //Il primo giorno è minore rispetto al primo
                 }
-                if (firstYear > secondYear)
+                if (firstMonth > secondMonth)
                     return 1;
                 return -1;
             }
+            if (firstYear > secondYear)
+                return 1;
+            return -1;
         });
 
         return listToSort;
