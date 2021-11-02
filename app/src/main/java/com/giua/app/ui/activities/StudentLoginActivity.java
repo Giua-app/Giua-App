@@ -111,7 +111,7 @@ public class StudentLoginActivity extends AppCompatActivity {
         obscureLayoutView.setVisibility(View.VISIBLE);
 
         loggerManager.d("Creazione credenziali con cookie ottenuto da google");
-        GlobalVariables.gS = new GiuaScraper("gsuite", "gsuite", cookie, true);
+        GlobalVariables.gS = new GiuaScraper("gsuite", "gsuite", cookie, true, new LoggerManager("GiuaScraper", this));
         LoginData.setCredentials(this, "gsuite", "gsuite", cookie);
         obscureLayoutView.setVisibility(View.GONE);
         loggerManager.d("Avvio DrawerActivity");

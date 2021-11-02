@@ -29,10 +29,11 @@ public class LoggerManager extends com.giua.utils.LoggerManager {
     public LoggerManager(String tag, Context c) {
         super(tag);
         this.c = c;
+    }
 
-        addOnSaveLogEventListener((log) -> {
-            String old = AppData.getLogsString(c);
-            AppData.saveLogsString(c, log.toString() + old);
-        });
+    @Override
+    protected void saveToData(Log log) {
+        String old = AppData.getLogsString(c);
+        AppData.saveLogsString(c, log.toString() + old);
     }
 }

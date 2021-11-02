@@ -129,7 +129,7 @@ public class MainLoginActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 loggerManager.d("Eseguo login...");
-                GlobalVariables.gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString(), LoginData.getCookie(this), true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE));
+                GlobalVariables.gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString(), LoginData.getCookie(this), true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
                 GlobalVariables.gS.login();
                 loggerManager.d("Devo ricordare le credenziali? " + chRememberCredentials.isChecked());
 

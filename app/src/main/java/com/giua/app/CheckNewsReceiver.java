@@ -115,17 +115,17 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         }
         else if (!LoginData.getUser(context).equals("gsuite")) {  //Se l'account non è di gsuite fai il login normale
             loggerManager.d("Account non google rilevato, eseguo login");
-            gS = new GiuaScraper(LoginData.getUser(context), LoginData.getPassword(context), LoginData.getCookie(context), true);
+            gS = new GiuaScraper(LoginData.getUser(context), LoginData.getPassword(context), LoginData.getCookie(context), true, new LoggerManager("GiuaScraper", context));
             gS.login();
             LoginData.setCredentials(context, LoginData.getUser(context), LoginData.getPassword(context), gS.getCookie());
         } else {    //Se l'account è di gsuite fai il login con gsuite
             try {
                 loggerManager.d("Account google rilevato, provo ad entrare con cookie precedente");
-                gS = new GiuaScraper(LoginData.getUser(context), LoginData.getPassword(context), LoginData.getCookie(context), true);
+                gS = new GiuaScraper(LoginData.getUser(context), LoginData.getPassword(context), LoginData.getCookie(context), true, new LoggerManager("GiuaScraper", context));
                 gS.login();
             } catch (GiuaScraperExceptions.SessionCookieEmpty e) {
                 loggerManager.d("Cookie precedente non valido");
-                gS = new GiuaScraper(LoginData.getUser(context), LoginData.getPassword(context), makeGsuiteLogin(), true);
+                gS = new GiuaScraper(LoginData.getUser(context), LoginData.getPassword(context), makeGsuiteLogin(), true, new LoggerManager("GiuaScraper", context));
                 gS.login();
                 LoginData.setCredentials(context, LoginData.getUser(context), LoginData.getPassword(context), gS.getCookie());
             }
