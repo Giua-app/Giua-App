@@ -162,7 +162,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                         if (!isFilterApplied) {
                             if (!allNewsletter.isEmpty())
                                 allNewsletterOld = allNewsletter;
-                            allNewsletter = GlobalVariables.gS.getNewslettersPage(true).getAllNewslettersWithFilter(onlyNotRead, filterDate, filterText, currentPage);
+                            allNewsletter = GlobalVariables.gS.getNewslettersPage(true).getAllNewslettersWithFilter(onlyNotRead, filterDate, filterText);
                             isFilterApplied = true;
                         } else
                             allNewsletter = GlobalVariables.gS.getNewslettersPage(true).getAllNewsletters(currentPage);
@@ -235,7 +235,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             NewsletterView newsletterView = new NewsletterView(context, null, newsletter);
             newsletterView.findViewById(R.id.newsletter_view_btn_document).setOnClickListener((view) -> onClickDocument(newsletter));
 
-            if (newsletter.attachments != null && !newsletter.attachments.isEmpty()) {
+            if (newsletter.attachmentsUrl != null && !newsletter.attachmentsUrl.isEmpty()) {
                 newsletterView.findViewById(R.id.newsletter_view_btn_attachment).setOnClickListener((view) -> onClickAttachmentImage(newsletter));
             } else {
                 newsletterView.findViewById(R.id.newsletter_view_btn_attachment).setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.non_vote, context.getTheme())));
@@ -265,7 +265,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
     private void onClickAttachmentImage(Newsletter newsletter) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 130);
-        List<String> allAttachments = newsletter.attachments;
+        List<String> allAttachments = newsletter.attachmentsUrl;
 
         int counter = 0;
         for (String attachment : allAttachments) {

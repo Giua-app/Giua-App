@@ -111,7 +111,7 @@ public class AbsenceView extends ConstraintLayout {
         if (absence.isJustified) {
             if (absence.isModificable && GlobalVariables.gS.getUserTypeEnum() == GiuaScraper.userTypes.PARENT) {
                 tvJustify.setText("Modifica");
-                tvJustify.setBackgroundTintList(getResources().getColorStateList(R.color.main_color, context.getTheme()));
+                tvJustify.setBackgroundTintList(getResources().getColorStateList(R.color.main_color_lighter, context.getTheme()));
                 tvJustify.setForeground(ResourcesCompat.getDrawable(getResources(), R.drawable.ripple_effect, context.getTheme()));
                 tvJustify.setOnClickListener(this::onJustify);
                 tvDelete.setBackgroundTintList(getResources().getColorStateList(R.color.bad_vote_lighter, context.getTheme()));

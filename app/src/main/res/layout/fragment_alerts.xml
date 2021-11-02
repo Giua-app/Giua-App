@@ -123,7 +123,9 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.421">
+        app:layout_constraintVertical_bias="0.421"
+        android:clickable="true"
+        android:focusable="true">
 
         <TextView
             android:id="@+id/alert_type_text_view"
@@ -137,12 +139,13 @@
 
         <TextView
             android:id="@+id/alert_details_text_view"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:fontFamily="@font/varelaroundregular"
             android:maxHeight="200dp"
             android:text="Dettagli"
+            android:textIsSelectable="true"
             android:textSize="16sp" />
 
         <TextView

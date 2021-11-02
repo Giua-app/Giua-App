@@ -101,7 +101,7 @@ public class AppUpdateManager {
     public JsonNode getReleasesJson(){
         String response = "";
         try {
-            response = session
+            response = session.newRequest()
                     .url("https://api.github.com/repos/giua-app/giua-app/releases/latest")
                     .get().text();
         } catch (IOException e) {

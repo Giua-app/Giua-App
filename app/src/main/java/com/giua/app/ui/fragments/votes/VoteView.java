@@ -21,6 +21,7 @@ package com.giua.app.ui.fragments.votes;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -41,16 +42,18 @@ import com.giua.objects.Vote;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Vector;
 
 public class VoteView extends ConstraintLayout {
-    String subjectName;
-    String voteFirstQuarter;
-    float rawVoteFirstQuarter;
-    String voteSecondQuarter;
-    float rawVoteSecondQuarter;
+    private String subjectName;
+    private String voteFirstQuarter;
+    private float rawVoteFirstQuarter;
+    private String voteSecondQuarter;
+    private float rawVoteSecondQuarter;
     private LinearLayout listVoteLayout1;
     private LinearLayout listVoteLayout2;
-    final List<Vote> allVotes;
+    private List<LinearLayout> listVoteLayouts;
+    private final List<Vote> allVotes;
     private final OnClickListener onClick;
 
     public VoteView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, String subject, String voteFirstQuarter, float rawVoteFirstQuarter, String voteSecondQuarter, float rawVoteSecondQuarter, List<Vote> allVotes, OnClickListener onClick) {
@@ -71,6 +74,7 @@ public class VoteView extends ConstraintLayout {
         layoutInflater.inflate(R.layout.view_vote, this);
 
         TextView tvSubject = findViewById(R.id.text_view_subject);
+        listVoteLayouts = new Vector<>();
         TextView tvVoteFisrtQuarter = findViewById(R.id.text_view_vote_primo_quadrimestre);
         TextView tvVoteSecondQuarter = findViewById(R.id.text_view_vote_secondo_quadrimestre);
 
@@ -85,26 +89,33 @@ public class VoteView extends ConstraintLayout {
         listVoteLayout2 = findViewById(R.id.list_vote_linear_layout_2);
 
         createSingleVotes();
+
+        for (int i = 0; i < listVoteLayouts.size(); i++) {
+            if (listVoteLayouts.get(i).getChildCount() == 0)
+                listVoteLayouts.get(i).setVisibility(GONE);
+        }
     }
 
     private void createSingleVotes(){
-        LinearLayout.LayoutParams singleVoteParams = new LinearLayout.LayoutParams(convertDpToPx(35f), ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams singleVoteParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         singleVoteParams.setMargins(20,0,0,0);
 
-        for(Vote vote : allVotes){
+        for(Vote vote : allVotes) {
             SingleVoteView tvVote = new SingleVoteView(getContext(), null, vote);
             tvVote.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             tvVote.setTypeface(ResourcesCompat.getFont(getContext(), R.font.varelaroundregular));
             tvVote.setId(View.generateViewId());
+            tvVote.setMinWidth(convertDpToPx(35f));
             tvVote.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.corner_radius_10dp));
-            tvVote.setMaxLines(1);
-
+            Drawable foreground = ContextCompat.getDrawable(getContext(), R.drawable.vote_background);
+            foreground.setAlpha(30);
+            tvVote.setForeground(foreground);
             tvVote.setTextSize(17f);
             tvVote.setLayoutParams(singleVoteParams);
             tvVote.setPadding(5, 10, 5, 10);
             tvVote.setOnClickListener(onClick);
 
-            if(!vote.isAsterisk)
+            if (!vote.isAsterisk)
                 tvVote.setText(vote.value);
             else
                 tvVote.setText("*");

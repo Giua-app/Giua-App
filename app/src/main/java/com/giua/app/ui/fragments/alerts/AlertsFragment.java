@@ -22,7 +22,6 @@ package com.giua.app.ui.fragments.alerts;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -219,7 +218,6 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
 
                 activity.runOnUiThread(() -> {
                     Alert alert = ((AlertView) view).alert;
-                    ((TextView) root.findViewById(R.id.alert_details_text_view)).setMovementMethod(new ScrollingMovementMethod());
                     ((TextView) root.findViewById(R.id.alert_details_text_view)).setText(alert.details);
                     ((TextView) root.findViewById(R.id.alert_creator_text_view)).setText(alert.creator);
                     ((TextView) root.findViewById(R.id.alert_type_text_view)).setText(alert.type);
