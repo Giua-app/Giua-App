@@ -19,7 +19,6 @@
 
 package com.giua.app.ui.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -251,7 +250,7 @@ public class MainLoginActivity extends AppCompatActivity {
     }
 
     private void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = this.getSystemService(InputMethodManager.class);
         imm.hideSoftInputFromWindow(this.btnLogin.getWindowToken(), 0);
     }
 

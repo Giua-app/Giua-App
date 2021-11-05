@@ -35,19 +35,16 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:fontFamily="@font/varelaroundregular"
-        android:paddingStart="5dp"
-        android:paddingTop="5dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="5dp"
+        android:padding="5dp"
         android:text="Materia"
-        android:textSize="20sp"
+        android:textSize="21sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.041"
         tools:ignore="HardcodedText" />
 
-    <androidx.cardview.widget.CardView
+    <LinearLayout
         android:id="@+id/list_vote_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -55,86 +52,28 @@
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:orientation="vertical"
-        app:cardBackgroundColor="@color/inside_general_view_color"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="10dp"
-        app:contentPadding="5dp"
+        android:background="@drawable/corner_radius_10dp"
+        android:backgroundTint="@color/inside_general_view_color"
+        android:elevation="10dp"
+        android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/mean_vote_layout"
         app:layout_constraintStart_toStartOf="@+id/text_view_subject"
         app:layout_constraintTop_toBottomOf="@+id/text_view_subject"
         app:layout_constraintVertical_bias="0.0">
 
-        <TextView
-            android:id="@+id/list_votes_text_view_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:fontFamily="@font/varelaroundregular"
-            android:text="@string/votecomponent_textview_firstperiod"
-            android:textSize="15sp" />
+    </LinearLayout>
 
-        <HorizontalScrollView
-            android:id="@+id/list_vote_scroll_view_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:overScrollMode="never"
-            android:padding="5dp"
-            android:scrollbars="none"
-            tools:ignore="SpeakableTextPresentCheck">
-
-            <LinearLayout
-                android:id="@+id/list_vote_linear_layout_1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-            </LinearLayout>
-        </HorizontalScrollView>
-
-        <TextView
-            android:id="@+id/list_votes_text_view_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="72dp"
-            android:layout_weight="1"
-            android:fontFamily="@font/varelaroundregular"
-            android:text="@string/votecomponent_textview_secondperiod"
-            android:textSize="15sp" />
-
-        <HorizontalScrollView
-            android:id="@+id/list_vote_scroll_view_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="96dp"
-            android:overScrollMode="never"
-            android:padding="5dp"
-            android:scrollbars="none"
-            tools:ignore="SpeakableTextPresentCheck">
-
-            <LinearLayout
-                android:id="@+id/list_vote_linear_layout_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal" />
-
-        </HorizontalScrollView>
-
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
+    <LinearLayout
         android:id="@+id/mean_vote_layout"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginEnd="10dp"
         android:elevation="10dp"
         android:orientation="vertical"
-        app:cardBackgroundColor="@color/mean_vote_layout"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="10dp"
-        app:contentPadding="5dp"
+        android:background="@drawable/corner_radius_10dp"
+        android:backgroundTint="@color/inside_general_view_color"
+        android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="@+id/list_vote_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/list_vote_layout">
@@ -146,43 +85,9 @@
             android:layout_gravity="top|center_vertical"
             android:fontFamily="@font/varelaroundregular"
             android:text="@string/votecomponent_textview_mean"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:layout_marginTop="4dp" />
 
-        <TextView
-            android:id="@+id/text_view_vote_primo_quadrimestre"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top|center_horizontal"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/corner_radius_10dp"
-            android:backgroundTint="@color/general_view_color"
-            android:fontFamily="@font/varelaroundregular"
-            android:paddingStart="5dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="5dp"
-            android:paddingBottom="5dp"
-            android:text="7.3"
-            android:textAlignment="center"
-            android:textSize="17sp"
-            tools:ignore="HardcodedText" />
-
-        <TextView
-            android:id="@+id/text_view_vote_secondo_quadrimestre"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:background="@drawable/corner_radius_10dp"
-            android:backgroundTint="@color/general_view_color"
-            android:fontFamily="@font/varelaroundregular"
-            android:paddingStart="5dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="5dp"
-            android:paddingBottom="5dp"
-            android:text="7.3"
-            android:textAlignment="center"
-            android:textSize="17sp"
-            tools:ignore="HardcodedText" />
-
-    </androidx.cardview.widget.CardView>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

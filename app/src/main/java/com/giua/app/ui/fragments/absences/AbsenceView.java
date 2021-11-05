@@ -156,7 +156,7 @@ public class AbsenceView extends ConstraintLayout {
     }
 
     private void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = context.getSystemService(InputMethodManager.class);
         imm.hideSoftInputFromWindow(this.getWindowToken(), 0);
     }
 }
