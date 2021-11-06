@@ -48,26 +48,16 @@ import java.util.Vector;
 
 public class VoteView extends ConstraintLayout {
     private String subjectName;
-    private String voteFirstQuarter;
-    private float rawVoteFirstQuarter;
-    private String voteSecondQuarter;
-    private float rawVoteSecondQuarter;
-    private LinearLayout listVoteLayout1;
-    private LinearLayout listVoteLayout2;
     private List<LinearLayout> listVoteLayouts;
     private final List<Vote> allVotes;
     private VotesPage votesPage;
     private final OnClickListener onClick;
     private List<Integer> quarterlyCounter;
 
-    public VoteView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, String subject, String voteFirstQuarter, float rawVoteFirstQuarter, String voteSecondQuarter, float rawVoteSecondQuarter, List<Vote> allVotes, OnClickListener onClick) {
+    public VoteView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, String subject, List<Vote> allVotes, OnClickListener onClick) {
         super(context, attrs);
 
         this.subjectName = subject;
-        this.voteFirstQuarter = voteFirstQuarter;
-        this.rawVoteFirstQuarter = rawVoteFirstQuarter;
-        this.voteSecondQuarter = voteSecondQuarter;
-        this.rawVoteSecondQuarter = rawVoteSecondQuarter;
         this.allVotes = allVotes;
         this.onClick = onClick;
         votesPage = GlobalVariables.gS.getVotesPage(false);

@@ -93,64 +93,61 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription">
 
-    <LinearLayout
-        android:id="@+id/vote_attachment_layout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        android:background="@drawable/general_view_style"
-        android:elevation="20dp"
-        android:orientation="vertical"
-        android:padding="10dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.422">
-
-        <TextView
-            android:id="@+id/detail_vote_date"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:id="@+id/vote_attachment_layout"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/varelaroundregular"
-            android:text="@string/detail_vote_date"
-            android:textSize="15sp"
-            android:visibility="gone" />
+            android:background="@drawable/general_view_style"
+            android:layout_marginStart="60dp"
+            android:layout_marginEnd="60dp"
+            android:orientation="vertical"
+            android:padding="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/detail_vote_type"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/varelaroundregular"
-            android:text="@string/detail_vote_type"
-            android:textSize="15sp"
-            android:visibility="gone" />
+            <TextView
+                android:id="@+id/detail_vote_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/varelaroundregular"
+                android:text="@string/detail_vote_date"
+                android:textSize="15sp"
+                android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/detail_vote_arguments"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/varelaroundregular"
-            android:scrollbars="vertical"
-            android:text="@string/detail_vote_arguments"
-            android:maxHeight="100dp"
-            android:textSize="15sp"
-            android:visibility="gone" />
+            <TextView
+                android:id="@+id/detail_vote_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/varelaroundregular"
+                android:text="@string/detail_vote_type"
+                android:textSize="15sp"
+                android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/detail_vote_judge"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/varelaroundregular"
-            android:text="@string/detail_vote_judge"
-            android:textSize="15sp"
-            android:maxHeight="100dp"
-            android:visibility="gone" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/detail_vote_arguments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/varelaroundregular"
+                android:maxHeight="100dp"
+                android:scrollbars="vertical"
+                android:text="@string/detail_vote_arguments"
+                android:textSize="15sp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/detail_vote_judge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/varelaroundregular"
+                android:maxHeight="100dp"
+                android:text="@string/detail_vote_judge"
+                android:textSize="15sp"
+                android:visibility="gone" />
+        </LinearLayout>
+    </com.giua.app.ui.fragments.ObscureLayoutView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

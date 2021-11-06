@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
@@ -37,6 +38,9 @@ import org.jetbrains.annotations.NotNull;
 public class ObscureLayoutView extends ConstraintLayout {
 
     private boolean isShown;
+    private final Animation hideAnimation;
+    private final Animation showAnimation;
+    private boolean isClickable = true;
 
     public ObscureLayoutView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -64,18 +68,25 @@ public class ObscureLayoutView extends ConstraintLayout {
             }
         }
         a.recycle();
+
+        showAnimation = AnimationUtils.loadAnimation(context, R.anim.visualizer_show_effect);
+        hideAnimation = AnimationUtils.loadAnimation(context, R.anim.visualizer_hide_effect);
     }
 
     public void hide(Context context) {
-        isShown = false;
-        startAnimation(AnimationUtils.loadAnimation(context, R.anim.visualizer_hide_effect));
+        setClickable(false);
+        startAnimation(hideAnimation);
         setVisibility(GONE);
+        isShown = false;
+
     }
 
     public void show(Context context) {
-        isShown = true;
-        startAnimation(AnimationUtils.loadAnimation(context, R.anim.visualizer_show_effect));
+        setClickable(false);
+        startAnimation(showAnimation);
         setVisibility(VISIBLE);
+        setClickable(true);
+        isShown = true;
     }
 
     public boolean isShown() {

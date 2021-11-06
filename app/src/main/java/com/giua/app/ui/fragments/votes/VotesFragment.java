@@ -28,7 +28,6 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -51,7 +50,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
@@ -134,11 +132,6 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void addViews() {
-        float meanSecondQuarter;
-        float meanFirstQuarter;     //media aritmetica dei voti
-        int voteCounterFirstQuarter;     //Conta solamente i voti che ci sono e non gli asterischi
-        int voteCounterSecondQuarter;
-
         viewsLayout.removeAllViews();
         params = new LinearLayout.LayoutParams(viewsLayout.getLayoutParams().width, viewsLayout.getLayoutParams().height);
         params.setMargins(10, 20, 10, 30);
@@ -148,36 +141,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
         }
 
         for (String subject : allVotes.keySet()) {     //Cicla ogni materia
-            meanFirstQuarter = 0f;
-            meanSecondQuarter = 0f;
-            voteCounterFirstQuarter = 0;     //Conta solamente i voti che ci sono e non gli asterischi
-            voteCounterSecondQuarter = 0;
-
-            for (Vote vote : Objects.requireNonNull(allVotes.get(subject))) {      //Cicla ogni voto della materia
-                if (vote.value.length() > 0 && !vote.isAsterisk && vote.quarterlyToInt() == 1) { //FIXME: prima era vote.isQuartely
-                    meanFirstQuarter += vote.toFloat();
-                    voteCounterFirstQuarter++;
-                } else if (vote.value.length() > 0 && !vote.isAsterisk) {
-                    meanSecondQuarter += vote.toFloat();
-                    voteCounterSecondQuarter++;
-                }
-            }
-
-            if(voteCounterFirstQuarter != 0 && voteCounterSecondQuarter != 0) {
-                meanFirstQuarter /= voteCounterFirstQuarter;
-                meanSecondQuarter /= voteCounterSecondQuarter;
-                addVoteView(subject, df.format(meanFirstQuarter), meanFirstQuarter, df.format(meanSecondQuarter), meanSecondQuarter);
-            } else{
-                if(voteCounterFirstQuarter == 0 && voteCounterSecondQuarter != 0) {
-                    meanSecondQuarter /= voteCounterSecondQuarter;
-                    addVoteView(subject, "/", -1f, df.format(meanSecondQuarter), meanSecondQuarter);
-                } else if(voteCounterFirstQuarter != 0){
-                    meanFirstQuarter /= voteCounterFirstQuarter;
-                    addVoteView(subject, df.format(meanFirstQuarter), meanFirstQuarter, "/", -1f);
-                } else {
-                    addVoteView(subject, "/", -1f, "/", -1f);
-                }
-            }
+            addVoteView(subject);
         }
         pbLoadingPage.setVisibility(View.GONE);
         swipeRefreshLayout.setRefreshing(false);
@@ -194,8 +158,6 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
     }
 
     public void obscureButtonOnClick(View view) {
-        voteVisualizer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
-        voteVisualizer.setVisibility(View.GONE);
         obscureLayoutView.hide(activity);
     }
 
@@ -212,9 +174,6 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
         detailVoteType.setVisibility(View.GONE);
         detailVoteArguments.setVisibility(View.GONE);
         detailVoteJudge.setVisibility(View.GONE);
-        voteVisualizer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
-        voteVisualizer.setVisibility(View.VISIBLE);
-        obscureLayoutView.show(activity);
 
         if (!_view.vote.date.equals("")) {
             detailVoteDate.setVisibility(View.VISIBLE);
@@ -232,11 +191,13 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
             detailVoteJudge.setVisibility(View.VISIBLE);
             detailVoteJudge.setText(Html.fromHtml("<b>" + res.getString(R.string.detail_vote_judge) + "</b> " + _view.vote.judgement, Html.FROM_HTML_MODE_COMPACT));
         }
+
+        obscureLayoutView.show(activity);
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void addVoteView(String subject, String voteFirstQuart, float rawVoteFirstQuart, String voteSecondQuart, float rawVoteSecondQuart) {
-        voteView = new VoteView(requireContext(), null, subject, voteFirstQuart, rawVoteFirstQuart, voteSecondQuart, rawVoteSecondQuart, allVotes.get(subject), this::singleVoteOnClick);
+    private void addVoteView(String subject) {
+        voteView = new VoteView(requireContext(), null, subject, allVotes.get(subject), this::singleVoteOnClick);
         voteView.setId(View.generateViewId());
 
         voteView.setLayoutParams(params);

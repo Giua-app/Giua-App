@@ -143,6 +143,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public boolean onBackPressed() {
         if (obscureLayoutView.isShown()) {
+            btnConfirm.setClickable(false);
             obscureLayoutView.hide(requireContext());
             return true;
         }
@@ -159,6 +160,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
         latestAbsenceViewClicked = ((AbsenceView) view);
         tvConfirmText.setText(Html.fromHtml("Sei sicuro di voler cancellare la giustificazione del <b>" + latestAbsenceViewClicked.absence.date + "</b> ?", 0));
         confirmActionIsDelete = true;
+        btnConfirm.setClickable(true);
         obscureLayoutView.show(activity);
     }
 
@@ -167,6 +169,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
             latestAbsenceViewClicked = ((AbsenceView) view);
             tvConfirmText.setText(Html.fromHtml("Sei sicuro di voler giustificare con: <b>" + ((AbsenceView) view).justifyText + "</b> ?", 0));
             confirmActionIsDelete = false;
+            btnConfirm.setClickable(true);
             obscureLayoutView.show(activity);
         }
     }
@@ -185,11 +188,9 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
                 activity.runOnUiThread(() -> swipeRefreshLayout.setRefreshing(true));
                 try {
                     if (!confirmActionIsDelete)
-                        //FIXME: non so se forceRefresh deve essere true
-                        GlobalVariables.gS.getAbsencesPage(true).justifyAbsence(absenceView.absence, "", absenceView.justifyText);
+                        GlobalVariables.gS.getAbsencesPage(false).justifyAbsence(absenceView.absence, "", absenceView.justifyText);
                     else
-                        //FIXME: non so se forceRefresh deve essere true di nuovo
-                        GlobalVariables.gS.getAbsencesPage(true).deleteJustificationAbsence(absenceView.absence);
+                        GlobalVariables.gS.getAbsencesPage(false).deleteJustificationAbsence(absenceView.absence);
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.your_connection_error), root));
                     return;
@@ -203,6 +204,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
                 activity.runOnUiThread(this::onRefresh);
             });
         }
+        btnConfirm.setClickable(false);
         obscureLayoutView.hide(activity);
     }
 
