@@ -45,11 +45,12 @@ import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
 import com.giua.app.ui.fragments.absences.AbsencesFragment;
 import com.giua.app.ui.fragments.agenda.AgendaFragment;
+import com.giua.app.ui.fragments.alerts.AlertsFragment;
 import com.giua.app.ui.fragments.authorizations.AuthorizationFragment;
 import com.giua.app.ui.fragments.home.HomeFragment;
 import com.giua.app.ui.fragments.lessons.LessonsFragment;
+import com.giua.app.ui.fragments.newsletters.NewslettersFragment;
 import com.giua.app.ui.fragments.not_implmented.NotImplementedFragment;
-import com.giua.app.ui.fragments.pinboard.PinboardFragment;
 import com.giua.app.ui.fragments.reportcard.ReportCardFragment;
 import com.giua.app.ui.fragments.votes.VotesFragment;
 import com.giua.webscraper.GiuaScraper;
@@ -99,8 +100,10 @@ public class DrawerActivity extends AppCompatActivity {
 
         if (goTo == null || goTo.equals(""))
             changeFragment(R.id.nav_home);
-        else if (goTo.equals("Newsletters") || goTo.equals("Alerts"))
-            changeFragment(R.id.nav_pin_board);
+        else if (goTo.equals("Newsletters"))
+            changeFragment(R.id.nav_newsletters);
+        else if (goTo.equals("Alerts"))
+            changeFragment(R.id.nav_alerts);
 
         //Setup CheckNewsReceiver
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -185,17 +188,18 @@ public class DrawerActivity extends AppCompatActivity {
                         createDrawerMainItem(10, "Pagella", "/genitori/pagelle", true, false),
                         createDrawerMainItem(11, "Colloqui", "/genitori/colloqui", !userType.equals("Studente"), false),    //SOLO GENITORE,
                         createDrawerCategory(12, "Bacheca").withSubItems(
-                                createDrawerMainItem(13, "Circolari e avvisi", R.id.nav_pin_board, true, true),
-                                createDrawerMainItem(14, "Documenti", "/documenti/bacheca", true, true)
+                                createDrawerMainItem(13, "Circolari", R.id.nav_newsletters, true, true),
+                                createDrawerMainItem(14, "Avvisi", R.id.nav_alerts, true, true),
+                                createDrawerMainItem(15, "Documenti", "/documenti/bacheca", true, true)
                         ),
-                        createDrawerMainItem(15, "Agenda", R.id.nav_agenda, true, false),
+                        createDrawerMainItem(16, "Agenda", R.id.nav_agenda, true, false),
 
                         new DividerDrawerItem(),
 
-                        createDrawerSecondaryItem(16, "Impostazioni")
+                        createDrawerSecondaryItem(17, "Impostazioni")
                                 .withOnDrawerItemClickListener(this::settingsItemOnClick)
                                 .withSelectable(false),
-                        createDrawerSecondaryItem(17, "Esci")
+                        createDrawerSecondaryItem(18, "Esci")
                                 .withOnDrawerItemClickListener(this::logoutItemOnClick)
                                 .withSelectable(false)
                 )
@@ -373,10 +377,14 @@ public class DrawerActivity extends AppCompatActivity {
             if (fragment == null)
                 fragment = new LessonsFragment();
             setTextToolbar("Lezioni");
-        } else if (id == R.id.nav_pin_board) {
+        } else if (id == R.id.nav_newsletters) {
             if (fragment == null)
-                fragment = new PinboardFragment(goTo);
-            setTextToolbar("Bacheca");
+                fragment = new NewslettersFragment();
+            setTextToolbar("Circolari");
+        } else if (id == R.id.nav_alerts) {
+            if (fragment == null)
+                fragment = new AlertsFragment();
+            setTextToolbar("Avvisi");
         } else if (id == R.id.nav_report_card) {
             if (fragment == null)
                 fragment = new ReportCardFragment();
@@ -408,8 +416,10 @@ public class DrawerActivity extends AppCompatActivity {
             return "FRAGMENT_AGENDA";
         if (id == R.id.nav_lessons)
             return "FRAGMENT_LESSONS";
-        if (id == R.id.nav_pin_board)
-            return "FRAGMENT_PIN_BOARD";
+        if (id == R.id.nav_alerts)
+            return "FRAGMENT_ALERTS";
+        if (id == R.id.nav_newsletters)
+            return "FRAGMENT_NEWSLETTERS";
         if (id == R.id.nav_report_card)
             return "FRAGMENT_REPORT_CARD";
         if (id == R.id.nav_authorization)
