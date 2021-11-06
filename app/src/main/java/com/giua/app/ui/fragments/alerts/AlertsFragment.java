@@ -137,14 +137,13 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
             threadManager.addAndRun(() -> {
                 try {
                     if (!offlineMode)
-                        allAlerts = GlobalVariables.gS.getAlertsPage(true).getAllAlerts(currentPage);
+                        allAlerts = GlobalVariables.gS.getAlertsPage(false).getAllAlerts(currentPage);
                     else {
                         hasLoadedAllPages = true;
                         try {
                             allAlerts = new JsonHelper().parseJsonForAlerts(AppData.getAlertsString(requireContext()));
                         } catch (Exception ignored) {
                         }
-
                     }
 
                     if (allAlerts.isEmpty() && currentPage == 1) {
