@@ -51,7 +51,7 @@ import com.giua.app.ui.fragments.authorizations.AuthorizationFragment;
 import com.giua.app.ui.fragments.home.HomeFragment;
 import com.giua.app.ui.fragments.lessons.LessonsFragment;
 import com.giua.app.ui.fragments.newsletters.NewslettersFragment;
-import com.giua.app.ui.fragments.not_implmented.NotImplementedFragment;
+import com.giua.app.ui.fragments.not_implemented.NotImplementedFragment;
 import com.giua.app.ui.fragments.reportcard.ReportCardFragment;
 import com.giua.app.ui.fragments.votes.VotesFragment;
 import com.giua.webscraper.GiuaScraper;

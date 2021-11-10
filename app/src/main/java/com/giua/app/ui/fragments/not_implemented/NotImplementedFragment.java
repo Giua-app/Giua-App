@@ -17,7 +17,7 @@
  *     along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 
-package com.giua.app.ui.fragments.not_implmented;
+package com.giua.app.ui.fragments.not_implemented;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
