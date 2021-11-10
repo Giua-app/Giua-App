@@ -28,6 +28,7 @@ import android.view.View;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationManagerCompat;
@@ -80,6 +81,7 @@ public class DrawerActivity extends AppCompatActivity {
     String userType = "Tipo utente non caricato";
     String username = "Nome utente non caricato";
     Drawer mDrawer;
+    String unstableFeatures = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,6 +160,14 @@ public class DrawerActivity extends AppCompatActivity {
             username = "Offline";
             setupMaterialDrawer();
         }
+
+        new Thread(() -> {
+            loggerManager.d("Scarico le informazioni sulle funzionalità instabili");
+            try {
+                unstableFeatures = GlobalVariables.gS.getExtPage("https://giua-app.github.io/unstable_features.txt").text();
+            } catch (Exception ignored) {}
+
+        }).start();
     }
 
     private void setupMaterialDrawer() {
@@ -328,9 +338,8 @@ public class DrawerActivity extends AppCompatActivity {
         if (!toolbarTitle.contentEquals(toolbar.getTitle())) {  //Se l'elemento cliccato non è già visualizzato allora visualizzalo
             loggerManager.w("Pagina " + toolbarTitle + " non ancora implementata, la faccio visualizzare dalla webview");
             fragment = new NotImplementedFragment(GiuaScraper.getSiteURL() + url, GlobalVariables.gS.getCookie());
-            toolbar.setTitle(toolbarTitle);
             toolbar.setSubtitle("Non ancora implementato!");
-            changeFragmentWithManager(fragment, tag);
+            changeFragmentWithManager(fragment, tag, toolbarTitle);
         }
     }
 
@@ -342,6 +351,7 @@ public class DrawerActivity extends AppCompatActivity {
         FragmentManager manager = getSupportFragmentManager();
         Fragment fragment;
         String tag = getTagFromId(id);
+        String toolbarTxt = "";
         toolbar.setSubtitle(subtitle);
 
         if (!manager.getFragments().isEmpty() && manager.getFragments().get(0).getTag().equals(tag)) //Se il fragment visualizzato è quello di id allora non fare nulla
@@ -358,45 +368,45 @@ public class DrawerActivity extends AppCompatActivity {
 
         fragment = manager.findFragmentByTag(tag);
 
-        //FIXME: Troppi if, lo switch non si può usare perchè R.id.x non è final
+        //FIXME: Troppi if, lo switch non si può usare perchè R.id.x in futuro non sarà final
         if (id == R.id.nav_home) {
             if (fragment == null)
                 fragment = new HomeFragment();
-            setTextToolbar("Home");
+            toolbarTxt = "Home";
         } else if (id == R.id.nav_absences) {
             if (fragment == null)
                 fragment = new AbsencesFragment();
-            setTextToolbar("Assenze");
+            toolbarTxt = "Assenze";
         } else if (id == R.id.nav_authorization) {
             if (fragment == null)
                 fragment = new AuthorizationFragment();
-            setTextToolbar("Autorizzazioni");
+            toolbarTxt = "Autorizzazioni";
         } else if (id == R.id.nav_votes) {
             if (fragment == null)
                 fragment = new VotesFragment();
-            setTextToolbar("Voti");
+            toolbarTxt = "Voti";
         } else if (id == R.id.nav_agenda) {
             if (fragment == null)
                 fragment = new AgendaFragment();
-            setTextToolbar("Agenda");
+            toolbarTxt = "Agenda";
         } else if (id == R.id.nav_lessons) {
             if (fragment == null)
                 fragment = new LessonsFragment();
-            setTextToolbar("Lezioni");
+            toolbarTxt = "Lezioni";
         } else if (id == R.id.nav_newsletters) {
             if (fragment == null)
                 fragment = new NewslettersFragment();
-            setTextToolbar("Circolari");
+            toolbarTxt = "Circolari";
         } else if (id == R.id.nav_alerts) {
             if (fragment == null)
                 fragment = new AlertsFragment();
-            setTextToolbar("Avvisi");
+            toolbarTxt = "Avvisi";
         } else if (id == R.id.nav_report_card) {
             if (fragment == null)
                 fragment = new ReportCardFragment();
-            setTextToolbar("Pagella");
+            toolbarTxt = "Pagella";
         }
-        changeFragmentWithManager(fragment, tag);
+        changeFragmentWithManager(fragment, tag, toolbarTxt);
     }
 
     private void setTextToolbar(String defaultName) {
@@ -435,10 +445,43 @@ public class DrawerActivity extends AppCompatActivity {
         return "";
     }
 
-    private void changeFragmentWithManager(Fragment fragment, String tag) {
+    private void changeFragmentWithManager(Fragment fragment, String tag, String toolbarTxt) {
         loggerManager.d("Cambio fragment a " + tag);
+        if(unstableFeatures.contains(tag)){
+            loggerManager.w("Rilevata apertura funzionalità instabile (" + tag + "), avviso l'utente ");
+            showUnstableDialog(fragment, tag, toolbarTxt);
+            return;
+        }
+        setTextToolbar(toolbarTxt);
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.content_main, fragment, tag).commit();
+    }
+
+    private void showUnstableDialog(Fragment fragment, String tag, String toolbarTxt){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Funzionalità Instabile");
+        builder.setMessage("E' stato segnalato che la schermata \"" + toolbarTxt + "\" potrebbe non funzionare come previsto in questa versione.\n\nSei sicuro di continuare?")
+
+        .setPositiveButton("Si", (dialog, id) -> {
+            loggerManager.w("L'utente ha deciso di continuare con la funzionalità instabile, cambio fragment a " + tag);
+            setTextToolbar(toolbarTxt);
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.content_main, fragment, tag).commit();
+        })
+
+        .setNegativeButton("No", (dialog, id) -> {
+            loggerManager.d("L'utente ha deciso di NON continuare con la funzionalità instabile");
+        })
+
+        .setOnCancelListener(dialog -> {
+            loggerManager.d("L'utente ha deciso di NON continuare con la funzionalità instabile");
+        })
+
+        .setOnDismissListener(dialog -> {
+            loggerManager.d("L'utente ha deciso di NON continuare con la funzionalità instabile");
+        });
+
+        builder.show();
     }
 
     @Override
