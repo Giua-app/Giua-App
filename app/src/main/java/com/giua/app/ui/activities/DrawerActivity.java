@@ -30,6 +30,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -98,12 +99,17 @@ public class DrawerActivity extends AppCompatActivity {
         bundle = new Bundle();
         bundle.putBoolean("offline", offlineMode);
 
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
         if (goTo == null || goTo.equals(""))
             changeFragment(R.id.nav_home);
-        else if (goTo.equals("Newsletters"))
+        else if (goTo.equals("Newsletters")) {
             changeFragment(R.id.nav_newsletters);
-        else if (goTo.equals("Alerts"))
+            notificationManager.cancel(10);
+        } else if (goTo.equals("Alerts")) {
             changeFragment(R.id.nav_alerts);
+            notificationManager.cancel(11);
+        }
 
         //Setup CheckNewsReceiver
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);

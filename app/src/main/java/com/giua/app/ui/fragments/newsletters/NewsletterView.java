@@ -23,6 +23,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -37,6 +38,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class NewsletterView extends ConstraintLayout {
     Newsletter newsletter;
+    public float normalTranslationX = 0;
+    private boolean isMoved = false;
+    public float offset = 0f; //Usato per fare lo scorrimento
+    public View view;
 
     public NewsletterView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, Newsletter newsletter) {
         super(context, attrs);
@@ -70,5 +75,25 @@ public class NewsletterView extends ConstraintLayout {
         tvNumberID.setText("n." + newsletter.number);
         tvDate.setText(newsletter.date);
         tvObject.setText(newsletter.newslettersObject);
+
+        view = findViewById(R.id.newsletter_view);
+    }
+
+    public float getNormalTranslationX() {
+        return normalTranslationX;
+    }
+
+    public void moveTo(float x) {
+        if (!isMoved) {
+            normalTranslationX = view.getTranslationX();
+            isMoved = true;
+        }
+        if (x >= normalTranslationX)
+            view.setTranslationX(x);
+    }
+
+    public void resetPosition() {
+        offset = 0;
+        view.setTranslationX(normalTranslationX);
     }
 }

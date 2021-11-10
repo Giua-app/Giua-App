@@ -22,130 +22,154 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/general_view_style"
-    android:padding="10dp">
-
-    <TextView
-        android:id="@+id/newsletter_status_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:fontFamily="@font/varelaroundregular"
-        android:padding="5dp"
-        android:text="Stato"
-        android:textSize="15sp"
-        app:layout_constraintStart_toEndOf="@+id/newsletter_view_left_image"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="HardcodedText" />
-
-    <TextView
-        android:id="@+id/newsletter_numberid_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="148dp"
-        android:fontFamily="@font/varelaroundregular"
-        android:padding="5dp"
-        android:text="Numero"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="@+id/newsletter_status_text_view"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/newsletter_status_text_view"
-        app:layout_constraintVertical_bias="0.0"
-        tools:ignore="HardcodedText" />
-
-    <TextView
-        android:id="@+id/newsletter_object_text_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:fontFamily="@font/varelaroundregular"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:text="Oggetto"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/newsletter_status_text_view"
-        app:layout_constraintTop_toBottomOf="@+id/newsletter_status_text_view"
-        tools:ignore="HardcodedText" />
-
-    <TextView
-        android:id="@+id/newsletter_date_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/varelaroundregular"
-        android:padding="5dp"
-        android:text="Data"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="@+id/newsletter_numberid_text_view"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.674"
-        app:layout_constraintStart_toEndOf="@+id/newsletter_numberid_text_view"
-        app:layout_constraintTop_toTopOf="@+id/newsletter_numberid_text_view"
-        app:layout_constraintVertical_bias="0.0"
-        tools:ignore="HardcodedText" />
+    android:baselineAligned="false"
+    android:orientation="horizontal">
 
     <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/corner_radius_10dp"
-        android:backgroundTint="@color/newsletter_layout"
-        android:elevation="4dp"
-        android:orientation="horizontal"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/newsletter_object_text_view"
-        app:layout_constraintTop_toBottomOf="@+id/newsletter_object_text_view">
+        android:id="@+id/newsletter_left_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_alignBottom="@+id/newsletter_view"
+        android:background="#EF5350"
+        app:layout_constraintBottom_toBottomOf="@+id/newsletter_view"
+        app:layout_constraintTop_toTopOf="@+id/newsletter_view"
+        android:alpha="0">
 
-        <ImageButton
-            android:id="@+id/newsletter_view_btn_document"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#00FFFFFF"
-            android:contentDescription="@string/newsletterview_imagebutton_viewdocument_contentdescription"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/ic_find_in_page"
-            app:tint="@color/main_color_lighter"
-            tools:ignore="TouchTargetSizeCheck" />
-
-        <ImageButton
-            android:id="@+id/newsletter_view_btn_attachment"
-            android:layout_width="wrap_content"
+        <TextView
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="#00000000"
-            android:contentDescription="@string/newsletterview_imagebutton_viewattachment_contentdescription"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/ic_baseline_attachment_24"
-            tools:ignore="TouchTargetSizeCheck" />
+            android:fontFamily="@font/varelaroundregular"
+            android:text="Segna come già letto"
+            android:layout_gravity="center_vertical"
+            android:gravity="center" />
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/newsletter_view_left_image"
-        android:layout_width="20dp"
-        android:layout_height="0dp"
-        android:background="@drawable/general_view_style"
-        android:backgroundTint="@color/middle_vote"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline4"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/newsletter_view"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_end="43dp" />
+        android:background="@drawable/general_view_style"
+        android:padding="10dp"
+        android:translationZ="1dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
+        <TextView
+            android:id="@+id/newsletter_status_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:fontFamily="@font/varelaroundregular"
+            android:padding="5dp"
+            android:text="Stato"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@+id/newsletter_view_left_image"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/newsletter_numberid_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="148dp"
+            android:fontFamily="@font/varelaroundregular"
+            android:padding="5dp"
+            android:text="Numero"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="@+id/newsletter_status_text_view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/newsletter_status_text_view"
+            app:layout_constraintVertical_bias="0.0"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/newsletter_object_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/varelaroundregular"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:text="Oggetto"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/newsletter_status_text_view"
+            app:layout_constraintTop_toBottomOf="@+id/newsletter_status_text_view"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/newsletter_date_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/varelaroundregular"
+            android:padding="5dp"
+            android:text="Data"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="@+id/newsletter_numberid_text_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.674"
+            app:layout_constraintStart_toEndOf="@+id/newsletter_numberid_text_view"
+            app:layout_constraintTop_toTopOf="@+id/newsletter_numberid_text_view"
+            app:layout_constraintVertical_bias="0.0"
+            tools:ignore="HardcodedText" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/corner_radius_10dp"
+            android:backgroundTint="@color/newsletter_layout"
+            android:elevation="4dp"
+            android:orientation="horizontal"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/newsletter_object_text_view"
+            app:layout_constraintTop_toBottomOf="@+id/newsletter_object_text_view">
+
+            <ImageButton
+                android:id="@+id/newsletter_view_btn_document"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#00FFFFFF"
+                android:contentDescription="@string/newsletterview_imagebutton_viewdocument_contentdescription"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/ic_find_in_page"
+                app:tint="@color/main_color_lighter"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <ImageButton
+                android:id="@+id/newsletter_view_btn_attachment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#00000000"
+                android:contentDescription="@string/newsletterview_imagebutton_viewattachment_contentdescription"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/ic_baseline_attachment_24"
+                tools:ignore="TouchTargetSizeCheck" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/newsletter_view_left_image"
+            android:layout_width="20dp"
+            android:layout_height="0dp"
+            android:background="@drawable/general_view_style"
+            android:backgroundTint="@color/middle_vote"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

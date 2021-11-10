@@ -23,14 +23,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -74,7 +79,6 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     ScrollView scrollView;
     LinearLayout attachmentLayout;
     ObscureLayoutView obscureLayoutView;
-    ImageView ivFilter;
     LinearLayout filterLayout;
     ProgressBar pbLoadingNewsletters;
     TextView tvNoElements;
@@ -117,13 +121,13 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         filterText = "";
 
         context = getContext();
+        activity = getActivity();
         layout = root.findViewById(R.id.newsletter_linear_layout);
         pbLoadingPage = root.findViewById(R.id.circolari_loading_page_bar);
         scrollView = root.findViewById(R.id.newsletter_scroll_view);
         attachmentLayout = root.findViewById(R.id.attachment_layout);
         obscureLayoutView = root.findViewById(R.id.newsletter_obscure_layout);
         tvNoElements = root.findViewById(R.id.newsletter_fragment_no_elements_view);
-        ivFilter = root.findViewById(R.id.newsletter_filter_button);
         filterLayout = root.findViewById(R.id.newsletter_filter_layout);
         swipeRefreshLayout = root.findViewById(R.id.newsletter_swipe_refresh_layout);
 
@@ -137,7 +141,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         attachmentLayout.setOnClickListener((view) -> {
         });
-        ivFilter.setOnClickListener(this::btnFilterOnClick);
+        root.findViewById(R.id.newsletter_filter_cardview).setOnClickListener(this::btnFilterOnClick);
 
         obscureLayoutView.setOnClickListener(this::obscureViewOnClick);
 
@@ -175,6 +179,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                     }
 
                     if (allNewsletter != null) {
+                        activity.runOnUiThread(() -> tvNoElements.setVisibility(View.GONE));
                         hasCompletedLoading = true;
                         if (currentPage == 1)
                             allNewsletterToSave = allNewsletter;
@@ -230,9 +235,12 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     public void addViews() {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.setMargins(0, 40, 0, 0);
+        LinearLayout.LayoutParams paramsForView = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        paramsForView.setMargins(convertDpToPx(10), 0, convertDpToPx(10), 0);
 
         for (Newsletter newsletter : allNewsletter) {
             NewsletterView newsletterView = new NewsletterView(context, null, newsletter);
+            newsletterView.setOnTouchListener(this::newsletterViewOnTouchListener);
             newsletterView.findViewById(R.id.newsletter_view_btn_document).setOnClickListener((view) -> onClickDocument(newsletter));
 
             if (newsletter.attachmentsUrl != null && !newsletter.attachmentsUrl.isEmpty()) {
@@ -243,6 +251,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             }
 
             newsletterView.setLayoutParams(params);
+            newsletterView.view.setLayoutParams(paramsForView);
 
             layout.addView(newsletterView);
         }
@@ -257,6 +266,50 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     }
 
     //region Listeners
+    private boolean newsletterViewOnTouchListener(View view, MotionEvent motionEvent) {
+        NewsletterView v = (NewsletterView) view;
+        if (v.view.getAnimation() != null || v.newsletter.isRead())
+            return false;
+        DisplayMetrics realMetrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getRealMetrics(realMetrics);
+        switch (motionEvent.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                return true;
+            case MotionEvent.ACTION_MOVE:
+                int historyLength = motionEvent.getHistorySize();
+                if (historyLength > 0 && v.view.getTranslationX() >= v.getNormalTranslationX()) {
+                    if (v.view.getTranslationX() > 20) {
+                        scrollView.requestDisallowInterceptTouchEvent(true);
+                        swipeRefreshLayout.requestDisallowInterceptTouchEvent(true);
+                    }
+                    if (v.offset == 0)
+                        v.offset = motionEvent.getRawX() - v.view.getX();
+                    v.moveTo((float) Math.sqrt(v.view.getTranslationX()) + motionEvent.getRawX() - v.offset);
+                    LinearLayout leftLayout = v.findViewById(R.id.newsletter_left_layout);
+                    float alpha = v.view.getTranslationX() / ((float) realMetrics.widthPixels / 2 - 300);
+                    leftLayout.setAlpha(alpha);
+                }
+                return true;
+            case MotionEvent.ACTION_UP:
+                if (v.view.getX() >= (float) realMetrics.widthPixels / 2 - 300) {
+                    makeMarkAsReadAnimation(v, realMetrics);
+                    threadManager.addAndRun(() -> {
+                        GlobalVariables.gS.getNewslettersPage(false).markNewsletterAsRead(v.newsletter);
+                    });
+                } else
+                    makeComeBackAnimation(v, v.view.getTranslationX());
+                v.resetPosition();
+                scrollView.requestDisallowInterceptTouchEvent(false);
+                swipeRefreshLayout.requestDisallowInterceptTouchEvent(false);
+                return true;
+            case MotionEvent.ACTION_CANCEL:
+                makeComeBackAnimation(v, v.view.getTranslationX());
+                v.resetPosition();
+                return true;
+        }
+        return false;
+    }
+
     private void onClickSingleAttachment(String url) {
         if (!isDownloading) {
             downloadAndOpenFile(url);
@@ -380,6 +433,52 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
     //region Metodi
 
+    private void makeComeBackAnimation(NewsletterView v, float fromX) {
+        TranslateAnimation comeBackAnimation = new TranslateAnimation(fromX, v.getNormalTranslationX(), v.view.getTranslationY(), v.view.getTranslationY());
+        comeBackAnimation.setDuration(200);
+        AlphaAnimation alphaAnimation = new AlphaAnimation(1, 0);
+        alphaAnimation.setDuration(200);
+        comeBackAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                v.findViewById(R.id.newsletter_left_layout).startAnimation(alphaAnimation);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                v.findViewById(R.id.newsletter_left_layout).setAlpha(0);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+        v.view.startAnimation(comeBackAnimation);
+    }
+
+    private void makeMarkAsReadAnimation(NewsletterView v, DisplayMetrics dm) {
+        TranslateAnimation goAnimation = new TranslateAnimation(v.view.getTranslationX(), dm.widthPixels, v.view.getTranslationY(), v.view.getTranslationY());
+        goAnimation.setDuration(200);
+
+        goAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                makeComeBackAnimation(v, dm.widthPixels);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        v.view.startAnimation(goAnimation);
+    }
+
     private boolean compareNewsletterLists(List<Newsletter> l1, List<Newsletter> l2) {
         int l1length = l1.size();
 
@@ -439,6 +538,11 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         } catch (Exception e) {
             setErrorMessage("Non è stata trovata alcuna app compatibile con il tipo di file " + fileExtension, root);
         }
+    }
+
+    private int convertDpToPx(float dp) {
+        //https://stackoverflow.com/questions/4605527/converting-pixels-to-dp
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
     }
 
     public void setErrorMessage(String message, View root) {
