@@ -235,8 +235,6 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     public void addViews() {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.setMargins(0, 40, 0, 0);
-        LinearLayout.LayoutParams paramsForView = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        paramsForView.setMargins(convertDpToPx(10), 0, convertDpToPx(10), 0);
 
         for (Newsletter newsletter : allNewsletter) {
             NewsletterView newsletterView = new NewsletterView(context, null, newsletter);
@@ -251,7 +249,6 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             }
 
             newsletterView.setLayoutParams(params);
-            newsletterView.view.setLayoutParams(paramsForView);
 
             layout.addView(newsletterView);
         }
@@ -268,7 +265,8 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     //region Listeners
     private boolean newsletterViewOnTouchListener(View view, MotionEvent motionEvent) {
         NewsletterView v = (NewsletterView) view;
-        if (v.view.getAnimation() != null || v.newsletter.isRead())
+        //Se ce' un animazione in corso o la circolare e' gia' stata letta allora non fare nulla
+        if (v.upperView.getAnimation() != null)
             return false;
         DisplayMetrics realMetrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getRealMetrics(realMetrics);
@@ -277,34 +275,37 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                 return true;
             case MotionEvent.ACTION_MOVE:
                 int historyLength = motionEvent.getHistorySize();
-                if (historyLength > 0 && v.view.getTranslationX() >= v.getNormalTranslationX()) {
-                    if (v.view.getTranslationX() > 20) {
+                if (historyLength > 0 && v.upperView.getTranslationX() >= v.getNormalTranslationX()) {
+                    if (v.upperView.getTranslationX() > 50) {
                         scrollView.requestDisallowInterceptTouchEvent(true);
                         swipeRefreshLayout.requestDisallowInterceptTouchEvent(true);
                     }
                     if (v.offset == 0)
-                        v.offset = motionEvent.getRawX() - v.view.getX();
-                    v.moveTo((float) Math.sqrt(v.view.getTranslationX()) + motionEvent.getRawX() - v.offset);
+                        v.offset = motionEvent.getRawX() - v.upperView.getX();
+                    v.moveTo((float) Math.sqrt(v.upperView.getTranslationX()) + motionEvent.getRawX() - v.offset);
                     LinearLayout leftLayout = v.findViewById(R.id.newsletter_left_layout);
-                    float alpha = v.view.getTranslationX() / ((float) realMetrics.widthPixels / 2 - 300);
+                    float alpha = v.upperView.getTranslationX() / ((float) realMetrics.widthPixels * 240 / 1080);
                     leftLayout.setAlpha(alpha);
                 }
                 return true;
             case MotionEvent.ACTION_UP:
-                if (v.view.getX() >= (float) realMetrics.widthPixels / 2 - 300) {
+                if (!v.newsletter.isRead() && v.upperView.getX() >= (float) realMetrics.widthPixels * 240 / 1080) {
                     makeMarkAsReadAnimation(v, realMetrics);
+                    v.markAsRead();
                     threadManager.addAndRun(() -> {
                         GlobalVariables.gS.getNewslettersPage(false).markNewsletterAsRead(v.newsletter);
                     });
                 } else
-                    makeComeBackAnimation(v, v.view.getTranslationX());
+                    makeComeBackAnimation(v, v.upperView.getTranslationX());
                 v.resetPosition();
                 scrollView.requestDisallowInterceptTouchEvent(false);
                 swipeRefreshLayout.requestDisallowInterceptTouchEvent(false);
                 return true;
             case MotionEvent.ACTION_CANCEL:
-                makeComeBackAnimation(v, v.view.getTranslationX());
+                makeComeBackAnimation(v, v.upperView.getTranslationX());
                 v.resetPosition();
+                scrollView.requestDisallowInterceptTouchEvent(false);
+                swipeRefreshLayout.requestDisallowInterceptTouchEvent(false);
                 return true;
         }
         return false;
@@ -434,7 +435,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     //region Metodi
 
     private void makeComeBackAnimation(NewsletterView v, float fromX) {
-        TranslateAnimation comeBackAnimation = new TranslateAnimation(fromX, v.getNormalTranslationX(), v.view.getTranslationY(), v.view.getTranslationY());
+        TranslateAnimation comeBackAnimation = new TranslateAnimation(fromX, v.getNormalTranslationX(), v.upperView.getTranslationY(), v.upperView.getTranslationY());
         comeBackAnimation.setDuration(200);
         AlphaAnimation alphaAnimation = new AlphaAnimation(1, 0);
         alphaAnimation.setDuration(200);
@@ -453,11 +454,11 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             public void onAnimationRepeat(Animation animation) {
             }
         });
-        v.view.startAnimation(comeBackAnimation);
+        v.upperView.startAnimation(comeBackAnimation);
     }
 
     private void makeMarkAsReadAnimation(NewsletterView v, DisplayMetrics dm) {
-        TranslateAnimation goAnimation = new TranslateAnimation(v.view.getTranslationX(), dm.widthPixels, v.view.getTranslationY(), v.view.getTranslationY());
+        TranslateAnimation goAnimation = new TranslateAnimation(v.upperView.getTranslationX(), dm.widthPixels, v.upperView.getTranslationY(), v.upperView.getTranslationY());
         goAnimation.setDuration(200);
 
         goAnimation.setAnimationListener(new Animation.AnimationListener() {
@@ -476,7 +477,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
             }
         });
-        v.view.startAnimation(goAnimation);
+        v.upperView.startAnimation(goAnimation);
     }
 
     private boolean compareNewsletterLists(List<Newsletter> l1, List<Newsletter> l2) {

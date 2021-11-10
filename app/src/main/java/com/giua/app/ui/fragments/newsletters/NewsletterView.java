@@ -25,11 +25,13 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.giua.app.R;
 import com.giua.objects.Newsletter;
@@ -41,12 +43,14 @@ public class NewsletterView extends ConstraintLayout {
     public float normalTranslationX = 0;
     private boolean isMoved = false;
     public float offset = 0f; //Usato per fare lo scorrimento
-    public View view;
+    public View upperView;
+    private Context context;
 
     public NewsletterView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, Newsletter newsletter) {
         super(context, attrs);
 
         this.newsletter = newsletter;
+        this.context = context;
 
         initializeComponent(context);
     }
@@ -55,6 +59,8 @@ public class NewsletterView extends ConstraintLayout {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layoutInflater.inflate(R.layout.view_newsletter, this);
 
+        LinearLayout hiddenLayout = findViewById(R.id.newsletter_left_layout);
+        TextView hiddenLayoutText = findViewById(R.id.newsletter_left_text);
         TextView tvStatus = findViewById(R.id.newsletter_status_text_view);
         TextView tvNumberID = findViewById(R.id.newsletter_numberid_text_view);
         TextView tvDate = findViewById(R.id.newsletter_date_text_view);
@@ -62,6 +68,8 @@ public class NewsletterView extends ConstraintLayout {
         ImageView ivNotRead = findViewById(R.id.newsletter_view_left_image);
 
         if (!newsletter.isRead()) {
+            hiddenLayout.setBackground(ResourcesCompat.getDrawable(getResources(), R.color.bad_vote_lighter, context.getTheme()));
+            hiddenLayoutText.setText("Segna come già letta");
             tvStatus.setText("Da leggere");
             tvStatus.setTypeface(tvStatus.getTypeface(), Typeface.BOLD);
             tvDate.setTypeface(tvDate.getTypeface(), Typeface.BOLD);
@@ -69,6 +77,8 @@ public class NewsletterView extends ConstraintLayout {
             tvObject.setTypeface(tvObject.getTypeface(), Typeface.BOLD);
             ivNotRead.setVisibility(VISIBLE);
         } else {
+            hiddenLayout.setBackground(ResourcesCompat.getDrawable(getResources(), R.color.non_vote_lighter, context.getTheme()));
+            hiddenLayoutText.setText("Già letta");
             tvStatus.setText("Letta");
         }
 
@@ -76,7 +86,43 @@ public class NewsletterView extends ConstraintLayout {
         tvDate.setText(newsletter.date);
         tvObject.setText(newsletter.newslettersObject);
 
-        view = findViewById(R.id.newsletter_view);
+        upperView = findViewById(R.id.newsletter_view);
+    }
+
+    public void refreshView() {
+        LinearLayout hiddenLayout = findViewById(R.id.newsletter_left_layout);
+        TextView hiddenLayoutText = findViewById(R.id.newsletter_left_text);
+        TextView tvStatus = findViewById(R.id.newsletter_status_text_view);
+        TextView tvNumberID = findViewById(R.id.newsletter_numberid_text_view);
+        TextView tvDate = findViewById(R.id.newsletter_date_text_view);
+        TextView tvObject = findViewById(R.id.newsletter_object_text_view);
+        ImageView ivNotRead = findViewById(R.id.newsletter_view_left_image);
+
+        if (!newsletter.isRead()) {
+            hiddenLayout.setBackground(ResourcesCompat.getDrawable(getResources(), R.color.bad_vote_lighter, context.getTheme()));
+            hiddenLayoutText.setText("Segna come già letta");
+            tvStatus.setText("Da leggere");
+            tvStatus.setTypeface(tvStatus.getTypeface(), Typeface.BOLD);
+            tvDate.setTypeface(tvDate.getTypeface(), Typeface.BOLD);
+            tvNumberID.setTypeface(tvNumberID.getTypeface(), Typeface.BOLD);
+            tvObject.setTypeface(tvObject.getTypeface(), Typeface.BOLD);
+            ivNotRead.setVisibility(VISIBLE);
+        } else {
+            hiddenLayout.setBackground(ResourcesCompat.getDrawable(getResources(), R.color.non_vote_lighter, context.getTheme()));
+            hiddenLayoutText.setText("Già letta");
+            tvStatus.setText("Letta");
+            tvStatus.setTypeface(tvStatus.getTypeface(), Typeface.NORMAL);
+            tvDate.setTypeface(tvDate.getTypeface(), Typeface.NORMAL);
+            tvNumberID.setTypeface(tvNumberID.getTypeface(), Typeface.NORMAL);
+            tvObject.setTypeface(tvObject.getTypeface(), Typeface.NORMAL);
+            ivNotRead.setVisibility(GONE);
+        }
+
+        tvNumberID.setText("n." + newsletter.number);
+        tvDate.setText(newsletter.date);
+        tvObject.setText(newsletter.newslettersObject);
+
+        upperView = findViewById(R.id.newsletter_view);
     }
 
     public float getNormalTranslationX() {
@@ -85,15 +131,20 @@ public class NewsletterView extends ConstraintLayout {
 
     public void moveTo(float x) {
         if (!isMoved) {
-            normalTranslationX = view.getTranslationX();
+            normalTranslationX = upperView.getTranslationX();
             isMoved = true;
         }
         if (x >= normalTranslationX)
-            view.setTranslationX(x);
+            upperView.setTranslationX(x);
     }
 
     public void resetPosition() {
         offset = 0;
-        view.setTranslationX(normalTranslationX);
+        upperView.setTranslationX(normalTranslationX);
+    }
+
+    public void markAsRead() {
+        newsletter.markAsRead();
+        refreshView();
     }
 }
