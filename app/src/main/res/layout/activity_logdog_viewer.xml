@@ -26,7 +26,7 @@
     tools:context=".ui.activities.LogdogViewerActivity">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
+        android:id="@+id/logDog_appBarLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:theme="@style/Theme.GiuaApp.AppBarOverlay"
@@ -35,6 +35,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.Toolbar
+            android:id="@+id/logDog_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/relative_main_color"
@@ -66,7 +67,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
+        app:layout_constraintTop_toBottomOf="@+id/logDog_appBarLayout"
         tools:ignore="SpeakableTextPresentCheck">
 
         <LinearLayout

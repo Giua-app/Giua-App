@@ -118,7 +118,7 @@
             tools:ignore="HardcodedText" />
 
         <LinearLayout
-            android:id="@+id/linearLayout"
+            android:id="@+id/newsletter_docs_attachments_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
@@ -128,8 +128,6 @@
             android:backgroundTint="@color/newsletter_layout"
             android:elevation="4dp"
             android:orientation="horizontal"
-            android:paddingStart="5dp"
-            android:paddingEnd="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -141,7 +139,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="#00FFFFFF"
+                android:background="@drawable/newsletter_view_touch_effect"
                 android:contentDescription="@string/newsletterview_imagebutton_viewdocument_contentdescription"
                 android:scaleType="centerInside"
                 app:srcCompat="@drawable/ic_find_in_page"
@@ -153,7 +151,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="#00000000"
+                android:background="@drawable/newsletter_view_touch_effect"
                 android:contentDescription="@string/newsletterview_imagebutton_viewattachment_contentdescription"
                 android:scaleType="centerInside"
                 app:srcCompat="@drawable/ic_baseline_attachment_24"
@@ -168,7 +166,7 @@
             android:background="@drawable/general_view_style"
             android:backgroundTint="@color/middle_vote"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+            app:layout_constraintBottom_toBottomOf="@+id/newsletter_docs_attachments_layout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />

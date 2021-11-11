@@ -28,6 +28,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.giua.app.AppData;
 import com.giua.app.LoggerManager;
@@ -54,6 +55,11 @@ public class LogdogViewerActivity extends AppCompatActivity {
         deleteLogs = findViewById(R.id.log_floating_deletelogs);
 
         deleteLogs.setOnClickListener(this::onClickDeleteLogs);
+
+        Toolbar toolbar = findViewById(R.id.logDog_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         @SuppressLint("SimpleDateFormat")
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");

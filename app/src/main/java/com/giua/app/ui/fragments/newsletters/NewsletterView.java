@@ -23,6 +23,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -122,7 +123,18 @@ public class NewsletterView extends ConstraintLayout {
         tvDate.setText(newsletter.date);
         tvObject.setText(newsletter.newslettersObject);
 
+        findViewById(R.id.newsletter_view_btn_document).setOnTouchListener(this::docsAttachmentsOnTouch);
+        findViewById(R.id.newsletter_view_btn_attachment).setOnTouchListener(this::docsAttachmentsOnTouch);
+
         upperView = findViewById(R.id.newsletter_view);
+    }
+
+    private boolean docsAttachmentsOnTouch(View view, MotionEvent motionEvent) {
+        if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+            setClickable(false);
+        } else
+            setClickable(true);
+        return false;
     }
 
     public float getNormalTranslationX() {

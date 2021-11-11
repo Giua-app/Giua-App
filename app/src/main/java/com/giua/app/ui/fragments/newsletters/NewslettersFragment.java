@@ -262,7 +262,9 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         return false;
     }
 
-    //region Listeners
+    //region
+
+    //Qui viene gestito lo swipe della circolare
     private boolean newsletterViewOnTouchListener(View view, MotionEvent motionEvent) {
         NewsletterView v = (NewsletterView) view;
         //Se ce' un animazione in corso o la circolare e' gia' stata letta allora non fare nulla
@@ -275,13 +277,13 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                 return true;
             case MotionEvent.ACTION_MOVE:
                 int historyLength = motionEvent.getHistorySize();
-                if (historyLength > 0 && v.upperView.getTranslationX() >= v.getNormalTranslationX()) {
+                if (historyLength > 1 && motionEvent.getHistoricalX(1) - motionEvent.getHistoricalX(0) > 0 && v.upperView.getTranslationX() >= v.getNormalTranslationX()) {
                     if (v.upperView.getTranslationX() > 50) {
                         scrollView.requestDisallowInterceptTouchEvent(true);
-                        swipeRefreshLayout.requestDisallowInterceptTouchEvent(true);
+                        swipeRefreshLayout.setEnabled(false);
                     }
                     if (v.offset == 0)
-                        v.offset = motionEvent.getRawX() - v.upperView.getX();
+                        v.offset = motionEvent.getRawX() - v.upperView.getTranslationX();
                     v.moveTo((float) Math.sqrt(v.upperView.getTranslationX()) + motionEvent.getRawX() - v.offset);
                     LinearLayout leftLayout = v.findViewById(R.id.newsletter_left_layout);
                     float alpha = v.upperView.getTranslationX() / ((float) realMetrics.widthPixels * 240 / 1080);
@@ -289,7 +291,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                 }
                 return true;
             case MotionEvent.ACTION_UP:
-                if (!v.newsletter.isRead() && v.upperView.getX() >= (float) realMetrics.widthPixels * 240 / 1080) {
+                if (!v.newsletter.isRead() && v.upperView.getTranslationX() >= (float) realMetrics.widthPixels * 240 / 1080) {
                     makeMarkAsReadAnimation(v, realMetrics);
                     v.markAsRead();
                     threadManager.addAndRun(() -> {
@@ -299,13 +301,13 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                     makeComeBackAnimation(v, v.upperView.getTranslationX());
                 v.resetPosition();
                 scrollView.requestDisallowInterceptTouchEvent(false);
-                swipeRefreshLayout.requestDisallowInterceptTouchEvent(false);
+                swipeRefreshLayout.setEnabled(true);
                 return true;
             case MotionEvent.ACTION_CANCEL:
                 makeComeBackAnimation(v, v.upperView.getTranslationX());
                 v.resetPosition();
                 scrollView.requestDisallowInterceptTouchEvent(false);
-                swipeRefreshLayout.requestDisallowInterceptTouchEvent(false);
+                swipeRefreshLayout.setEnabled(true);
                 return true;
         }
         return false;
