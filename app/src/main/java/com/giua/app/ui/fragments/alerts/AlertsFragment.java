@@ -120,7 +120,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
         scrollView.setOnScrollChangeListener(this::scrollViewOnScroll);
         obscureLayoutView.setOnClickListener((view) -> {
             detailsLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
-            obscureLayoutView.hide(activity);
+            obscureLayoutView.hide();
             detailsLayout.setVisibility(View.GONE);
         });
 
@@ -206,6 +206,10 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public boolean onBackPressed() {
+        if (obscureLayoutView.isShown()) {
+            obscureLayoutView.performClick();
+            return true;
+        }
         return false;
     }
 
@@ -248,7 +252,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
 
                     detailsLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
                     detailsLayout.setVisibility(View.VISIBLE);
-                    obscureLayoutView.show(activity);
+                    obscureLayoutView.show();
                     pbLoadingPage.setVisibility(View.GONE);
                 });
             } catch (GiuaScraperExceptions.SiteConnectionProblems e) {

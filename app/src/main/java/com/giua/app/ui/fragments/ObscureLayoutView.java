@@ -73,7 +73,7 @@ public class ObscureLayoutView extends ConstraintLayout {
         hideAnimation = AnimationUtils.loadAnimation(context, R.anim.visualizer_hide_effect);
     }
 
-    public void hide(Context context) {
+    public void hide() {
         setClickable(false);
         startAnimation(hideAnimation);
         setVisibility(GONE);
@@ -81,7 +81,7 @@ public class ObscureLayoutView extends ConstraintLayout {
 
     }
 
-    public void show(Context context) {
+    public void show() {
         setClickable(false);
         startAnimation(showAnimation);
         setVisibility(VISIBLE);

@@ -92,7 +92,10 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
             try {
                 absences = GlobalVariables.gS.getAbsencesPage(refresh).getAllAbsences();
                 if (absences.isEmpty())
-                    activity.runOnUiThread(() -> root.findViewById(R.id.absences_no_elements_text).setVisibility(View.VISIBLE));
+                    activity.runOnUiThread(() -> {
+                        root.findViewById(R.id.absences_no_elements_text).setVisibility(View.VISIBLE);
+                        swipeRefreshLayout.setRefreshing(false);
+                    });
                 else
                     activity.runOnUiThread(this::addViews);
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
@@ -144,7 +147,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
     public boolean onBackPressed() {
         if (obscureLayoutView.isShown()) {
             btnConfirm.setClickable(false);
-            obscureLayoutView.hide(requireContext());
+            obscureLayoutView.performClick();
             return true;
         }
         return false;
@@ -161,7 +164,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
         tvConfirmText.setText(Html.fromHtml("Sei sicuro di voler cancellare la giustificazione del <b>" + latestAbsenceViewClicked.absence.date + "</b> ?", 0));
         confirmActionIsDelete = true;
         btnConfirm.setClickable(true);
-        obscureLayoutView.show(activity);
+        obscureLayoutView.show();
     }
 
     public void viewJustifyOnClick(View view) {
@@ -170,13 +173,13 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
             tvConfirmText.setText(Html.fromHtml("Sei sicuro di voler giustificare con: <b>" + ((AbsenceView) view).justifyText + "</b> ?", 0));
             confirmActionIsDelete = false;
             btnConfirm.setClickable(true);
-            obscureLayoutView.show(activity);
+            obscureLayoutView.show();
         }
     }
 
     private void obscureViewOnClick(View view) {
         latestAbsenceViewClicked = null;
-        obscureLayoutView.hide(activity);
+        obscureLayoutView.hide();
     }
 
     private void btnConfirmOnClick(View view) {
@@ -205,7 +208,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
             });
         }
         btnConfirm.setClickable(false);
-        obscureLayoutView.hide(activity);
+        obscureLayoutView.hide();
     }
 
     private void setErrorMessage(String message, View root) {

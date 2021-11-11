@@ -213,6 +213,10 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public boolean onBackPressed() {
+        if (obscureLayoutView.isShown()) {
+            obscureLayoutView.performClick();
+            return true;
+        }
         return false;
     }
 
@@ -235,7 +239,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         //Dettagli delle lezioni
         visualizerLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
         visualizerLayout.setVisibility(View.VISIBLE);
-        obscureLayoutView.show(activity);
+        obscureLayoutView.show();
         bottomCardView.setZ(-10f);
         btnConfirmDate.setZ(-10f);
         ivCalendarImage.setZ(-10f);
@@ -263,10 +267,13 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void obscureLayoutOnClick(View view) {
+        if (visualizerLayout.getVisibility() == View.VISIBLE)
+            visualizerLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
+        if (frameLayout.getVisibility() == View.VISIBLE)
+            frameLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
         frameLayout.setVisibility(View.GONE);
-        visualizerLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
-        obscureLayoutView.hide(activity);
         visualizerLayout.setVisibility(View.GONE);
+        obscureLayoutView.hide();
         ivCalendarImage.setZ(13.75f);
         bottomCardView.setZ(13.75f);
         btnConfirmDate.setZ(13.75f);
@@ -274,7 +281,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
 
     private void tvCurrentDateOnClick(View view) {
         frameLayout.setVisibility(View.VISIBLE);
-        obscureLayoutView.show(activity);
+        obscureLayoutView.show();
         ivCalendarImage.setZ(-10f);
         bottomCardView.setZ(-10f);
         btnConfirmDate.setZ(-10f);

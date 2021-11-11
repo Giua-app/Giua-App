@@ -149,6 +149,10 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public boolean onBackPressed() {
+        if (obscureLayoutView.isShown()) {
+            obscureLayoutView.performClick();
+            return true;
+        }
         return false;
     }
 
@@ -158,7 +162,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
     }
 
     public void obscureButtonOnClick(View view) {
-        obscureLayoutView.hide(activity);
+        obscureLayoutView.hide();
     }
 
     private void singleVoteOnClick(View view) {
@@ -192,7 +196,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
             detailVoteJudge.setText(Html.fromHtml("<b>" + res.getString(R.string.detail_vote_judge) + "</b> " + _view.vote.judgement, Html.FROM_HTML_MODE_COMPACT));
         }
 
-        obscureLayoutView.show(activity);
+        obscureLayoutView.show();
     }
 
     @SuppressLint("ClickableViewAccessibility")

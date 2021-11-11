@@ -259,6 +259,10 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public boolean onBackPressed() {
+        if (obscureLayoutView.isShown()) {
+            obscureLayoutView.performClick();
+            return true;
+        }
         return false;
     }
 
@@ -347,7 +351,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
         attachmentLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
         attachmentLayout.setVisibility(View.VISIBLE);
-        obscureLayoutView.show(activity);
+        obscureLayoutView.show();
     }
 
     private void onClickDocument(Newsletter newsletter) {
@@ -394,7 +398,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             layout.removeViews(1, layout.getChildCount() - 1);
             filterLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
             filterLayout.setVisibility(View.GONE);
-            obscureLayoutView.hide(activity);
+            obscureLayoutView.hide();
             isFilterApplied = false;
             currentPage = 1;
             loadedAllPages = false;
@@ -403,14 +407,14 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         } else {
             filterLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
             filterLayout.setVisibility(View.GONE);
-            obscureLayoutView.hide(activity);
+            obscureLayoutView.hide();
         }
     }
 
     private void btnFilterOnClick(View view) {
         filterLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
         filterLayout.setVisibility(View.VISIBLE);
-        obscureLayoutView.show(activity);
+        obscureLayoutView.show();
         ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).setChecked(onlyNotRead);
         ((EditText) root.findViewById(R.id.newsletter_filter_date)).setText(filterDate);
         ((EditText) root.findViewById(R.id.newsletter_filter_text)).setText(filterText);
@@ -421,7 +425,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             filterLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
             filterLayout.setVisibility(View.GONE);
         }
-        obscureLayoutView.hide(activity);
+        obscureLayoutView.hide();
         if (attachmentLayout.getVisibility() == View.VISIBLE) {
             attachmentLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
             attachmentLayout.setVisibility(View.GONE);
