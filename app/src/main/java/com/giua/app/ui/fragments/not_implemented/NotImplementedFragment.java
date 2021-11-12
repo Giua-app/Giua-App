@@ -21,10 +21,13 @@ package com.giua.app.ui.fragments.not_implemented;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -56,11 +59,30 @@ public class NotImplementedFragment extends Fragment {
         WebView webView = root.findViewById(R.id.not_implemented_webview);
         webView.setWebViewClient(new WebViewClient() {
             public boolean shouldOverrideUrlLoading(WebView webView, WebResourceRequest request) {
-                return request.getUrl().toString().equals(GiuaScraper.getSiteURL() + "/logout/");
+                return request.getUrl().toString().equals(GiuaScraper.getSiteURL() + "/logout/") || !request.getUrl().toString().contains(GiuaScraper.getSiteURL());
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                webView.evaluateJavascript("try {var exitNode = document.querySelector('[title=\"Esci dal Registro Elettronico\"]');" +
+                        "exitNode.parentNode.removeChild(exitNode);" +
+                        "var menuNode = document.querySelector('[class=\"navbar-toggle collapsed gs-navbar-toggle gs-pt-1 gs-pb-1 gs-mt-2 gs-mb-0\"]');" +
+                        "menuNode.parentNode.removeChild(menuNode); } catch(e){}", null);
+            }
+        });
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                Log.d("MyApplication", consoleMessage.message() + " -- From line "
+                        + consoleMessage.lineNumber() + " of "
+                        + consoleMessage.sourceId());
+                return super.onConsoleMessage(consoleMessage);
             }
         });
         webView.getSettings().setUserAgentString(userAgent);
         webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setUseWideViewPort(true);
+        webView.getSettings().setLoadWithOverviewMode(true);
         CookieManager.getInstance().setCookie(GiuaScraper.getSiteURL(), "PHPSESSID=" + cookie + ";path=/; HttpOnly; SameSite=lax");
 
         webView.loadUrl(url);
