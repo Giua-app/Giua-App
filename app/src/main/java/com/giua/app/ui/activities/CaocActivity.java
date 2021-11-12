@@ -125,7 +125,7 @@ public class CaocActivity extends AppCompatActivity {
 
 
     private void copyErrorToClipboard() {
-        String errorInformation = CustomActivityOnCrash.getAllErrorDetailsFromIntent(CaocActivity.this, getIntent());
+        String errorInformation = getAllErrorDetailsFromIntent(getIntent());
 
         ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 

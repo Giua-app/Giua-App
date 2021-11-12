@@ -338,8 +338,7 @@ public class DrawerActivity extends AppCompatActivity {
         if (!toolbarTitle.contentEquals(toolbar.getTitle())) {  //Se l'elemento cliccato non è già visualizzato allora visualizzalo
             loggerManager.w("Pagina " + toolbarTitle + " non ancora implementata, la faccio visualizzare dalla webview");
             fragment = new NotImplementedFragment(GiuaScraper.getSiteURL() + url, GlobalVariables.gS.getCookie());
-            toolbar.setSubtitle("Non ancora implementato!");
-            changeFragmentWithManager(fragment, tag, toolbarTitle);
+            changeFragmentWithManager(fragment, tag, toolbarTitle, "Non ancora implementato!");
         }
     }
 
@@ -352,7 +351,6 @@ public class DrawerActivity extends AppCompatActivity {
         Fragment fragment;
         String tag = getTagFromId(id);
         String toolbarTxt = "";
-        toolbar.setSubtitle(subtitle);
 
         if (!manager.getFragments().isEmpty() && manager.getFragments().get(0).getTag().equals(tag)) //Se il fragment visualizzato è quello di id allora non fare nulla
             return;
@@ -406,7 +404,7 @@ public class DrawerActivity extends AppCompatActivity {
                 fragment = new ReportCardFragment();
             toolbarTxt = "Pagella";
         }
-        changeFragmentWithManager(fragment, tag, toolbarTxt);
+        changeFragmentWithManager(fragment, tag, toolbarTxt, subtitle);
     }
 
     private void setTextToolbar(String defaultName) {
@@ -445,28 +443,25 @@ public class DrawerActivity extends AppCompatActivity {
         return "";
     }
 
-    private void changeFragmentWithManager(Fragment fragment, String tag, String toolbarTxt) {
+    private void changeFragmentWithManager(Fragment fragment, String tag, String toolbarTxt, String subtitle) {
         loggerManager.d("Cambio fragment a " + tag);
         if(unstableFeatures.contains(tag)){
             loggerManager.w("Rilevata apertura funzionalità instabile (" + tag + "), avviso l'utente ");
-            showUnstableDialog(fragment, tag, toolbarTxt);
+            showUnstableDialog(fragment, tag, toolbarTxt, subtitle);
             return;
         }
-        setTextToolbar(toolbarTxt);
-        FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.content_main, fragment, tag).commit();
+        executeChangeFragment(fragment, tag, toolbarTxt, subtitle);
     }
 
-    private void showUnstableDialog(Fragment fragment, String tag, String toolbarTxt){
+    private void showUnstableDialog(Fragment fragment, String tag, String toolbarTxt, String subtitle){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Funzionalità Instabile");
+        builder.setIcon(R.drawable.ic_alert_outline);
         builder.setMessage("E' stato segnalato che la schermata \"" + toolbarTxt + "\" potrebbe non funzionare come previsto in questa versione.\n\nSei sicuro di continuare?")
 
         .setPositiveButton("Si", (dialog, id) -> {
             loggerManager.w("L'utente ha deciso di continuare con la funzionalità instabile, cambio fragment a " + tag);
-            setTextToolbar(toolbarTxt);
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.content_main, fragment, tag).commit();
+            executeChangeFragment(fragment, tag, toolbarTxt, subtitle);
         })
 
         .setNegativeButton("No", (dialog, id) -> {
@@ -475,13 +470,16 @@ public class DrawerActivity extends AppCompatActivity {
 
         .setOnCancelListener(dialog -> {
             loggerManager.d("L'utente ha deciso di NON continuare con la funzionalità instabile");
-        })
-
-        .setOnDismissListener(dialog -> {
-            loggerManager.d("L'utente ha deciso di NON continuare con la funzionalità instabile");
         });
 
         builder.show();
+    }
+
+    private void executeChangeFragment(Fragment fragment, String tag, String toolbarTxt, String subtitle){
+        setTextToolbar(toolbarTxt);
+        toolbar.setSubtitle(subtitle);
+        FragmentManager manager = getSupportFragmentManager();
+        manager.beginTransaction().replace(R.id.content_main, fragment, tag).commit();
     }
 
     @Override
