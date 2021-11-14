@@ -70,44 +70,60 @@ public class LogdogViewerActivity extends AppCompatActivity {
 
 
         List<LoggerManager.Log> logs = loggerManager.getLogs();
-        TextView textView = new TextView(this);
-        CharSequence text = "";
-        linearLayout.removeAllViews();
-        for (LoggerManager.Log log : logs) {
-            // --@ = Avvio dell'app
-            // -.@ = Crash dell'app
-            if (log.text.startsWith("--@")) {
-                text += "<b>    \u23af\u23af\u23af     " + log.text.split("@")[1] + "     \u23af\u23af\u23af</b>";
-            } else if (log.text.startsWith("-.@")) {
-                text += "<font color='red'>    \u23af\u23af\u23af     " + log.text.split("@")[1] + "     \u23af\u23af\u23af </font>";
-            } else {
-                switch (log.type) {
-                    case "ERROR":
-                        text += "<font color='red'>";
-                        break;
-                    case "WARNING":
-                        text += "<font color='#FFA500'>";
-                        break;
-                    case "DEBUG":
-                        text += "<font color='gray'>";
-                        break;
-                    default:
-                        text += "<font color='black'>";
-                        break;
-                }
-                text += dateFormat.format(log.date) + "|" + log.type + "| " + log.tag + ": <b>" + log.text + "</b></font>";
+        new Thread(() -> {
+            TextView textView = new TextView(this);
+            StringBuilder text = new StringBuilder();
+            linearLayout.removeAllViews();
+            for (LoggerManager.Log log : logs) {
+                // --@ = Avvio dell'app
+                // -.@ = Crash dell'app
+                String[] splitted = log.text.split("@");
+                if (log.text.startsWith("--@")) {
+                    text.append("<b>    \u23af\u23af\u23af     ")
+                            .append(splitted[1])
+                            .append("     \u23af\u23af\u23af</b>");
+                } else if (log.text.startsWith("-.@")) {
+                    text.append("<font color='red'>    \u23af\u23af\u23af     ")
+                            .append(splitted[1])
+                            .append("     \u23af\u23af\u23af </font>");
+                } else {
+                    switch (log.type) {
+                        case "ERROR":
+                            text.append("<font color='red'>");
+                            break;
+                        case "WARNING":
+                            text.append("<font color='#FFA500'>");
+                            break;
+                        case "DEBUG":
+                            text.append("<font color='gray'>");
+                            break;
+                        default:
+                            text.append("<font color='black'>");
+                            break;
+                    }
+                    // + "|" + log.type + "| " + log.tag + ": <b>" + log.text + "</b></font>"
+                    text.append(dateFormat.format(log.date))
+                            .append("|")
+                            .append(log.type)
+                            .append("| ")
+                            .append(log.tag)
+                            .append(": <b>")
+                            .append(log.text)
+                            .append("</b></font>");
 
+                }
+
+                text.append("<br>");
             }
 
-            text += "<br>";
-        }
+            if (logs.isEmpty()) {
+                text.append("<b>\u23af\u23af\u23af  Nessun log trovato!  \u23af\u23af\u23af</b>");
+            }
 
-        if (logs.isEmpty()) {
-            text = "<b>\u23af\u23af\u23af  Nessun log trovato!  \u23af\u23af\u23af</b>";
-        }
+            textView.setText(Html.fromHtml(text.toString(), 0));
+            runOnUiThread(() -> linearLayout.addView(textView));
+        }).start();
 
-        textView.setText(Html.fromHtml(text.toString(), 0));
-        linearLayout.addView(textView);
     }
 
     private void onClickDeleteLogs(View v){
