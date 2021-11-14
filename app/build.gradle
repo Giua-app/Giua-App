@@ -117,7 +117,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.14.3'
 
     //--Giua scraper
-    implementation 'com.github.Giua-app:Giua-Webscraper:de73b4cfc2'
+    implementation 'com.github.Giua-app:Giua-Webscraper:2.0.0'
     //implementation fileTree(dir: 'libs', include: ['*.jar'])     //DEBUG
 
     //--Charts lib
