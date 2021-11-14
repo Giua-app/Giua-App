@@ -61,6 +61,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
 
         btnOffline.setOnClickListener(this::btnOfflineOnClick);
         btnLogout.setOnClickListener(this::btnLogoutOnClick);
+        findViewById(R.id.loading_screen_btn_settings).setOnClickListener(this::btnSettingOnClick);
 
         GiuaScraper.setDebugMode(true);
         loginWithPreviousCredentials();
@@ -133,6 +134,11 @@ public class AutomaticLoginActivity extends AppCompatActivity {
         loggerManager.d("Modalità offline richiesta dall'utente");
         startActivity(new Intent(AutomaticLoginActivity.this, DrawerActivity.class).putExtra("offline", true));
         finish();
+    }
+
+    private void btnSettingOnClick(View view) {
+        loggerManager.d("Avvio SettingsActivity");
+        startActivity(new Intent(this, SettingsActivity.class));
     }
 
     private void threadSleepWithTextUpdates() {
