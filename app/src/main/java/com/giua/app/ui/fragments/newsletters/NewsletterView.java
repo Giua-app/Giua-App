@@ -40,7 +40,7 @@ import com.giua.objects.Newsletter;
 import org.jetbrains.annotations.NotNull;
 
 public class NewsletterView extends ConstraintLayout {
-    Newsletter newsletter;
+    public Newsletter newsletter;
     public float normalTranslationX = 0;
     private boolean isMoved = false;
     public float offset = 0f; //Usato per fare lo scorrimento
@@ -98,24 +98,25 @@ public class NewsletterView extends ConstraintLayout {
         TextView tvDate = findViewById(R.id.newsletter_date_text_view);
         TextView tvObject = findViewById(R.id.newsletter_object_text_view);
         ImageView ivNotRead = findViewById(R.id.newsletter_view_left_image);
+        Typeface typeface = ResourcesCompat.getFont(context, R.font.varelaroundregular);
 
         if (!newsletter.isRead()) {
             hiddenLayout.setBackground(ResourcesCompat.getDrawable(getResources(), R.color.bad_vote_lighter, context.getTheme()));
             hiddenLayoutText.setText("Segna come già letta");
             tvStatus.setText("Da leggere");
-            tvStatus.setTypeface(tvStatus.getTypeface(), Typeface.BOLD);
-            tvDate.setTypeface(tvDate.getTypeface(), Typeface.BOLD);
-            tvNumberID.setTypeface(tvNumberID.getTypeface(), Typeface.BOLD);
-            tvObject.setTypeface(tvObject.getTypeface(), Typeface.BOLD);
+            tvStatus.setTypeface(typeface, Typeface.BOLD);
+            tvDate.setTypeface(typeface, Typeface.BOLD);
+            tvNumberID.setTypeface(typeface, Typeface.BOLD);
+            tvObject.setTypeface(typeface, Typeface.BOLD);
             ivNotRead.setVisibility(VISIBLE);
         } else {
             hiddenLayout.setBackground(ResourcesCompat.getDrawable(getResources(), R.color.non_vote_lighter, context.getTheme()));
             hiddenLayoutText.setText("Già letta");
             tvStatus.setText("Letta");
-            tvStatus.setTypeface(tvStatus.getTypeface(), Typeface.NORMAL);
-            tvDate.setTypeface(tvDate.getTypeface(), Typeface.NORMAL);
-            tvNumberID.setTypeface(tvNumberID.getTypeface(), Typeface.NORMAL);
-            tvObject.setTypeface(tvObject.getTypeface(), Typeface.NORMAL);
+            tvStatus.setTypeface(typeface, Typeface.NORMAL);
+            tvDate.setTypeface(typeface, Typeface.NORMAL);
+            tvNumberID.setTypeface(typeface, Typeface.NORMAL);
+            tvObject.setTypeface(typeface, Typeface.NORMAL);
             ivNotRead.setVisibility(GONE);
         }
 

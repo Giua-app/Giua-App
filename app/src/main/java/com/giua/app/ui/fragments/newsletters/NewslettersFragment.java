@@ -21,7 +21,6 @@ package com.giua.app.ui.fragments.newsletters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -239,13 +238,17 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         for (Newsletter newsletter : allNewsletter) {
             NewsletterView newsletterView = new NewsletterView(context, null, newsletter);
             newsletterView.setOnTouchListener(this::newsletterViewOnTouchListener);
-            newsletterView.findViewById(R.id.newsletter_view_btn_document).setOnClickListener((view) -> onClickDocument(newsletter));
+            newsletterView.findViewById(R.id.newsletter_view_btn_document).setOnClickListener((view) -> {
+                onClickDocument(newsletter);
+                newsletterView.markAsRead();
+            });
 
             if (newsletter.attachmentsUrl != null && !newsletter.attachmentsUrl.isEmpty()) {
                 newsletterView.findViewById(R.id.newsletter_view_btn_attachment).setOnClickListener((view) -> onClickAttachmentImage(newsletter));
             } else {
-                newsletterView.findViewById(R.id.newsletter_view_btn_attachment).setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.non_vote, context.getTheme())));
-                newsletterView.findViewById(R.id.newsletter_view_btn_attachment).setAlpha(0.3f);
+                View btnAttachment = newsletterView.findViewById(R.id.newsletter_view_btn_attachment);
+                btnAttachment.setForeground(null);
+                btnAttachment.setAlpha(0.3f);
             }
 
             newsletterView.setLayoutParams(params);
@@ -281,7 +284,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                 return true;
             case MotionEvent.ACTION_MOVE:
                 int historyLength = motionEvent.getHistorySize();
-                if (historyLength > 1 && motionEvent.getHistoricalX(1) - motionEvent.getHistoricalX(0) > 0 && v.upperView.getTranslationX() >= v.getNormalTranslationX()) {
+                if (historyLength > 1 && v.upperView.getTranslationX() >= v.getNormalTranslationX()) {
                     if (v.upperView.getTranslationX() > 50) {
                         scrollView.requestDisallowInterceptTouchEvent(true);
                         swipeRefreshLayout.setEnabled(false);
@@ -297,18 +300,17 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             case MotionEvent.ACTION_UP:
                 if (!v.newsletter.isRead() && v.upperView.getTranslationX() >= (float) realMetrics.widthPixels * 240 / 1080) {
                     makeMarkAsReadAnimation(v, realMetrics);
-                    v.markAsRead();
                     threadManager.addAndRun(() -> {
                         GlobalVariables.gS.getNewslettersPage(false).markNewsletterAsRead(v.newsletter);
                     });
                 } else
-                    makeComeBackAnimation(v, v.upperView.getTranslationX());
+                    makeComeBackAnimation(v, v.upperView.getTranslationX(), true);
                 v.resetPosition();
                 scrollView.requestDisallowInterceptTouchEvent(false);
                 swipeRefreshLayout.setEnabled(true);
                 return true;
             case MotionEvent.ACTION_CANCEL:
-                makeComeBackAnimation(v, v.upperView.getTranslationX());
+                makeComeBackAnimation(v, v.upperView.getTranslationX(), true);
                 v.resetPosition();
                 scrollView.requestDisallowInterceptTouchEvent(false);
                 swipeRefreshLayout.setEnabled(true);
@@ -338,9 +340,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             tvAttachment.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.varelaroundregular));
             tvAttachment.setGravity(Gravity.CENTER);
             tvAttachment.setTextSize(16f);
-
-            if (counter % 2 != 0)
-                tvAttachment.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.black, context.getTheme())).withAlpha(40));
+            tvAttachment.setForeground(ResourcesCompat.getDrawable(getResources(), R.drawable.ripple_effect, context.getTheme()));
 
             tvAttachment.setLayoutParams(params);
 
@@ -440,7 +440,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
     //region Metodi
 
-    private void makeComeBackAnimation(NewsletterView v, float fromX) {
+    private void makeComeBackAnimation(NewsletterView v, float fromX, boolean isOnlyClosing) {
         TranslateAnimation comeBackAnimation = new TranslateAnimation(fromX, v.getNormalTranslationX(), v.upperView.getTranslationY(), v.upperView.getTranslationY());
         comeBackAnimation.setDuration(200);
         AlphaAnimation alphaAnimation = new AlphaAnimation(1, 0);
@@ -454,6 +454,8 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             @Override
             public void onAnimationEnd(Animation animation) {
                 v.findViewById(R.id.newsletter_left_layout).setAlpha(0);
+                if (!isOnlyClosing)
+                    v.markAsRead();
             }
 
             @Override
@@ -475,7 +477,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                makeComeBackAnimation(v, dm.widthPixels);
+                makeComeBackAnimation(v, dm.widthPixels, false);
             }
 
             @Override

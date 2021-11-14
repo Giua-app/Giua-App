@@ -223,7 +223,9 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
 
                 activity.runOnUiThread(() -> {
                     Alert alert = ((AlertView) view).alert;
+                    ((AlertView) view).markAsRead();
                     TextView alertDetailsTextView = root.findViewById(R.id.alert_details_text_view);
+
 
                     alertDetailsTextView.setText(Html.fromHtml(alert.details, 0));
                     ((TextView) root.findViewById(R.id.alert_creator_text_view)).setText(alert.creator);

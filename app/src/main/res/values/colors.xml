@@ -41,7 +41,6 @@
     <color name="inside_general_view_color">#FAFAFA</color>
     <color name="mean_vote_layout">#FAFAFA</color>
     <color name="adaptive_color_text">#090909</color>
-    <color name="newsletter_layout">#FAFAFA</color>
     <color name="newsletter_img">#0066cc</color>
     <color name="nav_drawer_selected_background">#260066CC</color>
     <color name="nav_drawer_selected_text">#0066CC</color>

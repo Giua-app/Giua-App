@@ -58,7 +58,35 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="8dp" />
+                android:padding="8dp">
+
+                <LinearLayout
+                    android:id="@+id/absences_other_info_layout_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/corner_radius_10dp"
+                    android:backgroundTint="@color/general_view_color"
+                    android:foreground="@drawable/ripple_effect"
+                    android:padding="10dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_baseline_info_24" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="10dp"
+                        android:text="Altre info"
+                        android:textSize="15sp"
+                        android:fontFamily="@font/varelaroundregular" />
+
+                </LinearLayout>
+
+            </LinearLayout>
 
         </ScrollView>
 
@@ -104,7 +132,58 @@
                 android:layout_marginTop="20dp"
                 android:text="Conferma"
                 android:textAllCaps="false"
+                android:backgroundTint="@color/main_color_lighter"
+                android:textColor="@color/adaptive_color_text"
                 android:fontFamily="@font/varelaroundregular" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/absences_other_info_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="60dp"
+            android:layout_marginEnd="60dp"
+            android:background="@drawable/corner_radius_10dp"
+            android:backgroundTint="@color/general_view_color"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Numero giorni di assenza: "
+                android:fontFamily="@font/varelaroundregular" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Numero di ritardi brevi (entro 10 minuti): "
+                android:fontFamily="@font/varelaroundregular" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Numero di ritardi (oltre 10 minuti): "
+                android:fontFamily="@font/varelaroundregular" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Numero di uscite anticipate: "
+                android:fontFamily="@font/varelaroundregular" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Totale ore di assenza: "
+                android:fontFamily="@font/varelaroundregular" />
+
 
         </LinearLayout>
     </com.giua.app.ui.fragments.ObscureLayoutView>

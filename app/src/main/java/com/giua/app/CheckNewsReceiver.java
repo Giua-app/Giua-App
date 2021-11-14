@@ -69,16 +69,6 @@ public class CheckNewsReceiver extends BroadcastReceiver {
 
                 checkNewsAndSendNotifications();
 
-            } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.SiteConnectionProblems e) {
-                loggerManager.e("Errore di connessione - " + e.getMessage());
-                if (SettingsData.getSettingBoolean(context, SettingKey.DEBUG_MODE)) {
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                            .setSmallIcon(R.drawable.ic_giuaschool_black)
-                            .setContentTitle("Si è verificato un errore di connessione")
-                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-                    notificationManager.notify(12, builder.build());
-                }
             } catch (Exception e) {
                 loggerManager.e("Errore sconosciuto - " + e.getMessage());
                 if (SettingsData.getSettingBoolean(context, SettingKey.DEBUG_MODE)) {

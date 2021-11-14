@@ -29,6 +29,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.giua.app.R;
 import com.giua.objects.Alert;
@@ -36,17 +37,19 @@ import com.giua.objects.Alert;
 import org.jetbrains.annotations.NotNull;
 
 public class AlertView extends ConstraintLayout {
-    Alert alert;
+    public Alert alert;
+    private Context context;
 
     public AlertView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, Alert alert) {
         super(context, attrs);
 
         this.alert = alert;
+        this.context = context;
 
-        initializeComponent(context);
+        initializeComponent();
     }
 
-    private void initializeComponent(Context context) {
+    private void initializeComponent() {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layoutInflater.inflate(R.layout.view_alert, this);
 
@@ -55,13 +58,14 @@ public class AlertView extends ConstraintLayout {
         TextView tvObject = findViewById(R.id.alert_object_text_view);
         TextView tvReceivers = findViewById(R.id.alert_receivers_text_view);
         ImageView ivNotRead = findViewById(R.id.alert_view_left_image);
+        Typeface typeface = ResourcesCompat.getFont(context, R.font.varelaroundregular);
 
         if (!alert.isRead()) {
             tvStatus.setText("Da leggere");
-            tvStatus.setTypeface(tvStatus.getTypeface(), Typeface.BOLD);
-            tvDate.setTypeface(tvDate.getTypeface(), Typeface.BOLD);
-            tvObject.setTypeface(tvObject.getTypeface(), Typeface.BOLD);
-            tvReceivers.setTypeface(tvObject.getTypeface(), Typeface.BOLD);
+            tvStatus.setTypeface(typeface, Typeface.BOLD);
+            tvDate.setTypeface(typeface, Typeface.BOLD);
+            tvObject.setTypeface(typeface, Typeface.BOLD);
+            tvReceivers.setTypeface(typeface, Typeface.BOLD);
             ivNotRead.setVisibility(VISIBLE);
         } else {
             tvStatus.setText("Letta");
@@ -70,5 +74,39 @@ public class AlertView extends ConstraintLayout {
         tvReceivers.setText(alert.receivers);
         tvDate.setText(alert.date);
         tvObject.setText(alert.object);
+    }
+
+    public void refreshView() {
+        TextView tvStatus = findViewById(R.id.alert_status_text_view);
+        TextView tvDate = findViewById(R.id.alert_date_text_view);
+        TextView tvObject = findViewById(R.id.alert_object_text_view);
+        TextView tvReceivers = findViewById(R.id.alert_receivers_text_view);
+        ImageView ivNotRead = findViewById(R.id.alert_view_left_image);
+        Typeface typeface = ResourcesCompat.getFont(context, R.font.varelaroundregular);
+
+        if (!alert.isRead()) {
+            tvStatus.setText("Da leggere");
+            tvStatus.setTypeface(typeface, Typeface.BOLD);
+            tvDate.setTypeface(typeface, Typeface.BOLD);
+            tvObject.setTypeface(typeface, Typeface.BOLD);
+            tvReceivers.setTypeface(typeface, Typeface.BOLD);
+            ivNotRead.setVisibility(VISIBLE);
+        } else {
+            tvStatus.setText("Letto");
+            tvStatus.setTypeface(typeface, Typeface.NORMAL);
+            tvDate.setTypeface(typeface, Typeface.NORMAL);
+            tvObject.setTypeface(typeface, Typeface.NORMAL);
+            tvReceivers.setTypeface(typeface, Typeface.NORMAL);
+            ivNotRead.setVisibility(GONE);
+        }
+
+        tvReceivers.setText(alert.receivers);
+        tvDate.setText(alert.date);
+        tvObject.setText(alert.object);
+    }
+
+    public void markAsRead() {
+        alert.markAsRead();
+        refreshView();
     }
 }

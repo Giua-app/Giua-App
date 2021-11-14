@@ -21,5 +21,5 @@
     android:color="@color/night_white_light_black">
     <item
         android:id="@android:id/mask"
-        android:drawable="@android:color/white" />
+        android:drawable="@drawable/corner_radius_10dp" />
 </ripple>
