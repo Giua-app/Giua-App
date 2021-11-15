@@ -126,11 +126,17 @@ public class LogdogViewerActivity extends AppCompatActivity {
 
     }
 
-    private void onClickDeleteLogs(View v){
+    private void onClickDeleteLogs(View v) {
         AppData.saveLogsString(LogdogViewerActivity.this, "");
         linearLayout.removeAllViews();
         TextView textView = new TextView(LogdogViewerActivity.this);
-        textView.setText(Html.fromHtml("<b>\u23af\u23af\u23af  Nessun log trovato!  \u23af\u23af\u23af</b>",0));
+        textView.setText(Html.fromHtml("<b>\u23af\u23af\u23af  Nessun log trovato!  \u23af\u23af\u23af</b>", 0));
         linearLayout.addView(textView);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

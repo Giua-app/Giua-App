@@ -29,6 +29,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -40,6 +41,7 @@ import com.giua.app.R;
 import com.giua.app.ThreadManager;
 import com.giua.app.ui.fragments.ObscureLayoutView;
 import com.giua.objects.Absence;
+import com.giua.pages.AbsencesPage;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -57,11 +59,12 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
     Button btnConfirm;
     ObscureLayoutView obscureLayoutView;
     AbsenceView latestAbsenceViewClicked;
+    LinearLayout otherInfoLayoutButton;
+    LinearLayout confirmLayout;
     boolean confirmActionIsDelete;  //Indica cosa deve fare il bottone di conferma una volta cliccato. true: elimina la giustificazione ; false: la modifica/pubblica
     boolean refresh = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //TODO: aggiungere le altre info come le ore totali di assenza
         root = inflater.inflate(R.layout.fragment_absences, container, false);
         loggerManager = new LoggerManager("AbsencesFragment", getContext());
 
@@ -69,6 +72,8 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
         tvConfirmText = root.findViewById(R.id.absences_confirm_text);
         obscureLayoutView = root.findViewById(R.id.absences_obscure_view);
         btnConfirm = root.findViewById(R.id.absences_confirm_button);
+        otherInfoLayoutButton = root.findViewById(R.id.absences_other_info_layout_button);
+        confirmLayout = root.findViewById(R.id.absences_confirm_layout);
 
         activity = requireActivity();
         threadManager = new ThreadManager();
@@ -77,6 +82,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         obscureLayoutView.setOnClickListener(this::obscureViewOnClick);
         btnConfirm.setOnClickListener(this::btnConfirmOnClick);
+        otherInfoLayoutButton.setOnClickListener(this::otherInfoOnClick);
 
         loadDataAndViews();
 
@@ -124,19 +130,16 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void addViews() {
         LinearLayout linearLayout = root.findViewById(R.id.absences_views_layout);
-        linearLayout.removeAllViews();
+        linearLayout.removeViews(1, linearLayout.getChildCount() - 1);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.setMargins(0, 40, 0, 0);
 
-        int counter = 0;
         for (Absence absence : absences) {
             AbsenceView absenceView = new AbsenceView(activity, null, absence, this::viewJustifyOnClick, this::viewDeleteOnClick);
 
-            if (counter != 0)
-                absenceView.setLayoutParams(params);
+            absenceView.setLayoutParams(params);
 
             linearLayout.addView(absenceView);
-            counter++;
         }
 
         swipeRefreshLayout.setRefreshing(false);
@@ -159,11 +162,30 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
         loadDataAndViews();
     }
 
+    private void otherInfoOnClick(View view) {
+        AbsencesPage absencesPage = GlobalVariables.gS.getAbsencesPage(false);
+        confirmLayout.setVisibility(View.GONE);
+        root.findViewById(R.id.absences_other_info_layout).setVisibility(View.VISIBLE);
+        setTextToOtherInfoObjects(R.id.absences_other_info_number_absences, "Numero di giorni di assenza: ", absencesPage.getAbsencesDayCount());
+        setTextToOtherInfoObjects(R.id.absences_other_info_number_short_delays, "Numero di ritardi brevi (entro 10 minuti): ", absencesPage.getShortDelaysCount());
+        setTextToOtherInfoObjects(R.id.absences_other_info_number_delays, "Numero di ritardi (oltre 10 minuti): ", absencesPage.getDelaysCount());
+        setTextToOtherInfoObjects(R.id.absences_other_info_number_exits, "Numero di uscite anticipate: ", absencesPage.getEarlyExitsCount());
+        setTextToOtherInfoObjects(R.id.absences_other_info_total_absences_time, "Totale ore di assenza: ", absencesPage.getTotalHourOfAbsences());
+        obscureLayoutView.show();
+
+    }
+
+    private void setTextToOtherInfoObjects(@IdRes int id, String textBold, String info) {
+        ((TextView) root.findViewById(id)).setText(Html.fromHtml("<b>" + textBold + "</b><br>" + info + "<br>", Html.FROM_HTML_MODE_LEGACY));
+    }
+
     private void viewDeleteOnClick(View view) {
         latestAbsenceViewClicked = ((AbsenceView) view);
         tvConfirmText.setText(Html.fromHtml("Sei sicuro di voler cancellare la giustificazione del <b>" + latestAbsenceViewClicked.absence.date + "</b> ?", 0));
         confirmActionIsDelete = true;
         btnConfirm.setClickable(true);
+        confirmLayout.setVisibility(View.VISIBLE);
+        root.findViewById(R.id.absences_other_info_layout).setVisibility(View.GONE);
         obscureLayoutView.show();
     }
 
@@ -173,6 +195,8 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
             tvConfirmText.setText(Html.fromHtml("Sei sicuro di voler giustificare con: <b>" + ((AbsenceView) view).justifyText + "</b> ?", 0));
             confirmActionIsDelete = false;
             btnConfirm.setClickable(true);
+            confirmLayout.setVisibility(View.VISIBLE);
+            root.findViewById(R.id.absences_other_info_layout).setVisibility(View.GONE);
             obscureLayoutView.show();
         }
     }
