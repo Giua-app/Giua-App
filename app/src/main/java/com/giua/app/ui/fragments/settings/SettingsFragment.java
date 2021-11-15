@@ -195,6 +195,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
         } else {
             alarmManager.cancel(pendingIntent);
+            loggerManager.d("L'allarme è stato (teoricamente) cancellato");
         }
         return true;
     }

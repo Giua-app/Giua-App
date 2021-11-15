@@ -101,6 +101,7 @@
                     android:layout_gravity="end"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="10dp"
+                    android:foreground="@drawable/ripple_effect"
                     app:contentPadding="5dp"
                     app:cardBackgroundColor="@color/general_view_color"
                     app:cardCornerRadius="10dp">

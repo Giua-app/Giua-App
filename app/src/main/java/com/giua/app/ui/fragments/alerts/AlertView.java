@@ -92,7 +92,7 @@ public class AlertView extends ConstraintLayout {
             tvReceivers.setTypeface(typeface, Typeface.BOLD);
             ivNotRead.setVisibility(VISIBLE);
         } else {
-            tvStatus.setText("Letto");
+            tvStatus.setText("Letta");
             tvStatus.setTypeface(typeface, Typeface.NORMAL);
             tvDate.setTypeface(typeface, Typeface.NORMAL);
             tvObject.setTypeface(typeface, Typeface.NORMAL);
