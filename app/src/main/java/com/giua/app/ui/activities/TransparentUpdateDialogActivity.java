@@ -88,10 +88,11 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
     private void showDialogUpdateChangelog(){
         loggerManager.d("Mostro un dialogo personalizzato");
         String body = rootNode.findPath("body").asText();
+        loggerManager.w("body: " + body);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Novità della versione " + tagName)
 
-                .setMessage(Html.fromHtml(body,0))
+                .setMessage(Html.fromHtml(body, 0))
 
                 .setPositiveButton("Chiudi", (dialog, id) -> finish());
 
