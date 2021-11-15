@@ -80,8 +80,6 @@ public class ActivityManager extends AppCompatActivity {
         if (!defaultUrl.equals(""))
             GiuaScraper.setSiteURL(defaultUrl);
 
-        loggerManager.d("defaultUrl è " + defaultUrl);
-
         //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
 
         final int introStatus = SettingsData.getSettingInt(this, SettingKey.INTRO_STATUS);
@@ -131,7 +129,9 @@ public class ActivityManager extends AppCompatActivity {
         if(!SettingsData.getSettingString(this, SettingKey.APP_VER).equals(BuildConfig.VERSION_NAME)){
             loggerManager.w("Aggiornamento installato rilevato");
             loggerManager.d("Cancello apk dell'aggiornamento");
-            new AppUpdateManager(this).deleteOldApk();
+            AppUpdateManager upd = new AppUpdateManager(ActivityManager.this);
+            upd.deleteOldApk();
+            new Thread(upd::showDialogReleaseChangelog).start();
         }
         SettingsData.saveSettingString(this, SettingKey.APP_VER, BuildConfig.VERSION_NAME);
         new Thread(() -> {

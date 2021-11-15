@@ -54,6 +54,8 @@ public class AppUpdateManager {
         loggerManager = new LoggerManager("AppUpdateManager", this.context);
     }
 
+
+
     public void deleteOldApk(){
         String downloadLocation = context.getExternalFilesDir(null) + "/giua_update.apk";
         File file = new File(downloadLocation);
@@ -62,6 +64,28 @@ public class AppUpdateManager {
             loggerManager.w("Errore nel cancellare file apk dell'aggiornamento! Forse si è aggiornato manualmente?");
         }
     }
+
+
+
+    public String getLatestReleaseChangelog(){
+        JsonNode rootNode = getReleasesJson();
+
+        if (rootNode == null)    //Si è verificato un errore di qualche tipo
+            return null;
+
+        return rootNode.findPath("body").asText(); //Si spera che il body della release sia in html, altrimenti si vedrà male
+
+    }
+
+
+
+    public void showDialogReleaseChangelog(){
+        Intent intent = new Intent(context, TransparentUpdateDialogActivity.class);
+        intent.putExtra("json", getReleasesJson().toString());
+
+        context.startActivity(intent);
+    }
+
 
     public boolean checkForUpdates(){
         loggerManager.d("Controllo aggiornamenti...");
@@ -98,8 +122,9 @@ public class AppUpdateManager {
         return false;
     }
 
+
     public JsonNode getReleasesJson(){
-        String response = "";
+        String response;
         try {
             response = session.newRequest()
                     .url("https://api.github.com/repos/giua-app/giua-app/releases/latest")
@@ -112,7 +137,7 @@ public class AppUpdateManager {
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        JsonNode rootNode = null;
+        JsonNode rootNode;
         try {
             rootNode = objectMapper.readTree(response);
         } catch (IOException e) {
@@ -123,6 +148,7 @@ public class AppUpdateManager {
 
         return rootNode;
     }
+
 
     private boolean isUpdateNewerThanApp(){
         if (currentVer[0].equals(updateVer[0]) && currentVer[1].equals(updateVer[1]) && currentVer[2].equals(updateVer[2])) {
@@ -168,7 +194,7 @@ public class AppUpdateManager {
             return true;
         }
 
-        loggerManager.w("Il LastReminder è di oggi (o indietro nel tempo). Update gia notificato non c'è bisogno di rifarlo di nuovo");
+        loggerManager.w("Il LastReminder è di oggi (o avanti nel tempo). Update gia notificato non c'è bisogno di rifarlo di nuovo");
         return false;
     }
 
@@ -182,6 +208,7 @@ public class AppUpdateManager {
 
         Intent intent = new Intent(context, TransparentUpdateDialogActivity.class);
         intent.putExtra("json", getReleasesJson().toString());
+        intent.putExtra("doUpdate", true);
         PendingIntent pendingIntent;
 
         pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);

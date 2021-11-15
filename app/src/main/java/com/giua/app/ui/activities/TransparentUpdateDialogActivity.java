@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -49,9 +50,10 @@ import java.util.Objects;
 public class TransparentUpdateDialogActivity extends AppCompatActivity {
 
     String url;
-    String newVer;
+    String tagName;
     Calendar date;
     LoggerManager loggerManager;
+    JsonNode rootNode;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,25 +65,45 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
         String json = getIntent().getStringExtra("json");
         ObjectMapper objectMapper = new ObjectMapper();
 
-        JsonNode rootNode = null;
         try {
             rootNode = objectMapper.readTree(json);
         } catch (IOException e) {
             loggerManager.e("Impossibile leggere json! - " + e.getMessage());
             e.printStackTrace();
+            finish();
         }
+
         url = Objects.requireNonNull(rootNode).findPath("browser_download_url").asText();
-        newVer = rootNode.findPath("tag_name").asText();
+        tagName = rootNode.findPath("tag_name").asText();
         date = Calendar.getInstance();
-        showDialog();
+
+        if(getIntent().getBooleanExtra("doUpdate", false)){
+            showDialogNewUpdate();
+            return;
+        }
+        showDialogUpdateChangelog();
     }
 
 
-    private void showDialog() {
+    private void showDialogUpdateChangelog(){
+        loggerManager.d("Mostro un dialogo personalizzato");
+        String body = rootNode.findPath("body").asText();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Novità della versione " + tagName)
+
+                .setMessage(Html.fromHtml(body,0))
+
+                .setPositiveButton("Chiudi", (dialog, id) -> finish());
+
+        builder.show();
+    }
+
+
+    private void showDialogNewUpdate() {
         loggerManager.d("Mostro dialogo per aggiornamento app");
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Aggiornamento");
-        builder.setMessage("La tua versione attuale è la " + BuildConfig.VERSION_NAME + "\nLa nuova versione è la " + newVer + "\n\nVuoi aggiornare l'app?\n" +
+        builder.setMessage("La tua versione attuale è la " + BuildConfig.VERSION_NAME + "\nLa nuova versione è la " + tagName + "\n\nVuoi aggiornare l'app?\n" +
                 "Nota: I tuoi dati NON VERRANNO cancellati, verranno scaricati circa 10MB")
                 .setPositiveButton("Si", (dialog, id) -> new Thread(this::downloadInstallApk).start());
 
@@ -123,7 +145,7 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
 
 
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-        request.setDescription(newVer);
+        request.setDescription(tagName);
         request.setTitle("Download Giua App");
 
 
