@@ -202,6 +202,21 @@ public class AboutActivity extends MaterialAboutActivity {
                 "LeakCanary", "2015", "Square, Inc",
                 OpenSourceLicense.APACHE_2);
 
+        MaterialAboutCard androidChartLicenseCard = ConvenienceBuilder.createLicenseCard(c,
+                new IconicsDrawable(c)
+                        .icon(CommunityMaterial.Icon.cmd_book)
+                        .sizeDp(18),
+                "MPAndroidChart", "2020", "Philipp Jahoda",
+                OpenSourceLicense.APACHE_2);
+
+        MaterialAboutCard drawerLicenseCard = ConvenienceBuilder.createLicenseCard(c,
+                new IconicsDrawable(c)
+                        .icon(CommunityMaterial.Icon.cmd_book)
+                        .sizeDp(18),
+                "Material Drawer", "2021", "Mike Penz",
+                OpenSourceLicense.APACHE_2);
+
+
 
         return new MaterialAboutList(giuaScraperLicenseCard,
                 appIntroLicenseCard,
@@ -209,7 +224,8 @@ public class AboutActivity extends MaterialAboutActivity {
                 jsoupLicenseCard,
                 materialAboutLibraryLicenseCard,
                 androidIconicsLicenseCard,
-                leakCanaryLicenseCard);
+                leakCanaryLicenseCard, androidChartLicenseCard,
+                drawerLicenseCard);
     }
 
     @Nullable

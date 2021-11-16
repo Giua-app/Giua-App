@@ -105,10 +105,15 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment:2.3.5'
     //noinspection KtxExtensionAvailable
     implementation 'androidx.navigation:navigation-ui:2.3.5'
+    //noinspection GradleDependency
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
+    //noinspection GradleDependency
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
+    //noinspection GradleDependency
     implementation 'androidx.annotation:annotation:1.2.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    //noinspection KtxExtensionAvailable
+    implementation "androidx.preference:preference:1.1.1"
 
     //--Memory leak lib
     //implementation 'com.squareup.leakcanary:leakcanary-android:2.7'  //DEBUG
@@ -134,10 +139,6 @@ dependencies {
 
     //--App Intro
     implementation 'com.github.AppIntro:AppIntro:6.1.0'
-
-    //--Settings screen (https://developer.android.com/jetpack/androidx/releases/preference)
-    //noinspection KtxExtensionAvailable
-    implementation "androidx.preference:preference:1.1.1"
 
     //--Doki (display info from dontkillmyapp.com - https://github.com/DoubleDotLabs/doki)
     implementation('dev.doubledot.doki:library:c18efeb072@aar') {
