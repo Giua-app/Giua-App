@@ -61,6 +61,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
     AbsenceView latestAbsenceViewClicked;
     LinearLayout otherInfoLayoutButton;
     LinearLayout confirmLayout;
+    AbsencesPage absencesPage;
     boolean confirmActionIsDelete;  //Indica cosa deve fare il bottone di conferma una volta cliccato. true: elimina la giustificazione ; false: la modifica/pubblica
     boolean refresh = false;
 
@@ -96,7 +97,14 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
 
         threadManager.addAndRun(() -> {
             try {
-                absences = GlobalVariables.gS.getAbsencesPage(refresh).getAllAbsences();
+                absencesPage = GlobalVariables.gS.getAbsencesPage(refresh);
+                absences = absencesPage.getAllAbsences();
+
+                activity.runOnUiThread(() -> {
+                    setTextToOtherInfoObjects(R.id.absences_other_info_number_absences, "Numero di giorni di assenza: ", absencesPage.getAbsencesDayCount(), false);
+                    setTextToOtherInfoObjects(R.id.absences_other_info_total_absences_time, "Totale ore di assenza: ", absencesPage.getTotalHourOfAbsences(), false);
+                });
+
                 if (absences.isEmpty())
                     activity.runOnUiThread(() -> {
                         root.findViewById(R.id.absences_no_elements_text).setVisibility(View.VISIBLE);
@@ -130,7 +138,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void addViews() {
         LinearLayout linearLayout = root.findViewById(R.id.absences_views_layout);
-        linearLayout.removeViews(1, linearLayout.getChildCount() - 1);
+        linearLayout.removeViews(2, linearLayout.getChildCount() - 3);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.setMargins(0, 40, 0, 0);
 
@@ -163,20 +171,18 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void otherInfoOnClick(View view) {
-        AbsencesPage absencesPage = GlobalVariables.gS.getAbsencesPage(false);
+        absencesPage = GlobalVariables.gS.getAbsencesPage(false);
         confirmLayout.setVisibility(View.GONE);
         root.findViewById(R.id.absences_other_info_layout).setVisibility(View.VISIBLE);
-        setTextToOtherInfoObjects(R.id.absences_other_info_number_absences, "Numero di giorni di assenza: ", absencesPage.getAbsencesDayCount());
-        setTextToOtherInfoObjects(R.id.absences_other_info_number_short_delays, "Numero di ritardi brevi (entro 10 minuti): ", absencesPage.getShortDelaysCount());
-        setTextToOtherInfoObjects(R.id.absences_other_info_number_delays, "Numero di ritardi (oltre 10 minuti): ", absencesPage.getDelaysCount());
-        setTextToOtherInfoObjects(R.id.absences_other_info_number_exits, "Numero di uscite anticipate: ", absencesPage.getEarlyExitsCount());
-        setTextToOtherInfoObjects(R.id.absences_other_info_total_absences_time, "Totale ore di assenza: ", absencesPage.getTotalHourOfAbsences());
+        setTextToOtherInfoObjects(R.id.absences_other_info_number_short_delays, "Numero di ritardi brevi (entro 10 minuti): ", absencesPage.getShortDelaysCount(), true);
+        setTextToOtherInfoObjects(R.id.absences_other_info_number_delays, "Numero di ritardi (oltre 10 minuti): ", absencesPage.getDelaysCount(), true);
+        setTextToOtherInfoObjects(R.id.absences_other_info_number_exits, "Numero di uscite anticipate: ", absencesPage.getEarlyExitsCount(), true);
         obscureLayoutView.show();
 
     }
 
-    private void setTextToOtherInfoObjects(@IdRes int id, String textBold, String info) {
-        ((TextView) root.findViewById(id)).setText(Html.fromHtml("<b>" + textBold + "</b><br>" + info + "<br>", Html.FROM_HTML_MODE_LEGACY));
+    private void setTextToOtherInfoObjects(@IdRes int id, String textBold, String info, boolean hasBr) {
+        ((TextView) root.findViewById(id)).setText(Html.fromHtml("<b>" + textBold + "</b>" + (hasBr ? "<br>" : "") + info + (hasBr ? "<br>" : ""), Html.FROM_HTML_MODE_LEGACY));
     }
 
     private void viewDeleteOnClick(View view) {

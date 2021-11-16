@@ -86,6 +86,30 @@
 
                 </LinearLayout>
 
+                <TextView
+                    android:id="@+id/absences_other_info_number_absences"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Numero giorni di assenza: "
+                    android:fontFamily="@font/varelaroundregular"
+                    android:textSize="16sp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/corner_radius_10dp"
+                    android:backgroundTint="@color/general_view_color"
+                    android:padding="10dp" />
+
+                <TextView
+                    android:id="@+id/absences_other_info_total_absences_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Totale ore di assenza: "
+                    android:fontFamily="@font/varelaroundregular"
+                    android:textSize="16sp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/corner_radius_10dp"
+                    android:backgroundTint="@color/general_view_color"
+                    android:padding="10dp" />
+
             </LinearLayout>
 
         </ScrollView>
@@ -160,40 +184,28 @@
                 android:padding="8dp">
 
                 <TextView
-                    android:id="@+id/absences_other_info_number_absences"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Numero giorni di assenza: "
-                    android:fontFamily="@font/varelaroundregular" />
-
-                <TextView
                     android:id="@+id/absences_other_info_number_short_delays"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Numero di ritardi brevi (entro 10 minuti): "
-                    android:fontFamily="@font/varelaroundregular" />
+                    android:fontFamily="@font/varelaroundregular"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/absences_other_info_number_delays"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Numero di ritardi (oltre 10 minuti): "
-                    android:fontFamily="@font/varelaroundregular" />
+                    android:fontFamily="@font/varelaroundregular"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/absences_other_info_number_exits"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Numero di uscite anticipate: "
-                    android:fontFamily="@font/varelaroundregular" />
-
-                <TextView
-                    android:id="@+id/absences_other_info_total_absences_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Totale ore di assenza: "
-                    android:fontFamily="@font/varelaroundregular" />
-
+                    android:fontFamily="@font/varelaroundregular"
+                    android:textSize="16sp" />
 
             </LinearLayout>
         </ScrollView>
