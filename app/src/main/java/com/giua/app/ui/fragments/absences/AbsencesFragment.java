@@ -138,7 +138,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void addViews() {
         LinearLayout linearLayout = root.findViewById(R.id.absences_views_layout);
-        linearLayout.removeViews(2, linearLayout.getChildCount() - 3);
+        linearLayout.removeViews(3, linearLayout.getChildCount() - 3);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.setMargins(0, 40, 0, 0);
 
