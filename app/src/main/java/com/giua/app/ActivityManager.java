@@ -126,9 +126,11 @@ public class ActivityManager extends AppCompatActivity {
     }
 
     private void checkForUpdates(){
-        if(!SettingsData.getSettingString(this, SettingKey.APP_VER).equals(BuildConfig.VERSION_NAME)){
+        if(!SettingsData.getSettingString(this, SettingKey.APP_VER).equals("")
+                && !SettingsData.getSettingString(this, SettingKey.APP_VER).equals(BuildConfig.VERSION_NAME)){
+
             loggerManager.w("Aggiornamento installato rilevato");
-            loggerManager.d("Cancello apk dell'aggiornamento");
+            loggerManager.d("Cancello apk dell'aggiornamento e mostro changelog");
             AppUpdateManager upd = new AppUpdateManager(ActivityManager.this);
             upd.deleteOldApk();
             new Thread(upd::showDialogReleaseChangelog).start();
@@ -161,7 +163,7 @@ public class ActivityManager extends AppCompatActivity {
     private void setupNotificationManager(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Giua App Novità";
-            String description = "";
+            String description = "Notifiche dal registro elettronico";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel("0", name, importance);
             channel.setDescription(description);
