@@ -126,16 +126,6 @@ public class ActivityManager extends AppCompatActivity {
     }
 
     private void checkForUpdates(){
-        if(!SettingsData.getSettingString(this, SettingKey.APP_VER).equals("")
-                && !SettingsData.getSettingString(this, SettingKey.APP_VER).equals(BuildConfig.VERSION_NAME)){
-
-            loggerManager.w("Aggiornamento installato rilevato");
-            loggerManager.d("Cancello apk dell'aggiornamento e mostro changelog");
-            AppUpdateManager upd = new AppUpdateManager(ActivityManager.this);
-            upd.deleteOldApk();
-            new Thread(upd::showDialogReleaseChangelog).start();
-        }
-        SettingsData.saveSettingString(this, SettingKey.APP_VER, BuildConfig.VERSION_NAME);
         new Thread(() -> {
             AppUpdateManager manager = new AppUpdateManager(ActivityManager.this);
             if (SettingsData.getSettingBoolean(this, SettingKey.UPDATES_NOTIFICATION) && manager.checkForUpdates() && manager.checkUpdateReminderDate()) {

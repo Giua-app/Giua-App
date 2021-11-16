@@ -37,6 +37,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.giua.app.AppData;
+import com.giua.app.AppUpdateManager;
+import com.giua.app.BuildConfig;
 import com.giua.app.GlobalVariables;
 import com.giua.app.LoggerManager;
 import com.giua.app.LoginData;
@@ -97,6 +99,7 @@ public class MainLoginActivity extends AppCompatActivity {
             params.setMargins(0, 20, 0, 0);
             findViewById(R.id.main_card_view).setLayoutParams(params);
         }
+        checkForUpdateChangelog();
     }
 
     private TextWatcher onTextChange(final TextInputLayout view) {
@@ -122,6 +125,19 @@ public class MainLoginActivity extends AppCompatActivity {
 
             }
         };
+    }
+
+    private void checkForUpdateChangelog(){
+        if(!SettingsData.getSettingString(this, SettingKey.APP_VER).equals("")
+                && !SettingsData.getSettingString(this, SettingKey.APP_VER).equals(BuildConfig.VERSION_NAME)){
+
+            loggerManager.w("Aggiornamento installato rilevato");
+            loggerManager.d("Cancello apk dell'aggiornamento e mostro changelog");
+            AppUpdateManager upd = new AppUpdateManager(MainLoginActivity.this);
+            upd.deleteOldApk();
+            new Thread(upd::showDialogReleaseChangelog).start();
+        }
+        SettingsData.saveSettingString(this, SettingKey.APP_VER, BuildConfig.VERSION_NAME);
     }
 
     private void login() {

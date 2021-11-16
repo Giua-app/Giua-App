@@ -37,6 +37,8 @@ import androidx.fragment.app.FragmentManager;
 
 import com.giua.app.ActivityManager;
 import com.giua.app.AppData;
+import com.giua.app.AppUpdateManager;
+import com.giua.app.BuildConfig;
 import com.giua.app.CheckNewsReceiver;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
@@ -168,6 +170,21 @@ public class DrawerActivity extends AppCompatActivity {
             } catch (Exception ignored) {}
 
         }).start();
+
+        checkForUpdateChangelog();
+    }
+
+    private void checkForUpdateChangelog(){
+        if(!SettingsData.getSettingString(this, SettingKey.APP_VER).equals("")
+                && !SettingsData.getSettingString(this, SettingKey.APP_VER).equals(BuildConfig.VERSION_NAME)){
+
+            loggerManager.w("Aggiornamento installato rilevato");
+            loggerManager.d("Cancello apk dell'aggiornamento e mostro changelog");
+            AppUpdateManager upd = new AppUpdateManager(DrawerActivity.this);
+            upd.deleteOldApk();
+            new Thread(upd::showDialogReleaseChangelog).start();
+        }
+        SettingsData.saveSettingString(this, SettingKey.APP_VER, BuildConfig.VERSION_NAME);
     }
 
     private void setupMaterialDrawer() {
