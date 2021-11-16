@@ -23,7 +23,7 @@
 
         <activity
             android:name=".ui.activities.LogdogViewerActivity"
-            android:label="LogDot viewer"
+            android:label="LogDog viewer"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.GiuaApp.NoActionBar"
             tools:ignore="LockedOrientationActivity" />

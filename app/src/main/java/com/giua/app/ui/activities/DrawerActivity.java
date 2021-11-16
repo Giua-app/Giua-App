@@ -196,7 +196,7 @@ public class DrawerActivity extends AppCompatActivity {
                         ),
                         createDrawerCategory(4, "Situazione").withSubItems(
                                 createDrawerMainItem(5, "Voti", R.id.nav_votes, true, true),
-                                createDrawerMainItem(6, "Assenze", "/genitori/assenze/", R.id.nav_absences, true, true),
+                                createDrawerMainItem(6, "Assenze", R.id.nav_absences, true, true),
                                 createDrawerMainItem(7, "Note", "/genitori/note/", true, true),
                                 createDrawerMainItem(8, "Osservazioni", "/genitori/osservazioni/", !userType.equals("Studente"), true), //SOLO GENITORE,
                                 createDrawerMainItem(9, "Autorizzazioni", R.id.nav_authorization, true, true)
