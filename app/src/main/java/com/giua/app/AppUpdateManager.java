@@ -67,18 +67,6 @@ public class AppUpdateManager {
 
 
 
-    public String getLatestReleaseChangelog(){
-        JsonNode rootNode = getReleasesJson();
-
-        if (rootNode == null)    //Si è verificato un errore di qualche tipo
-            return null;
-
-        return rootNode.findPath("body").asText(); //Si spera che il body della release sia in html, altrimenti si vedrà male
-
-    }
-
-
-
     public void showDialogReleaseChangelog(){
         Intent intent = new Intent(context, TransparentUpdateDialogActivity.class);
         intent.putExtra("json", getReleasesJson().toString());
@@ -151,13 +139,14 @@ public class AppUpdateManager {
 
 
     private boolean isUpdateNewerThanApp(){
-        if (currentVer[0].equals(updateVer[0]) && currentVer[1].equals(updateVer[1]) && currentVer[2].equals(updateVer[2])) {
-            //Nessun aggiornamento
-            return false;
+        int result = updateVer[0] - currentVer[0];
+        if (result == 0) {
+            result = updateVer[1] - currentVer[1];
+            if (result == 0) {
+                result = updateVer[2] - currentVer[2];
+            }
         }
-
-        //false = versione vecchia, true = versione nuova
-        return currentVer[0] <= updateVer[0] && currentVer[1] <= updateVer[1] && currentVer[2] <= updateVer[2];
+        return result > 0; //Negativo = minore , 0 = uguale , Positivo = maggiore
     }
 
     /**
@@ -227,6 +216,7 @@ public class AppUpdateManager {
     public void startUpdateDialog(){
         Intent intent = new Intent(context, TransparentUpdateDialogActivity.class);
         intent.putExtra("json", getReleasesJson().toString());
+        intent.putExtra("doUpdate", true);
         context.startActivity(intent);
     }
 
