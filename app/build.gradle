@@ -26,11 +26,9 @@ plugins {
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
-androidGitVersion {
+androidGitVersion { //Usato soltanto durante lo sviluppo per differenziare le versioni
     baseCode 1
-}
-
-androidGitVersion {
+    format '%tag%%-count%%<commit>%%-branch%%-dirty%'
     untrackedIsDirty = false
 }
 
@@ -47,8 +45,8 @@ android {
         minSdkVersion 24
         targetSdkVersion 30
         versionCode androidGitVersion.code()
-        versionName "0.6.1-dev"
-        //versionName androidGitVersion.name()
+        //versionName "0.6.2-stable" //Da usare per le release
+        versionName androidGitVersion.name() //Da usare per lo sviluppo
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
