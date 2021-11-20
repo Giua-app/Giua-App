@@ -55,6 +55,8 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
     LoggerManager loggerManager;
     JsonNode rootNode;
 
+    //TODO: Rendere questa activity universale per qualsiasi dialogo a cui serva una activity trasparente
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

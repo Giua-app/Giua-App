@@ -61,7 +61,7 @@ public class AboutActivity extends MaterialAboutActivity {
 
         appCardBuilder.addItem(new MaterialAboutTitleItem.Builder()
                 .text("Giua App")
-                .desc("L'app dell'IIS Michele Giua")
+                .desc("L'app non ufficiale dell'IIS Michele Giua")
                 .icon(R.mipmap.ic_launcher)
                 .build());
 
@@ -73,6 +73,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 false)
                 .setOnClickAction(this::justANormalJavaFunction));
 
+        //TODO: far aprire il changelog come dialogo e non webview
         appCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text("Changelog")
                 .icon(new IconicsDrawable(this)
@@ -80,6 +81,15 @@ public class AboutActivity extends MaterialAboutActivity {
                         .sizeDp(18))
                 .setOnClickAction(ConvenienceBuilder.createWebViewDialogOnClickAction(this,"", "Chiudi",
                         "https://github.com/Giua-app/Giua-App/releases/tag/" + BuildConfig.VERSION_NAME.split("-")[0], true, false))
+                .build());
+
+        appCardBuilder.addItem(new MaterialAboutActionItem.Builder()
+                .text("Privacy Policy")
+                .icon(new IconicsDrawable(this)
+                        .icon(CommunityMaterial.Icon2.cmd_lock)
+                        .sizeDp(18))
+                .setOnClickAction(ConvenienceBuilder.createWebViewDialogOnClickAction(this,"", "Chiudi",
+                        "https://giua-app.github.io/privacy", true, false))
                 .build());
 
         appCardBuilder.addItem(new MaterialAboutActionItem.Builder()
@@ -145,7 +155,6 @@ public class AboutActivity extends MaterialAboutActivity {
                 .setOnClickAction(ConvenienceBuilder.createWebsiteOnClickAction(this,
                         Uri.parse("https://app.piratepx.com/shared/x9v-IWrD1ZG_Jvk6vyAT53tdz5wCCijE55V9pn060ZfuUJRXT9rcqTwPnR_PWz7R")))
                 .build());
-
 
         loggerManager.d("Creazione pagina about completata");
         return new MaterialAboutList(appCardBuilder.build(), authorCardBuilder.build(), otherCardBuilder.build());
