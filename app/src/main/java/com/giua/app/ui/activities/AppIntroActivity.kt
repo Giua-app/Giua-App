@@ -27,6 +27,7 @@ import com.github.appintro.AppIntroFragment
 import com.github.appintro.AppIntroPageTransformerType
 import com.github.appintro.model.SliderPage
 import com.giua.app.*
+import com.giua.app.ui.fragments.intro.CustomSlideFragment
 import com.giua.app.ui.fragments.intro.DokiSlidePolicyFragment
 import com.mikepenz.iconics.context.IconicsLayoutInflater2
 
@@ -37,26 +38,30 @@ class AppIntroActivity : AppIntro(){
         super.onCreate(savedInstanceState)
 
         setProgressIndicator() //Progress bar come barra anzichè pallini
+        setIndicatorColor(
+            selectedIndicatorColor = getColor(R.color.design_default_color_secondary),
+            unselectedIndicatorColor = getColor(R.color.design_default_color_secondary)
+        )
         setImmersiveMode() //Fullscreen
         isSystemBackButtonLocked = true
 
-        addSlide(AppIntroFragment.newInstance(
+        setTransformer(AppIntroPageTransformerType.Fade)
+
+        addSlide(CustomSlideFragment.newInstance(
             "Benvenuto!",
             "Segui questa breve introduzione per scoprire tutte le funzionalità di Giua App",
-            imageDrawable = R.drawable.ic_giuaschool_logo1,
             backgroundDrawable = R.drawable.bg_intro_slide1,
-            titleTypefaceFontRes = R.font.caviar_dreams_bold,
-            descriptionTypefaceFontRes = R.font.caviar_dreams
+            layoutResId = R.layout.fragment_appintro_customslide_1,
+            gifRaw = R.raw.introv2
         ))
 
-        addSlide(AppIntroFragment.newInstance(SliderPage(
+        addSlide(CustomSlideFragment.newInstance(
             "Voti",
             "Puoi cliccare su un voto per vederne i dettagli",
-            imageDrawable = R.mipmap.voti_tutorial,
+            imageDrawable = R.mipmap.phone1,
             backgroundDrawable = R.drawable.bg_intro_slide2,
-            titleTypefaceFontRes = R.font.caviar_dreams_bold,
-            descriptionTypefaceFontRes = R.font.caviar_dreams
-        )))
+            layoutResId = R.layout.fragment_appintro_customslide_2,
+        ))
 
         addSlide(AppIntroFragment.newInstance(
             "Bacheca (Circolari)",
@@ -123,8 +128,6 @@ class AppIntroActivity : AppIntro(){
             titleTypefaceFontRes = R.font.caviar_dreams_bold,
             descriptionTypefaceFontRes = R.font.caviar_dreams
         )))
-
-        setTransformer(AppIntroPageTransformerType.Parallax())
     }
 
     public override fun onSkipPressed(currentFragment: Fragment?) {
