@@ -22,16 +22,13 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.core.view.LayoutInflaterCompat
 import androidx.fragment.app.Fragment
-import com.github.appintro.AppIntro
-import com.github.appintro.AppIntroFragment
+import com.github.appintro.AppIntro2
 import com.github.appintro.AppIntroPageTransformerType
-import com.github.appintro.model.SliderPage
 import com.giua.app.*
 import com.giua.app.ui.fragments.intro.CustomSlideFragment
-import com.giua.app.ui.fragments.intro.DokiSlidePolicyFragment
 import com.mikepenz.iconics.context.IconicsLayoutInflater2
 
-class AppIntroActivity : AppIntro(){
+class AppIntroActivity : AppIntro2(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LayoutInflaterCompat.setFactory2(layoutInflater, IconicsLayoutInflater2(delegate))
@@ -44,6 +41,7 @@ class AppIntroActivity : AppIntro(){
         )
         setImmersiveMode() //Fullscreen
         isSystemBackButtonLocked = true
+        isWizardMode = true //Rimuove pulsante salta
 
         setTransformer(AppIntroPageTransformerType.Fade)
 
@@ -56,78 +54,60 @@ class AppIntroActivity : AppIntro(){
         ))
 
         addSlide(CustomSlideFragment.newInstance(
+            "Lezioni",
+            "Per cambiare giorno, clicca su {cmd_calendar_blank} per aprire il calendario",
+            imageDrawable = R.mipmap.phone1,
+            backgroundDrawable = R.drawable.bg_intro_slide2,
+            layoutResId = R.layout.fragment_appintro_customslide_2
+        ))
+
+        addSlide(CustomSlideFragment.newInstance(
             "Voti",
             "Puoi cliccare su un voto per vederne i dettagli",
             imageDrawable = R.mipmap.phone1,
-            backgroundDrawable = R.drawable.bg_intro_slide2,
-            layoutResId = R.layout.fragment_appintro_customslide_2,
-        ))
-
-        addSlide(AppIntroFragment.newInstance(
-            "Bacheca (Circolari)",
-            "Clicca su {cmd_file_document_outline} per visualizzare la circolare",
-            imageDrawable = R.mipmap.circolari_tutorial,
             backgroundDrawable = R.drawable.bg_intro_slide3,
-            titleTypefaceFontRes = R.font.caviar_dreams_bold,
-            descriptionTypefaceFontRes = R.font.caviar_dreams
+            layoutResId = R.layout.fragment_appintro_customslide_2
         ))
 
-        addSlide(AppIntroFragment.newInstance(
-            "Bacheca (Circolari)",
-            "Clicca su {gmd_attachment} per vedere i suoi allegati",
-            imageDrawable = R.mipmap.circolari2_tutorial,
+        addSlide(CustomSlideFragment.newInstance(
+            "Assenze",
+            "Puoi cliccare su un voto per vederne i dettagli",
+            imageDrawable = R.mipmap.phone1,
             backgroundDrawable = R.drawable.bg_intro_slide4,
-            titleTypefaceFontRes = R.font.caviar_dreams_bold,
-            descriptionTypefaceFontRes = R.font.caviar_dreams
+            layoutResId = R.layout.fragment_appintro_customslide_2
         ))
 
-        addSlide(AppIntroFragment.newInstance(
-            "Bacheca (Avvisi)",
+        addSlide(CustomSlideFragment.newInstance(
+            "Circolari",
+            "Clicca su {cmd_file_document_outline} per visualizzare la circolare",
+            imageDrawable = R.mipmap.phone1,
+            backgroundDrawable = R.drawable.bg_intro_slide3,
+            layoutResId = R.layout.fragment_appintro_customslide_2
+        ))
+
+        addSlide(CustomSlideFragment.newInstance(
+            "Avvisi",
             "Clicca su un avviso per vederne i dettagli",
-            imageDrawable = R.mipmap.avvisi_tutorial,
-            backgroundDrawable = R.drawable.bg_intro_slide6,
-            titleTypefaceFontRes = R.font.caviar_dreams_bold,
-            descriptionTypefaceFontRes = R.font.caviar_dreams
+            imageDrawable = R.mipmap.phone1,
+            backgroundDrawable = R.drawable.bg_intro_slide4,
+            layoutResId = R.layout.fragment_appintro_customslide_2
         ))
 
-        addSlide(AppIntroFragment.newInstance(
-            "Lezioni",
-            "Clicca su una lezione per vederne i dettagli",
-            imageDrawable = R.mipmap.lezioni_tutorial,
-            backgroundDrawable = R.drawable.bg_intro_slide7,
-            titleTypefaceFontRes = R.font.caviar_dreams_bold,
-            descriptionTypefaceFontRes = R.font.caviar_dreams
-        ))
-
-        addSlide(AppIntroFragment.newInstance(
-            "Lezioni",
-            "Per cambiare giorno, clicca su {cmd_calendar_blank} per aprire il calendario",
-            imageDrawable = R.mipmap.lezioni2_tutorial,
-            backgroundDrawable = R.drawable.bg_intro_slide8,
-            titleTypefaceFontRes = R.font.caviar_dreams_bold,
-            descriptionTypefaceFontRes = R.font.caviar_dreams
-        ))
-
-        addSlide(AppIntroFragment.newInstance(
-            "Agenda",
-            "Clicca su una verifica o compito per vedere i dettagli",
-            imageDrawable = R.mipmap.agenda_tutorial,
+        addSlide(CustomSlideFragment.newInstance(
+            "Batteria",
+            "Inserire testo riguardo la cosa la batteria bho",
+            imageDrawable = R.mipmap.battery_tutorial,
             backgroundDrawable = R.drawable.bg_intro_slide9,
-            titleTypefaceFontRes = R.font.caviar_dreams_bold,
-            descriptionTypefaceFontRes = R.font.caviar_dreams
+            layoutResId = R.layout.fragment_appintro_customslide_2
         ))
 
-        //Slide con SlidePolicy per evitare che l'utente salti le istruzioni
-        addSlide(DokiSlidePolicyFragment.newInstance())
-
-        addSlide(AppIntroFragment.newInstance(SliderPage(
+        addSlide(CustomSlideFragment.newInstance(
             "E' tutto pronto!",
             "Clicca \"FINE\" per passare alla pagina di login",
             imageDrawable = R.mipmap.fine_tutorial,
             backgroundDrawable = R.drawable.bg_intro_slide1,
-            titleTypefaceFontRes = R.font.caviar_dreams_bold,
-            descriptionTypefaceFontRes = R.font.caviar_dreams
-        )))
+            layoutResId = R.layout.fragment_appintro_customslide_2
+        ))
     }
 
     public override fun onSkipPressed(currentFragment: Fragment?) {

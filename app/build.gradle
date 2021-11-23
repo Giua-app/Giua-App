@@ -139,9 +139,9 @@ dependencies {
     implementation 'com.github.AppIntro:AppIntro:6.1.0'
 
     //--Doki (display info from dontkillmyapp.com - https://github.com/DoubleDotLabs/doki)
-    implementation('dev.doubledot.doki:library:c18efeb072@aar') {
+    /*implementation('dev.doubledot.doki:library:c18efeb072@aar') {
         transitive = true
-    }
+    }*/
 
     //--Glide (https://github.com/bumptech/glide)
     implementation 'com.github.bumptech.glide:glide:4.12.0'
