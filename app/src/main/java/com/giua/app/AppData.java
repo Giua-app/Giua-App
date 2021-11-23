@@ -34,11 +34,18 @@ public class AppData {
      * Controlla la memorizzazione dei dati dell'app
      */
     private static final String appDataPreferenceKey = "appData";
+
+    //Chiavi per il salvataggio delle cose offline
     private static final String voteKey = "votes";
     private static final String newsletterKey = "newsletters";
     private static final String alertKey = "alerts";
+
+    //Chiavi per il salvataggio dei dati per le notifiche
     private static final String numberNewslettersKey = "number_newsletters";
     private static final String numberAlertsKey = "number_alerts";
+    private static final String numberVotesKey = "numebr_votes";
+
+    //Chiavi per il salvataggio delle versioni
     private static final String lastUpdateVersionKey = "last_update_version";
     private static final String nextUpdateReminderKey = "next_update_reminder";
     private static final String updatePresenceKey = "update_presence";
@@ -48,7 +55,7 @@ public class AppData {
         return context.getSharedPreferences(appDataPreferenceKey, Context.MODE_PRIVATE);
     }
 
-    //region Dati per il json
+    //region Dati per l'offline
 
     public static void saveVotesString(final Context context, final String jsonString) {
         getSharedPreferences(context).edit()
@@ -82,7 +89,7 @@ public class AppData {
 
     //endregion
 
-    //region Dati del broadcast di background
+    //region Dati per le notifiche
 
     public static void saveNumberNewslettersInt(final Context context, final int value) {
         getSharedPreferences(context).edit()
@@ -102,6 +109,16 @@ public class AppData {
 
     public static int getNumberAlertsInt(final Context context) {
         return getSharedPreferences(context).getInt(numberAlertsKey, -1);
+    }
+
+    public static void saveNumberVotesInt(final Context context, final int value) {
+        getSharedPreferences(context).edit()
+                .putInt(numberVotesKey, value)
+                .apply();
+    }
+
+    public static int getNumberVotesInt(final Context context) {
+        return getSharedPreferences(context).getInt(numberVotesKey, -1);
     }
 
     //endregion

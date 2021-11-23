@@ -31,6 +31,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import com.giua.app.ui.activities.AppIntroActivity;
 import com.giua.app.ui.activities.AutomaticLoginActivity;
 import com.giua.app.ui.activities.CaocActivity;
+import com.giua.app.ui.activities.DrawerActivity;
 import com.giua.app.ui.activities.MainLoginActivity;
 import com.giua.webscraper.GiuaScraper;
 
@@ -96,10 +97,21 @@ public class ActivityManager extends AppCompatActivity {
 
         checkForUpdates();
 
+        if (GlobalVariables.gS != null)
+            startDrawerActivity();
         if (LoginData.getUser(this).equals(""))
             startMainLoginActivity();
         else
             startAutomaticLoginActivity();
+    }
+
+    private void startDrawerActivity() {
+        loggerManager.d("Avvio direttamente Drawer Activity dato che gS esiste già");
+        String goTo = getIntent().getStringExtra("goTo");
+        if (goTo == null)
+            goTo = "";
+        startActivity(new Intent(ActivityManager.this, DrawerActivity.class).putExtra("goTo", goTo));
+        finish();
     }
 
     //Questa funzione viene chiamata solo al primo avvio di sempre dell'app
@@ -108,6 +120,7 @@ public class ActivityManager extends AppCompatActivity {
         SettingsData.saveSettingBoolean(this, SettingKey.NEWSLETTER_NOTIFICATION, true);
         SettingsData.saveSettingBoolean(this, SettingKey.ALERTS_NOTIFICATION, true);
         SettingsData.saveSettingBoolean(this, SettingKey.UPDATES_NOTIFICATION, true);
+        SettingsData.saveSettingBoolean(this, SettingKey.VOTES_NOTIFICATION, true);
     }
 
     private void startMainLoginActivity() {

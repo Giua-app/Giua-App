@@ -51,6 +51,11 @@ public abstract class SettingKey {
     public static final String ALERTS_NOTIFICATION = "alerts_notification";
 
     /**
+     * Indica se la notifica per i voti è abilitata
+     */
+    public static final String VOTES_NOTIFICATION = "votes_notification";
+
+    /**
      * Indica se la notifica per gli aggiornamenti è abilitata
      */
     public static final String UPDATES_NOTIFICATION = "updates_notification";

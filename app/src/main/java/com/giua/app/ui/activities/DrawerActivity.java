@@ -113,6 +113,9 @@ public class DrawerActivity extends AppCompatActivity {
         } else if (goTo.equals("Alerts")) {
             changeFragment(R.id.nav_alerts);
             notificationManager.cancel(11);
+        } else if (goTo.equals("Votes")) {
+            changeFragment(R.id.nav_votes);
+            notificationManager.cancel(12);
         }
 
         //Setup CheckNewsReceiver
@@ -121,6 +124,7 @@ public class DrawerActivity extends AppCompatActivity {
         boolean alarmUp = (PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE) != null);  //Controlla se l'allarme è già settato
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, 0);
         loggerManager.d("L'allarme è già settato?: " + alarmUp);
+        //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000, pendingIntent);    //DEBUG
         if (!alarmUp && !LoginData.getUser(this).equals("") && SettingsData.getSettingBoolean(this, SettingKey.NOTIFICATION)) {
 
             Random r = new Random(SystemClock.elapsedRealtime());
@@ -532,8 +536,8 @@ public class DrawerActivity extends AppCompatActivity {
     protected void onDestroy() {
         loggerManager.d("onDestroy chiamato");
         new Thread(() -> {  //Questo serve a prevenire la perdita di news
-            AppData.saveNumberNewslettersInt(this, GlobalVariables.gS.getHomePage(false).checkForNewsletterUpdate());
-            AppData.saveNumberAlertsInt(this, GlobalVariables.gS.getHomePage(false).checkForAlertsUpdate());
+            AppData.saveNumberNewslettersInt(this, GlobalVariables.gS.getHomePage(false).getNumberNewsletters());
+            AppData.saveNumberAlertsInt(this, GlobalVariables.gS.getHomePage(false).getNumberAlerts());
         }).start();
         super.onDestroy();
     }

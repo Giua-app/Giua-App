@@ -20,6 +20,7 @@
 package com.giua.app;
 
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -30,6 +31,7 @@ import android.webkit.CookieManager;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.giua.objects.Vote;
 import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
 
@@ -39,6 +41,8 @@ import org.jsoup.Jsoup;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class CheckNewsReceiver extends BroadcastReceiver {
@@ -51,7 +55,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         loggerManager = new LoggerManager("CheckNewsReceiver", context);
         loggerManager.d("onReceive chiamato");
-        if (SettingsData.getSettingBoolean(context, SettingKey.NOTIFICATION)) {
+        if (!LoginData.getUser(context).equals("") && SettingsData.getSettingBoolean(context, SettingKey.NOTIFICATION)) {
             loggerManager.d("Broadcast di background STARTATO");
             this.context = context;
             notificationManager = NotificationManagerCompat.from(context);
@@ -113,6 +117,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
                 loggerManager.d("Account google rilevato, provo ad entrare con cookie precedente");
                 gS = new GiuaScraper(LoginData.getUser(context), LoginData.getPassword(context), LoginData.getCookie(context), true, new LoggerManager("GiuaScraper", context));
                 gS.login();
+                LoginData.setCredentials(context, LoginData.getUser(context), LoginData.getPassword(context), gS.getCookie());
             } catch (GiuaScraperExceptions.SessionCookieEmpty e) {
                 loggerManager.d("Cookie precedente non valido");
                 gS = new GiuaScraper(LoginData.getUser(context), LoginData.getPassword(context), makeGsuiteLogin(), true, new LoggerManager("GiuaScraper", context));
@@ -129,41 +134,72 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         int numberNewsletters = -1;
         int numberAlertsOld = -1;
         int numberAlerts = -1;
+        int numberVotesOld = -1;
+        int numberVotes = -1;
 
         //Se la notifica non può essere mandata non faccio nemmeno controllare i check
         if (SettingsData.getSettingBoolean(context, SettingKey.NEWSLETTER_NOTIFICATION)) {
             numberNewslettersOld = AppData.getNumberNewslettersInt(context);
-            numberNewsletters = gS.getHomePage(false).checkForNewsletterUpdate();
+            numberNewsletters = gS.getHomePage(false).getNumberNewsletters();
             AppData.saveNumberNewslettersInt(context, numberNewsletters);
         }
-        if (SettingsData.getSettingBoolean(context, SettingKey.NEWSLETTER_NOTIFICATION)) {
+        if (SettingsData.getSettingBoolean(context, SettingKey.ALERTS_NOTIFICATION)) {
             numberAlertsOld = AppData.getNumberAlertsInt(context);
-            numberAlerts = gS.getHomePage(false).checkForAlertsUpdate();
+            numberAlerts = gS.getHomePage(false).getNumberAlerts();
             AppData.saveNumberAlertsInt(context, numberAlerts);
+        }
+        if (SettingsData.getSettingBoolean(context, SettingKey.VOTES_NOTIFICATION)) {
+            numberVotesOld = AppData.getNumberVotesInt(context);
+            Map<String, List<Vote>> votes = gS.getVotesPage(false).getAllVotes();
+            //Conto i voti
+            numberVotes = 0;
+            for (String subject : votes.keySet()) {
+                numberVotes += votes.get(subject).size();
+            }
+            AppData.saveNumberVotesInt(context, numberVotes);
         }
 
         if (numberNewslettersOld != -1 && numberNewsletters - numberNewslettersOld > 0) {
-            loggerManager.d("Trovata nuova circolare");
-            Intent intent = new Intent(context, ActivityManager.class).putExtra("goTo", "Newsletters");
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                    .setContentIntent(PendingIntent.getActivity(context, 2, intent, PendingIntent.FLAG_CANCEL_CURRENT))
-                    .setSmallIcon(R.drawable.ic_giuaschool_black)
-                    .setContentTitle(numberNewsletters - numberNewslettersOld == 1 ? "Nuova circolare" : numberNewsletters - numberNewslettersOld + " nuove circolari")
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+            loggerManager.d("Trovate nuove circolari: " + (numberNewsletters - numberNewslettersOld));
+            Notification notification;
+            if (numberVotes - numberVotesOld == 1)
+                notification = createNotification("Nuova circolare", "Newsletters", 2);
+            else
+                notification = createNotification(numberNewsletters - numberNewslettersOld + " nuove circolari", "Newsletters", 2);
 
-            notificationManager.notify(10, builder.build());
+            notificationManager.notify(10, notification);
         }
         if (numberAlertsOld != -1 && numberAlerts - numberAlertsOld > 0) {
-            loggerManager.d("Trovati nuovi avvisi");
-            Intent intent = new Intent(context, ActivityManager.class).putExtra("goTo", "Alerts");
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                    .setContentIntent(PendingIntent.getActivity(context, 2, intent, PendingIntent.FLAG_CANCEL_CURRENT))
-                    .setSmallIcon(R.drawable.ic_giuaschool_black)
-                    .setContentTitle(numberAlerts - numberAlertsOld == 1 ? "Nuovo avviso" : numberAlerts - numberAlertsOld + " nuovi avvisi")
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+            loggerManager.d("Trovati nuovi avvisi: " + (numberAlerts - numberAlertsOld));
+            Notification notification;
+            if (numberVotes - numberVotesOld == 1)
+                notification = createNotification("Nuovo avviso", "Alerts", 3);
+            else
+                notification = createNotification(numberAlerts - numberAlertsOld + " nuovi avvisi", "Alerts", 3);
 
-            notificationManager.notify(11, builder.build());
+            notificationManager.notify(11, notification);
         }
+        if (numberVotesOld != -1 && numberVotes - numberVotesOld > 0) {
+            loggerManager.d("Trovati nuovi voti: " + (numberVotes - numberVotesOld));
+            Notification notification;
+            if (numberVotes - numberVotesOld == 1)
+                notification = createNotification("\u00c8 stato pubblicato un nuovo voto", "Votes", 4);
+            else
+                notification = createNotification("Sono stati pubblicati " + (numberVotes - numberVotesOld) + " nuovi voti", "Votes", 4);
+
+            notificationManager.notify(12, notification);
+        }
+    }
+
+    private Notification createNotification(String title, String goTo, int requestCode) {
+        Intent intent = new Intent(context, ActivityManager.class).putExtra("goTo", goTo).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        return new NotificationCompat.Builder(context, "0")
+                .setContentIntent(PendingIntent.getActivity(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT))
+                .setSmallIcon(R.drawable.ic_giuaschool_black)
+                .setContentTitle(title)
+                .setContentText("Clicca per avere più informazioni")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .build();
     }
 
     private String makeGsuiteLogin() {

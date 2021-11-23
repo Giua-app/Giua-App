@@ -119,8 +119,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void setupNotificationManager() {
         MultiSelectListPreference multiSelectListPreference = findPreference("notification_manager");
-        multiSelectListPreference.setEntries(new CharSequence[]{"Circolari", "Avvisi", "Aggiornamenti"});
-        multiSelectListPreference.setEntryValues(new CharSequence[]{"0", "1", "2"});
+        multiSelectListPreference.setEntries(new CharSequence[]{"Circolari", "Avvisi", "Aggiornamenti", "Voti"});
+        multiSelectListPreference.setEntryValues(new CharSequence[]{"0", "1", "2", "3"});
         multiSelectListPreference.setOnPreferenceChangeListener(this::setupNotificationManagerChangeListener);
         multiSelectListPreference.setOnPreferenceClickListener(this::setupNotificationManagerOnClick);
     }
@@ -133,6 +133,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             l.add("1");
         if (SettingsData.getSettingBoolean(requireContext(), SettingKey.UPDATES_NOTIFICATION))
             l.add("2");
+        if (SettingsData.getSettingBoolean(requireContext(), SettingKey.VOTES_NOTIFICATION))
+            l.add("3");
         ((MultiSelectListPreference) preference).setValues(l);
         return true;
     }
@@ -141,6 +143,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         SettingsData.saveSettingBoolean(requireContext(), SettingKey.NEWSLETTER_NOTIFICATION, ((HashSet) o).contains("0"));
         SettingsData.saveSettingBoolean(requireContext(), SettingKey.ALERTS_NOTIFICATION, ((HashSet) o).contains("1"));
         SettingsData.saveSettingBoolean(requireContext(), SettingKey.UPDATES_NOTIFICATION, ((HashSet) o).contains("2"));
+        SettingsData.saveSettingBoolean(requireContext(), SettingKey.VOTES_NOTIFICATION, ((HashSet) o).contains("3"));
         return true;
     }
 
@@ -192,6 +195,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         interval,   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
                         pendingIntent);
                 loggerManager.d("Alarm per CheckNews settato a " + (interval / 60_000) + " minuti");
+                //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000, pendingIntent);    //DEBUG
             }
         } else {
             alarmManager.cancel(pendingIntent);
