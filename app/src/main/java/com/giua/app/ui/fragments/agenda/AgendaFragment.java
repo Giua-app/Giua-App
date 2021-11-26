@@ -379,21 +379,38 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
                 activity.runOnUiThread(() -> {
                     if (agendaView.test != null) {
-                        tvVisualizerType.setText("Verifica");
-                        tvVisualizerSubject.setText(visualizerTests.get(0).subject);
-                        tvVisualizerCreator.setText(visualizerTests.get(0).creator);
-                        tvVisualizerText.setText(visualizerTests.get(0).details);
-                        tvVisualizerDate.setText(visualizerTests.get(0).date);
+                        if (visualizerTests.size() == 0) {
+                            tvVisualizerType.setText("");
+                            tvVisualizerSubject.setText("");
+                            tvVisualizerCreator.setText("");
+                            tvVisualizerText.setText("Non è presente alcuna verifica per questo giorno");
+                            tvVisualizerDate.setText("");
+                        } else {
+                            tvVisualizerType.setText("Verifica");
+                            tvVisualizerSubject.setText(visualizerTests.get(0).subject);
+                            tvVisualizerCreator.setText(visualizerTests.get(0).creator);
+                            tvVisualizerText.setText(visualizerTests.get(0).details);
+                            tvVisualizerDate.setText(visualizerTests.get(0).date);
+                        }
                     } else if (agendaView.homework != null) {
-                        tvVisualizerType.setText("Compito");
-                        tvVisualizerSubject.setText(visualizerHomeworks.get(0).subject);
-                        tvVisualizerCreator.setText(visualizerHomeworks.get(0).creator);
-                        tvVisualizerText.setText(visualizerHomeworks.get(0).details);
-                        tvVisualizerDate.setText(visualizerHomeworks.get(0).date);
+                        if (visualizerHomeworks.size() == 0) {
+                            tvVisualizerType.setText("");
+                            tvVisualizerSubject.setText("");
+                            tvVisualizerCreator.setText("");
+                            tvVisualizerText.setText("Non è presente alcun compito per questo giorno");
+                            tvVisualizerDate.setText("");
+                        } else {
+                            tvVisualizerType.setText("Compito");
+                            tvVisualizerSubject.setText(visualizerHomeworks.get(0).subject);
+                            tvVisualizerCreator.setText(visualizerHomeworks.get(0).creator);
+                            tvVisualizerText.setText(visualizerHomeworks.get(0).details);
+                            tvVisualizerDate.setText(visualizerHomeworks.get(0).date);
+                        }
+
                     }
 
                     ivVisualizerPrevBtn.setVisibility(View.INVISIBLE);
-                    if (visualizerHomeworks.size() + visualizerTests.size() == 1) {  //E' presente solo un elemento
+                    if (visualizerHomeworks.size() + visualizerTests.size() <= 1) {  //E' presente solo un elemento
                         ivVisualizerPrevBtn.setVisibility(View.GONE);
                         ivVisualizerNextBtn.setVisibility(View.GONE);
                     } else
