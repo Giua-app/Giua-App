@@ -134,6 +134,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void loadDataAndViews() {
+        tvNoElements.setVisibility(View.GONE);
         pbLoadingContent.setVisibility(View.VISIBLE);
         viewsLayout.removeAllViews();
         hasCompletedLoading = false;
@@ -192,9 +193,14 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         params.setMargins(20, 40, 20, 0);
+        tvNoElements.setText(R.string.no_elements);
         tvNoElements.setVisibility(View.GONE);
 
-        if (allLessons.isEmpty() || (allLessons.size() == 1 && !allLessons.get(0).exists)) {
+        if (allLessons.isEmpty())
+            tvNoElements.setVisibility(View.VISIBLE);
+        else if (allLessons.size() == 1 && !allLessons.get(0).exists) {
+            if (allLessons.get(0).isError)
+                tvNoElements.setText(allLessons.get(0).arguments);
             tvNoElements.setVisibility(View.VISIBLE);
         } else {
             for (Lesson lesson : allLessons) {
