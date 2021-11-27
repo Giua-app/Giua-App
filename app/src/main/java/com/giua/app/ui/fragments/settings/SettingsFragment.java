@@ -190,8 +190,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 Random r = new Random(SystemClock.elapsedRealtime());
                 long interval = AlarmManager.INTERVAL_HOUR + r.nextInt(3_600_000);
 
-                alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
-                        SystemClock.elapsedRealtime(),
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME,
                         interval,   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
                         pendingIntent);
                 loggerManager.d("Alarm per CheckNews settato a " + (interval / 60_000) + " minuti");

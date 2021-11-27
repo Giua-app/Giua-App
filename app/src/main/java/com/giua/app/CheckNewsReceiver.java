@@ -92,8 +92,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
             Intent iCheckNewsReceiver = new Intent(context, CheckNewsReceiver.class);
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, 0);
-            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
-                    SystemClock.elapsedRealtime() + interval,
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME,
                     interval,   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
                     pendingIntent);
             loggerManager.d("Risetto l'allarme con un nuovo intervallo random (" + (interval / 60_000) + " minuti)");
@@ -162,7 +161,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         if (numberNewslettersOld != -1 && numberNewsletters - numberNewslettersOld > 0) {
             loggerManager.d("Trovate nuove circolari: " + (numberNewsletters - numberNewslettersOld));
             Notification notification;
-            if (numberVotes - numberVotesOld == 1)
+            if (numberNewsletters - numberNewslettersOld == 1)
                 notification = createNotification("Nuova circolare", "Newsletters", 2);
             else
                 notification = createNotification(numberNewsletters - numberNewslettersOld + " nuove circolari", "Newsletters", 2);
@@ -172,7 +171,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         if (numberAlertsOld != -1 && numberAlerts - numberAlertsOld > 0) {
             loggerManager.d("Trovati nuovi avvisi: " + (numberAlerts - numberAlertsOld));
             Notification notification;
-            if (numberVotes - numberVotesOld == 1)
+            if (numberAlerts - numberAlertsOld == 1)
                 notification = createNotification("Nuovo avviso", "Alerts", 3);
             else
                 notification = createNotification(numberAlerts - numberAlertsOld + " nuovi avvisi", "Alerts", 3);
