@@ -98,7 +98,7 @@ dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
     //noinspection KtxExtensionAvailable
     implementation 'androidx.navigation:navigation-fragment:2.3.5'
     //noinspection KtxExtensionAvailable
@@ -115,6 +115,9 @@ dependencies {
 
     //--Memory leak lib
     //implementation 'com.squareup.leakcanary:leakcanary-android:2.7'  //DEBUG
+
+    //--Material Calendar View
+    implementation 'com.github.prolificinteractive:material-calendarview:2.0.0'
 
     //--jsoup HTML parser library @ https://jsoup.org/
     implementation 'org.jsoup:jsoup:1.14.3'

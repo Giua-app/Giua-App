@@ -96,4 +96,9 @@
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
+    <style name="AgendaCalendarViewStyle">
+        <item name="android:backgroundTint">@color/adaptive_color_text</item>
+        <item name="android:fontFamily">@font/varelaroundregular</item>
+    </style>
+
 </resources>

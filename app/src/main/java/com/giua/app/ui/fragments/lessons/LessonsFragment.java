@@ -249,6 +249,8 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         bottomCardView.setZ(-10f);
         btnConfirmDate.setZ(-10f);
         ivCalendarImage.setZ(-10f);
+        tvVisualizerArguments.scrollTo(0, 0);
+        tvVisualizerActivities.scrollTo(0, 0);
 
         if (!((LessonView) view).lesson.arguments.equals(""))
             tvVisualizerArguments.setText(Html.fromHtml("<b>Argomenti:</b> " + ((LessonView) view).lesson.arguments, Html.FROM_HTML_MODE_COMPACT));

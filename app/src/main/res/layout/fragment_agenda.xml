@@ -26,57 +26,26 @@
     android:background="@color/background"
     tools:context=".ui.fragments.agenda.AgendaFragment">
 
-    <TextView
-        android:id="@+id/agenda_month_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/varelaroundregular"
-        android:text="Aprile 1999"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+        android:id="@+id/agenda_calendar"
+        android:layout_width="match_parent"
+        android:layout_height="380dp"
+        app:mcv_calendarMode="month"
+        app:mcv_selectionMode="none"
+        app:mcv_headerTextAppearance="@style/AgendaCalendarViewStyle"
+        app:mcv_arrowColor="@color/adaptive_color_text"
+        app:mcv_dateTextAppearance="@style/AgendaCalendarViewStyle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.025" />
-
-    <ImageView
-        android:id="@+id/agenda_month_next_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|end"
-        android:layout_marginStart="30dp"
-        android:background="@drawable/corner_radius_10dp"
-        android:backgroundTint="@color/general_view_color"
-        android:src="@drawable/ic_baseline_arrow_right_24"
-        app:layout_constraintBottom_toBottomOf="@+id/agenda_month_text"
-        app:layout_constraintStart_toEndOf="@+id/agenda_month_text"
-        app:layout_constraintTop_toTopOf="@+id/agenda_month_text"
-        android:contentDescription="Prossimo mese" />
-
-    <ImageView
-        android:id="@+id/agenda_month_prev_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start|center_vertical"
-        android:layout_marginEnd="30dp"
-        android:background="@drawable/corner_radius_10dp"
-        android:backgroundTint="@color/general_view_color"
-        android:src="@drawable/ic_baseline_arrow_left_24"
-        app:layout_constraintBottom_toBottomOf="@+id/agenda_month_text"
-        app:layout_constraintEnd_toStartOf="@+id/agenda_month_text"
-        app:layout_constraintTop_toTopOf="@+id/agenda_month_text"
-        android:contentDescription="Precedente mese" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/agenda_swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/agenda_month_text">
+        app:layout_constraintTop_toBottomOf="@+id/agenda_calendar">
 
         <ScrollView
             android:id="@+id/agenda_scroll_view"
@@ -132,6 +101,8 @@
             android:visibility="gone"
             android:layout_marginStart="50dp"
             android:layout_marginEnd="50dp"
+            android:focusable="true"
+            android:clickable="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -228,5 +199,5 @@
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.441" />
+        app:layout_constraintVertical_bias="0.75" />
 </androidx.constraintlayout.widget.ConstraintLayout>

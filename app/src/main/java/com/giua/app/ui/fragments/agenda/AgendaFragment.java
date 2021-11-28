@@ -30,9 +30,11 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -48,10 +50,15 @@ import com.giua.objects.Homework;
 import com.giua.objects.Test;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
+import com.prolificinteractive.materialcalendarview.DayViewDecorator;
+import com.prolificinteractive.materialcalendarview.DayViewFacade;
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
@@ -63,16 +70,16 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     List<Homework> allHomeworks;
     List<Test> visualizerTests;
     List<Homework> visualizerHomeworks;
-    TextView tvTodayText;
     TextView tvNoElements;
-    ImageView ivPrevMonth;
-    ImageView ivNextMonth;
     Activity activity;
     View root;
-    Date currentDate;
+    Date currentDisplayedDate;
+    Calendar currentDate;
     ProgressBar pbLoadingPage;
     ProgressBar pbForDetails;
     Calendar calendar;
+    ScrollView scrollView;
+    MaterialCalendarView calendarView;
     SimpleDateFormat formatterForMonth = new SimpleDateFormat("MM", Locale.ITALIAN);
     SimpleDateFormat formatterForYear = new SimpleDateFormat("yyyy", Locale.ITALIAN);
     SwipeRefreshLayout swipeRefreshLayout;
@@ -97,11 +104,10 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         loggerManager = new LoggerManager("AgendaFragment", getContext());
         loggerManager.d("onCreateView chiamato");
 
+        scrollView = root.findViewById(R.id.agenda_scroll_view);
+        calendarView = root.findViewById(R.id.agenda_calendar);
         viewsLayout = root.findViewById(R.id.agenda_views_layout);
-        tvTodayText = root.findViewById(R.id.agenda_month_text);
         tvNoElements = root.findViewById(R.id.agenda_no_elements_text);
-        ivNextMonth = root.findViewById(R.id.agenda_month_next_btn);
-        ivPrevMonth = root.findViewById(R.id.agenda_month_prev_btn);
         visualizerLayout = root.findViewById(R.id.agenda_object_visualizer_layout);
         tvVisualizerType = root.findViewById(R.id.agenda_visualizer_type);
         tvVisualizerSubject = root.findViewById(R.id.agenda_visualizer_subject);
@@ -119,34 +125,54 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         if (SettingsData.getSettingBoolean(requireContext(), SettingKey.DEMO_MODE)) {
             calendar = Calendar.getInstance();
             calendar.set(2021, 11, 1);
-            currentDate = calendar.getTime();
+            currentDisplayedDate = calendar.getTime();
         } else {    //No demo
             calendar = Calendar.getInstance();
-            currentDate = calendar.getTime();
+            currentDisplayedDate = calendar.getTime();
+            currentDate = calendar;
         }
+
+        calendarView.setTitleMonths(new CharSequence[]{
+                "Gennaio", "Febbraio", "Marzo",
+                "Aprile", "Maggio", "Giugno",
+                "Luglio", "Agosto", "Settembre",
+                "Ottobre", "Novembre", "Dicembre"
+        });
+
+        calendarView.setWeekDayLabels(new CharSequence[]{
+                "Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"
+        });
 
         pbLoadingPage = new ProgressBar(requireContext(), null);
         threadManager = new ThreadManager();
 
         tvVisualizerText.setMovementMethod(new ScrollingMovementMethod());
-        tvTodayText.setText(getMonthFromNumber(Integer.parseInt(getCurrentMonth())) + " " + getCurrentYear());
+        //tvTodayText.setText(getMonthFromNumber(Integer.parseInt(getCurrentMonth())) + " " + getCurrentYear());
 
+        calendarView.setOnMonthChangedListener(this::onMonthChangeListener);
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
-        ivNextMonth.setOnClickListener(this::btnNextMonthOnClick);
-        ivPrevMonth.setOnClickListener(this::btnPrevMonthOnClick);
         ivVisualizerPrevBtn.setOnClickListener(this::ivVisualizerPrevBtnOnClick);
         ivVisualizerNextBtn.setOnClickListener(this::ivVisualizerNextBtnOnClick);
-        visualizerLayout.setOnClickListener((view) -> {/*Serve ad evitare che quando si clicca il layout questo non sparisca*/});
         obscureLayoutView.setOnClickListener(this::obscureLayoutOnClick);
-
-        if (Integer.parseInt(getCurrentMonth()) >= 6 && Integer.parseInt(getCurrentMonth()) <= 8)
-            ivNextMonth.setVisibility(View.GONE);
-        if (Integer.parseInt(getCurrentMonth()) == 7 || Integer.parseInt(getCurrentMonth()) == 1 || Integer.parseInt(getCurrentMonth()) == 9)
-            ivPrevMonth.setVisibility(View.GONE);
+        scrollView.setOnScrollChangeListener(this::onScrollViewScrolling);
 
         loadDataAndViews();
 
         return root;
+    }
+
+    private void onScrollViewScrolling(View view, int i, int i1, int i2, int i3) {
+        calendarView.setY(calendarView.getY() - (i1 - i3) * 2);
+    }
+
+    private void onMonthChangeListener(MaterialCalendarView materialCalendarView, CalendarDay calendarDay) {
+        Calendar selectedDay = Calendar.getInstance();
+        selectedDay.set(calendarDay.getYear(), calendarDay.getMonth() - 1, calendarDay.getDay());
+        if (calendarDay.getYear() == currentDate.get(Calendar.YEAR) && calendarDay.getMonth() - 1 == currentDate.get(Calendar.MONTH))
+            currentDisplayedDate = currentDate.getTime();
+        else
+            currentDisplayedDate = selectedDay.getTime();
+        loadDataAndViews();
     }
 
     @Override
@@ -203,9 +229,13 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void addViews() {
         loggerManager.d("Aggiungo views...");
+        HashSet<CalendarDay> homeworkDates = new HashSet<>();
+        HashSet<CalendarDay> testDates = new HashSet<>();
+        HashSet<CalendarDay> homeworkAndTestDates = new HashSet<>();
         viewsLayout.removeAllViews();
         tvNoElements.setVisibility(View.GONE);
         viewsLayout.scrollTo(0, 0);
+
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.setMargins(0, 50, 0, 0);
 
@@ -218,6 +248,8 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
             while (testCounter < allTestsLength && homeworkDay > Integer.parseInt(allTests.get(testCounter).day)) {
                 //Sino a quando non arrivi alla data del primo compito trovato metti nel layout tutte le verifche che trovi
+                Test test = allTests.get(testCounter);
+                testDates.add(CalendarDay.from(Integer.parseInt(test.year), Integer.parseInt(test.month), Integer.parseInt(test.day)));
                 AgendaView view2 = new AgendaView(requireContext(), null, allTests.get(testCounter));
                 view2.setOnClickListener(this::agendaViewOnClick);
                 view2.setId(View.generateViewId());
@@ -228,9 +260,12 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
             }
 
             if (testCounter < allTestsLength && homeworkDay == Integer.parseInt(allTests.get(testCounter).day)) {     //In questo giorno ci sono sia verifiche che compiti
+                Test test = allTests.get(testCounter);
+                homeworkAndTestDates.add(CalendarDay.from(Integer.parseInt(test.year), Integer.parseInt(test.month), Integer.parseInt(test.day)));
                 view = new AgendaView(requireContext(), null, homework, allTests.get(testCounter));
                 testCounter++;
             } else {    //Solo compiti
+                homeworkDates.add(CalendarDay.from(Integer.parseInt(homework.year), Integer.parseInt(homework.month), Integer.parseInt(homework.day)));
                 view = new AgendaView(requireContext(), null, homework);
             }
 
@@ -241,6 +276,8 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         }
         while (testCounter < allTestsLength) {
             //Aggiungi tutte le restanti verifiche che si trovano dopo l'ultimo compito
+            Test test = allTests.get(testCounter);
+            testDates.add(CalendarDay.from(Integer.parseInt(test.year), Integer.parseInt(test.month), Integer.parseInt(test.day)));
             AgendaView view = new AgendaView(requireContext(), null, allTests.get(testCounter));
             view.setOnClickListener(this::agendaViewOnClick);
             view.setId(View.generateViewId());
@@ -249,6 +286,45 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
             testCounter++;
         }
+
+        //Decorator per i giorni dei compiti
+        calendarView.addDecorator(new DayViewDecorator() {
+            @Override
+            public boolean shouldDecorate(CalendarDay day) {
+                return homeworkDates.contains(day);
+            }
+
+            @Override
+            public void decorate(DayViewFacade view) {
+                view.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.agenda_calendar_homeworks, activity.getTheme()));
+            }
+        });
+
+        //Decorator per i giorni delle verifiche
+        calendarView.addDecorator(new DayViewDecorator() {
+            @Override
+            public boolean shouldDecorate(CalendarDay day) {
+                return testDates.contains(day);
+            }
+
+            @Override
+            public void decorate(DayViewFacade view) {
+                view.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.agenda_calendar_test, activity.getTheme()));
+            }
+        });
+
+        //Decorator per i giorni in cui ci sono compiti e verifiche
+        calendarView.addDecorator(new DayViewDecorator() {
+            @Override
+            public boolean shouldDecorate(CalendarDay day) {
+                return homeworkAndTestDates.contains(day);
+            }
+
+            @Override
+            public void decorate(DayViewFacade view) {
+                view.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.agenda_calendar_test_homework, activity.getTheme()));
+            }
+        });
         isLoadingData = false;
     }
 
@@ -262,37 +338,9 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     }
 
     //region Listeners
-    @SuppressLint("SetTextI18n")
-    private void btnPrevMonthOnClick(View view) {
-        if (!isLoadingData) {
-            currentDate = getPrevMonth(currentDate);
-            loggerManager.d("Carico compiti del mese " + currentDate.toString());
-            if (Integer.parseInt(getCurrentMonth()) < 6 || Integer.parseInt(getCurrentMonth()) > 8)
-                ivNextMonth.setVisibility(View.VISIBLE);
-            if (Integer.parseInt(getCurrentMonth()) == 9)
-                ivPrevMonth.setVisibility(View.GONE);
-            tvTodayText.setText(getMonthFromNumber(Integer.parseInt(getCurrentMonth())) + " " + getCurrentYear());
-            viewsLayout.removeAllViews();
-            loadDataAndViews();
-        }
-    }
-
-    @SuppressLint("SetTextI18n")
-    private void btnNextMonthOnClick(View view) {
-        loggerManager.d("Car");
-        if (!isLoadingData) {
-            currentDate = getNextMonth(currentDate);
-            loggerManager.d("Carico compiti del mese " + currentDate.toString());
-            ivPrevMonth.setVisibility(View.VISIBLE);
-            if (Integer.parseInt(getCurrentMonth()) >= 6 && Integer.parseInt(getCurrentMonth()) <= 8)
-                ivNextMonth.setVisibility(View.GONE);
-            tvTodayText.setText(getMonthFromNumber(Integer.parseInt(getCurrentMonth())) + " " + getCurrentYear());
-            viewsLayout.removeAllViews();
-            loadDataAndViews();
-        }
-    }
 
     private void ivVisualizerNextBtnOnClick(View view) {
+        tvVisualizerText.scrollTo(0, 0);
         if (visualizerPointer + 1 < visualizerTests.size() + visualizerHomeworks.size())  //Se si può ancora andare avanti punto il visualizerPointer al prossimo oggetto (quello che sta per essere visualizzato)
             visualizerPointer++;
         if (visualizerPointer < visualizerTests.size()) {
@@ -319,6 +367,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     private void ivVisualizerPrevBtnOnClick(View view) {
         int testsSize = visualizerTests.size();
         int homeworkSize = visualizerHomeworks.size();
+        tvVisualizerText.scrollTo(0, 0);
         if (visualizerPointer > 0)
             visualizerPointer--;
         if (visualizerPointer >= 0 && visualizerPointer < testsSize) {
@@ -378,6 +427,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                 }
 
                 activity.runOnUiThread(() -> {
+                    tvVisualizerText.scrollTo(0, 0);
                     if (agendaView.test != null) {
                         if (visualizerTests.size() == 0) {
                             tvVisualizerType.setText("");
@@ -450,11 +500,11 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private String getCurrentMonth() {
-        return formatterForMonth.format(currentDate);
+        return formatterForMonth.format(currentDisplayedDate);
     }
 
     private String getCurrentYear() {
-        return formatterForYear.format(currentDate);
+        return formatterForYear.format(currentDisplayedDate);
     }
 
     private String getMonthFromNumber(int number) {
