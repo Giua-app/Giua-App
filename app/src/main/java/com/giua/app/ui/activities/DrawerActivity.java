@@ -131,7 +131,7 @@ public class DrawerActivity extends AppCompatActivity {
             long interval = AlarmManager.INTERVAL_HOUR + r.nextInt(3_600_000);
 
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME,
-                    interval,   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
+                    SystemClock.elapsedRealtime() + interval,   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
                     pendingIntent);
             loggerManager.d("Alarm per CheckNews settato a " + (interval / 60_000) + " minuti");
             //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000, pendingIntent);    //DEBUG

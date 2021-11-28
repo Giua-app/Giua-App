@@ -93,7 +93,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, 0);
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME,
-                    interval,   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
+                    SystemClock.elapsedRealtime() + interval,   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
                     pendingIntent);
             loggerManager.d("Risetto l'allarme con un nuovo intervallo random (" + (interval / 60_000) + " minuti)");
             //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()+60000, 60000, pendingIntent);    //DEBUG
