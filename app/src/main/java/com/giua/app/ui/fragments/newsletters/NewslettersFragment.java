@@ -511,7 +511,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         threadManager.addAndRun(() -> {
             try {
                 DownloadedFile downloadedFile = GlobalVariables.gS.download(url);
-                FileOutputStream out = new FileOutputStream(requireContext().getFilesDir() + "/" + "circolare." + downloadedFile.fileExtension);
+                FileOutputStream out = new FileOutputStream(requireContext().getCacheDir() + "/" + "circolare." + downloadedFile.fileExtension);
                 if (downloadedFile.data != null && downloadedFile.data.length > 0) {
                     out.write(downloadedFile.data);
                     out.close();
