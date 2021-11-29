@@ -34,6 +34,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -75,13 +76,13 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     View root;
     Date currentDisplayedDate;
     Calendar currentDate;
-    ProgressBar pbLoadingPage;
     ProgressBar pbForDetails;
     Calendar calendar;
     ScrollView scrollView;
     MaterialCalendarView calendarView;
-    SimpleDateFormat formatterForMonth = new SimpleDateFormat("MM", Locale.ITALIAN);
-    SimpleDateFormat formatterForYear = new SimpleDateFormat("yyyy", Locale.ITALIAN);
+    HashSet<CalendarDay> homeworkDates;
+    HashSet<CalendarDay> testDates;
+    HashSet<CalendarDay> homeworkAndTestDates;
     SwipeRefreshLayout swipeRefreshLayout;
     ObscureLayoutView obscureLayoutView;
     LinearLayout visualizerLayout;
@@ -93,6 +94,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     ImageView ivVisualizerPrevBtn;
     ImageView ivVisualizerNextBtn;
     ThreadManager threadManager;
+    long lastRequestTime = 0;
     int visualizerPointer = 0;
     boolean isLoadingData = false;
     boolean isLoadingDetails = false;
@@ -143,12 +145,12 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                 "Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"
         });
 
-        pbLoadingPage = new ProgressBar(requireContext(), null);
         threadManager = new ThreadManager();
 
         tvVisualizerText.setMovementMethod(new ScrollingMovementMethod());
         //tvTodayText.setText(getMonthFromNumber(Integer.parseInt(getCurrentMonth())) + " " + getCurrentYear());
 
+        calendarView.setOnDateChangedListener(this::onDateChangeListener);
         calendarView.setOnMonthChangedListener(this::onMonthChangeListener);
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         ivVisualizerPrevBtn.setOnClickListener(this::ivVisualizerPrevBtnOnClick);
@@ -161,26 +163,12 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         return root;
     }
 
-    private void onScrollViewScrolling(View view, int i, int i1, int i2, int i3) {
-        calendarView.setY(calendarView.getY() - (i1 - i3) * 2);
-    }
-
-    private void onMonthChangeListener(MaterialCalendarView materialCalendarView, CalendarDay calendarDay) {
-        Calendar selectedDay = Calendar.getInstance();
-        selectedDay.set(calendarDay.getYear(), calendarDay.getMonth() - 1, calendarDay.getDay());
-        if (calendarDay.getYear() == currentDate.get(Calendar.YEAR) && calendarDay.getMonth() - 1 == currentDate.get(Calendar.MONTH))
-            currentDisplayedDate = currentDate.getTime();
-        else
-            currentDisplayedDate = selectedDay.getTime();
-        loadDataAndViews();
-    }
-
     @Override
     public void loadDataAndViews() {
         loggerManager.d("Carico views...");
-        if (!isLoadingData) {
-            if (viewsLayout.indexOfChild(pbLoadingPage) == -1)
-                viewsLayout.addView(pbLoadingPage, 0);
+        if (!isLoadingData && System.nanoTime() - lastRequestTime > 500_000_000) {  //Anti click spam
+            lastRequestTime = System.nanoTime();
+            swipeRefreshLayout.setRefreshing(true);
             threadManager.addAndRun(() -> {
                 try {
                     isLoadingData = true;
@@ -199,7 +187,6 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
                         setErrorMessage(activity.getString(R.string.your_connection_error), root);
-                        pbLoadingPage.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
                         isLoadingData = false;
@@ -207,7 +194,6 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     activity.runOnUiThread(() -> {
                         setErrorMessage(activity.getString(R.string.site_connection_error), root);
-                        pbLoadingPage.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
                         isLoadingData = false;
@@ -215,7 +201,6 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                 } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
                     activity.runOnUiThread(() -> {
                         setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
-                        pbLoadingPage.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
                         isLoadingData = false;
@@ -229,9 +214,9 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void addViews() {
         loggerManager.d("Aggiungo views...");
-        HashSet<CalendarDay> homeworkDates = new HashSet<>();
-        HashSet<CalendarDay> testDates = new HashSet<>();
-        HashSet<CalendarDay> homeworkAndTestDates = new HashSet<>();
+        homeworkDates = new HashSet<>();
+        testDates = new HashSet<>();
+        homeworkAndTestDates = new HashSet<>();
         viewsLayout.removeAllViews();
         tvNoElements.setVisibility(View.GONE);
         viewsLayout.scrollTo(0, 0);
@@ -325,6 +310,8 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                 view.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.agenda_calendar_test_homework, activity.getTheme()));
             }
         });
+
+        swipeRefreshLayout.setRefreshing(false);
         isLoadingData = false;
     }
 
@@ -338,6 +325,50 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     }
 
     //region Listeners
+
+    private void onDateChangeListener(MaterialCalendarView materialCalendarView, CalendarDay calendarDay, boolean b) {
+        //Se nel giorno cliccato ci sonon compiti o verifiche o entrambi
+        if (homeworkDates.contains(calendarDay) || testDates.contains(calendarDay) || homeworkAndTestDates.contains(calendarDay)) {
+            int childCount = viewsLayout.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                AgendaView agendaView = (AgendaView) viewsLayout.getChildAt(i);
+                if (agendaView.homework != null) {
+                    boolean isDayEqual = Integer.parseInt(agendaView.homework.day) == calendarDay.getDay();
+                    boolean isMonthEqual = Integer.parseInt(agendaView.homework.month) == calendarDay.getMonth();
+                    boolean isYearEqual = Integer.parseInt(agendaView.homework.year) == calendarDay.getYear();
+                    if (isDayEqual && isMonthEqual && isYearEqual) {
+                        agendaView.callOnClick();
+                        return;
+                    }
+                } else if (agendaView.test != null) {
+                    boolean isDayEqual = Integer.parseInt(agendaView.test.day) == calendarDay.getDay();
+                    boolean isMonthEqual = Integer.parseInt(agendaView.test.month) == calendarDay.getMonth();
+                    boolean isYearEqual = Integer.parseInt(agendaView.test.year) == calendarDay.getYear();
+                    if (isDayEqual && isMonthEqual && isYearEqual) {
+                        agendaView.callOnClick();
+                        return;
+                    }
+                }
+            }
+        }
+        materialCalendarView.clearSelection();
+    }
+
+    private void onScrollViewScrolling(View view, int x, int y, int oldX, int oldY) {
+        calendarView.setY(calendarView.getY() - (y - oldY) * 2);
+        ((ConstraintLayout) root.findViewById(R.id.agenda_main_layout)).forceLayout();
+    }
+
+    private void onMonthChangeListener(MaterialCalendarView materialCalendarView, CalendarDay calendarDay) {
+        Calendar selectedDay = Calendar.getInstance();
+        selectedDay.set(calendarDay.getYear(), calendarDay.getMonth() - 1, calendarDay.getDay());
+        if (calendarDay.getYear() == currentDate.get(Calendar.YEAR) && calendarDay.getMonth() - 1 == currentDate.get(Calendar.MONTH))
+            currentDisplayedDate = currentDate.getTime();
+        else
+            currentDisplayedDate = selectedDay.getTime();
+        viewsLayout.removeAllViews();
+        loadDataAndViews();
+    }
 
     private void ivVisualizerNextBtnOnClick(View view) {
         tvVisualizerText.scrollTo(0, 0);
@@ -500,10 +531,12 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private String getCurrentMonth() {
+        SimpleDateFormat formatterForMonth = new SimpleDateFormat("MM", Locale.ITALIAN);
         return formatterForMonth.format(currentDisplayedDate);
     }
 
     private String getCurrentYear() {
+        SimpleDateFormat formatterForYear = new SimpleDateFormat("yyyy", Locale.ITALIAN);
         return formatterForYear.format(currentDisplayedDate);
     }
 

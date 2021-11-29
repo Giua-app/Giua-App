@@ -581,13 +581,17 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onStop() {
-        if (!allNewsletterToSave.isEmpty() && !offlineMode && !demoMode)
-            AppData.saveNewslettersString(activity, new JsonHelper().saveNewslettersToString(allNewsletterToSave));
+        //Cose per offline
+        /*if (!allNewsletterToSave.isEmpty() && !offlineMode && !demoMode)
+            AppData.saveNewslettersString(activity, new JsonHelper().saveNewslettersToString(allNewsletterToSave));*/
         super.onStop();
     }
 
     @Override
     public void onDestroyView() {
+        new Thread(() -> {
+            AppData.saveNumberNewslettersInt(activity, GlobalVariables.gS.getHomePage(false).getNumberNewsletters());
+        }).start();
         threadManager.destroyAllAndNullMe();
         super.onDestroyView();
     }

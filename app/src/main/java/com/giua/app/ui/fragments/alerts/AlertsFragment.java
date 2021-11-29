@@ -393,14 +393,18 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onStop() {
-        if (!allAlertsToSave.isEmpty() && !offlineMode && !demoMode)
-            AppData.saveAlertsString(activity, new JsonHelper().saveAlertsToString(allAlertsToSave));
+        //Cose per offline
+        /*if (!allAlertsToSave.isEmpty() && !offlineMode && !demoMode)
+            AppData.saveAlertsString(activity, new JsonHelper().saveAlertsToString(allAlertsToSave));*/
         super.onStop();
     }
     //endregion
 
     @Override
     public void onDestroyView() {
+        new Thread(() -> {
+            AppData.saveNumberAlertsInt(activity, GlobalVariables.gS.getHomePage(false).getNumberAlerts());
+        }).start();
         threadManager.destroyAllAndNullMe();
         super.onDestroyView();
     }

@@ -85,7 +85,7 @@ public class NewsletterView extends ConstraintLayout {
 
         tvNumberID.setText("n." + newsletter.number);
         tvDate.setText(newsletter.date);
-        tvObject.setText(newsletter.newslettersObject);
+        tvObject.setText(newsletter.object);
 
         upperView = findViewById(R.id.newsletter_view);
     }
@@ -122,7 +122,7 @@ public class NewsletterView extends ConstraintLayout {
 
         tvNumberID.setText("n." + newsletter.number);
         tvDate.setText(newsletter.date);
-        tvObject.setText(newsletter.newslettersObject);
+        tvObject.setText(newsletter.object);
 
         findViewById(R.id.newsletter_view_btn_document).setOnTouchListener(this::docsAttachmentsOnTouch);
         findViewById(R.id.newsletter_view_btn_attachment).setOnTouchListener(this::docsAttachmentsOnTouch);

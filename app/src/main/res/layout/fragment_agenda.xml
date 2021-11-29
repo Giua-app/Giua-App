@@ -24,19 +24,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".ui.fragments.agenda.AgendaFragment">
+    tools:context=".ui.fragments.agenda.AgendaFragment"
+    android:id="@+id/agenda_main_layout">
 
     <com.prolificinteractive.materialcalendarview.MaterialCalendarView
         android:id="@+id/agenda_calendar"
         android:layout_width="match_parent"
         android:layout_height="380dp"
-        app:mcv_calendarMode="month"
-        app:mcv_selectionMode="none"
-        app:mcv_headerTextAppearance="@style/AgendaCalendarViewStyle"
         app:mcv_arrowColor="@color/adaptive_color_text"
+        app:mcv_calendarMode="month"
         app:mcv_dateTextAppearance="@style/AgendaCalendarViewStyle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:mcv_headerTextAppearance="@style/AgendaCalendarViewStyle"
+        app:mcv_selectionMode="single" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/agenda_swipe_refresh_layout"

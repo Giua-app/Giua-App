@@ -36,14 +36,12 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.giua.app.AppData;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
 import com.giua.app.ThreadManager;
 import com.giua.app.ui.fragments.ObscureLayoutView;
 import com.giua.objects.Vote;
-import com.giua.utils.JsonHelper;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -218,8 +216,9 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onStop() {
-        if (allVotes != null && !allVotes.isEmpty())
-            AppData.saveVotesString(activity, new JsonHelper().saveVotesToString(allVotes));
+        //Cose per offline
+        /*if (allVotes != null && !allVotes.isEmpty())
+            AppData.saveVotesString(activity, new JsonHelper().saveVotesToString(allVotes));*/
         super.onStop();
     }
 

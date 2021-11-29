@@ -139,7 +139,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         viewsLayout.removeAllViews();
         hasCompletedLoading = false;
 
-        if (!isSpammingClick && System.nanoTime() - lastCallTime > 500000000) {     //Anti click spam
+        if (!isSpammingClick && System.nanoTime() - lastCallTime > 500_000_000) {     //Anti click spam
             threadManager.addAndRun(() -> {
                 lastCallTime = System.nanoTime();
                 try {
