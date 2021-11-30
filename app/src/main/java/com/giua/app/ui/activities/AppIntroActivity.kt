@@ -50,13 +50,21 @@ class AppIntroActivity : AppIntro2(){
             "Segui questa breve introduzione per scoprire tutte le funzionalità di Giua App",
             backgroundDrawable = R.drawable.bg_intro_slide1,
             layoutResId = R.layout.fragment_appintro_customslide_1,
-            gifRaw = R.raw.introv2
+            gifRaw = R.raw.introv4
+        ))
+
+        addSlide(CustomSlideFragment.newInstance(
+            "Lezioni",
+            "Clicca su una lezione per vederne i dettagli, clicca ovunque per annulare",
+            gifRaw = R.raw.lezioni,
+            backgroundDrawable = R.drawable.bg_intro_slide2,
+            layoutResId = R.layout.fragment_appintro_customslide_2
         ))
 
         addSlide(CustomSlideFragment.newInstance(
             "Lezioni",
             "Per cambiare giorno, clicca su {cmd_calendar_blank} per aprire il calendario",
-            imageDrawable = R.mipmap.phone1,
+            gifRaw = R.raw.lezioni2,
             backgroundDrawable = R.drawable.bg_intro_slide2,
             layoutResId = R.layout.fragment_appintro_customslide_2
         ))
@@ -79,7 +87,15 @@ class AppIntroActivity : AppIntro2(){
 
         addSlide(CustomSlideFragment.newInstance(
             "Circolari",
-            "Clicca su {cmd_file_document_outline} per visualizzare la circolare",
+            "Clicca su {cmd_file_document_outline} per visualizzare la circolare\nClicca su {cmd_paperclip} per visualizzare gli allegati",
+            imageDrawable = R.mipmap.phone1,
+            backgroundDrawable = R.drawable.bg_intro_slide3,
+            layoutResId = R.layout.fragment_appintro_customslide_2
+        ))
+
+        addSlide(CustomSlideFragment.newInstance(
+            "Circolari",
+            "Muovi il dito da sinistra verso destra per impostare come letta la circolare",
             imageDrawable = R.mipmap.phone1,
             backgroundDrawable = R.drawable.bg_intro_slide3,
             layoutResId = R.layout.fragment_appintro_customslide_2

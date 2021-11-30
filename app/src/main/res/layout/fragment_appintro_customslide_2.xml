@@ -30,17 +30,17 @@
         style="@style/AppIntroDefaultHeading"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
+        android:layout_marginStart="8dp"
         android:fontFamily="@font/ubuntu_light"
         android:gravity="center"
         android:textAlignment="textStart"
         android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.786"
+        app:layout_constraintVertical_bias="0.779"
         app:layout_constraintVertical_chainStyle="spread"
         tools:text="Welcome" />
 
@@ -53,7 +53,7 @@
         android:layout_marginEnd="60dp"
         android:layout_marginBottom="20dp"
         android:contentDescription="@string/app_intro_image_content_description"
-        android:scaleType="centerInside"
+        android:scaleType="fitXY"
         app:layout_constraintBottom_toTopOf="@+id/title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -76,5 +76,12 @@
         app:layout_constraintTop_toBottomOf="@+id/image"
         app:layout_constraintVertical_bias="0.345"
         tools:text="This is a demo of the AppIntro Library" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
