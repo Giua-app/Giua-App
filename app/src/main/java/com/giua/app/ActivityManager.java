@@ -35,6 +35,8 @@ import com.giua.app.ui.activities.DrawerActivity;
 import com.giua.app.ui.activities.MainLoginActivity;
 import com.giua.webscraper.GiuaScraper;
 
+import java.util.Calendar;
+
 import cat.ereza.customactivityoncrash.config.CaocConfig;
 
 /**
@@ -96,6 +98,7 @@ public class ActivityManager extends AppCompatActivity {
         }
 
         checkForUpdates();
+        checkForPreviousUpdate();
 
         if (GlobalVariables.gS != null)
             startDrawerActivity();
@@ -104,6 +107,17 @@ public class ActivityManager extends AppCompatActivity {
         else
             startAutomaticLoginActivity();
     }
+
+    private void checkForPreviousUpdate(){
+        if(!SettingsData.getSettingString(this, SettingKey.APP_VER).equals("")
+                && !SettingsData.getSettingString(this, SettingKey.APP_VER).equals(BuildConfig.VERSION_NAME)){
+            AppData.saveLastUpdateReminderDate(this, Calendar.getInstance()); //Imposta last reminder
+        }
+        //Non salviamo la stringa della versione per permettere a DrawerActivity e MainLoginActivity di fare le loro cose
+        //SettingsData.saveSettingString(this, SettingKey.APP_VER, BuildConfig.VERSION_NAME);
+    }
+
+
 
     private void startDrawerActivity() {
         loggerManager.d("Avvio direttamente Drawer Activity dato che gS esiste già");

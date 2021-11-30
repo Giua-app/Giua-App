@@ -195,9 +195,7 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
                         startActivity(installIntent);
                     }
                 }
-                loggerManager.d("Imposto LastUpdateReminder ed esco");
-                //L'installazione è gia iniziata quando si arriva qui, praticamente sono gli ultimi instanti dell'app
-                AppData.saveLastUpdateReminderDate(TransparentUpdateDialogActivity.this, date);
+                loggerManager.d("Chiusura transparent activity");
                 finish();
             }
         };
