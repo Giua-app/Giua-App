@@ -57,6 +57,7 @@ import com.giua.app.ui.fragments.newsletters.NewslettersFragment;
 import com.giua.app.ui.fragments.not_implemented.NotImplementedFragment;
 import com.giua.app.ui.fragments.reportcard.ReportCardFragment;
 import com.giua.app.ui.fragments.votes.VotesFragment;
+import com.giua.objects.Vote;
 import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -69,6 +70,8 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class DrawerActivity extends AppCompatActivity {
@@ -109,13 +112,10 @@ public class DrawerActivity extends AppCompatActivity {
             changeFragment(R.id.nav_home);
         else if (goTo.equals("Newsletters")) {
             changeFragment(R.id.nav_newsletters);
-            notificationManager.cancel(10);
         } else if (goTo.equals("Alerts")) {
             changeFragment(R.id.nav_alerts);
-            notificationManager.cancel(11);
         } else if (goTo.equals("Votes")) {
             changeFragment(R.id.nav_votes);
-            notificationManager.cancel(12);
         }
 
         //Setup CheckNewsReceiver
@@ -532,12 +532,24 @@ public class DrawerActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        loggerManager.d("onDestroy chiamato");
+    protected void onStop() {
         new Thread(() -> {  //Questo serve a prevenire la perdita di news
             AppData.saveNumberNewslettersInt(this, GlobalVariables.gS.getHomePage(false).getNumberNewsletters());
             AppData.saveNumberAlertsInt(this, GlobalVariables.gS.getHomePage(false).getNumberAlerts());
+
+            Map<String, List<Vote>> votes = GlobalVariables.gS.getVotesPage(false).getAllVotes();
+            int numberVotes = 0;
+            for (String subject : votes.keySet()) {
+                numberVotes += votes.get(subject).size();
+            }
+            AppData.saveNumberVotesInt(this, numberVotes);
         }).start();
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        loggerManager.d("onDestroy chiamato");
         super.onDestroy();
     }
 }

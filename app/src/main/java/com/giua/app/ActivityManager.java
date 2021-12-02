@@ -130,6 +130,7 @@ public class ActivityManager extends AppCompatActivity {
 
     //Questa funzione viene chiamata solo al primo avvio di sempre dell'app
     private void firstStart() {
+        SettingsData.saveSettingBoolean(this, SettingKey.NOTIFICATION, true);
         SettingsData.saveSettingBoolean(this, SettingKey.NOT_FIRST_START, true);
         SettingsData.saveSettingBoolean(this, SettingKey.NEWSLETTER_NOTIFICATION, true);
         SettingsData.saveSettingBoolean(this, SettingKey.ALERTS_NOTIFICATION, true);
@@ -198,6 +199,11 @@ public class ActivityManager extends AppCompatActivity {
             channel.setDescription(description2);
             NotificationManager notificationManager2 = getSystemService(NotificationManager.class);
             notificationManager2.createNotificationChannel(channel2);
+
+            //Cancello tutte le notifiche
+            notificationManager.cancel(10);
+            notificationManager.cancel(11);
+            notificationManager.cancel(12);
         }
         loggerManager.d("Notification Manager setup completato");
     }

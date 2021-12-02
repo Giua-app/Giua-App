@@ -402,9 +402,6 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onDestroyView() {
-        new Thread(() -> {
-            AppData.saveNumberAlertsInt(activity, GlobalVariables.gS.getHomePage(false).getNumberAlerts());
-        }).start();
         threadManager.destroyAllAndNullMe();
         super.onDestroyView();
     }

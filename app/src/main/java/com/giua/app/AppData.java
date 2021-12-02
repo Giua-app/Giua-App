@@ -43,7 +43,7 @@ public class AppData {
     //Chiavi per il salvataggio dei dati per le notifiche
     private static final String numberNewslettersKey = "number_newsletters";
     private static final String numberAlertsKey = "number_alerts";
-    private static final String numberVotesKey = "numebr_votes";
+    private static final String numberVotesKey = "number_votes";
 
     //Chiavi per il salvataggio delle versioni
     private static final String lastUpdateVersionKey = "last_update_version";

@@ -442,9 +442,9 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
     private void makeComeBackAnimation(NewsletterView v, float fromX, boolean isOnlyClosing) {
         TranslateAnimation comeBackAnimation = new TranslateAnimation(fromX, v.getNormalTranslationX(), v.upperView.getTranslationY(), v.upperView.getTranslationY());
-        comeBackAnimation.setDuration(200);
+        comeBackAnimation.setDuration(100);
         AlphaAnimation alphaAnimation = new AlphaAnimation(1, 0);
-        alphaAnimation.setDuration(200);
+        alphaAnimation.setDuration(100);
         comeBackAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -467,7 +467,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
     private void makeMarkAsReadAnimation(NewsletterView v, DisplayMetrics dm) {
         TranslateAnimation goAnimation = new TranslateAnimation(v.upperView.getTranslationX(), dm.widthPixels, v.upperView.getTranslationY(), v.upperView.getTranslationY());
-        goAnimation.setDuration(200);
+        goAnimation.setDuration(150);
 
         goAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -589,9 +589,6 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onDestroyView() {
-        new Thread(() -> {
-            AppData.saveNumberNewslettersInt(activity, GlobalVariables.gS.getHomePage(false).getNumberNewsletters());
-        }).start();
         threadManager.destroyAllAndNullMe();
         super.onDestroyView();
     }
