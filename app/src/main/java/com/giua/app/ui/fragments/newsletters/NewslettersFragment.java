@@ -47,7 +47,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.giua.app.AppData;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
@@ -56,7 +55,6 @@ import com.giua.app.SettingsData;
 import com.giua.app.ThreadManager;
 import com.giua.app.ui.fragments.ObscureLayoutView;
 import com.giua.objects.Newsletter;
-import com.giua.utils.JsonHelper;
 import com.giua.webscraper.DownloadedFile;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
@@ -171,10 +169,10 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                             allNewsletter = GlobalVariables.gS.getNewslettersPage(false).getAllNewsletters(currentPage);
                     } else {
                         loadedAllPages = true;
-                        try {
+                        /*try {
                             allNewsletter = new JsonHelper().parseJsonForNewsletters(AppData.getNewslettersString(requireContext()));
                         } catch (Exception ignored) {
-                        }
+                        }*/
                     }
 
                     if (allNewsletter != null) {

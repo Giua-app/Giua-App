@@ -27,16 +27,6 @@
     tools:context=".ui.fragments.agenda.AgendaFragment"
     android:id="@+id/agenda_main_layout">
 
-    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
-        android:id="@+id/agenda_calendar"
-        android:layout_width="match_parent"
-        android:layout_height="380dp"
-        app:mcv_arrowColor="@color/adaptive_color_text"
-        app:mcv_calendarMode="month"
-        app:mcv_dateTextAppearance="@style/AgendaCalendarViewStyle"
-        app:mcv_headerTextAppearance="@style/AgendaCalendarViewStyle"
-        app:mcv_selectionMode="single" />
-
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/agenda_swipe_refresh_layout"
         android:layout_width="match_parent"
@@ -44,7 +34,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/agenda_calendar">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ScrollView
             android:id="@+id/agenda_scroll_view"
@@ -60,6 +50,16 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="10dp">
+
+                <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+                    android:id="@+id/agenda_calendar"
+                    android:layout_width="match_parent"
+                    android:layout_height="380dp"
+                    app:mcv_arrowColor="@color/adaptive_color_text"
+                    app:mcv_calendarMode="month"
+                    app:mcv_dateTextAppearance="@style/AgendaCalendarViewStyle"
+                    app:mcv_headerTextAppearance="@style/AgendaCalendarViewStyle"
+                    app:mcv_selectionMode="single" />
 
             </LinearLayout>
 

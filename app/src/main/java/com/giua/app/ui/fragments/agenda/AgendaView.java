@@ -30,39 +30,32 @@ import androidx.annotation.Nullable;
 
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
+import com.giua.objects.Activity;
 import com.giua.objects.Homework;
+import com.giua.objects.PinBoardObject;
 import com.giua.objects.Test;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Type;
 import java.util.Calendar;
 
 public class AgendaView extends RelativeLayout {
-    Homework homework = null;
-    Test test = null;
-    LoggerManager loggerManager;
+    public final PinBoardObject pinBoardObject;
+    private LoggerManager loggerManager;
+    private int representedObject; //0 - Test; 1 - Homework; 2 - Activity
 
-    public AgendaView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, Test test) {
+    public AgendaView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, PinBoardObject pinBoardObject) {
         super(context, attrs);
 
-        this.test = test;
+        this.pinBoardObject = pinBoardObject;
 
-        initializeComponent(context);
-    }
-
-    public AgendaView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, Homework homework) {
-        super(context, attrs);
-
-        this.homework = homework;
-
-        initializeComponent(context);
-    }
-
-    public AgendaView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, Homework homework, Test test) {
-        super(context, attrs);
-
-        this.homework = homework;
-        this.test = test;
+        if (pinBoardObject.getClass() == Test.class)
+            representedObject = 0;
+        else if (pinBoardObject.getClass() == Homework.class)
+            representedObject = 1;
+        else if (pinBoardObject.getClass() == Activity.class)
+            representedObject = 2;
 
         initializeComponent(context);
     }
@@ -78,21 +71,24 @@ public class AgendaView extends RelativeLayout {
         TextView tvDate = findViewById(R.id.agenda_view_date);
         TextView tvType = findViewById(R.id.agenda_view_type);
 
-        if (homework != null && test != null) {
+        if (getRepresentedObject() == Homework.class) {
+            Homework homework = (Homework) pinBoardObject;
             objectDay.set(Integer.parseInt(homework.year), Integer.parseInt(homework.month) - 1, Integer.parseInt(homework.day), 23, 59, 59);
-            tvDate.setText(homework.day + "-" + homework.month + "-" + homework.year);
-            tvType.setText(R.string.agenda_view_type_homework_and_tests);
-            tvType.setTextColor(getResources().getColor(R.color.agenda_views_text_green, context.getTheme()));
-        } else if (homework != null) {
-            objectDay.set(Integer.parseInt(homework.year), Integer.parseInt(homework.month) -1, Integer.parseInt(homework.day), 23, 59, 59);
             tvDate.setText(homework.day + "-" + homework.month + "-" + homework.year);
             tvType.setText(R.string.agenda_view_type_homeworks);
             tvType.setTextColor(getResources().getColor(R.color.agenda_views_text_cyan, context.getTheme()));
-        } else {
-            objectDay.set(Integer.parseInt(test.year), Integer.parseInt(test.month) -1, Integer.parseInt(test.day), 23, 59, 59);
+        } else if (getRepresentedObject() == Test.class) {
+            Test test = (Test) pinBoardObject;
+            objectDay.set(Integer.parseInt(test.year), Integer.parseInt(test.month) - 1, Integer.parseInt(test.day), 23, 59, 59);
             tvDate.setText(test.day + "-" + test.month + "-" + test.year);
             tvType.setText(R.string.agenda_view_type_tests);
             tvType.setTextColor(getResources().getColor(R.color.agenda_views_text_orange, context.getTheme()));
+        } else if (getRepresentedObject() == Activity.class) {
+            Activity activity = (Activity) pinBoardObject;
+            objectDay.set(Integer.parseInt(activity.year), Integer.parseInt(activity.month) - 1, Integer.parseInt(activity.day), 23, 59, 59);
+            tvDate.setText(activity.day + "-" + activity.month + "-" + activity.year);
+            tvType.setText(R.string.agenda_view_type_activities);
+            tvType.setTextColor(getResources().getColor(R.color.agenda_views_text_green, context.getTheme()));
         }
 
         //Calendar fake = Calendar.getInstance();
@@ -143,5 +139,22 @@ public class AgendaView extends RelativeLayout {
         loggerManager.d("la differenza in ms è " + diffInMillis);
         loggerManager.d("in giorni è: " + diffInDays);
         return Math.round(diffInMillis / 86_400_000f);       //Una giornata sono 86_400_000 ms
+    }
+
+    public Type getRepresentedObject() {
+        switch (representedObject) {
+            case 0:
+                return Test.class;
+            case 1:
+                return Homework.class;
+            case 2:
+                return Activity.class;
+            default:
+                return null;
+        }
+    }
+
+    public int getRepresentedObjectInt() {
+        return representedObject;
     }
 }

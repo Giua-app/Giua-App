@@ -34,7 +34,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -48,6 +47,7 @@ import com.giua.app.SettingsData;
 import com.giua.app.ThreadManager;
 import com.giua.app.ui.fragments.ObscureLayoutView;
 import com.giua.objects.Homework;
+import com.giua.objects.PinBoardObject;
 import com.giua.objects.Test;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
@@ -67,10 +67,10 @@ import java.util.Vector;
 public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
     LinearLayout viewsLayout;
+    List<com.giua.objects.Activity> allActivities;
     List<Test> allTests;
     List<Homework> allHomeworks;
-    List<Test> visualizerTests;
-    List<Homework> visualizerHomeworks;
+    List<PinBoardObject> visualizerPinBoardObjects;
     TextView tvNoElements;
     Activity activity;
     View root;
@@ -80,9 +80,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     Calendar calendar;
     ScrollView scrollView;
     MaterialCalendarView calendarView;
-    HashSet<CalendarDay> homeworkDates;
-    HashSet<CalendarDay> testDates;
-    HashSet<CalendarDay> homeworkAndTestDates;
+    HashSet<CalendarDay> objectDays;
     SwipeRefreshLayout swipeRefreshLayout;
     ObscureLayoutView obscureLayoutView;
     LinearLayout visualizerLayout;
@@ -156,7 +154,6 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         ivVisualizerPrevBtn.setOnClickListener(this::ivVisualizerPrevBtnOnClick);
         ivVisualizerNextBtn.setOnClickListener(this::ivVisualizerNextBtnOnClick);
         obscureLayoutView.setOnClickListener(this::obscureLayoutOnClick);
-        scrollView.setOnScrollChangeListener(this::onScrollViewScrolling);
 
         loadDataAndViews();
 
@@ -172,8 +169,10 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
             threadManager.addAndRun(() -> {
                 try {
                     isLoadingData = true;
-                    allTests = GlobalVariables.gS.getPinBoardPage(true).getAllTestsWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())));
-                    allHomeworks = GlobalVariables.gS.getPinBoardPage(true).getAllHomeworksWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())));
+
+                    allTests = GlobalVariables.gS.getPinBoardPage(false).getAllTestsWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())));
+                    allHomeworks = GlobalVariables.gS.getPinBoardPage(false).getAllHomeworksWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())));
+                    allActivities = GlobalVariables.gS.getPinBoardPage(false).getAllActivitiesWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())));
 
                     if (allTests.isEmpty() && allHomeworks.isEmpty()) {
                         activity.runOnUiThread(() -> {
@@ -214,69 +213,54 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void addViews() {
         loggerManager.d("Aggiungo views...");
-        homeworkDates = new HashSet<>();
-        testDates = new HashSet<>();
-        homeworkAndTestDates = new HashSet<>();
-        viewsLayout.removeAllViews();
+        viewsLayout.removeViews(1, viewsLayout.getChildCount() - 1);
         tvNoElements.setVisibility(View.GONE);
         viewsLayout.scrollTo(0, 0);
+        objectDays = new HashSet<>();
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.setMargins(0, 50, 0, 0);
 
-        int testCounter = 0;
-        int allTestsLength = allTests.size();
-        //Rircordarsi che i compiti e le verifiche sono già messe in ordine di data
-        for (Homework homework : allHomeworks) {
-            int homeworkDay = Integer.parseInt(homework.day);
-            AgendaView view;
+        List<PinBoardObject> allObjects = new Vector<>();
+        allObjects.addAll(allTests);
+        allObjects.addAll(allHomeworks);
+        allObjects.addAll(allActivities);
+        allObjects.sort((pinBoardObject1, pinBoardObject2) -> {
+            int year1 = Integer.parseInt(pinBoardObject1.year);
+            int month1 = Integer.parseInt(pinBoardObject1.month);
+            ;
+            int day1 = Integer.parseInt(pinBoardObject1.day);
+            ;
+            int year2 = Integer.parseInt(pinBoardObject2.year);
+            ;
+            int month2 = Integer.parseInt(pinBoardObject2.month);
+            ;
+            int day2 = Integer.parseInt(pinBoardObject2.day);
+            ;
 
-            while (testCounter < allTestsLength && homeworkDay > Integer.parseInt(allTests.get(testCounter).day)) {
-                //Sino a quando non arrivi alla data del primo compito trovato metti nel layout tutte le verifche che trovi
-                Test test = allTests.get(testCounter);
-                testDates.add(CalendarDay.from(Integer.parseInt(test.year), Integer.parseInt(test.month), Integer.parseInt(test.day)));
-                AgendaView view2 = new AgendaView(requireContext(), null, allTests.get(testCounter));
-                view2.setOnClickListener(this::agendaViewOnClick);
-                view2.setId(View.generateViewId());
-                view2.setLayoutParams(params);
-                viewsLayout.addView(view2);
+            if (year1 == year2) {
+                if (month1 == month2)
+                    return Integer.compare(day1, day2);
+                else
+                    return Integer.compare(month1, month2);
+            } else
+                return Integer.compare(year1, year2);
+        });
 
-                testCounter++;
-            }
-
-            if (testCounter < allTestsLength && homeworkDay == Integer.parseInt(allTests.get(testCounter).day)) {     //In questo giorno ci sono sia verifiche che compiti
-                Test test = allTests.get(testCounter);
-                homeworkAndTestDates.add(CalendarDay.from(Integer.parseInt(test.year), Integer.parseInt(test.month), Integer.parseInt(test.day)));
-                view = new AgendaView(requireContext(), null, homework, allTests.get(testCounter));
-                testCounter++;
-            } else {    //Solo compiti
-                homeworkDates.add(CalendarDay.from(Integer.parseInt(homework.year), Integer.parseInt(homework.month), Integer.parseInt(homework.day)));
-                view = new AgendaView(requireContext(), null, homework);
-            }
-
-            view.setOnClickListener(this::agendaViewOnClick);
-            view.setId(View.generateViewId());
-            view.setLayoutParams(params);
-            viewsLayout.addView(view);
-        }
-        while (testCounter < allTestsLength) {
-            //Aggiungi tutte le restanti verifiche che si trovano dopo l'ultimo compito
-            Test test = allTests.get(testCounter);
-            testDates.add(CalendarDay.from(Integer.parseInt(test.year), Integer.parseInt(test.month), Integer.parseInt(test.day)));
-            AgendaView view = new AgendaView(requireContext(), null, allTests.get(testCounter));
-            view.setOnClickListener(this::agendaViewOnClick);
-            view.setId(View.generateViewId());
-            view.setLayoutParams(params);
-            viewsLayout.addView(view);
-
-            testCounter++;
+        for (PinBoardObject pinBoardObject : allObjects) {
+            AgendaView agendaView = new AgendaView(activity, null, pinBoardObject);
+            agendaView.setOnClickListener(this::agendaViewOnClick);
+            agendaView.setId(View.generateViewId());
+            agendaView.setLayoutParams(params);
+            viewsLayout.addView(agendaView);
+            objectDays.add(CalendarDay.from(Integer.parseInt(pinBoardObject.year), Integer.parseInt(pinBoardObject.month), Integer.parseInt(pinBoardObject.day)));
         }
 
         //Decorator per i giorni dei compiti
         calendarView.addDecorator(new DayViewDecorator() {
             @Override
             public boolean shouldDecorate(CalendarDay day) {
-                return homeworkDates.contains(day);
+                return objectDays.contains(day);
             }
 
             @Override
@@ -285,11 +269,11 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
             }
         });
 
-        //Decorator per i giorni delle verifiche
+        //Decorator per i giorni delle verifiche che server per il calendario
         calendarView.addDecorator(new DayViewDecorator() {
             @Override
             public boolean shouldDecorate(CalendarDay day) {
-                return testDates.contains(day);
+                return objectDays.contains(day);
             }
 
             @Override
@@ -302,7 +286,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         calendarView.addDecorator(new DayViewDecorator() {
             @Override
             public boolean shouldDecorate(CalendarDay day) {
-                return homeworkAndTestDates.contains(day);
+                return objectDays.contains(day);
             }
 
             @Override
@@ -328,35 +312,20 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
     private void onDateChangeListener(MaterialCalendarView materialCalendarView, CalendarDay calendarDay, boolean b) {
         //Se nel giorno cliccato ci sonon compiti o verifiche o entrambi
-        if (homeworkDates.contains(calendarDay) || testDates.contains(calendarDay) || homeworkAndTestDates.contains(calendarDay)) {
+        if (objectDays.contains(calendarDay)) {
             int childCount = viewsLayout.getChildCount();
             for (int i = 0; i < childCount; i++) {
                 AgendaView agendaView = (AgendaView) viewsLayout.getChildAt(i);
-                if (agendaView.homework != null) {
-                    boolean isDayEqual = Integer.parseInt(agendaView.homework.day) == calendarDay.getDay();
-                    boolean isMonthEqual = Integer.parseInt(agendaView.homework.month) == calendarDay.getMonth();
-                    boolean isYearEqual = Integer.parseInt(agendaView.homework.year) == calendarDay.getYear();
-                    if (isDayEqual && isMonthEqual && isYearEqual) {
-                        agendaView.callOnClick();
-                        return;
-                    }
-                } else if (agendaView.test != null) {
-                    boolean isDayEqual = Integer.parseInt(agendaView.test.day) == calendarDay.getDay();
-                    boolean isMonthEqual = Integer.parseInt(agendaView.test.month) == calendarDay.getMonth();
-                    boolean isYearEqual = Integer.parseInt(agendaView.test.year) == calendarDay.getYear();
-                    if (isDayEqual && isMonthEqual && isYearEqual) {
-                        agendaView.callOnClick();
-                        return;
-                    }
+                boolean isDayEqual = Integer.parseInt(agendaView.pinBoardObject.day) == calendarDay.getDay();
+                boolean isMonthEqual = Integer.parseInt(agendaView.pinBoardObject.month) == calendarDay.getMonth();
+                boolean isYearEqual = Integer.parseInt(agendaView.pinBoardObject.year) == calendarDay.getYear();
+                if (isDayEqual && isMonthEqual && isYearEqual) {
+                    agendaView.callOnClick();
+                    return;
                 }
             }
         }
         materialCalendarView.clearSelection();
-    }
-
-    private void onScrollViewScrolling(View view, int x, int y, int oldX, int oldY) {
-        calendarView.setY(calendarView.getY() - (y - oldY) * 2);
-        ((ConstraintLayout) root.findViewById(R.id.agenda_main_layout)).forceLayout();
     }
 
     private void onMonthChangeListener(MaterialCalendarView materialCalendarView, CalendarDay calendarDay) {
@@ -371,51 +340,65 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void ivVisualizerNextBtnOnClick(View view) {
+        int size = visualizerPinBoardObjects.size();
         tvVisualizerText.scrollTo(0, 0);
-        if (visualizerPointer + 1 < visualizerTests.size() + visualizerHomeworks.size())  //Se si può ancora andare avanti punto il visualizerPointer al prossimo oggetto (quello che sta per essere visualizzato)
+        if (visualizerPointer + 1 < size)  //Se si può ancora andare avanti punto il visualizerPointer al prossimo oggetto (quello che sta per essere visualizzato)
             visualizerPointer++;
-        if (visualizerPointer < visualizerTests.size()) {
+        if (visualizerPinBoardObjects.get(visualizerPointer).getClass() == Test.class) {
+            Test test = (Test) visualizerPinBoardObjects.get(visualizerPointer);
             tvVisualizerType.setText("Verifica");
-            tvVisualizerSubject.setText(visualizerTests.get(visualizerPointer).subject);
-            tvVisualizerCreator.setText(visualizerTests.get(visualizerPointer).creator);
-            tvVisualizerText.setText(visualizerTests.get(visualizerPointer).details);
-            tvVisualizerDate.setText(visualizerTests.get(visualizerPointer).date);
-            ivVisualizerPrevBtn.setVisibility(View.VISIBLE);
-        } else if (visualizerPointer - visualizerTests.size() < visualizerHomeworks.size()) {
-            int index = visualizerPointer - visualizerTests.size();
-
-            tvVisualizerType.setText("Compiti");
-            tvVisualizerSubject.setText(visualizerHomeworks.get(index).subject);
-            tvVisualizerCreator.setText(visualizerHomeworks.get(index).creator);
-            tvVisualizerText.setText(visualizerHomeworks.get(index).details);
-            tvVisualizerDate.setText(visualizerHomeworks.get(index).date);
-            ivVisualizerPrevBtn.setVisibility(View.VISIBLE);
+            tvVisualizerSubject.setText(test.subject);
+            tvVisualizerCreator.setText(test.creator);
+            tvVisualizerText.setText(test.details);
+            tvVisualizerDate.setText(test.date);
+        } else if (visualizerPinBoardObjects.get(visualizerPointer).getClass() == Homework.class) {
+            Homework homework = (Homework) visualizerPinBoardObjects.get(visualizerPointer);
+            tvVisualizerType.setText("Compito");
+            tvVisualizerSubject.setText(homework.subject);
+            tvVisualizerCreator.setText(homework.creator);
+            tvVisualizerText.setText(homework.details);
+            tvVisualizerDate.setText(homework.date);
+        } else if (visualizerPinBoardObjects.get(visualizerPointer).getClass() == com.giua.objects.Activity.class) {
+            com.giua.objects.Activity activity = (com.giua.objects.Activity) visualizerPinBoardObjects.get(visualizerPointer);
+            tvVisualizerType.setText("Attività");
+            tvVisualizerSubject.setText("");
+            tvVisualizerCreator.setText(activity.creator);
+            tvVisualizerText.setText(activity.details);
+            tvVisualizerDate.setText(activity.date);
         }
-        if (visualizerPointer >= visualizerTests.size() + visualizerHomeworks.size() - 1)
+        ivVisualizerPrevBtn.setVisibility(View.VISIBLE);
+        if (visualizerPointer >= size)
             ivVisualizerNextBtn.setVisibility(View.INVISIBLE);
     }
 
     private void ivVisualizerPrevBtnOnClick(View view) {
-        int testsSize = visualizerTests.size();
-        int homeworkSize = visualizerHomeworks.size();
+        int size = visualizerPinBoardObjects.size();
         tvVisualizerText.scrollTo(0, 0);
         if (visualizerPointer > 0)
             visualizerPointer--;
-        if (visualizerPointer >= 0 && visualizerPointer < testsSize) {
-            tvVisualizerType.setText("Verifica");
-            tvVisualizerSubject.setText(visualizerTests.get(visualizerPointer).subject);
-            tvVisualizerCreator.setText(visualizerTests.get(visualizerPointer).creator);
-            tvVisualizerText.setText(visualizerTests.get(visualizerPointer).details);
-            tvVisualizerDate.setText(visualizerTests.get(visualizerPointer).date);
-            ivVisualizerNextBtn.setVisibility(View.VISIBLE);
-        } else if (visualizerPointer - testsSize >= 0 && visualizerPointer - testsSize < homeworkSize && !visualizerHomeworks.isEmpty()) {
-            int index = visualizerPointer - testsSize;
-
-            tvVisualizerType.setText("Compito");
-            tvVisualizerSubject.setText(visualizerHomeworks.get(index).subject);
-            tvVisualizerCreator.setText(visualizerHomeworks.get(index).creator);
-            tvVisualizerText.setText(visualizerHomeworks.get(index).details);
-            tvVisualizerDate.setText(visualizerHomeworks.get(index).date);
+        if (visualizerPointer >= 0 && visualizerPointer < size) {
+            if (visualizerPinBoardObjects.get(visualizerPointer).getClass() == Test.class) {
+                Test test = (Test) visualizerPinBoardObjects.get(visualizerPointer);
+                tvVisualizerType.setText("Verifica");
+                tvVisualizerSubject.setText(test.subject);
+                tvVisualizerCreator.setText(test.creator);
+                tvVisualizerText.setText(test.details);
+                tvVisualizerDate.setText(test.date);
+            } else if (visualizerPinBoardObjects.get(visualizerPointer).getClass() == Homework.class) {
+                Homework homework = (Homework) visualizerPinBoardObjects.get(visualizerPointer);
+                tvVisualizerType.setText("Compito");
+                tvVisualizerSubject.setText(homework.subject);
+                tvVisualizerCreator.setText(homework.creator);
+                tvVisualizerText.setText(homework.details);
+                tvVisualizerDate.setText(homework.date);
+            } else if (visualizerPinBoardObjects.get(visualizerPointer).getClass() == com.giua.objects.Activity.class) {
+                com.giua.objects.Activity activity = (com.giua.objects.Activity) visualizerPinBoardObjects.get(visualizerPointer);
+                tvVisualizerType.setText("Attività");
+                tvVisualizerSubject.setText("");
+                tvVisualizerCreator.setText(activity.creator);
+                tvVisualizerText.setText(activity.details);
+                tvVisualizerDate.setText(activity.date);
+            }
             ivVisualizerNextBtn.setVisibility(View.VISIBLE);
         }
         if (visualizerPointer == 0)
@@ -428,15 +411,20 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
             pbForDetails.setVisibility(View.VISIBLE);
             threadManager.addAndRun(() -> {
                 AgendaView agendaView = (AgendaView) view;
-                visualizerHomeworks = new Vector<>();
-                visualizerTests = new Vector<>();
+                visualizerPinBoardObjects = new Vector<>();
                 visualizerPointer = 0;
 
                 try {
-                    if (agendaView.test != null)
-                        visualizerTests = GlobalVariables.gS.getPinBoardPage(false).getTest(agendaView.test.date);
-                    if (agendaView.homework != null)
-                        visualizerHomeworks = GlobalVariables.gS.getPinBoardPage(false).getHomework(agendaView.homework.date);
+                    if (agendaView.getRepresentedObject() == Test.class) {
+                        List<Test> visualizerTests = GlobalVariables.gS.getPinBoardPage(false).getTest(agendaView.pinBoardObject.date);
+                        visualizerPinBoardObjects.addAll(visualizerTests);
+                    } else if (agendaView.getRepresentedObject() == Homework.class) {
+                        List<Homework> visualizerHomeworks = GlobalVariables.gS.getPinBoardPage(false).getHomework(agendaView.pinBoardObject.date);
+                        visualizerPinBoardObjects.addAll(visualizerHomeworks);
+                    } else if (agendaView.getRepresentedObject() == Activity.class) {
+                        List<com.giua.objects.Activity> visualizerActivities = GlobalVariables.gS.getPinBoardPage(false).getActivity(agendaView.pinBoardObject.date);
+                        visualizerPinBoardObjects.addAll(visualizerActivities);
+                    }
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
                         setErrorMessage(activity.getString(R.string.your_connection_error), root);
@@ -459,39 +447,30 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
                 activity.runOnUiThread(() -> {
                     tvVisualizerText.scrollTo(0, 0);
-                    if (agendaView.test != null) {
-                        if (visualizerTests.size() == 0) {
-                            tvVisualizerType.setText("");
-                            tvVisualizerSubject.setText("");
-                            tvVisualizerCreator.setText("");
-                            tvVisualizerText.setText("Non è presente alcuna verifica per questo giorno");
-                            tvVisualizerDate.setText("");
-                        } else {
-                            tvVisualizerType.setText("Verifica");
-                            tvVisualizerSubject.setText(visualizerTests.get(0).subject);
-                            tvVisualizerCreator.setText(visualizerTests.get(0).creator);
-                            tvVisualizerText.setText(visualizerTests.get(0).details);
-                            tvVisualizerDate.setText(visualizerTests.get(0).date);
-                        }
-                    } else if (agendaView.homework != null) {
-                        if (visualizerHomeworks.size() == 0) {
-                            tvVisualizerType.setText("");
-                            tvVisualizerSubject.setText("");
-                            tvVisualizerCreator.setText("");
-                            tvVisualizerText.setText("Non è presente alcun compito per questo giorno");
-                            tvVisualizerDate.setText("");
-                        } else {
-                            tvVisualizerType.setText("Compito");
-                            tvVisualizerSubject.setText(visualizerHomeworks.get(0).subject);
-                            tvVisualizerCreator.setText(visualizerHomeworks.get(0).creator);
-                            tvVisualizerText.setText(visualizerHomeworks.get(0).details);
-                            tvVisualizerDate.setText(visualizerHomeworks.get(0).date);
-                        }
-
+                    if (agendaView.getRepresentedObject() == Test.class) {
+                        tvVisualizerType.setText("Verifica");
+                        Test test = (Test) visualizerPinBoardObjects.get(0);
+                        tvVisualizerSubject.setText(test.subject);
+                        tvVisualizerCreator.setText(test.creator);
+                        tvVisualizerText.setText(test.details);
+                        tvVisualizerDate.setText(test.date);
+                    } else if (agendaView.getRepresentedObject() == Homework.class) {
+                        tvVisualizerType.setText("Compito");
+                        Homework homework = (Homework) visualizerPinBoardObjects.get(0);
+                        tvVisualizerSubject.setText(homework.subject);
+                        tvVisualizerCreator.setText(homework.creator);
+                        tvVisualizerText.setText(homework.details);
+                        tvVisualizerDate.setText(homework.date);
+                    } else if (agendaView.getRepresentedObject() == Activity.class) {
+                        tvVisualizerType.setText("Attività");
+                        com.giua.objects.Activity activity = (com.giua.objects.Activity) visualizerPinBoardObjects.get(0);
+                        tvVisualizerCreator.setText(activity.creator);
+                        tvVisualizerText.setText(activity.details);
+                        tvVisualizerDate.setText(activity.date);
                     }
 
                     ivVisualizerPrevBtn.setVisibility(View.INVISIBLE);
-                    if (visualizerHomeworks.size() + visualizerTests.size() <= 1) {  //E' presente solo un elemento
+                    if (visualizerPinBoardObjects.size() + visualizerPinBoardObjects.size() <= 1) {  //E' presente solo un elemento
                         ivVisualizerPrevBtn.setVisibility(View.GONE);
                         ivVisualizerNextBtn.setVisibility(View.GONE);
                     } else
