@@ -45,6 +45,7 @@ import com.giua.app.IGiuaAppFragment;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.giua.app.ThreadManager;
+import com.giua.app.ui.activities.DrawerActivity;
 import com.giua.objects.Vote;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
@@ -104,6 +105,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         tvTests = root.findViewById(R.id.home_txt_tests);
         swipeRefreshLayout = root.findViewById(R.id.home_swipe_refresh_layout);
 
+        root.findViewById(R.id.home_agenda_alerts).setOnClickListener(this::agendaAlertsOnClick);
         swipeRefreshLayout.setRefreshing(true);
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
 
@@ -118,6 +120,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
                 });
             }
         }).start();
+
 
 
         loadDataAndViews();
@@ -174,6 +177,11 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public boolean onBackPressed() {
         return false;
+    }
+
+    private void agendaAlertsOnClick(View view) {
+        ((DrawerActivity) activity).changeFragment(R.id.nav_agenda);
+        ((DrawerActivity) activity).selectItemInDrawer(16);
     }
 
     private void updateReminderOnClick(View view) {

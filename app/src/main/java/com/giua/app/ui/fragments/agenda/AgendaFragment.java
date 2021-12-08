@@ -228,15 +228,11 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         allObjects.sort((pinBoardObject1, pinBoardObject2) -> {
             int year1 = Integer.parseInt(pinBoardObject1.year);
             int month1 = Integer.parseInt(pinBoardObject1.month);
-            ;
             int day1 = Integer.parseInt(pinBoardObject1.day);
-            ;
+
             int year2 = Integer.parseInt(pinBoardObject2.year);
-            ;
             int month2 = Integer.parseInt(pinBoardObject2.month);
-            ;
             int day2 = Integer.parseInt(pinBoardObject2.day);
-            ;
 
             if (year1 == year2) {
                 if (month1 == month2)
@@ -260,12 +256,15 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         calendarView.addDecorator(new DayViewDecorator() {
             @Override
             public boolean shouldDecorate(CalendarDay day) {
-                return objectDays.contains(day);
+                String d = String.valueOf(day.getDay());
+                String m = String.valueOf(day.getMonth());
+                String y = String.valueOf(day.getYear());
+                return allHomeworks.contains(new PinBoardObject(d, m, y, y + "-" + m + "-" + d));
             }
 
             @Override
             public void decorate(DayViewFacade view) {
-                view.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.agenda_calendar_homeworks, activity.getTheme()));
+                view.setBackgroundDrawable(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.agenda_calendar_homeworks, activity.getTheme()));
             }
         });
 
@@ -273,25 +272,30 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         calendarView.addDecorator(new DayViewDecorator() {
             @Override
             public boolean shouldDecorate(CalendarDay day) {
-                return objectDays.contains(day);
+                String d = String.valueOf(day.getDay());
+                String m = String.valueOf(day.getMonth());
+                String y = String.valueOf(day.getYear());
+                return allTests.contains(new PinBoardObject(d, m, y, y + "-" + m + "-" + d));
             }
 
             @Override
             public void decorate(DayViewFacade view) {
-                view.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.agenda_calendar_test, activity.getTheme()));
+                view.setBackgroundDrawable(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.agenda_calendar_test, activity.getTheme()));
             }
         });
-
         //Decorator per i giorni in cui ci sono compiti e verifiche
         calendarView.addDecorator(new DayViewDecorator() {
             @Override
             public boolean shouldDecorate(CalendarDay day) {
-                return objectDays.contains(day);
+                String d = String.valueOf(day.getDay());
+                String m = String.valueOf(day.getMonth());
+                String y = String.valueOf(day.getYear());
+                return allActivities.contains(new PinBoardObject(d, m, y, y + "-" + m + "-" + d));
             }
 
             @Override
             public void decorate(DayViewFacade view) {
-                view.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.agenda_calendar_test_homework, activity.getTheme()));
+                view.setBackgroundDrawable(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.agenda_calendar_activities, activity.getTheme()));
             }
         });
 
@@ -342,8 +346,11 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     private void ivVisualizerNextBtnOnClick(View view) {
         int size = visualizerPinBoardObjects.size();
         tvVisualizerText.scrollTo(0, 0);
-        if (visualizerPointer + 1 < size)  //Se si può ancora andare avanti punto il visualizerPointer al prossimo oggetto (quello che sta per essere visualizzato)
+        if (visualizerPointer + 1 < size) {  //Se si può ancora andare avanti punto il visualizerPointer al prossimo oggetto (quello che sta per essere visualizzato)
+            ivVisualizerPrevBtn.setVisibility(View.VISIBLE);
             visualizerPointer++;
+        } else if (ivVisualizerNextBtn.getVisibility() == View.VISIBLE)
+            ivVisualizerNextBtn.setVisibility(View.INVISIBLE);
         if (visualizerPinBoardObjects.get(visualizerPointer).getClass() == Test.class) {
             Test test = (Test) visualizerPinBoardObjects.get(visualizerPointer);
             tvVisualizerType.setText("Verifica");
@@ -366,16 +373,18 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
             tvVisualizerText.setText(activity.details);
             tvVisualizerDate.setText(activity.date);
         }
-        ivVisualizerPrevBtn.setVisibility(View.VISIBLE);
-        if (visualizerPointer >= size)
+        if (visualizerPointer + 1 >= size)
             ivVisualizerNextBtn.setVisibility(View.INVISIBLE);
     }
 
     private void ivVisualizerPrevBtnOnClick(View view) {
         int size = visualizerPinBoardObjects.size();
         tvVisualizerText.scrollTo(0, 0);
-        if (visualizerPointer > 0)
+        if (visualizerPointer > 0) {
+            ivVisualizerNextBtn.setVisibility(View.VISIBLE);
             visualizerPointer--;
+        } else if (ivVisualizerPrevBtn.getVisibility() == View.VISIBLE)
+            ivVisualizerPrevBtn.setVisibility(View.INVISIBLE);
         if (visualizerPointer >= 0 && visualizerPointer < size) {
             if (visualizerPinBoardObjects.get(visualizerPointer).getClass() == Test.class) {
                 Test test = (Test) visualizerPinBoardObjects.get(visualizerPointer);
@@ -399,7 +408,6 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                 tvVisualizerText.setText(activity.details);
                 tvVisualizerDate.setText(activity.date);
             }
-            ivVisualizerNextBtn.setVisibility(View.VISIBLE);
         }
         if (visualizerPointer == 0)
             ivVisualizerPrevBtn.setVisibility(View.INVISIBLE);
@@ -470,7 +478,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                     }
 
                     ivVisualizerPrevBtn.setVisibility(View.INVISIBLE);
-                    if (visualizerPinBoardObjects.size() + visualizerPinBoardObjects.size() <= 1) {  //E' presente solo un elemento
+                    if (visualizerPinBoardObjects.size() <= 1) {  //E' presente solo un elemento
                         ivVisualizerPrevBtn.setVisibility(View.GONE);
                         ivVisualizerNextBtn.setVisibility(View.GONE);
                     } else

@@ -362,7 +362,7 @@ public class DrawerActivity extends AppCompatActivity {
         }
     }
 
-    private void changeFragment(@IdRes int id) {
+    public void changeFragment(@IdRes int id) {
         changeFragment(id, "");
     }
 
@@ -495,11 +495,15 @@ public class DrawerActivity extends AppCompatActivity {
         builder.show();
     }
 
-    private void executeChangeFragment(Fragment fragment, String tag, String toolbarTxt, String subtitle){
+    private void executeChangeFragment(Fragment fragment, String tag, String toolbarTxt, String subtitle) {
         setTextToolbar(toolbarTxt);
         toolbar.setSubtitle(subtitle);
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.content_main, fragment, tag).commit();
+    }
+
+    public void selectItemInDrawer(long identifier) {
+        mDrawer.setSelection(identifier);
     }
 
     @Override

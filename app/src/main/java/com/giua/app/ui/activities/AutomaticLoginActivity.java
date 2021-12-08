@@ -154,12 +154,14 @@ public class AutomaticLoginActivity extends AppCompatActivity {
     }
 
     private void startStudentLoginActivity() {
+        runOnUiThread(() -> findViewById(R.id.loading_screen_btn_settings).setVisibility(View.GONE));
         loggerManager.d("Avvio StudentLoginActivity");
         startActivity(new Intent(AutomaticLoginActivity.this, StudentLoginActivity.class).putExtra("sender", "AutomaticLogin"));
         finish();
     }
 
     private void startDrawerActivity() {
+        runOnUiThread(() -> findViewById(R.id.loading_screen_btn_settings).setVisibility(View.GONE));
         loggerManager.d("Avvio DrawerActivity");
         String goTo = getIntent().getStringExtra("goTo");
         if (goTo == null)

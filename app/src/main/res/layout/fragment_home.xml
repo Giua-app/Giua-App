@@ -74,7 +74,8 @@
                     android:background="@drawable/corner_radius_10dp"
                     android:backgroundTint="@color/general_view_color"
                     android:layout_marginBottom="40dp"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:foreground="@drawable/ripple_effect">
 
                     <TextView
                         android:id="@+id/home_txt_homeworks"

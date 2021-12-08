@@ -273,8 +273,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     private boolean newsletterViewOnTouchListener(View view, MotionEvent motionEvent) {
         NewsletterView v = (NewsletterView) view;
         //Se ce' un animazione in corso o la circolare e' gia' stata letta allora non fare nulla
-        if (v.upperView.getAnimation() != null)
-            return false;
+        if (v.upperView.getAnimation() != null) return false;
         DisplayMetrics realMetrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getRealMetrics(realMetrics);
         switch (motionEvent.getAction()) {
@@ -536,14 +535,13 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
      */
     private void openFile(String fileName, String fileExtension) {
         Intent target = new Intent(Intent.ACTION_VIEW);
-        target.setData(FileProvider.getUriForFile(activity, "com.giua.app.fileprovider", new File(requireContext().getFilesDir() + "/" + fileName)));
+        target.setData(FileProvider.getUriForFile(activity, "com.giua.app.fileprovider", new File(requireContext().getCacheDir() + "/" + fileName)));
         target.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-        Intent intent = Intent.createChooser(target, "Apri con:");
         try {
-            startActivity(intent);
+            startActivity(target);
         } catch (Exception e) {
-            setErrorMessage("Non è stata trovata alcuna app compatibile con il tipo di file " + fileExtension, root);
+            setErrorMessage("Non è stata trovata alcuna app compatibile con il tipo di file " + fileExtension.toUpperCase(), root);
         }
     }
 
