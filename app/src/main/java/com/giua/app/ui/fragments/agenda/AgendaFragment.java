@@ -21,13 +21,11 @@ package com.giua.app.ui.fragments.agenda;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -46,8 +44,8 @@ import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
 import com.giua.app.ThreadManager;
 import com.giua.app.ui.fragments.ObscureLayoutView;
+import com.giua.objects.AgendaObject;
 import com.giua.objects.Homework;
-import com.giua.objects.PinBoardObject;
 import com.giua.objects.Test;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
@@ -59,7 +57,6 @@ import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
@@ -67,10 +64,7 @@ import java.util.Vector;
 public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
     LinearLayout viewsLayout;
-    List<com.giua.objects.Activity> allActivities;
-    List<Test> allTests;
-    List<Homework> allHomeworks;
-    List<PinBoardObject> visualizerPinBoardObjects;
+    List<AgendaObject> allAgendaObjects;
     TextView tvNoElements;
     Activity activity;
     View root;
@@ -80,22 +74,11 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     Calendar calendar;
     ScrollView scrollView;
     MaterialCalendarView calendarView;
-    HashSet<CalendarDay> objectDays;
     SwipeRefreshLayout swipeRefreshLayout;
     ObscureLayoutView obscureLayoutView;
-    LinearLayout visualizerLayout;
-    TextView tvVisualizerType;
-    TextView tvVisualizerSubject;
-    TextView tvVisualizerCreator;
-    TextView tvVisualizerText;
-    TextView tvVisualizerDate;
-    ImageView ivVisualizerPrevBtn;
-    ImageView ivVisualizerNextBtn;
     ThreadManager threadManager;
     long lastRequestTime = 0;
-    int visualizerPointer = 0;
     boolean isLoadingData = false;
-    boolean isLoadingDetails = false;
     LoggerManager loggerManager;
 
     @SuppressLint("SetTextI18n")
@@ -108,15 +91,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         calendarView = root.findViewById(R.id.agenda_calendar);
         viewsLayout = root.findViewById(R.id.agenda_views_layout);
         tvNoElements = root.findViewById(R.id.agenda_no_elements_text);
-        visualizerLayout = root.findViewById(R.id.agenda_object_visualizer_layout);
-        tvVisualizerType = root.findViewById(R.id.agenda_visualizer_type);
-        tvVisualizerSubject = root.findViewById(R.id.agenda_visualizer_subject);
-        tvVisualizerCreator = root.findViewById(R.id.agenda_visualizer_creator);
-        tvVisualizerText = root.findViewById(R.id.agenda_visualizer_text);
-        tvVisualizerDate = root.findViewById(R.id.agenda_visualizer_date);
         obscureLayoutView = root.findViewById(R.id.agenda_obscure_layout);
-        ivVisualizerPrevBtn = root.findViewById(R.id.agenda_visualizer_prev_btn);
-        ivVisualizerNextBtn = root.findViewById(R.id.agenda_visualizer_next_btn);
         pbForDetails = root.findViewById(R.id.agenda_progress_bar_details);
         swipeRefreshLayout = root.findViewById(R.id.agenda_swipe_refresh_layout);
 
@@ -145,14 +120,9 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
         threadManager = new ThreadManager();
 
-        tvVisualizerText.setMovementMethod(new ScrollingMovementMethod());
-        //tvTodayText.setText(getMonthFromNumber(Integer.parseInt(getCurrentMonth())) + " " + getCurrentYear());
-
         calendarView.setOnDateChangedListener(this::onDateChangeListener);
         calendarView.setOnMonthChangedListener(this::onMonthChangeListener);
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
-        ivVisualizerPrevBtn.setOnClickListener(this::ivVisualizerPrevBtnOnClick);
-        ivVisualizerNextBtn.setOnClickListener(this::ivVisualizerNextBtnOnClick);
         obscureLayoutView.setOnClickListener(this::obscureLayoutOnClick);
 
         loadDataAndViews();
@@ -167,140 +137,49 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
             lastRequestTime = System.nanoTime();
             swipeRefreshLayout.setRefreshing(true);
             threadManager.addAndRun(() -> {
+                isLoadingData = true;
                 try {
-                    isLoadingData = true;
+                    allAgendaObjects = GlobalVariables.gS.getAgendaPage(false)
+                            .getAllAgendaObjectsWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())));
 
-                    allTests = GlobalVariables.gS.getPinBoardPage(false).getAllTestsWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())));
-                    allHomeworks = GlobalVariables.gS.getPinBoardPage(false).getAllHomeworksWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())));
-                    allActivities = GlobalVariables.gS.getPinBoardPage(false).getAllActivitiesWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())));
-
-                    if (allTests.isEmpty() && allHomeworks.isEmpty()) {
+                    if (allAgendaObjects.isEmpty()) {
                         activity.runOnUiThread(() -> {
-                            viewsLayout.removeAllViews();
+                            viewsLayout.removeViews(1, viewsLayout.getChildCount() - 1);
                             tvNoElements.setVisibility(View.VISIBLE);
-                            swipeRefreshLayout.setRefreshing(false);
-                            isLoadingData = false;
                         });
-                    } else
-                        activity.runOnUiThread(this::addViews);
+                    } else {
+                        activity.runOnUiThread(() -> {
+                            viewsLayout.removeViews(1, viewsLayout.getChildCount() - 1);
+                            decorateCalendar();
+                        });
+                    }
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> {
                         setErrorMessage(activity.getString(R.string.your_connection_error), root);
                         tvNoElements.setVisibility(View.VISIBLE);
-                        swipeRefreshLayout.setRefreshing(false);
-                        isLoadingData = false;
                     });
                 } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                     activity.runOnUiThread(() -> {
                         setErrorMessage(activity.getString(R.string.site_connection_error), root);
                         tvNoElements.setVisibility(View.VISIBLE);
-                        swipeRefreshLayout.setRefreshing(false);
-                        isLoadingData = false;
                     });
                 } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
                     activity.runOnUiThread(() -> {
                         setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
                         tvNoElements.setVisibility(View.VISIBLE);
+                    });
+                } finally {
+                    activity.runOnUiThread(() -> {
                         swipeRefreshLayout.setRefreshing(false);
                         isLoadingData = false;
                     });
                 }
-                activity.runOnUiThread(() -> swipeRefreshLayout.setRefreshing(false));
             });
         }
     }
 
     @Override
     public void addViews() {
-        loggerManager.d("Aggiungo views...");
-        viewsLayout.removeViews(1, viewsLayout.getChildCount() - 1);
-        tvNoElements.setVisibility(View.GONE);
-        viewsLayout.scrollTo(0, 0);
-        objectDays = new HashSet<>();
-
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0, 50, 0, 0);
-
-        List<PinBoardObject> allObjects = new Vector<>();
-        allObjects.addAll(allTests);
-        allObjects.addAll(allHomeworks);
-        allObjects.addAll(allActivities);
-        allObjects.sort((pinBoardObject1, pinBoardObject2) -> {
-            int year1 = Integer.parseInt(pinBoardObject1.year);
-            int month1 = Integer.parseInt(pinBoardObject1.month);
-            int day1 = Integer.parseInt(pinBoardObject1.day);
-
-            int year2 = Integer.parseInt(pinBoardObject2.year);
-            int month2 = Integer.parseInt(pinBoardObject2.month);
-            int day2 = Integer.parseInt(pinBoardObject2.day);
-
-            if (year1 == year2) {
-                if (month1 == month2)
-                    return Integer.compare(day1, day2);
-                else
-                    return Integer.compare(month1, month2);
-            } else
-                return Integer.compare(year1, year2);
-        });
-
-        for (PinBoardObject pinBoardObject : allObjects) {
-            AgendaView agendaView = new AgendaView(activity, null, pinBoardObject);
-            agendaView.setOnClickListener(this::agendaViewOnClick);
-            agendaView.setId(View.generateViewId());
-            agendaView.setLayoutParams(params);
-            viewsLayout.addView(agendaView);
-            objectDays.add(CalendarDay.from(Integer.parseInt(pinBoardObject.year), Integer.parseInt(pinBoardObject.month), Integer.parseInt(pinBoardObject.day)));
-        }
-
-        //Decorator per i giorni dei compiti
-        calendarView.addDecorator(new DayViewDecorator() {
-            @Override
-            public boolean shouldDecorate(CalendarDay day) {
-                String d = String.valueOf(day.getDay());
-                String m = String.valueOf(day.getMonth());
-                String y = String.valueOf(day.getYear());
-                return allHomeworks.contains(new PinBoardObject(d, m, y, y + "-" + m + "-" + d));
-            }
-
-            @Override
-            public void decorate(DayViewFacade view) {
-                view.setBackgroundDrawable(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.agenda_calendar_homeworks, activity.getTheme()));
-            }
-        });
-
-        //Decorator per i giorni delle verifiche che server per il calendario
-        calendarView.addDecorator(new DayViewDecorator() {
-            @Override
-            public boolean shouldDecorate(CalendarDay day) {
-                String d = String.valueOf(day.getDay());
-                String m = String.valueOf(day.getMonth());
-                String y = String.valueOf(day.getYear());
-                return allTests.contains(new PinBoardObject(d, m, y, y + "-" + m + "-" + d));
-            }
-
-            @Override
-            public void decorate(DayViewFacade view) {
-                view.setBackgroundDrawable(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.agenda_calendar_test, activity.getTheme()));
-            }
-        });
-        //Decorator per i giorni in cui ci sono compiti e verifiche
-        calendarView.addDecorator(new DayViewDecorator() {
-            @Override
-            public boolean shouldDecorate(CalendarDay day) {
-                String d = String.valueOf(day.getDay());
-                String m = String.valueOf(day.getMonth());
-                String y = String.valueOf(day.getYear());
-                return allActivities.contains(new PinBoardObject(d, m, y, y + "-" + m + "-" + d));
-            }
-
-            @Override
-            public void decorate(DayViewFacade view) {
-                view.setBackgroundDrawable(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.agenda_calendar_activities, activity.getTheme()));
-            }
-        });
-
-        swipeRefreshLayout.setRefreshing(false);
-        isLoadingData = false;
     }
 
     @Override
@@ -312,23 +191,117 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         return false;
     }
 
+    private void addViews(List<AgendaObject> objectsToShow) {
+        loggerManager.d("Aggiungo views...");
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(0, 50, 0, 0);
+
+        for (AgendaObject agendaObject : objectsToShow) {
+            AgendaView agendaView = new AgendaView(activity, null, agendaObject);
+            agendaView.setLayoutParams(params);
+            agendaView.setId(View.generateViewId());
+            viewsLayout.addView(agendaView);
+        }
+
+        swipeRefreshLayout.setRefreshing(false);
+        isLoadingData = false;
+    }
+
+    private void decorateCalendar() {
+        calendarView.addDecorator(new DayViewDecorator() {
+            @Override
+            public boolean shouldDecorate(CalendarDay day) {
+                String d = String.valueOf(day.getDay());
+                String m = String.valueOf(day.getMonth());
+                String y = String.valueOf(day.getYear());
+                if (d.length() == 1)
+                    d = "0" + d;
+                for (AgendaObject agendaObject : allAgendaObjects) {
+                    if (agendaObject.date.equals(y + "-" + m + "-" + d))
+                        return true;
+                }
+                return false;
+            }
+
+            @Override
+            public void decorate(DayViewFacade view) {
+                GradientDrawable shape = ((GradientDrawable) ResourcesCompat.getDrawable(activity.getResources(), R.drawable.agenda_calendar_homeworks, activity.getTheme()));
+                shape.setColor(ResourcesCompat.getColorStateList(getResources(), R.color.main_color, activity.getTheme()));
+                view.setBackgroundDrawable(shape);
+            }
+        });
+
+        /*calendarView.addDecorator(new DayViewDecorator() {
+            @Override
+            public boolean shouldDecorate(CalendarDay day) {
+                Calendar cal = Calendar.getInstance();
+                return cal.get(Calendar.DAY_OF_MONTH) == day.getDay() && cal.get(Calendar.MONTH)+1 == day.getMonth() && cal.get(Calendar.YEAR) == day.getYear();
+            }
+
+            @Override
+            public void decorate(DayViewFacade view) {
+                GradientDrawable shape = ((GradientDrawable)ResourcesCompat.getDrawable(activity.getResources(), R.drawable.agenda_calendar_homeworks, activity.getTheme()));
+                shape.setColor(ResourcesCompat.getColorStateList(getResources(), R.color.transparent, activity.getTheme()));
+                shape.setStroke(4, ResourcesCompat.getColorStateList(getResources(), R.color.adaptive_color_text, activity.getTheme()));
+                view.setBackgroundDrawable(shape);
+            }
+        });*/
+
+
+    }
+
     //region Listeners
 
     private void onDateChangeListener(MaterialCalendarView materialCalendarView, CalendarDay calendarDay, boolean b) {
-        //Se nel giorno cliccato ci sonon compiti o verifiche o entrambi
-        if (objectDays.contains(calendarDay)) {
-            int childCount = viewsLayout.getChildCount();
-            for (int i = 0; i < childCount; i++) {
-                AgendaView agendaView = (AgendaView) viewsLayout.getChildAt(i);
-                boolean isDayEqual = Integer.parseInt(agendaView.pinBoardObject.day) == calendarDay.getDay();
-                boolean isMonthEqual = Integer.parseInt(agendaView.pinBoardObject.month) == calendarDay.getMonth();
-                boolean isYearEqual = Integer.parseInt(agendaView.pinBoardObject.year) == calendarDay.getYear();
-                if (isDayEqual && isMonthEqual && isYearEqual) {
-                    agendaView.callOnClick();
-                    return;
+        threadManager.addAndRun(() -> {
+            //Conto quanti oggetti ci sono nel giorno cliccato
+            List<AgendaObject> agendaObjectsOfTheDay = new Vector<>();
+            String day = String.valueOf(calendarDay.getDay());
+            String month = String.valueOf(calendarDay.getMonth());
+            String year = String.valueOf(calendarDay.getYear());
+            if (day.length() == 1)
+                day = "0" + day;
+            AgendaObject agendaObjectComparator = new AgendaObject(
+                    day,
+                    month,
+                    year,
+                    year + "-" + month + "-" + day
+            );
+
+            for (AgendaObject agendaObject : allAgendaObjects)
+                if (agendaObject.date.equals(agendaObjectComparator.date))
+                    agendaObjectsOfTheDay.add(agendaObject);
+
+            if (!agendaObjectsOfTheDay.isEmpty()) {
+                activity.runOnUiThread(() -> {
+                    swipeRefreshLayout.setRefreshing(true);
+                    isLoadingData = true;
+                    viewsLayout.removeViews(1, viewsLayout.getChildCount() - 1);
+                    tvNoElements.setVisibility(View.GONE);
+                    viewsLayout.scrollTo(0, 0);
+                });
+                for (AgendaObject agendaObject : agendaObjectsOfTheDay) {
+                    List<AgendaObject> objectsToShow = new Vector<>();
+                    if (agendaObject.getRepresentingClass() == Test.class)
+                        objectsToShow.addAll(GlobalVariables.gS.getAgendaPage(false).getTests(agendaObject.date));
+                    else if (agendaObject.getRepresentingClass() == Homework.class)
+                        objectsToShow.addAll(GlobalVariables.gS.getAgendaPage(false).getHomeworks(agendaObject.date));
+                    else if (agendaObject.getRepresentingClass() == com.giua.objects.Activity.class)
+                        objectsToShow.addAll(GlobalVariables.gS.getAgendaPage(false).getActivities(agendaObject.date));
+                    activity.runOnUiThread(() -> addViews(objectsToShow));
                 }
+            } else {
+                activity.runOnUiThread(() -> {
+                    tvNoElements.setVisibility(View.VISIBLE);
+                    isLoadingData = false;
+                    swipeRefreshLayout.setRefreshing(false);
+                    viewsLayout.removeViews(1, viewsLayout.getChildCount() - 1);
+                });
             }
-        }
+        });
+
+
         materialCalendarView.clearSelection();
     }
 
@@ -341,157 +314,6 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
             currentDisplayedDate = selectedDay.getTime();
         viewsLayout.removeAllViews();
         loadDataAndViews();
-    }
-
-    private void ivVisualizerNextBtnOnClick(View view) {
-        int size = visualizerPinBoardObjects.size();
-        tvVisualizerText.scrollTo(0, 0);
-        if (visualizerPointer + 1 < size) {  //Se si può ancora andare avanti punto il visualizerPointer al prossimo oggetto (quello che sta per essere visualizzato)
-            ivVisualizerPrevBtn.setVisibility(View.VISIBLE);
-            visualizerPointer++;
-        } else if (ivVisualizerNextBtn.getVisibility() == View.VISIBLE)
-            ivVisualizerNextBtn.setVisibility(View.INVISIBLE);
-        if (visualizerPinBoardObjects.get(visualizerPointer).getClass() == Test.class) {
-            Test test = (Test) visualizerPinBoardObjects.get(visualizerPointer);
-            tvVisualizerType.setText("Verifica");
-            tvVisualizerSubject.setText(test.subject);
-            tvVisualizerCreator.setText(test.creator);
-            tvVisualizerText.setText(test.details);
-            tvVisualizerDate.setText(test.date);
-        } else if (visualizerPinBoardObjects.get(visualizerPointer).getClass() == Homework.class) {
-            Homework homework = (Homework) visualizerPinBoardObjects.get(visualizerPointer);
-            tvVisualizerType.setText("Compito");
-            tvVisualizerSubject.setText(homework.subject);
-            tvVisualizerCreator.setText(homework.creator);
-            tvVisualizerText.setText(homework.details);
-            tvVisualizerDate.setText(homework.date);
-        } else if (visualizerPinBoardObjects.get(visualizerPointer).getClass() == com.giua.objects.Activity.class) {
-            com.giua.objects.Activity activity = (com.giua.objects.Activity) visualizerPinBoardObjects.get(visualizerPointer);
-            tvVisualizerType.setText("Attività");
-            tvVisualizerSubject.setText("");
-            tvVisualizerCreator.setText(activity.creator);
-            tvVisualizerText.setText(activity.details);
-            tvVisualizerDate.setText(activity.date);
-        }
-        if (visualizerPointer + 1 >= size)
-            ivVisualizerNextBtn.setVisibility(View.INVISIBLE);
-    }
-
-    private void ivVisualizerPrevBtnOnClick(View view) {
-        int size = visualizerPinBoardObjects.size();
-        tvVisualizerText.scrollTo(0, 0);
-        if (visualizerPointer > 0) {
-            ivVisualizerNextBtn.setVisibility(View.VISIBLE);
-            visualizerPointer--;
-        } else if (ivVisualizerPrevBtn.getVisibility() == View.VISIBLE)
-            ivVisualizerPrevBtn.setVisibility(View.INVISIBLE);
-        if (visualizerPointer >= 0 && visualizerPointer < size) {
-            if (visualizerPinBoardObjects.get(visualizerPointer).getClass() == Test.class) {
-                Test test = (Test) visualizerPinBoardObjects.get(visualizerPointer);
-                tvVisualizerType.setText("Verifica");
-                tvVisualizerSubject.setText(test.subject);
-                tvVisualizerCreator.setText(test.creator);
-                tvVisualizerText.setText(test.details);
-                tvVisualizerDate.setText(test.date);
-            } else if (visualizerPinBoardObjects.get(visualizerPointer).getClass() == Homework.class) {
-                Homework homework = (Homework) visualizerPinBoardObjects.get(visualizerPointer);
-                tvVisualizerType.setText("Compito");
-                tvVisualizerSubject.setText(homework.subject);
-                tvVisualizerCreator.setText(homework.creator);
-                tvVisualizerText.setText(homework.details);
-                tvVisualizerDate.setText(homework.date);
-            } else if (visualizerPinBoardObjects.get(visualizerPointer).getClass() == com.giua.objects.Activity.class) {
-                com.giua.objects.Activity activity = (com.giua.objects.Activity) visualizerPinBoardObjects.get(visualizerPointer);
-                tvVisualizerType.setText("Attività");
-                tvVisualizerSubject.setText("");
-                tvVisualizerCreator.setText(activity.creator);
-                tvVisualizerText.setText(activity.details);
-                tvVisualizerDate.setText(activity.date);
-            }
-        }
-        if (visualizerPointer == 0)
-            ivVisualizerPrevBtn.setVisibility(View.INVISIBLE);
-    }
-
-    private void agendaViewOnClick(View view) {
-        if (!isLoadingDetails) {
-            isLoadingDetails = true;
-            pbForDetails.setVisibility(View.VISIBLE);
-            threadManager.addAndRun(() -> {
-                AgendaView agendaView = (AgendaView) view;
-                visualizerPinBoardObjects = new Vector<>();
-                visualizerPointer = 0;
-
-                try {
-                    if (agendaView.getRepresentedObject() == Test.class) {
-                        List<Test> visualizerTests = GlobalVariables.gS.getPinBoardPage(false).getTest(agendaView.pinBoardObject.date);
-                        visualizerPinBoardObjects.addAll(visualizerTests);
-                    } else if (agendaView.getRepresentedObject() == Homework.class) {
-                        List<Homework> visualizerHomeworks = GlobalVariables.gS.getPinBoardPage(false).getHomework(agendaView.pinBoardObject.date);
-                        visualizerPinBoardObjects.addAll(visualizerHomeworks);
-                    } else if (agendaView.getRepresentedObject() == Activity.class) {
-                        List<com.giua.objects.Activity> visualizerActivities = GlobalVariables.gS.getPinBoardPage(false).getActivity(agendaView.pinBoardObject.date);
-                        visualizerPinBoardObjects.addAll(visualizerActivities);
-                    }
-                } catch (GiuaScraperExceptions.YourConnectionProblems e) {
-                    activity.runOnUiThread(() -> {
-                        setErrorMessage(activity.getString(R.string.your_connection_error), root);
-                        pbForDetails.setVisibility(View.GONE);
-                    });
-                    return;
-                } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
-                    activity.runOnUiThread(() -> {
-                        setErrorMessage(activity.getString(R.string.site_connection_error), root);
-                        pbForDetails.setVisibility(View.GONE);
-                    });
-                    return;
-                } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
-                    activity.runOnUiThread(() -> {
-                        setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
-                        pbForDetails.setVisibility(View.GONE);
-                    });
-                    return;
-                }
-
-                activity.runOnUiThread(() -> {
-                    tvVisualizerText.scrollTo(0, 0);
-                    if (agendaView.getRepresentedObject() == Test.class) {
-                        tvVisualizerType.setText("Verifica");
-                        Test test = (Test) visualizerPinBoardObjects.get(0);
-                        tvVisualizerSubject.setText(test.subject);
-                        tvVisualizerCreator.setText(test.creator);
-                        tvVisualizerText.setText(test.details);
-                        tvVisualizerDate.setText(test.date);
-                    } else if (agendaView.getRepresentedObject() == Homework.class) {
-                        tvVisualizerType.setText("Compito");
-                        Homework homework = (Homework) visualizerPinBoardObjects.get(0);
-                        tvVisualizerSubject.setText(homework.subject);
-                        tvVisualizerCreator.setText(homework.creator);
-                        tvVisualizerText.setText(homework.details);
-                        tvVisualizerDate.setText(homework.date);
-                    } else if (agendaView.getRepresentedObject() == Activity.class) {
-                        tvVisualizerType.setText("Attività");
-                        com.giua.objects.Activity activity = (com.giua.objects.Activity) visualizerPinBoardObjects.get(0);
-                        tvVisualizerCreator.setText(activity.creator);
-                        tvVisualizerText.setText(activity.details);
-                        tvVisualizerDate.setText(activity.date);
-                    }
-
-                    ivVisualizerPrevBtn.setVisibility(View.INVISIBLE);
-                    if (visualizerPinBoardObjects.size() <= 1) {  //E' presente solo un elemento
-                        ivVisualizerPrevBtn.setVisibility(View.GONE);
-                        ivVisualizerNextBtn.setVisibility(View.GONE);
-                    } else
-                        ivVisualizerNextBtn.setVisibility(View.VISIBLE);
-                    visualizerLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
-                    visualizerLayout.setVisibility(View.VISIBLE);
-                    obscureLayoutView.show();
-
-                    isLoadingDetails = false;
-                    pbForDetails.setVisibility(View.GONE);
-                });
-            });
-        }
     }
 
     private void obscureLayoutOnClick(View view) {

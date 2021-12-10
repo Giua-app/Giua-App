@@ -36,8 +36,38 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/varelaroundregular"
-            android:text="Compito"
+            android:text=""
             android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/agenda_view_subject"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/varelaroundregular"
+            android:text=""
+            android:textSize="16sp"
+            android:layout_gravity="right"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/agenda_view_teacher"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/varelaroundregular"
+            android:text=""
+            android:layout_gravity="right"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/agenda_view_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/varelaroundregular"
+            android:text=""
+            android:textSize="16sp"
+            android:layout_marginTop="20dp"
             android:textStyle="bold" />
 
         <TextView

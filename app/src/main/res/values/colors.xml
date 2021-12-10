@@ -48,8 +48,8 @@
     <color name="obscure_layout">#B2000000</color>
     <color name="light_white_night_black">#FFFFFF</color>
     <color name="night_white_light_black">#000000</color>
-    <color name="agenda_views_text_green">#35B039</color>
-    <color name="agenda_views_text_orange">#FF9800</color>
-    <color name="agenda_views_text_cyan">#00BCD4</color>
+    <color name="agenda_views_green">#58B05B</color>
+    <color name="agenda_views_orange">#BF8630</color>
+    <color name="agenda_views_cyan">#4CC8DA</color>
     <color name="transparent">#00FFFFFF</color>
 </resources>
