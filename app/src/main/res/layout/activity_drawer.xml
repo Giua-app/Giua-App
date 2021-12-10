@@ -36,6 +36,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/relative_main_color"
+            app:menu="@menu/menu_drawer_toolbar"
             app:popupTheme="@style/Theme.GiuaApp.PopupOverlay"
             app:title="Home"
             app:titleTextAppearance="@style/ToolbarTextStyle" />

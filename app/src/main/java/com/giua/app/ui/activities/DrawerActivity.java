@@ -24,6 +24,9 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.text.Html;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.IdRes;
@@ -533,6 +536,64 @@ public class DrawerActivity extends AppCompatActivity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putBoolean("offline", offlineMode);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_drawer_toolbar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.help_menu_drawer){
+            Fragment fragment = getSupportFragmentManager().getFragments().get(0);
+            if (fragment.getTag() != null && !fragment.getTag().equals("FRAGMENT_NOT_IMPLEMENTED")){
+                //Se il fragment corrente ha un tag ed è una schermata implementata
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setTitle("Come si usa la pagina " + toolbar.getTitle())
+
+                .setPositiveButton("Chiudi", (dialog, id) -> {})
+
+                .setOnDismissListener(dialog -> {});
+                String message = "";
+
+                switch (fragment.getTag()){
+                    case "FRAGMENT_HOME":
+                        message = "Nella Home puoi vedere il tuo andamento scolastico e " +
+                                "avvisi sulle verifiche o compiti per i prossimi giorni";
+                        break;
+                    case "FRAGMENT_VOTES":
+                        message = "Puoi cliccare sui voti per vederne i dettagli (data, tipo, argomento).<br>" +
+                                "L'app calcolerà per te la media delle materie.<br>" +
+                                "<i>Legenda dei colori:<br>" +
+                                "Verde = Sufficiente<br>Arancione = Quasi Sufficiente<br>Rosso = Insufficiente</i>";
+                        break;
+                    case "FRAGMENT_AGENDA":
+                        message = "In sviluppo";
+                        break;
+                    case "FRAGMENT_LESSONS":
+                        message = "Puoi cliccare su una lezione per vederne i dettagli (argomenti, attività)";
+                        break;
+                    case "FRAGMENT_ALERTS":
+                        message = "Puoi cliccare su un avviso per vederne il contenuto ed eventuali allegati<br>" +
+                                "Gli avvisi ancora da leggere sono segnati da una barra arancione affianco all'avviso";
+                        break;
+                    case "FRAGMENT_NEWSLETTERS":
+                        message = "Il tasto a sinistra (con il documento) scarica e apre la circolare<br>" +
+                                "Il tasto a destra (con la graffetta) mostra una lista degli allegati presenti," +
+                                " clicca un allegato per scaricarlo ed aprirlo.<br><br>" +
+                                "Per segnare come letta una circolare <i>senza aprirla</i>, basta trascinare " +
+                                "il dito da sinistra verso destra sopra una circolare";
+                        break;
+                }
+                builder.setMessage(Html.fromHtml(message, 0));
+                builder.show();
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

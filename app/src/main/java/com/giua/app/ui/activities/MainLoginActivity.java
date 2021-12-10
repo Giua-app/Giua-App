@@ -88,17 +88,7 @@ public class MainLoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(this::btnLoginOnClick);
         btnLoginAsStudent.setOnClickListener(this::btnLoginAsStudentOnClick);
 
-        DisplayMetrics realMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getRealMetrics(realMetrics);
-
-        loggerManager.d("Dimensioni schermo: " + realMetrics.widthPixels + "x" + realMetrics.heightPixels);
-        loggerManager.d("Login visibile? " + (realMetrics.widthPixels <= 1080 && realMetrics.heightPixels <= 1920 ? "Probabilmente no" : "Si"));
-        if (realMetrics.widthPixels <= 1080 && realMetrics.heightPixels <= 1920) {
-            loggerManager.d("Aggiusto margini di card view per essere visibili");
-            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) findViewById(R.id.main_card_view).getLayoutParams();
-            params.setMargins(0, 20, 0, 0);
-            findViewById(R.id.main_card_view).setLayoutParams(params);
-        }
+        checkDisplayMetrics();
         checkForUpdateChangelog();
     }
 
@@ -125,6 +115,20 @@ public class MainLoginActivity extends AppCompatActivity {
 
             }
         };
+    }
+
+    private void checkDisplayMetrics() {
+        DisplayMetrics realMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getRealMetrics(realMetrics);
+
+        loggerManager.d("Dimensioni schermo: " + realMetrics.widthPixels + "x" + realMetrics.heightPixels);
+        loggerManager.d("Login visibile? " + (realMetrics.widthPixels <= 1080 && realMetrics.heightPixels <= 1920 ? "Probabilmente no" : "Si"));
+        if (realMetrics.widthPixels <= 1080 && realMetrics.heightPixels <= 1920) {
+            loggerManager.d("Aggiusto margini di card view per essere visibili");
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) findViewById(R.id.main_card_view).getLayoutParams();
+            params.setMargins(0, 20, 0, 0);
+            findViewById(R.id.main_card_view).setLayoutParams(params);
+        }
     }
 
     private void checkForUpdateChangelog(){

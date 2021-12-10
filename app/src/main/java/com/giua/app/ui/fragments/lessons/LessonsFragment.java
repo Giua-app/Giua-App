@@ -255,12 +255,12 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         if (!((LessonView) view).lesson.arguments.equals(""))
             tvVisualizerArguments.setText(Html.fromHtml("<b>Argomenti:</b> " + ((LessonView) view).lesson.arguments, Html.FROM_HTML_MODE_COMPACT));
         else
-            tvVisualizerArguments.setText(Html.fromHtml("<b>Argomenti:</b> Non specificati", Html.FROM_HTML_MODE_COMPACT));
+            tvVisualizerArguments.setText(Html.fromHtml("<b>Argomenti:</b> (Non specificati)", Html.FROM_HTML_MODE_COMPACT));
 
         if (!((LessonView) view).lesson.activities.equals(""))
             tvVisualizerActivities.setText(Html.fromHtml("<b>Attività:</b> " + ((LessonView) view).lesson.activities, Html.FROM_HTML_MODE_COMPACT));
         else
-            tvVisualizerActivities.setText(Html.fromHtml("<b>Attività:</b> Non specificata", Html.FROM_HTML_MODE_COMPACT));
+            tvVisualizerActivities.setText(Html.fromHtml("<b>Attività:</b> (Non specificata)", Html.FROM_HTML_MODE_COMPACT));
     }
 
     private void calendarOnChangeDateListener(CalendarView view, int year, int month, int dayOfMonth) {
