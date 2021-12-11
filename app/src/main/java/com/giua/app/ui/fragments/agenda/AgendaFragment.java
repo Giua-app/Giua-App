@@ -218,7 +218,48 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                 if (d.length() == 1)
                     d = "0" + d;
                 for (AgendaObject agendaObject : allAgendaObjects) {
-                    if (agendaObject.date.equals(y + "-" + m + "-" + d))
+                    if (agendaObject.date.equals(y + "-" + m + "-" + d)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public void decorate(DayViewFacade view) {
+                GradientDrawable shape;
+                shape = ((GradientDrawable) ResourcesCompat.getDrawable(activity.getResources(), R.drawable.agenda_calendar_homeworks, activity.getTheme()));
+                shape.setStroke(0, ResourcesCompat.getColorStateList(activity.getResources(), R.color.adaptive_color_text, activity.getTheme()));
+                shape.setColor(ResourcesCompat.getColorStateList(activity.getResources(), R.color.main_color, activity.getTheme()));
+                view.setBackgroundDrawable(shape);
+            }
+        });
+
+        calendarView.addDecorator(new DayViewDecorator() {
+            @Override
+            public boolean shouldDecorate(CalendarDay day) {
+                Calendar cal = Calendar.getInstance();
+                return cal.get(Calendar.DAY_OF_MONTH) == day.getDay() && cal.get(Calendar.MONTH) + 1 == day.getMonth() && cal.get(Calendar.YEAR) == day.getYear();
+            }
+
+            @Override
+            public void decorate(DayViewFacade view) {
+                GradientDrawable shape = ((GradientDrawable) ResourcesCompat.getDrawable(activity.getResources(), R.drawable.agenda_calendar_today, activity.getTheme()));
+                view.setBackgroundDrawable(shape);
+            }
+        });
+
+        calendarView.addDecorator(new DayViewDecorator() {
+            @Override
+            public boolean shouldDecorate(CalendarDay day) {
+                String d = String.valueOf(day.getDay());
+                String m = String.valueOf(day.getMonth());
+                String y = String.valueOf(day.getYear());
+                Calendar cal = Calendar.getInstance();
+                if (d.length() == 1)
+                    d = "0" + d;
+                for (AgendaObject agendaObject : allAgendaObjects) {
+                    if (agendaObject.date.equals(y + "-" + m + "-" + d) && cal.get(Calendar.DAY_OF_MONTH) == day.getDay() && cal.get(Calendar.MONTH) + 1 == day.getMonth() && cal.get(Calendar.YEAR) == day.getYear())
                         return true;
                 }
                 return false;
@@ -226,34 +267,19 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
             @Override
             public void decorate(DayViewFacade view) {
-                GradientDrawable shape = ((GradientDrawable) ResourcesCompat.getDrawable(activity.getResources(), R.drawable.agenda_calendar_homeworks, activity.getTheme()));
+                GradientDrawable shape = ((GradientDrawable) ResourcesCompat.getDrawable(activity.getResources(), R.drawable.agenda_calendar_test, activity.getTheme()));
                 shape.setColor(ResourcesCompat.getColorStateList(getResources(), R.color.main_color, activity.getTheme()));
+                shape.setStroke(4, ResourcesCompat.getColorStateList(activity.getResources(), R.color.adaptive_color_text, activity.getTheme()));
                 view.setBackgroundDrawable(shape);
             }
         });
-
-        /*calendarView.addDecorator(new DayViewDecorator() {
-            @Override
-            public boolean shouldDecorate(CalendarDay day) {
-                Calendar cal = Calendar.getInstance();
-                return cal.get(Calendar.DAY_OF_MONTH) == day.getDay() && cal.get(Calendar.MONTH)+1 == day.getMonth() && cal.get(Calendar.YEAR) == day.getYear();
-            }
-
-            @Override
-            public void decorate(DayViewFacade view) {
-                GradientDrawable shape = ((GradientDrawable)ResourcesCompat.getDrawable(activity.getResources(), R.drawable.agenda_calendar_homeworks, activity.getTheme()));
-                shape.setColor(ResourcesCompat.getColorStateList(getResources(), R.color.transparent, activity.getTheme()));
-                shape.setStroke(4, ResourcesCompat.getColorStateList(getResources(), R.color.adaptive_color_text, activity.getTheme()));
-                view.setBackgroundDrawable(shape);
-            }
-        });*/
-
 
     }
 
     //region Listeners
 
     private void onDateChangeListener(MaterialCalendarView materialCalendarView, CalendarDay calendarDay, boolean b) {
+        if (isLoadingData) return;
         threadManager.addAndRun(() -> {
             //Conto quanti oggetti ci sono nel giorno cliccato
             List<AgendaObject> agendaObjectsOfTheDay = new Vector<>();
@@ -312,7 +338,6 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
             currentDisplayedDate = currentDate.getTime();
         else
             currentDisplayedDate = selectedDay.getTime();
-        viewsLayout.removeAllViews();
         loadDataAndViews();
     }
 
