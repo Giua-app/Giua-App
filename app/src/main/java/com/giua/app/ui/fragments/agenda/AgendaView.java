@@ -84,7 +84,7 @@ public class AgendaView extends RelativeLayout {
             tvText.setText(homework.details);
             tvSubject.setText(homework.subject.split(": ")[1]);
             tvTeacher.setText(homework.creator);
-            layout.setBackgroundTintList(ResourcesCompat.getColorStateList(getResources(), R.color.agenda_views_cyan, context.getTheme()));
+            layout.setBackgroundTintList(ResourcesCompat.getColorStateList(getResources(), R.color.adaptive_agenda_views_cyan, context.getTheme()));
         } else if (getRepresentedObject() == Test.class) {
             Test test = (Test) agendaObject;
             objectDay.set(Integer.parseInt(test.year), Integer.parseInt(test.month) - 1, Integer.parseInt(test.day), 23, 59, 59);
@@ -93,7 +93,7 @@ public class AgendaView extends RelativeLayout {
             tvText.setText(test.details);
             tvSubject.setText(test.subject);
             tvTeacher.setText(test.creator);
-            layout.setBackgroundTintList(ResourcesCompat.getColorStateList(getResources(), R.color.agenda_views_orange, context.getTheme()));
+            layout.setBackgroundTintList(ResourcesCompat.getColorStateList(getResources(), R.color.adaptive_agenda_views_orange, context.getTheme()));
         } else if (getRepresentedObject() == com.giua.objects.Activity.class) {
             com.giua.objects.Activity activity = (com.giua.objects.Activity) agendaObject;
             objectDay.set(Integer.parseInt(activity.year), Integer.parseInt(activity.month) - 1, Integer.parseInt(activity.day), 23, 59, 59);
@@ -102,7 +102,7 @@ public class AgendaView extends RelativeLayout {
             tvText.setText(activity.details);
             tvSubject.setVisibility(GONE);
             tvTeacher.setVisibility(GONE);
-            layout.setBackgroundTintList(ResourcesCompat.getColorStateList(getResources(), R.color.agenda_views_green, context.getTheme()));
+            layout.setBackgroundTintList(ResourcesCompat.getColorStateList(getResources(), R.color.adaptive_agenda_views_green, context.getTheme()));
         }
 
         //Calendar fake = Calendar.getInstance();

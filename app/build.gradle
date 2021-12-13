@@ -117,7 +117,7 @@ dependencies {
     //implementation 'com.squareup.leakcanary:leakcanary-android:2.7'  //DEBUG
 
     //--Material Calendar View
-    implementation 'com.github.prolificinteractive:material-calendarview:2.0.0'
+    implementation 'com.github.applikeysolutions:cosmocalendar:1.0.4'
 
     //--jsoup HTML parser library @ https://jsoup.org/
     implementation 'org.jsoup:jsoup:1.14.3'

@@ -21,7 +21,6 @@ package com.giua.app.ui.fragments.agenda;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +35,11 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.applikeysolutions.cosmocalendar.model.Month;
+import com.applikeysolutions.cosmocalendar.selection.SingleSelectionManager;
+import com.applikeysolutions.cosmocalendar.settings.appearance.ConnectedDayIconPosition;
+import com.applikeysolutions.cosmocalendar.settings.lists.connected_days.ConnectedDays;
+import com.applikeysolutions.cosmocalendar.view.CalendarView;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.LoggerManager;
@@ -49,16 +53,15 @@ import com.giua.objects.Homework;
 import com.giua.objects.Test;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
-import com.prolificinteractive.materialcalendarview.CalendarDay;
-import com.prolificinteractive.materialcalendarview.DayViewDecorator;
-import com.prolificinteractive.materialcalendarview.DayViewFacade;
-import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
 public class AgendaFragment extends Fragment implements IGiuaAppFragment {
@@ -73,7 +76,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     ProgressBar pbForDetails;
     Calendar calendar;
     ScrollView scrollView;
-    MaterialCalendarView calendarView;
+    CalendarView calendarView;
     SwipeRefreshLayout swipeRefreshLayout;
     ObscureLayoutView obscureLayoutView;
     ThreadManager threadManager;
@@ -109,23 +112,10 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
             currentDate = calendar;
         }
 
-        calendarView.setTitleMonths(new CharSequence[]{
-                "Gennaio", "Febbraio", "Marzo",
-                "Aprile", "Maggio", "Giugno",
-                "Luglio", "Agosto", "Settembre",
-                "Ottobre", "Novembre", "Dicembre"
-        });
-
-        calendarView.setWeekDayLabels(new CharSequence[]{
-                "Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"
-        });
-
-        decorateCalendar();
-
         threadManager = new ThreadManager();
 
-        calendarView.setOnDateChangedListener(this::onDateChangeListener);
-        calendarView.setOnMonthChangedListener(this::onMonthChangeListener);
+        calendarView.setSelectionManager(new SingleSelectionManager(this::onDateChangedListener));
+        calendarView.setOnMonthChangeListener(this::onMonthChangeListener);
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         obscureLayoutView.setOnClickListener(this::obscureLayoutOnClick);
 
@@ -155,7 +145,10 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                     } else {
                         activity.runOnUiThread(() -> {
                             viewsLayout.removeViews(1, viewsLayout.getChildCount() - 1);
-                            calendarView.invalidateDecorators();
+                            try {
+                                refreshCalendarEvents();
+                            } catch (ParseException ignored) {
+                            }
                         });
                     }
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
@@ -172,6 +165,74 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                 }
             });
         }
+    }
+
+    private void refreshCalendarEvents() throws ParseException {
+        Set<Long> testDaysSet = new TreeSet<>();
+        Set<Long> homeworkDaysSet = new TreeSet<>();
+        Set<Long> activitiesDaysSet = new TreeSet<>();
+        /*
+        String date1 = "12-18-2021";
+        String date2 = "12-09-2021";
+
+        SimpleDateFormat sdf1 = new SimpleDateFormat("MM-dd-yyyy");
+        try {
+            Date mDate1 = sdf1.parse(date1);
+            long timeInMilliseconds1 = mDate1.getTime();
+
+
+            Date mDate2 = sdf1.parse(date2);
+            long timeInMilliseconds2 = mDate2.getTime();
+
+            days.add(timeInMilliseconds1);
+            days.add(timeInMilliseconds2);
+            // can add more days to set
+
+        } catch (Exception e) {
+        }
+        ConnectedDays connectedDays = new ConnectedDays(days, Color.parseColor("#000000"));
+        calendarView.setConnectedDayIconPosition(ConnectedDayIconPosition.BOTTOM);
+        calendarView.setConnectedDayIconRes(R.drawable.agenda_calendar_test);
+        calendarView.addConnectedDays(connectedDays);
+        calendarView.update();*/
+
+        /*calendarView.setTitleMonths(new CharSequence[]{
+                "Gennaio", "Febbraio", "Marzo",
+                "Aprile", "Maggio", "Giugno",
+                "Luglio", "Agosto", "Settembre",
+                "Ottobre", "Novembre", "Dicembre"
+        });
+
+        calendarView.setWeekDayLabels(new CharSequence[]{
+                "Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"
+        });
+
+        decorateCalendar();*/
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        for (AgendaObject agendaObject : allAgendaObjects) {
+            if (agendaObject.getRepresentingClass() == Test.class)
+                testDaysSet.add(simpleDateFormat.parse(agendaObject.date).getTime());
+            else if (agendaObject.getRepresentingClass() == Homework.class)
+                homeworkDaysSet.add(simpleDateFormat.parse(agendaObject.date).getTime());
+            else if (agendaObject.getRepresentingClass() == com.giua.objects.Activity.class)
+                activitiesDaysSet.add(simpleDateFormat.parse(agendaObject.date).getTime());
+        }
+
+        ConnectedDays testDays = new ConnectedDays(testDaysSet, ResourcesCompat.getColor(activity.getResources(), R.color.adaptive_color_text, activity.getTheme()));
+        calendarView.setConnectedDayIconPosition(ConnectedDayIconPosition.BOTTOM);
+        calendarView.setConnectedDayIconRes(R.drawable.agenda_calendar_test);
+        calendarView.addConnectedDays(testDays);
+        ConnectedDays homeworkDays = new ConnectedDays(homeworkDaysSet, ResourcesCompat.getColor(activity.getResources(), R.color.adaptive_color_text, activity.getTheme()));
+        calendarView.setConnectedDayIconPosition(ConnectedDayIconPosition.BOTTOM);
+        calendarView.setConnectedDayIconRes(R.drawable.agenda_calendar_homeworks);
+        calendarView.addConnectedDays(homeworkDays);
+        ConnectedDays activitiesDays = new ConnectedDays(activitiesDaysSet, ResourcesCompat.getColor(activity.getResources(), R.color.adaptive_color_text, activity.getTheme()));
+        calendarView.setConnectedDayIconPosition(ConnectedDayIconPosition.BOTTOM);
+        calendarView.setConnectedDayIconRes(R.drawable.agenda_calendar_activities);
+        calendarView.addConnectedDays(activitiesDays);
+        calendarView.update();
+
     }
 
     @Override
@@ -204,160 +265,12 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         isLoadingData = false;
     }
 
-    private void decorateCalendar() {
-        calendarView.addDecorator(new DayViewDecorator() {
-            @Override
-            public boolean shouldDecorate(CalendarDay day) {
-                String d = String.valueOf(day.getDay());
-                String m = String.valueOf(day.getMonth());
-                String y = String.valueOf(day.getYear());
-                if (d.length() == 1)
-                    d = "0" + d;
-                for (AgendaObject agendaObject : allAgendaObjects) {
-                    if (agendaObject.date.equals(y + "-" + m + "-" + d)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-
-            @Override
-            public void decorate(DayViewFacade view) {
-                GradientDrawable shape;
-                shape = ((GradientDrawable) ResourcesCompat.getDrawable(activity.getResources(), R.drawable.agenda_calendar_homeworks, activity.getTheme()));
-                shape.setStroke(0, ResourcesCompat.getColorStateList(activity.getResources(), R.color.adaptive_color_text, activity.getTheme()));
-                shape.setColor(ResourcesCompat.getColorStateList(activity.getResources(), R.color.main_color, activity.getTheme()));
-                view.setBackgroundDrawable(shape);
-            }
-        });
-
-        calendarView.addDecorator(new DayViewDecorator() {
-            @Override
-            public boolean shouldDecorate(CalendarDay day) {
-                Calendar cal = Calendar.getInstance();
-                return cal.get(Calendar.DAY_OF_MONTH) == day.getDay() && cal.get(Calendar.MONTH) + 1 == day.getMonth() && cal.get(Calendar.YEAR) == day.getYear();
-            }
-
-            @Override
-            public void decorate(DayViewFacade view) {
-                GradientDrawable shape = ((GradientDrawable) ResourcesCompat.getDrawable(activity.getResources(), R.drawable.agenda_calendar_today, activity.getTheme()));
-                view.setBackgroundDrawable(shape);
-            }
-        });
-
-        calendarView.addDecorator(new DayViewDecorator() {
-            @Override
-            public boolean shouldDecorate(CalendarDay day) {
-                String d = String.valueOf(day.getDay());
-                String m = String.valueOf(day.getMonth());
-                String y = String.valueOf(day.getYear());
-                Calendar cal = Calendar.getInstance();
-                if (d.length() == 1)
-                    d = "0" + d;
-                for (AgendaObject agendaObject : allAgendaObjects) {
-                    if (agendaObject.date.equals(y + "-" + m + "-" + d) && cal.get(Calendar.DAY_OF_MONTH) == day.getDay() && cal.get(Calendar.MONTH) + 1 == day.getMonth() && cal.get(Calendar.YEAR) == day.getYear())
-                        return true;
-                }
-                return false;
-            }
-
-            @Override
-            public void decorate(DayViewFacade view) {
-                GradientDrawable shape = ((GradientDrawable) ResourcesCompat.getDrawable(activity.getResources(), R.drawable.agenda_calendar_test, activity.getTheme()));
-                shape.setColor(ResourcesCompat.getColorStateList(activity.getResources(), R.color.main_color, activity.getTheme()));
-                shape.setStroke(4, ResourcesCompat.getColorStateList(activity.getResources(), R.color.adaptive_color_text, activity.getTheme()));
-                view.setBackgroundDrawable(shape);
-            }
-        });
-
-    }
-
     //region Listeners
 
-    private void onDateChangeListener(MaterialCalendarView materialCalendarView, CalendarDay calendarDay, boolean b) {
-        if (System.currentTimeMillis() - lastOnDateCall < 300) {
-            setErrorMessage("Clicca più lentamente!", root);
-            return;
-        }
-        if (isLoadingData) return;
-        lastOnDateCall = System.currentTimeMillis();
-        isLoadingData = true;
-        swipeRefreshLayout.setRefreshing(true);
-        threadManager.addAndRun(() -> {
-            //Conto quanti oggetti ci sono nel giorno cliccato
-            List<AgendaObject> agendaObjectsOfTheDay = new Vector<>();
-            String day = String.valueOf(calendarDay.getDay());
-            String month = String.valueOf(calendarDay.getMonth());
-            String year = String.valueOf(calendarDay.getYear());
-            if (day.length() == 1)
-                day = "0" + day;
-            AgendaObject agendaObjectComparator = new AgendaObject(
-                    day,
-                    month,
-                    year,
-                    year + "-" + month + "-" + day
-            );
-
-            for (AgendaObject agendaObject : allAgendaObjects)
-                if (agendaObject.date.equals(agendaObjectComparator.date))
-                    agendaObjectsOfTheDay.add(agendaObject);
-
-            if (!agendaObjectsOfTheDay.isEmpty()) {
-                activity.runOnUiThread(() -> {
-                    viewsLayout.removeViews(1, viewsLayout.getChildCount() - 1);
-                    tvNoElements.setVisibility(View.GONE);
-                    viewsLayout.scrollTo(0, 0);
-                });
-                for (AgendaObject agendaObject : agendaObjectsOfTheDay) {
-                    List<AgendaObject> objectsToShow = new Vector<>();
-                    try {
-                        if (agendaObject.getRepresentingClass() == Test.class)
-                            objectsToShow.addAll(GlobalVariables.gS.getAgendaPage(false).getTests(agendaObject.date));
-                        else if (agendaObject.getRepresentingClass() == Homework.class)
-                            objectsToShow.addAll(GlobalVariables.gS.getAgendaPage(false).getHomeworks(agendaObject.date));
-                        else if (agendaObject.getRepresentingClass() == com.giua.objects.Activity.class)
-                            objectsToShow.addAll(GlobalVariables.gS.getAgendaPage(false).getActivities(agendaObject.date));
-                    } catch (GiuaScraperExceptions.YourConnectionProblems e) {
-                        activity.runOnUiThread(() -> {
-                            setErrorMessage(activity.getString(R.string.your_connection_error), root);
-                            swipeRefreshLayout.setRefreshing(false);
-                        });
-                        return;
-                    } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
-                        activity.runOnUiThread(() -> {
-                            setErrorMessage(activity.getString(R.string.site_connection_error), root);
-                            swipeRefreshLayout.setRefreshing(false);
-                        });
-                        return;
-                    } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
-                        activity.runOnUiThread(() -> {
-                            setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
-                            swipeRefreshLayout.setRefreshing(false);
-                        });
-                        return;
-                    }
-                    activity.runOnUiThread(() -> addViews(objectsToShow));
-                }
-            } else {
-                activity.runOnUiThread(() -> {
-                    tvNoElements.setText("Non ci sono compiti per questo giorno");
-                    tvNoElements.setVisibility(View.VISIBLE);
-                    isLoadingData = false;
-                    swipeRefreshLayout.setRefreshing(false);
-                    viewsLayout.removeViews(1, viewsLayout.getChildCount() - 1);
-                });
-            }
-        });
-
-
-        materialCalendarView.clearSelection();
-    }
-
-    private void onMonthChangeListener(MaterialCalendarView materialCalendarView, CalendarDay calendarDay) {
+    private void onMonthChangeListener(Month month) {
         tvNoElements.setVisibility(View.GONE);
-        Calendar selectedDay = Calendar.getInstance();
-        selectedDay.set(calendarDay.getYear(), calendarDay.getMonth() - 1, calendarDay.getDay());
-        if (calendarDay.getYear() == currentDate.get(Calendar.YEAR) && calendarDay.getMonth() - 1 == currentDate.get(Calendar.MONTH))
+        Calendar selectedDay = month.getFirstDay().getCalendar();
+        if (selectedDay.get(Calendar.YEAR) == currentDate.get(Calendar.YEAR) && selectedDay.get(Calendar.MONTH) == currentDate.get(Calendar.MONTH))
             currentDisplayedDate = currentDate.getTime();
         else
             currentDisplayedDate = selectedDay.getTime();
@@ -475,5 +388,83 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         loggerManager.d("onDestroyView chiamato");
         threadManager.destroyAllAndNullMe();
         super.onDestroyView();
+    }
+
+    private void onDateChangedListener() {
+        if (calendarView.getSelectedDates().size() <= 0) return;
+        Calendar selectedDate = calendarView.getSelectedDates().get(0);
+        if (System.currentTimeMillis() - lastOnDateCall < 300) {
+            setErrorMessage("Clicca più lentamente!", root);
+            return;
+        }
+        if (isLoadingData) return;
+        lastOnDateCall = System.currentTimeMillis();
+        isLoadingData = true;
+        swipeRefreshLayout.setRefreshing(true);
+        threadManager.addAndRun(() -> {
+            //Conto quanti oggetti ci sono nel giorno cliccato
+            List<AgendaObject> agendaObjectsOfTheDay = new Vector<>();
+            String day = String.valueOf(selectedDate.get(Calendar.DAY_OF_MONTH));
+            String month = String.valueOf(selectedDate.get(Calendar.MONTH) + 1);
+            String year = String.valueOf(selectedDate.get(Calendar.YEAR));
+            if (day.length() == 1)
+                day = "0" + day;
+            AgendaObject agendaObjectComparator = new AgendaObject(
+                    day,
+                    month,
+                    year,
+                    year + "-" + month + "-" + day
+            );
+
+            for (AgendaObject agendaObject : allAgendaObjects)
+                if (agendaObject.date.equals(agendaObjectComparator.date))
+                    agendaObjectsOfTheDay.add(agendaObject);
+
+            if (!agendaObjectsOfTheDay.isEmpty()) {
+                activity.runOnUiThread(() -> {
+                    viewsLayout.removeViews(1, viewsLayout.getChildCount() - 1);
+                    tvNoElements.setVisibility(View.GONE);
+                    viewsLayout.scrollTo(0, 0);
+                });
+                for (AgendaObject agendaObject : agendaObjectsOfTheDay) {
+                    List<AgendaObject> objectsToShow = new Vector<>();
+                    try {
+                        if (agendaObject.getRepresentingClass() == Test.class)
+                            objectsToShow.addAll(GlobalVariables.gS.getAgendaPage(false).getTests(agendaObject.date));
+                        else if (agendaObject.getRepresentingClass() == Homework.class)
+                            objectsToShow.addAll(GlobalVariables.gS.getAgendaPage(false).getHomeworks(agendaObject.date));
+                        else if (agendaObject.getRepresentingClass() == com.giua.objects.Activity.class)
+                            objectsToShow.addAll(GlobalVariables.gS.getAgendaPage(false).getActivities(agendaObject.date));
+                    } catch (GiuaScraperExceptions.YourConnectionProblems e) {
+                        activity.runOnUiThread(() -> {
+                            setErrorMessage(activity.getString(R.string.your_connection_error), root);
+                            swipeRefreshLayout.setRefreshing(false);
+                        });
+                        return;
+                    } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
+                        activity.runOnUiThread(() -> {
+                            setErrorMessage(activity.getString(R.string.site_connection_error), root);
+                            swipeRefreshLayout.setRefreshing(false);
+                        });
+                        return;
+                    } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
+                        activity.runOnUiThread(() -> {
+                            setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
+                            swipeRefreshLayout.setRefreshing(false);
+                        });
+                        return;
+                    }
+                    activity.runOnUiThread(() -> addViews(objectsToShow));
+                }
+            } else {
+                activity.runOnUiThread(() -> {
+                    tvNoElements.setText("Non ci sono compiti per questo giorno");
+                    tvNoElements.setVisibility(View.VISIBLE);
+                    isLoadingData = false;
+                    swipeRefreshLayout.setRefreshing(false);
+                    viewsLayout.removeViews(1, viewsLayout.getChildCount() - 1);
+                });
+            }
+        });
     }
 }

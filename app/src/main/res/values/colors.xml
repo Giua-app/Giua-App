@@ -40,7 +40,8 @@
     <color name="black">#090909</color>
     <color name="inside_general_view_color">#FAFAFA</color>
     <color name="mean_vote_layout">#FAFAFA</color>
-    <color name="adaptive_color_text">#090909</color>
+    <color name="adaptive_color_text">#1A1A1A</color>
+    <color name="adaptive_disabled_color_text">#808080</color>
     <color name="newsletter_img">#0066cc</color>
     <color name="nav_drawer_selected_background">#260066CC</color>
     <color name="nav_drawer_selected_text">#0066CC</color>
@@ -48,6 +49,9 @@
     <color name="obscure_layout">#B2000000</color>
     <color name="light_white_night_black">#FFFFFF</color>
     <color name="night_white_light_black">#000000</color>
+    <color name="adaptive_agenda_views_green">#58B05B</color>
+    <color name="adaptive_agenda_views_orange">#BF8630</color>
+    <color name="adaptive_agenda_views_cyan">#4CC8DA</color>
     <color name="agenda_views_green">#58B05B</color>
     <color name="agenda_views_orange">#BF8630</color>
     <color name="agenda_views_cyan">#4CC8DA</color>

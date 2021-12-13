@@ -51,16 +51,18 @@
                 android:orientation="vertical"
                 android:padding="10dp">
 
-                <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+                <com.applikeysolutions.cosmocalendar.view.CalendarView
                     android:id="@+id/agenda_calendar"
                     android:layout_width="match_parent"
                     android:layout_height="380dp"
-                    app:mcv_leftArrowMask="@drawable/ic_baseline_arrow_back_ios_24"
-                    app:mcv_rightArrowMask="@drawable/ic_baseline_arrow_forward_ios_24"
-                    app:mcv_calendarMode="month"
-                    app:mcv_dateTextAppearance="@style/AgendaCalendarViewStyle"
-                    app:mcv_headerTextAppearance="@style/AgendaCalendarViewStyle"
-                    app:mcv_selectionMode="single" />
+                    app:selectionType="single"
+                    app:orientation="horizontal"
+                    app:calendarBackgroundColor="@color/background"
+                    app:weekendDayTextColor="@color/main_color"
+                    app:selectedDayBackgroundColor="@color/main_color"
+                    app:dayTextColor="@color/adaptive_color_text"
+                    app:disabledDayTextColor="@color/adaptive_disabled_color_text"
+                    app:monthTextColor="@color/adaptive_color_text" />
 
             </LinearLayout>
 
