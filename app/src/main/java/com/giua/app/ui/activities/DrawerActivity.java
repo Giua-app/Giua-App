@@ -588,6 +588,11 @@ public class DrawerActivity extends AppCompatActivity {
                                 "Per segnare come letta una circolare <i>senza aprirla</i>, basta trascinare " +
                                 "il dito da sinistra verso destra sopra una circolare";
                         break;
+                    case "FRAGMENT_ABSENCES":
+                        message = "Scrivi la giustificazione (o clicca la freccia per scegliere tra giustificazioni gia fatte) e clicca il pulsante rosso 'Giustifica' per giustificare l'assenza<br>" +
+                                "Se vuoi modificarla, scrivi la nuova giustificazione e clicca il pulsante blu 'Modifica'<br>" +
+                                "Se non riesci a modificarla, vuol dire che il professore ha già convalidato l'assenza e non si può più modificare";
+                        break;
                 }
                 builder.setMessage(Html.fromHtml(message, 0));
                 builder.show();
@@ -595,6 +600,7 @@ public class DrawerActivity extends AppCompatActivity {
             }
             builder.setTitle("Che cosa è una schermata non implementata?");
             builder.setMessage(Html.fromHtml("non te lo dico", 0));
+            builder.show();
             return true;
         }
         return super.onOptionsItemSelected(item);
