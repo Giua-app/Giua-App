@@ -593,6 +593,9 @@ public class DrawerActivity extends AppCompatActivity {
                                 "Se vuoi modificarla, scrivi la nuova giustificazione e clicca il pulsante blu 'Modifica'<br>" +
                                 "Se non riesci a modificarla, vuol dire che il professore ha già convalidato l'assenza e non si può più modificare";
                         break;
+                    case "FRAGMENT_AUTHORIZATIONS":
+                        message = "In questa schermata puoi vedere le tue Autorizzazioni di uscita o entrata";
+                        break;
                 }
                 builder.setMessage(Html.fromHtml(message, 0));
                 builder.show();
