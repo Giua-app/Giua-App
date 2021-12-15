@@ -574,7 +574,7 @@ public class DrawerActivity extends AppCompatActivity {
                         message = "In sviluppo";
                         break;
                     case "FRAGMENT_LESSONS":
-                        message = "Puoi cliccare su una lezione per vederne i dettagli (argomenti, attività)";
+                        message = "Puoi cliccare su una lezione per vederne i dettagli (argomenti, attività)<br>Clicca in basso, sull'icona del calendario o le freccie, per cambiare giorno";
                         break;
                     case "FRAGMENT_ALERTS":
                         message = "Puoi cliccare su un avviso per vederne il contenuto ed eventuali allegati<br>" +
