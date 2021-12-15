@@ -548,15 +548,16 @@ public class DrawerActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.help_menu_drawer){
             Fragment fragment = getSupportFragmentManager().getFragments().get(0);
-            if (fragment.getTag() != null && !fragment.getTag().equals("FRAGMENT_NOT_IMPLEMENTED")){
-                //Se il fragment corrente ha un tag ed è una schermata implementata
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setTitle("Come si usa la pagina " + toolbar.getTitle())
-
+            AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setPositiveButton("Chiudi", (dialog, id) -> {})
 
                 .setOnDismissListener(dialog -> {});
+            if (fragment.getTag() != null && !fragment.getTag().equals("FRAGMENT_NOT_IMPLEMENTED")){
+                //Se il fragment corrente ha un tag ed è una schermata implementata
+
+                builder.setTitle("Come si usa la pagina " + toolbar.getTitle());
+
+
                 String message = "";
 
                 switch (fragment.getTag()){
@@ -592,6 +593,9 @@ public class DrawerActivity extends AppCompatActivity {
                 builder.show();
                 return true;
             }
+            builder.setTitle("Che cosa è una schermata non implementata?");
+            builder.setMessage(Html.fromHtml("non te lo dico", 0));
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
