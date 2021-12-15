@@ -32,15 +32,15 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:fontFamily="@font/ubuntu_light"
-        android:gravity="center"
+        android:gravity="start"
         android:textAlignment="textStart"
         android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.779"
+        app:layout_constraintVertical_bias="0.722"
         app:layout_constraintVertical_chainStyle="spread"
         tools:text="Welcome" />
 
@@ -48,17 +48,15 @@
         android:id="@+id/image"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="60dp"
-        android:layout_marginEnd="60dp"
-        android:layout_marginBottom="20dp"
         android:contentDescription="@string/app_intro_image_content_description"
-        android:scaleType="fitXY"
+        android:scaleType="centerInside"
         app:layout_constraintBottom_toTopOf="@+id/title"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@mipmap/phone1" />
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@mipmap/battery_tutorial" />
 
     <TextView
         android:id="@+id/description"
@@ -74,7 +72,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/image"
-        app:layout_constraintVertical_bias="0.345"
+        app:layout_constraintVertical_bias="0.379"
         tools:text="This is a demo of the AppIntro Library" />
 
     <androidx.constraintlayout.widget.Guideline

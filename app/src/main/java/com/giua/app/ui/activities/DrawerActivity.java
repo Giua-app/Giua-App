@@ -556,8 +556,6 @@ public class DrawerActivity extends AppCompatActivity {
                 //Se il fragment corrente ha un tag ed è una schermata implementata
 
                 builder.setTitle("Come si usa la pagina " + toolbar.getTitle());
-
-
                 String message = "";
 
                 switch (fragment.getTag()){
@@ -572,10 +570,11 @@ public class DrawerActivity extends AppCompatActivity {
                                 "Verde = Sufficiente<br>Arancione = Quasi Sufficiente<br>Rosso = Insufficiente</i>";
                         break;
                     case "FRAGMENT_AGENDA":
-                        message = "In sviluppo";
+                        message = "";
                         break;
                     case "FRAGMENT_LESSONS":
-                        message = "Puoi cliccare su una lezione per vederne i dettagli (argomenti, attività)<br>Clicca in basso, sull'icona del calendario o le freccie, per cambiare giorno";
+                        message = "Puoi cliccare su una lezione per vederne i dettagli (argomenti, attività)<br>Clicca in basso, " +
+                                "sull'icona del calendario o le freccie, per cambiare giorno";
                         break;
                     case "FRAGMENT_ALERTS":
                         message = "Puoi cliccare su un avviso per vederne il contenuto ed eventuali allegati<br>" +
@@ -589,8 +588,9 @@ public class DrawerActivity extends AppCompatActivity {
                                 "il dito da sinistra verso destra sopra una circolare";
                         break;
                     case "FRAGMENT_ABSENCES":
-                        message = "Scrivi la giustificazione (o clicca la freccia per scegliere tra giustificazioni gia fatte) e clicca il pulsante rosso 'Giustifica' per giustificare l'assenza<br>" +
-                                "Se vuoi modificarla, scrivi la nuova giustificazione e clicca il pulsante blu 'Modifica'<br>" +
+                        message = "Scrivi la giustificazione (o clicca la freccia per scegliere tra giustificazioni gia fatte) e " +
+                                "clicca il pulsante rosso \"Giustifica\" per giustificare l'assenza<br><br>" +
+                                "Se vuoi modificarla, scrivi la nuova giustificazione e clicca il pulsante blu \"Modifica\"<br>" +
                                 "Se non riesci a modificarla, vuol dire che il professore ha già convalidato l'assenza e non si può più modificare";
                         break;
                     case "FRAGMENT_AUTHORIZATIONS":
@@ -601,8 +601,11 @@ public class DrawerActivity extends AppCompatActivity {
                 builder.show();
                 return true;
             }
-            builder.setTitle("Che cosa è una schermata non implementata?");
-            builder.setMessage(Html.fromHtml("non te lo dico", 0));
+            //Titolo personalizzato per schermate non implementate
+            builder.setTitle("Che cosa è una schermata \"Non Implementata?\"");
+            builder.setMessage(Html.fromHtml("Queste schermate non sono ancora implementate nell'app, ma lo saranno in futuro.<br><br>" +
+                    "Per facilitare l'uso dell'app, essa ti aprirà il sito del registro all'interno dell'app stessa, in modo da non dover cambiare " +
+                    "continuamente tra Giua App e Browser (Chrome)", 0));
             builder.show();
             return true;
         }

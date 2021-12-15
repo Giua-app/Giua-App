@@ -23,6 +23,7 @@ import android.os.Bundle
 import androidx.core.view.LayoutInflaterCompat
 import androidx.fragment.app.Fragment
 import com.github.appintro.AppIntro2
+import com.github.appintro.AppIntroFragment
 import com.github.appintro.AppIntroPageTransformerType
 import com.giua.app.*
 import com.giua.app.ui.fragments.intro.CustomSlideFragment
@@ -43,14 +44,35 @@ class AppIntroActivity : AppIntro2(){
         isSystemBackButtonLocked = true
         isWizardMode = true //Rimuove pulsante salta
 
-        setTransformer(AppIntroPageTransformerType.Fade)
+        setTransformer(AppIntroPageTransformerType.Parallax(
+            titleParallaxFactor = 1.0,
+            imageParallaxFactor = 1.0,
+            descriptionParallaxFactor = 2.0
+        ))
 
         addSlide(CustomSlideFragment.newInstance(
             "Benvenuto!",
-            "Segui questa breve introduzione per scoprire tutte le funzionalità di Giua App",
+            "Segui questa breve introduzione per configurare Giua App",
             backgroundDrawable = R.drawable.bg_intro_slide1,
             layoutResId = R.layout.fragment_appintro_customslide_1,
             gifRaw = R.raw.introv4
+        ))
+
+        addSlide(AppIntroFragment.newInstance(
+            "Disattiva il Risparmio Batteria",
+            "Disattiva il Risparmio Batteria per consentirci di inviarti notifiche sui nuovi compiti, verifiche, avvisi e tanto altro",
+            imageDrawable = R.mipmap.battery_tutorial,
+            backgroundDrawable = R.drawable.bg_intro_slide2,
+            descriptionTypefaceFontRes = R.font.ubuntu_light,
+            titleTypefaceFontRes = R.font.ubuntu_light
+        ))
+
+        addSlide(CustomSlideFragment.newInstance(
+            "Disattiva il Risparmio Batteria",
+            "Disattiva il Risparmio Batteria per consentirci di inviarti notifiche sui nuovi compiti, verifiche, avvisi e tanto altro",
+            imageDrawable = R.mipmap.battery_tutorial,
+            backgroundDrawable = R.drawable.bg_intro_slide2,
+            layoutResId = R.layout.fragment_appintro_customslide_2
         ))
 
         addSlide(CustomSlideFragment.newInstance(
