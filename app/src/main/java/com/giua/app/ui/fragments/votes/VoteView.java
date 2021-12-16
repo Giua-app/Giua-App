@@ -47,10 +47,10 @@ import java.util.List;
 import java.util.Vector;
 
 public class VoteView extends ConstraintLayout {
-    private String subjectName;
+    private final String subjectName;
     private List<LinearLayout> listVoteLayouts;
     private final List<Vote> allVotes;
-    private VotesPage votesPage;
+    private final VotesPage votesPage;
     private final OnClickListener onClick;
     private List<Integer> quarterlyCounter;
 
@@ -118,7 +118,10 @@ public class VoteView extends ConstraintLayout {
         else
             layoutParams.setMargins(0, convertDpToPx(42), 0, 0);
         TextView textView = new TextView(context);
-        textView.setText(df.format((mean)));
+        if (mean != -1f)
+            textView.setText(df.format((mean)));
+        else
+            textView.setText("/");
         textView.setTypeface(ResourcesCompat.getFont(getContext(), R.font.varelaroundregular));
         textView.setTextSize(17);
         textView.setTextAlignment(TEXT_ALIGNMENT_CENTER);

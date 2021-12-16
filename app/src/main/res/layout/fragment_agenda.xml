@@ -51,18 +51,67 @@
                 android:orientation="vertical"
                 android:padding="10dp">
 
-                <com.applikeysolutions.cosmocalendar.view.CalendarView
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_horizontal">
+
+                    <ImageView
+                        android:id="@+id/agenda_prev_month"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_baseline_arrow_back_ios_24"
+                        android:layout_marginEnd="60dp"
+                        android:padding="5dp"
+                        android:foreground="@drawable/ripple_effect" />
+
+                    <TextView
+                        android:id="@+id/agenda_calendar_month"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="Novembre"
+                        android:fontFamily="@font/varelaroundregular"
+                        android:textSize="20sp"
+                        android:layout_marginTop="5dp"
+                        android:textColor="@color/adaptive_color_text" />
+
+                    <TextView
+                        android:id="@+id/agenda_calendar_year"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/varelaroundregular"
+                        android:layout_marginStart="10dp"
+                        android:textSize="20sp"
+                        android:layout_marginTop="5dp"
+                        android:textColor="@color/adaptive_color_text"
+                        tools:text="2021" />
+
+                    <ImageView
+                        android:id="@+id/agenda_next_month"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_baseline_arrow_forward_ios_24"
+                        android:layout_marginStart="60dp"
+                        android:padding="5dp"
+                        android:foreground="@drawable/ripple_effect" />
+
+                </LinearLayout>
+
+                <com.github.sundeepk.compactcalendarview.CompactCalendarView
                     android:id="@+id/agenda_calendar"
                     android:layout_width="match_parent"
-                    android:layout_height="380dp"
-                    app:selectionType="single"
-                    app:orientation="horizontal"
-                    app:calendarBackgroundColor="@color/background"
-                    app:weekendDayTextColor="@color/main_color"
-                    app:selectedDayBackgroundColor="@color/main_color"
-                    app:dayTextColor="@color/adaptive_color_text"
-                    app:disabledDayTextColor="@color/adaptive_disabled_color_text"
-                    app:monthTextColor="@color/adaptive_color_text" />
+                    android:layout_height="300dp"
+                    app:compactCalendarTargetHeight="300dp"
+                    app:compactCalendarTextSize="14sp"
+                    android:layout_marginTop="10dp"
+                    app:compactCalendarBackgroundColor="@color/background"
+                    app:compactCalendarTextColor="@color/adaptive_color_text"
+                    app:compactCalendarCurrentSelectedDayBackgroundColor="@color/main_color"
+                    app:compactCalendarCurrentDayBackgroundColor="@color/calendar_current_day"
+                    app:compactCalendarMultiEventIndicatorColor="#fff"
+                    app:compactCalendarShouldSelectFirstDayOfMonthOnScroll="false"
+                    app:compactCalendarDisplayOtherMonthDays="true" />
 
             </LinearLayout>
 
@@ -81,112 +130,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.427" />
-
-    <com.giua.app.ui.fragments.ObscureLayoutView
-        android:id="@+id/agenda_obscure_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        app:cancelText="Indietro"
-        app:hasCancelText="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:id="@+id/agenda_object_visualizer_layout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/corner_radius_10dp"
-            android:backgroundTint="@color/general_view_color"
-            android:orientation="vertical"
-            android:padding="10dp"
-            android:visibility="gone"
-            android:layout_marginStart="50dp"
-            android:layout_marginEnd="50dp"
-            android:focusable="true"
-            android:clickable="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/agenda_visualizer_type"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/varelaroundregular"
-                android:text="Tipo"
-                android:textAlignment="center"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/agenda_visualizer_subject"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:fontFamily="@font/varelaroundregular"
-                android:text="Materia"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/agenda_visualizer_creator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/varelaroundregular"
-                android:text="Docente"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/agenda_visualizer_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:fontFamily="@font/varelaroundregular"
-                android:maxHeight="110dp"
-                android:text=""
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/agenda_visualizer_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginTop="20dp"
-                android:fontFamily="@font/varelaroundregular"
-                android:text="Data" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="20dp"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/agenda_visualizer_prev_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/corner_radius_10dp"
-                    android:backgroundTint="@color/main_color_lighter"
-                    android:contentDescription="Precedente oggetto"
-                    android:src="@drawable/ic_baseline_arrow_left_24" />
-
-                <ImageView
-                    android:id="@+id/agenda_visualizer_next_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/corner_radius_10dp"
-                    android:backgroundTint="@color/main_color_lighter"
-                    android:contentDescription="Prossimo oggetto"
-                    android:src="@drawable/ic_baseline_arrow_right_24" />
-            </LinearLayout>
-        </LinearLayout>
-    </com.giua.app.ui.fragments.ObscureLayoutView>
 
     <TextView
         android:id="@+id/agenda_no_elements_text"

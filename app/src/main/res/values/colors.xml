@@ -22,6 +22,7 @@
     <color name="relative_main_color">#0066cc</color>
     <color name="main_color">#0066cc</color>
     <color name="main_color_lighter">#2679CC</color>
+    <color name="calendar_current_day">#528FCC</color>
     <color name="background">#E1E0E0</color>
     <color name="good_vote">#3EDC3E</color>
     <color name="good_vote_darker">#0F990F</color>
@@ -49,11 +50,11 @@
     <color name="obscure_layout">#B2000000</color>
     <color name="light_white_night_black">#FFFFFF</color>
     <color name="night_white_light_black">#000000</color>
-    <color name="adaptive_agenda_views_green">#58B05B</color>
-    <color name="adaptive_agenda_views_orange">#BF8630</color>
-    <color name="adaptive_agenda_views_cyan">#4CC8DA</color>
+    <color name="adaptive_agenda_views_green">#5ED162</color>
+    <color name="adaptive_agenda_views_orange">#D99836</color>
+    <color name="adaptive_agenda_views_cyan">#4CB0BF</color>
     <color name="agenda_views_green">#58B05B</color>
-    <color name="agenda_views_orange">#BF8630</color>
+    <color name="agenda_views_orange">#CC8314</color>
     <color name="agenda_views_cyan">#4CC8DA</color>
     <color name="transparent">#00FFFFFF</color>
 </resources>
