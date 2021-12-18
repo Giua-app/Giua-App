@@ -22,6 +22,7 @@ package com.giua.app.ui.fragments.intro
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,8 +39,8 @@ import com.giua.app.R
 
 
 class CustomSlideFragment(
-    var title: CharSequence?,
-    var description: CharSequence?,
+    var title: String?,
+    var description: String?,
     @DrawableRes var imageDrawable: Int,
     @RawRes var gifRaw: Int,
     @LayoutRes var layoutResId: Int,
@@ -55,7 +56,7 @@ class CustomSlideFragment(
         val titleView: TextView = view.findViewById(R.id.title)
         val descriptionView: TextView = view.findViewById(R.id.description)
         val imageView: ImageView = view.findViewById(R.id.image)
-        val layout: ConstraintLayout = view.findViewById(R.id.constraint_layout_slidepolicy)
+        val layout: ConstraintLayout = view.findViewById(R.id.constraint_layout)
 
         if(gifRaw != -1){
             Glide.with(this).asGif().load(gifRaw).into(imageView)
@@ -68,15 +69,15 @@ class CustomSlideFragment(
 
         titleView.text = title
 
-        descriptionView.text = description
+        descriptionView.text = Html.fromHtml(description, 0)
 
 
     }
 
     companion object {
         fun newInstance(
-            title: CharSequence?,
-            description: CharSequence?,
+            title: String?,
+            description: String?,
             @DrawableRes imageDrawable: Int = -1,
             @RawRes gifRaw: Int = -1,
             @LayoutRes layoutResId: Int ,

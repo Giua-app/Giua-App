@@ -605,7 +605,7 @@ public class DrawerActivity extends AppCompatActivity {
             builder.setTitle("Che cosa è una schermata \"Non Implementata?\"");
             builder.setMessage(Html.fromHtml("Queste schermate non sono ancora implementate nell'app, ma lo saranno in futuro.<br><br>" +
                     "Per facilitare l'uso dell'app, essa ti aprirà il sito del registro all'interno dell'app stessa, in modo da non dover cambiare " +
-                    "continuamente tra Giua App e Browser (Chrome)", 0));
+                    "continuamente tra Giua App e Browser", 0));
             builder.show();
             return true;
         }

@@ -20,62 +20,93 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constraint_layout_slidepolicy"
+    android:id="@+id/constraint_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/appintro_statusbar_height"
-    android:paddingBottom="@dimen/appintro2_bottombar_height"
     tools:background="@drawable/bg_intro_slide7">
 
     <TextView
         android:id="@+id/title"
         style="@style/AppIntroDefaultHeading"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/caviar_dreams_bold"
-        android:gravity="center"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/ubuntu_light"
+        android:gravity="start"
+        android:textAlignment="textStart"
+        android:textSize="34sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.633"
         app:layout_constraintVertical_chainStyle="spread"
         tools:text="Welcome" />
 
     <ImageView
         android:id="@+id/image"
-        style="@style/AppIntroDefaultImage"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginBottom="-50dp"
         android:contentDescription="@string/app_intro_image_content_description"
-        app:layout_constraintBottom_toTopOf="@+id/description"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/title"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@mipmap/battery_tutorial" />
 
     <TextView
         android:id="@+id/description"
         style="@style/AppIntroDefaultText"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:autoLink="web"
-        android:fontFamily="@font/caviar_dreams"
-        app:layout_constraintBottom_toTopOf="@+id/intro_slidepolicy_button"
+        android:fontFamily="@font/ubuntu_light"
+        android:textAlignment="viewStart"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/image"
+        app:layout_constraintVertical_bias="0.064"
         tools:text="This is a demo of the AppIntro Library" />
 
-    <Button
-        android:id="@+id/intro_slidepolicy_button"
+    <androidx.constraintlayout.widget.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Vai alle impostazioni"
-        android:textColor="@color/white"
-        android:backgroundTint="#005DCF"
-        android:fontFamily="@font/caviar_dreams_bold"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="16dp" />
+
+    <Button
+        android:id="@+id/button_yes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="220dp"
+        android:text="Button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/description"
+        app:layout_constraintVertical_bias="0.267" />
+
+    <Button
+        android:id="@+id/button_no"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:text="Button"
+        app:layout_constraintBottom_toBottomOf="@+id/button_yes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/button_yes"
+        app:layout_constraintTop_toTopOf="@+id/button_yes" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

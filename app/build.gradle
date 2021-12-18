@@ -116,9 +116,6 @@ dependencies {
     //--Memory leak lib
     //implementation 'com.squareup.leakcanary:leakcanary-android:2.7'  //DEBUG
 
-    //--Material Calendar View
-    implementation 'com.github.sundeepk:compact-calendar-view:3.0.0'
-
     //--jsoup HTML parser library @ https://jsoup.org/
     implementation 'org.jsoup:jsoup:1.14.3'
 
@@ -146,9 +143,12 @@ dependencies {
         transitive = true
     }*/
 
-    //--Glide (https://github.com/bumptech/glide)
+    //--Glide (https://github.com/bumptech/glide) TODO: aggiungere lib alle licenze
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+
+    //--Material Calendar View TODO: aggiungere lib alle licenze
+    implementation 'com.github.sundeepk:compact-calendar-view:3.0.0'
 
     //--Android Iconics !!!NON AGGIORNARE!!!
     //noinspection GradleDependency

@@ -23,10 +23,10 @@ import android.os.Bundle
 import androidx.core.view.LayoutInflaterCompat
 import androidx.fragment.app.Fragment
 import com.github.appintro.AppIntro2
-import com.github.appintro.AppIntroFragment
 import com.github.appintro.AppIntroPageTransformerType
 import com.giua.app.*
 import com.giua.app.ui.fragments.intro.CustomSlideFragment
+import com.giua.app.ui.fragments.intro.CustomSlidePolicyFragment
 import com.mikepenz.iconics.context.IconicsLayoutInflater2
 
 class AppIntroActivity : AppIntro2(){
@@ -58,92 +58,27 @@ class AppIntroActivity : AppIntro2(){
             gifRaw = R.raw.introv4
         ))
 
-        addSlide(AppIntroFragment.newInstance(
-            "Disattiva il Risparmio Batteria",
+        addSlide(CustomSlideFragment.newInstance(
+            "Dubbi? Clicca sugli Aiuti!",
+            "In ogni schermata troverai un pulsante con l'icona {cmd_help_circle_outline}, cliccalo per scoprire come usare quella schermata",
+            imageDrawable = R.mipmap.screen_help_icon,
+            backgroundDrawable = R.drawable.bg_intro_slide3,
+            layoutResId = R.layout.fragment_appintro_customslide_2
+        ))
+
+        addSlide(CustomSlidePolicyFragment.newInstance(
+            "Risparmio Batteria",
             "Disattiva il Risparmio Batteria per consentirci di inviarti notifiche sui nuovi compiti, verifiche, avvisi e tanto altro",
             imageDrawable = R.mipmap.battery_tutorial,
-            backgroundDrawable = R.drawable.bg_intro_slide2,
-            descriptionTypefaceFontRes = R.font.ubuntu_light,
-            titleTypefaceFontRes = R.font.ubuntu_light
-        ))
-
-        addSlide(CustomSlideFragment.newInstance(
-            "Disattiva il Risparmio Batteria",
-            "Disattiva il Risparmio Batteria per consentirci di inviarti notifiche sui nuovi compiti, verifiche, avvisi e tanto altro",
-            imageDrawable = R.mipmap.battery_tutorial,
-            backgroundDrawable = R.drawable.bg_intro_slide2,
-            layoutResId = R.layout.fragment_appintro_customslide_2
-        ))
-
-        addSlide(CustomSlideFragment.newInstance(
-            "Lezioni",
-            "Clicca su una lezione per vederne i dettagli, clicca ovunque per annulare",
-            gifRaw = R.raw.lezioni,
-            backgroundDrawable = R.drawable.bg_intro_slide2,
-            layoutResId = R.layout.fragment_appintro_customslide_2
-        ))
-
-        addSlide(CustomSlideFragment.newInstance(
-            "Lezioni",
-            "Per cambiare giorno, clicca su {cmd_calendar_blank} per aprire il calendario",
-            gifRaw = R.raw.lezioni2,
-            backgroundDrawable = R.drawable.bg_intro_slide2,
-            layoutResId = R.layout.fragment_appintro_customslide_2
-        ))
-
-        addSlide(CustomSlideFragment.newInstance(
-            "Voti",
-            "Puoi cliccare su un voto per vederne i dettagli",
-            imageDrawable = R.mipmap.phone1,
-            backgroundDrawable = R.drawable.bg_intro_slide3,
-            layoutResId = R.layout.fragment_appintro_customslide_2
-        ))
-
-        addSlide(CustomSlideFragment.newInstance(
-            "Assenze",
-            "Puoi cliccare su un voto per vederne i dettagli",
-            imageDrawable = R.mipmap.phone1,
             backgroundDrawable = R.drawable.bg_intro_slide4,
-            layoutResId = R.layout.fragment_appintro_customslide_2
-        ))
-
-        addSlide(CustomSlideFragment.newInstance(
-            "Circolari",
-            "Clicca su {cmd_file_document_outline} per visualizzare la circolare\nClicca su {cmd_paperclip} per visualizzare gli allegati",
-            imageDrawable = R.mipmap.phone1,
-            backgroundDrawable = R.drawable.bg_intro_slide3,
-            layoutResId = R.layout.fragment_appintro_customslide_2
-        ))
-
-        addSlide(CustomSlideFragment.newInstance(
-            "Circolari",
-            "Muovi il dito da sinistra verso destra per impostare come letta la circolare",
-            imageDrawable = R.mipmap.phone1,
-            backgroundDrawable = R.drawable.bg_intro_slide3,
-            layoutResId = R.layout.fragment_appintro_customslide_2
-        ))
-
-        addSlide(CustomSlideFragment.newInstance(
-            "Avvisi",
-            "Clicca su un avviso per vederne i dettagli",
-            imageDrawable = R.mipmap.phone1,
-            backgroundDrawable = R.drawable.bg_intro_slide4,
-            layoutResId = R.layout.fragment_appintro_customslide_2
-        ))
-
-        addSlide(CustomSlideFragment.newInstance(
-            "Batteria",
-            "Inserire testo riguardo la cosa la batteria bho",
-            imageDrawable = R.mipmap.battery_tutorial,
-            backgroundDrawable = R.drawable.bg_intro_slide9,
-            layoutResId = R.layout.fragment_appintro_customslide_2
+            layoutResId = R.layout.fragment_appintro_customslide_policy
         ))
 
         addSlide(CustomSlideFragment.newInstance(
             "E' tutto pronto!",
             "Clicca \"FINE\" per passare alla pagina di login",
             imageDrawable = R.mipmap.fine_tutorial,
-            backgroundDrawable = R.drawable.bg_intro_slide1,
+            backgroundDrawable = R.drawable.bg_intro_slide2,
             layoutResId = R.layout.fragment_appintro_customslide_2
         ))
     }

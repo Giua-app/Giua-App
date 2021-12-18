@@ -32,56 +32,71 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.DrawableRes
+import androidx.annotation.LayoutRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import com.github.appintro.SlidePolicy
 import com.giua.app.R
 
-class DokiSlidePolicyFragment : Fragment(), SlidePolicy {
+class CustomSlidePolicyFragment(
+    var title: String?,
+    var description: String?,
+    @DrawableRes var imageDrawable: Int,
+    @LayoutRes var layoutResId: Int,
+    @DrawableRes var backgroundDrawable: Int
+) : Fragment(), SlidePolicy {
 
-    private var dokiViewed = false
+    private var viewed = false
 
-    private lateinit var button: Button
-    private lateinit var title: TextView
-    private lateinit var description: TextView
+    private lateinit var yesButton: Button
+    private lateinit var noButton: Button
+    private lateinit var vTitle: TextView
+    private lateinit var vDescription: TextView
     private lateinit var image: ImageView
     private lateinit var layout: ConstraintLayout
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?):
-            View? = inflater.inflate(R.layout.fragment_doki_slidepolicy, container, false)
+            View? = inflater.inflate(layoutResId, container, false)
 
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        button = view.findViewById(R.id.intro_slidepolicy_button)
-        title = view.findViewById(R.id.title)
-        description = view.findViewById(R.id.description)
+        yesButton = view.findViewById(R.id.button_yes)
+        noButton = view.findViewById(R.id.button_no)
+        vTitle = view.findViewById(R.id.title)
+        vDescription = view.findViewById(R.id.description)
         image = view.findViewById(R.id.image)
-        layout = view.findViewById(R.id.constraint_layout_slidepolicy)
+        layout = view.findViewById(R.id.constraint_layout)
 
         //Background
-        layout.background = ResourcesCompat.getDrawable(resources, R.drawable.bg_intro_slide9, null)
+        layout.background = ResourcesCompat.getDrawable(resources, backgroundDrawable, null)
+
+        yesButton.text = "Apri Risp. Batt."
+        noButton.text = "No grazie"
+
         //Pulsante istruzioni
-        button.setOnClickListener {
-            dokiViewed = true
+        yesButton.setOnClickListener {
+            viewed = true
 
             startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
         }
 
-        title.text = "Ottimizzazione batteria"
+        noButton.setOnClickListener {
+            viewed = true
+        }
 
-        description.text = Html.fromHtml("<p> " +
-                "Per poter ricevere notifiche dal registro devi disattivare l'ottimizzazione batteria </p>" +
-                "<p> <b>Clicca il pulsante qua sotto per andare nelle impostazioni, cerca l'app Giua App e disattiva l'ottimizzazione</b></p>",0)
+        vTitle.text = title
 
-        image.setImageDrawable(ResourcesCompat.getDrawable(resources, R.mipmap.battery_tutorial, null))
+        vDescription.text = Html.fromHtml(description,0)
+
+        image.setImageDrawable(ResourcesCompat.getDrawable(resources, imageDrawable, null))
     }
 
-    //getter per dokiViewed, richiamato da SlidePolicy
+    //getter per viewed, richiamato da SlidePolicy
     override val isPolicyRespected: Boolean
-        get() = true //TODO: rifare completamente l'avviso della batteria anziche sto schifo
-        //get() = dokiViewed
+        get() = viewed
 
     override fun onUserIllegallyRequestedNextPage() {
         //Eseguito quando isPolicyRespected è false
@@ -93,8 +108,20 @@ class DokiSlidePolicyFragment : Fragment(), SlidePolicy {
     }
 
     companion object {
-        fun newInstance(): DokiSlidePolicyFragment {
-            return DokiSlidePolicyFragment()
+        fun newInstance(
+            title: String?,
+            description: String?,
+            @DrawableRes imageDrawable: Int = -1,
+            @LayoutRes layoutResId: Int,
+            @DrawableRes backgroundDrawable: Int
+        ): CustomSlidePolicyFragment {
+            return CustomSlidePolicyFragment(
+                title = title,
+                description = description,
+                imageDrawable = imageDrawable,
+                backgroundDrawable = backgroundDrawable,
+                layoutResId = layoutResId
+            )
         }
     }
 }

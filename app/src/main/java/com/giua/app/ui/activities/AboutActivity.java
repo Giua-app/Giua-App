@@ -118,7 +118,13 @@ public class AboutActivity extends MaterialAboutActivity {
 
         authorCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text("Franck1421")
-                //.subText("United Kingdom")
+                .icon(new IconicsDrawable(this)
+                        .icon(CommunityMaterial.Icon.cmd_account)
+                        .sizeDp(18))
+                .build());
+
+        authorCardBuilder.addItem(new MaterialAboutActionItem.Builder()
+                .text("Krek3r")
                 .icon(new IconicsDrawable(this)
                         .icon(CommunityMaterial.Icon.cmd_account)
                         .sizeDp(18))
