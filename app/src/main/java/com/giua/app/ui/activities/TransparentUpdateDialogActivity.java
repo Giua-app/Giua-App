@@ -135,6 +135,7 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
     private void downloadInstallApk(){
         loggerManager.d("Aggiornamento richiesto dall'utente");
         loggerManager.d("Scarico aggiornamento...");
+        runOnUiThread(() -> Toast.makeText(this, "Download in corso...", Toast.LENGTH_SHORT).show());
         String downloadLocation = getExternalFilesDir(null) + "/giua_update.apk";
 
         File file = new File(downloadLocation);

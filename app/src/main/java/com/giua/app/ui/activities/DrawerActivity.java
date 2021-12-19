@@ -34,7 +34,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -109,7 +108,13 @@ public class DrawerActivity extends AppCompatActivity {
         bundle = new Bundle();
         bundle.putBoolean("offline", offlineMode);
 
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        //Non usato? NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+        if(GlobalVariables.gS == null){
+            loggerManager.e("ERRORE: gS è null ma siamo dentro DrawerActivity!! Avvio ActivityManager");
+            startActivity(new Intent(this, ActivityManager.class));
+            finish();
+        }
 
         if (goTo == null || goTo.equals(""))
             changeFragment(R.id.nav_home);

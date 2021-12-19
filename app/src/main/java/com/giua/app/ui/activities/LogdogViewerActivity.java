@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -53,6 +54,8 @@ public class LogdogViewerActivity extends AppCompatActivity {
         linearLayout = findViewById(R.id.log_linearlayout);
         scrollView = findViewById(R.id.log_scroll_view);
         deleteLogs = findViewById(R.id.log_floating_deletelogs);
+        ProgressBar progressBar = findViewById(R.id.logdog_progressbar);
+        TextView pbText = findViewById(R.id.logdog_progressbartxt);
 
         deleteLogs.setOnClickListener(this::onClickDeleteLogs);
 
@@ -66,15 +69,22 @@ public class LogdogViewerActivity extends AppCompatActivity {
 
         LoggerManager loggerManager = new LoggerManager("Logdog", this);
 
-        loggerManager.parseLogsFrom(AppData.getLogsString(this));
+        try{
+            loggerManager.parseLogsFrom(AppData.getLogsString(this));
+        } catch(ArrayIndexOutOfBoundsException e){
+            onClickDeleteLogs(null);
+        }
 
 
         List<LoggerManager.Log> logs = loggerManager.getLogs();
         new Thread(() -> {
+            int i=0;
             TextView textView = new TextView(this);
             StringBuilder text = new StringBuilder();
             linearLayout.removeAllViews();
             for (LoggerManager.Log log : logs) {
+                int finalI = i; //Non so perchè ma dobbiamo fare questa cosa per passare variabili al thread
+                runOnUiThread(() -> pbText.setText(finalI + "/" + logs.size()));
                 // --@ = Avvio dell'app
                 // -.@ = Crash dell'app
                 String[] splitted = log.text.split("@");
@@ -114,14 +124,28 @@ public class LogdogViewerActivity extends AppCompatActivity {
                 }
 
                 text.append("<br>");
+                i++;
             }
 
             if (logs.isEmpty()) {
-                text.append("<b>\u23af\u23af\u23af  Nessun log trovato!  \u23af\u23af\u23af</b>");
+                text.append(noLogPresentText());
             }
 
-            textView.setText(Html.fromHtml(text.toString(), 0));
-            runOnUiThread(() -> linearLayout.addView(textView));
+
+            if(logs.size() >= 3000){
+                //Troppi log da mostrare in html, ne tagliamo un quarto
+                int last = text.length() - (text.length() / 4);
+                runOnUiThread(() -> pbText.setText("Rendering\nonly " + last + " of " + text.length() + " chars"));
+                textView.setText(Html.fromHtml(text.substring(0,last), 0));
+            } else {
+                runOnUiThread(() -> pbText.setText("Rendering " + text.length() + " chars"));
+                textView.setText(Html.fromHtml(text.toString(), 0));
+            }
+            runOnUiThread(() -> {
+                linearLayout.addView(textView);
+                progressBar.setVisibility(View.INVISIBLE);
+                pbText.setVisibility(View.INVISIBLE);
+            });
         }).start();
 
     }
@@ -130,8 +154,12 @@ public class LogdogViewerActivity extends AppCompatActivity {
         AppData.saveLogsString(LogdogViewerActivity.this, "");
         linearLayout.removeAllViews();
         TextView textView = new TextView(LogdogViewerActivity.this);
-        textView.setText(Html.fromHtml("<b>\u23af\u23af\u23af  Nessun log trovato!  \u23af\u23af\u23af</b>", 0));
+        textView.setText(Html.fromHtml(noLogPresentText(), 0));
         linearLayout.addView(textView);
+    }
+
+    private String noLogPresentText(){
+        return "<b>\u23af\u23af\u23af  Nessun log trovato!  \u23af\u23af\u23af</b>";
     }
 
     @Override
