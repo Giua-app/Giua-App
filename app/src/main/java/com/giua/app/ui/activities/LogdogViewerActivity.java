@@ -132,7 +132,7 @@ public class LogdogViewerActivity extends AppCompatActivity {
             }
 
 
-            if(logs.size() >= 3000){
+            if(logs.size() >= 2000){
                 //Troppi log da mostrare in html, ne tagliamo un quarto
                 int last = text.length() - (text.length() / 4);
                 runOnUiThread(() -> pbText.setText("Rendering\nonly " + last + " of " + text.length() + " chars"));
