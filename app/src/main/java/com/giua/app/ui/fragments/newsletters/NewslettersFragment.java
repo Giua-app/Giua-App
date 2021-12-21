@@ -282,7 +282,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             case MotionEvent.ACTION_MOVE:
                 int historyLength = motionEvent.getHistorySize();
                 if (historyLength > 1 && v.upperView.getTranslationX() >= v.getNormalTranslationX()) {
-                    if (v.upperView.getTranslationX() > 50) {
+                    if (v.upperView.getTranslationX() > 20) {
                         scrollView.requestDisallowInterceptTouchEvent(true);
                         swipeRefreshLayout.setEnabled(false);
                     }

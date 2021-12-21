@@ -46,7 +46,7 @@ public class AppUpdateManager {
     Integer[] currentVer = {0,0,0};
     LoggerManager loggerManager;
     Context context;
-    final String semverRegex = "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$";
+    final String serverRegex = "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$";
 
 
     public AppUpdateManager(Context context){
@@ -91,7 +91,7 @@ public class AppUpdateManager {
         currentVer[0] = Integer.parseInt(temp[0]);
         currentVer[1] = Integer.parseInt(temp[1]);
         currentVer[2] = Integer.parseInt(temp[2]);
-        if (tagName.matches(semverRegex)) {
+        if (tagName.matches(serverRegex)) {
             temp = tagName.split("-")[0].split("\\.");
             updateVer[0] = Integer.parseInt(temp[0]);
             updateVer[1] = Integer.parseInt(temp[1]);

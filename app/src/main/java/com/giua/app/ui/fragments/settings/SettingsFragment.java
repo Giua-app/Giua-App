@@ -88,6 +88,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         //region Personalizzazione
 
         setupThemeObject();
+        setupShowCentsObject();
 
         //endregion
 
@@ -105,6 +106,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         //endregion
     }
 
+    private void setupShowCentsObject() {
+        SwitchPreference swShowCents = findPreference("show_cents");
+        swShowCents.setChecked(SettingsData.getSettingBoolean(context, SettingKey.SHOW_CENTS));
+        swShowCents.setOnPreferenceChangeListener(this::swShowCentsListener);
+    }
+
+    private boolean swShowCentsListener(Preference preference, Object o) {
+        SettingsData.saveSettingBoolean(requireContext(), SettingKey.SHOW_CENTS, (boolean) o);
+        return true;
+    }
+
     private void setupExpModeObject() {
         SwitchPreference swDemoMode = findPreference("experimentalMode");
         swDemoMode.setChecked(SettingsData.getSettingBoolean(context, SettingKey.EXP_MODE));
@@ -119,8 +131,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void setupNotificationManager() {
         MultiSelectListPreference multiSelectListPreference = findPreference("notification_manager");
-        multiSelectListPreference.setEntries(new CharSequence[]{"Circolari", "Avvisi", "Aggiornamenti", "Voti"});
-        multiSelectListPreference.setEntryValues(new CharSequence[]{"0", "1", "2", "3"});
+        multiSelectListPreference.setEntries(new CharSequence[]{"Circolari", "Avvisi", "Aggiornamenti", "Voti", "Compiti", "Verifiche"});
+        multiSelectListPreference.setEntryValues(new CharSequence[]{"0", "1", "2", "3", "4", "5"});
         multiSelectListPreference.setOnPreferenceChangeListener(this::setupNotificationManagerChangeListener);
         multiSelectListPreference.setOnPreferenceClickListener(this::setupNotificationManagerOnClick);
     }
@@ -135,6 +147,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             l.add("2");
         if (SettingsData.getSettingBoolean(requireContext(), SettingKey.VOTES_NOTIFICATION))
             l.add("3");
+        if (SettingsData.getSettingBoolean(requireContext(), SettingKey.HOMEWORKS_NOTIFICATION))
+            l.add("4");
+        if (SettingsData.getSettingBoolean(requireContext(), SettingKey.TESTS_NOTIFICATION))
+            l.add("5");
         ((MultiSelectListPreference) preference).setValues(l);
         return true;
     }
@@ -144,6 +160,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         SettingsData.saveSettingBoolean(requireContext(), SettingKey.ALERTS_NOTIFICATION, ((HashSet) o).contains("1"));
         SettingsData.saveSettingBoolean(requireContext(), SettingKey.UPDATES_NOTIFICATION, ((HashSet) o).contains("2"));
         SettingsData.saveSettingBoolean(requireContext(), SettingKey.VOTES_NOTIFICATION, ((HashSet) o).contains("3"));
+        SettingsData.saveSettingBoolean(requireContext(), SettingKey.HOMEWORKS_NOTIFICATION, ((HashSet) o).contains("4"));
+        SettingsData.saveSettingBoolean(requireContext(), SettingKey.TESTS_NOTIFICATION, ((HashSet) o).contains("5"));
         return true;
     }
 

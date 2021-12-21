@@ -31,6 +31,11 @@ public abstract class SettingKey {
     public static final String INTRO_STATUS = "introStatus";
 
     /**
+     * Mostra i centesimi nella media dei voti
+     */
+    public static final String SHOW_CENTS = "show_cents";
+
+    /**
      * Il tema da utilizzare di defualt
      **/
     public static final String THEME = "theme";
@@ -49,6 +54,16 @@ public abstract class SettingKey {
      * Indica se la notifica per gli avvisi è abilitata
      */
     public static final String ALERTS_NOTIFICATION = "alerts_notification";
+
+    /**
+     * Indica se la notifica per i nuovi compiti è abilitata
+     */
+    public static final String HOMEWORKS_NOTIFICATION = "homeworks_notification";
+
+    /**
+     * Indica se la notifica per le nuove verifiche è abilitata
+     */
+    public static final String TESTS_NOTIFICATION = "tests_notification";
 
     /**
      * Indica se la notifica per i voti è abilitata

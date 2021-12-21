@@ -53,13 +53,15 @@ public class VoteView extends ConstraintLayout {
     private final VotesPage votesPage;
     private final OnClickListener onClick;
     private List<Integer> quarterlyCounter;
+    private final boolean shouldShowCents;
 
-    public VoteView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, String subject, List<Vote> allVotes, OnClickListener onClick) {
+    public VoteView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, String subject, boolean shouldShowCents, List<Vote> allVotes, OnClickListener onClick) {
         super(context, attrs);
 
         this.subjectName = subject;
         this.allVotes = allVotes;
         this.onClick = onClick;
+        this.shouldShowCents = shouldShowCents;
         votesPage = GlobalVariables.gS.getVotesPage(false);
         initializeComponent(context);
     }
@@ -111,7 +113,11 @@ public class VoteView extends ConstraintLayout {
     }
 
     private TextView createTextViewForMeans(Context context, float mean, boolean isFirst) {
-        DecimalFormat df = new DecimalFormat("0.0");
+        DecimalFormat df;
+        if (shouldShowCents)
+            df = new DecimalFormat("0.00");
+        else
+            df = new DecimalFormat("0.0");
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(convertDpToPx(50f), ViewGroup.LayoutParams.WRAP_CONTENT);
         if (isFirst)
             layoutParams.setMargins(0, convertDpToPx(14), 0, 0);

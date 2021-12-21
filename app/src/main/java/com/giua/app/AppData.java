@@ -38,7 +38,7 @@ public class AppData {
     //Chiavi per il salvataggio delle cose offline
     private static final String voteKey = "votes";
     private static final String newsletterKey = "newsletters";
-    private static final String alertKey = "alerts";
+    private static final String alertsKey = "alerts";
 
     //Chiavi per il salvataggio dei dati per le notifiche
     private static final String numberNewslettersKey = "number_newsletters";
@@ -63,28 +63,28 @@ public class AppData {
                 .apply();
     }
 
+    public static String getVotesString(final Context context) {
+        return getSharedPreferences(context).getString(voteKey, null);
+    }
+
     public static void saveNewslettersString(final Context context, final String jsonString) {
         getSharedPreferences(context).edit()
                 .putString(newsletterKey, jsonString)
                 .apply();
     }
 
-    public static void saveAlertsString(final Context context, final String jsonString) {
-        getSharedPreferences(context).edit()
-                .putString(alertKey, jsonString)
-                .apply();
-    }
-
-    public static String getVotesString(final Context context) {
-        return getSharedPreferences(context).getString(voteKey, null);
-    }
-
     public static String getNewslettersString(final Context context) {
         return getSharedPreferences(context).getString(newsletterKey, null);
     }
 
+    public static void saveAlertsString(final Context context, final String jsonString) {
+        getSharedPreferences(context).edit()
+                .putString(alertsKey, jsonString)
+                .apply();
+    }
+
     public static String getAlertsString(final Context context) {
-        return getSharedPreferences(context).getString(alertKey, null);
+        return getSharedPreferences(context).getString(alertsKey, null);
     }
 
     //endregion

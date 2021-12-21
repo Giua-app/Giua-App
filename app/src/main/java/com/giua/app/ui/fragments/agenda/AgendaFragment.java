@@ -181,6 +181,34 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         }
     }
 
+    @Override
+    public void addViews() {
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        return false;
+    }
+
+    private void addViews(List<AgendaObject> objectsToShow) {
+        loggerManager.d("Aggiungo views...");
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(0, 50, 0, 0);
+
+        for (AgendaObject agendaObject : objectsToShow) {
+            AgendaView agendaView = new AgendaView(activity, null, agendaObject);
+            agendaView.setLayoutParams(params);
+            agendaView.setId(View.generateViewId());
+            viewsLayout.addView(agendaView);
+        }
+
+        swipeRefreshLayout.setRefreshing(false);
+        isLoadingData = false;
+    }
+
+    //region Listeners
+
     private void onDayChanged(Date dateClicked) {
         Calendar selectedDate = Calendar.getInstance();
         selectedDate.setTime(dateClicked);
@@ -300,44 +328,6 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
 
     }
-
-    @Override
-    public void addViews() {
-    }
-
-    @Override
-    public boolean onBackPressed() {
-        return false;
-    }
-
-    private void addViews(List<AgendaObject> objectsToShow) {
-        loggerManager.d("Aggiungo views...");
-
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0, 50, 0, 0);
-
-        for (AgendaObject agendaObject : objectsToShow) {
-            AgendaView agendaView = new AgendaView(activity, null, agendaObject);
-            agendaView.setLayoutParams(params);
-            agendaView.setId(View.generateViewId());
-            viewsLayout.addView(agendaView);
-        }
-
-        swipeRefreshLayout.setRefreshing(false);
-        isLoadingData = false;
-    }
-
-    //region Listeners
-
-    /*private void onMonthChangeListener(Month month) {
-        tvNoElements.setVisibility(View.GONE);
-        Calendar selectedDay = month.getFirstDay().getCalendar();
-        if (selectedDay.get(Calendar.YEAR) == currentDate.get(Calendar.YEAR) && selectedDay.get(Calendar.MONTH) == currentDate.get(Calendar.MONTH))
-            currentDisplayedDate = currentDate.getTime();
-        else
-            currentDisplayedDate = selectedDay.getTime();
-        loadDataAndViews();
-    }*/
 
     private void onRefresh() {
         loadDataAndViews();

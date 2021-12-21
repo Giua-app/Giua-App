@@ -54,7 +54,7 @@
     <color name="adaptive_agenda_views_orange">#D99836</color>
     <color name="adaptive_agenda_views_cyan">#4CB0BF</color>
     <color name="agenda_views_green">#58B05B</color>
-    <color name="agenda_views_orange">#CC8314</color>
-    <color name="agenda_views_cyan">#4CC8DA</color>
+    <color name="agenda_views_orange">#EC9716</color>
+    <color name="agenda_views_cyan">#33C0D5</color>
     <color name="transparent">#00FFFFFF</color>
 </resources>

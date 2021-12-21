@@ -72,6 +72,12 @@
             app:negativeButtonText="Annulla"
             app:title="Scegli un tema" />
 
+        <SwitchPreference
+            android:icon="@drawable/ic_vote_mean"
+            app:defaultValue="false"
+            app:key="show_cents"
+            app:title="Mostra i centesimi nelle medie" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

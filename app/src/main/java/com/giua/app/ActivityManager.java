@@ -136,6 +136,8 @@ public class ActivityManager extends AppCompatActivity {
         SettingsData.saveSettingBoolean(this, SettingKey.ALERTS_NOTIFICATION, true);
         SettingsData.saveSettingBoolean(this, SettingKey.UPDATES_NOTIFICATION, true);
         SettingsData.saveSettingBoolean(this, SettingKey.VOTES_NOTIFICATION, true);
+        SettingsData.saveSettingBoolean(this, SettingKey.HOMEWORKS_NOTIFICATION, true);
+        SettingsData.saveSettingBoolean(this, SettingKey.TESTS_NOTIFICATION, true);
     }
 
     private void startMainLoginActivity() {
@@ -204,6 +206,8 @@ public class ActivityManager extends AppCompatActivity {
             notificationManager.cancel(10);
             notificationManager.cancel(11);
             notificationManager.cancel(12);
+            notificationManager.cancel(13);
+            notificationManager.cancel(14);
         }
         loggerManager.d("Notification Manager setup completato");
     }

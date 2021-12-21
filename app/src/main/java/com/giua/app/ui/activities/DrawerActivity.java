@@ -118,13 +118,16 @@ public class DrawerActivity extends AppCompatActivity {
 
         if (goTo == null || goTo.equals(""))
             changeFragment(R.id.nav_home);
-        else if (goTo.equals("Newsletters")) {
+        else if (goTo.equals("Newsletters"))
             changeFragment(R.id.nav_newsletters);
-        } else if (goTo.equals("Alerts")) {
+        else if (goTo.equals("Alerts"))
             changeFragment(R.id.nav_alerts);
-        } else if (goTo.equals("Votes")) {
+        else if (goTo.equals("Votes"))
             changeFragment(R.id.nav_votes);
-        }
+        else if (goTo.equals("Agenda"))
+            changeFragment(R.id.nav_agenda);
+        else
+            changeFragment(R.id.nav_home);
 
         //Setup CheckNewsReceiver
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);

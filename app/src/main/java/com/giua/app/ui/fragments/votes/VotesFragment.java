@@ -39,13 +39,14 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
+import com.giua.app.SettingKey;
+import com.giua.app.SettingsData;
 import com.giua.app.ThreadManager;
 import com.giua.app.ui.fragments.ObscureLayoutView;
 import com.giua.objects.Vote;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -59,7 +60,6 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
     LinearLayout.LayoutParams params;
     ObscureLayoutView obscureLayoutView;    //Questo bottone viene visualizzato dietro al detail layout e se viene cliccato si esce dai dettagli
     SwipeRefreshLayout swipeRefreshLayout;
-    DecimalFormat df = new DecimalFormat("0.0");
     Map<String, List<Vote>> allVotes;
     Activity activity;
     View root;
@@ -176,6 +176,8 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
         detailVoteType.setVisibility(View.GONE);
         detailVoteArguments.setVisibility(View.GONE);
         detailVoteJudge.setVisibility(View.GONE);
+        detailVoteArguments.scrollTo(0, 0);
+        detailVoteJudge.scrollTo(0, 0);
 
         if (!_view.vote.date.equals("")) {
             detailVoteDate.setVisibility(View.VISIBLE);
@@ -199,7 +201,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
     @SuppressLint("ClickableViewAccessibility")
     private void addVoteView(String subject) {
-        voteView = new VoteView(requireContext(), null, subject, allVotes.get(subject), this::singleVoteOnClick);
+        voteView = new VoteView(requireContext(), null, subject, SettingsData.getSettingBoolean(activity, SettingKey.SHOW_CENTS), allVotes.get(subject), this::singleVoteOnClick);
         voteView.setId(View.generateViewId());
 
         voteView.setLayoutParams(params);
