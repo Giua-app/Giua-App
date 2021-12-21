@@ -37,7 +37,8 @@
             android:defaultValue="false"
             android:icon="@drawable/ic_test_tube"
             android:key="experimentalMode"
-            android:title="Abilita funzionalità sperimentali" />
+            android:title="Abilita funzionalità sperimentali"
+            app:isPreferenceVisible="false" />
         <SwitchPreference
             app:defaultValue="false"
             app:icon="@drawable/ic_baseline_code_24"

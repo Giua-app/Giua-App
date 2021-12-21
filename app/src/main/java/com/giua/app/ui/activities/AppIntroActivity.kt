@@ -31,6 +31,8 @@ import com.mikepenz.iconics.context.IconicsLayoutInflater2
 
 class AppIntroActivity : AppIntro2(){
 
+    var welcomeBack = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         LayoutInflaterCompat.setFactory2(layoutInflater, IconicsLayoutInflater2(delegate))
         super.onCreate(savedInstanceState)
@@ -50,13 +52,29 @@ class AppIntroActivity : AppIntro2(){
             descriptionParallaxFactor = 2.0
         ))
 
-        addSlide(CustomSlideFragment.newInstance(
-            "Benvenuto!",
-            "Segui questa breve introduzione per configurare Giua App",
-            backgroundDrawable = R.drawable.bg_intro_slide1,
-            layoutResId = R.layout.fragment_appintro_customslide_1,
-            gifRaw = R.raw.introv4
-        ))
+
+        welcomeBack = intent.extras?.getBoolean("welcomeBack") == true
+
+        //aiuto non so il kotlin help e odio gli "?"
+        if(welcomeBack == true){
+            addSlide(CustomSlideFragment.newInstance(
+                "Bentornato!",
+                "Segui questa breve introduzione per scoprire le novità di Giua App " + AppUpdateManager.getPrettyAppVersion(),
+                backgroundDrawable = R.drawable.bg_intro_slide1,
+                layoutResId = R.layout.fragment_appintro_customslide_1,
+                gifRaw = R.raw.introv4
+            ))
+        } else {
+            addSlide(CustomSlideFragment.newInstance(
+                "Benvenuto!",
+                "Segui questa breve introduzione per configurare Giua App",
+                backgroundDrawable = R.drawable.bg_intro_slide1,
+                layoutResId = R.layout.fragment_appintro_customslide_1,
+                gifRaw = R.raw.introv4
+            ))
+        }
+
+
 
         addSlide(CustomSlideFragment.newInstance(
             "Dubbi? Clicca sugli Aiuti!",
@@ -94,7 +112,12 @@ class AppIntroActivity : AppIntro2(){
     }
 
     private fun finishIntro(){
-        SettingsData.saveSettingInt(this, SettingKey.INTRO_STATUS, 1)
+        if(welcomeBack){
+            SettingsData.saveSettingInt(this, SettingKey.INTRO_STATUS, 2)
+        } else {
+            SettingsData.saveSettingInt(this, SettingKey.INTRO_STATUS, 1)
+        }
+
         //Ritorna all'activity manager per decidere cosa fare
         startActivity(Intent(this@AppIntroActivity, ActivityManager::class.java))
         finish()

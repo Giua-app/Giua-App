@@ -74,6 +74,10 @@ public class AppUpdateManager {
         context.startActivity(intent);
     }
 
+    public static String getPrettyAppVersion(){
+        String[] temp = BuildConfig.VERSION_NAME.split("-")[0].split("\\.");
+        return temp[0] + "." + temp[1] + "." + temp[2];
+    }
 
     public boolean checkForUpdates(){
         loggerManager.d("Controllo aggiornamenti...");

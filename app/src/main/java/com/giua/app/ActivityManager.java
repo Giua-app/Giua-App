@@ -85,15 +85,26 @@ public class ActivityManager extends AppCompatActivity {
 
         //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
 
+        checkFor061Update();
         final int introStatus = SettingsData.getSettingInt(this, SettingKey.INTRO_STATUS);
-        //introStatus = 0;         //DEBUG
 
-        // 1 = Intro già vista , 0 = (Non usato) , -1 = Intro mai vista
+        /*
+         * 2 Intro & welcomeBack vista
+         * 1 Intro già vista
+         * 0 Intro mai vista
+         * -1 Intro mai vista (default se non impostato)
+         * -2 App aggiornata (welcomeBack mai visto)
+         *
+         */
         loggerManager.d("introStatus è " + introStatus);
-        if (introStatus != 1) {
-            new Thread(() -> AppData.increaseVisitCount("Primo avvio (nuove installazioni)")).start();
+        if (introStatus < 1) {
+            if(introStatus != -2) //non è una prima installazione se è -2
+                new Thread(() -> AppData.increaseVisitCount("Primo avvio (nuove installazioni)")).start();
+
             loggerManager.d("Avvio App Intro Activity");
-            startActivity(new Intent(ActivityManager.this, AppIntroActivity.class));
+            Intent intent = new Intent(this, AppIntroActivity.class);
+            intent.putExtra("welcomeBack", introStatus==-2);
+            startActivity(intent);
             return;
         }
 
@@ -113,8 +124,26 @@ public class ActivityManager extends AppCompatActivity {
                 && !SettingsData.getSettingString(this, SettingKey.APP_VER).equals(BuildConfig.VERSION_NAME)){
             AppData.saveLastUpdateReminderDate(this, Calendar.getInstance()); //Imposta last reminder
         }
+
         //Non salviamo la stringa della versione per permettere a DrawerActivity e MainLoginActivity di fare le loro cose
         //SettingsData.saveSettingString(this, SettingKey.APP_VER, BuildConfig.VERSION_NAME);
+    }
+
+    /**
+     * Controlla se la versione vecchia era 0.6.1 e nel caso cancella i log e ritorna true
+     * @return true se la versione vecchia era 0.6.1, false altrimenti
+     */
+    private void checkFor061Update(){
+        if(SettingsData.getSettingString(this, SettingKey.APP_VER).contains("0.6.1")
+                && SettingsData.getSettingInt(this, SettingKey.INTRO_STATUS) != 2){
+            loggerManager.d("Rilevato aggiornamento da 0.6.1");
+            loggerManager.d("Cancello log...");
+            AppData.saveLogsString(this, "");
+            loggerManager.w("Ciao! Abbiamo notato che hai aggiornato versione dalla 0.6.1." +
+                    " I log non sono compatibili con questa versione quindi sono stati cancellati");
+
+            SettingsData.saveSettingInt(this, SettingKey.INTRO_STATUS, 0);
+        }
     }
 
 

@@ -118,9 +118,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void setupExpModeObject() {
-        SwitchPreference swDemoMode = findPreference("experimentalMode");
-        swDemoMode.setChecked(SettingsData.getSettingBoolean(context, SettingKey.EXP_MODE));
-        swDemoMode.setOnPreferenceChangeListener(this::swExpModeChangeListener);
+        SwitchPreference swExpMode = findPreference("experimentalMode");
+        swExpMode.setChecked(SettingsData.getSettingBoolean(context, SettingKey.EXP_MODE));
+        swExpMode.setOnPreferenceChangeListener(this::swExpModeChangeListener);
     }
 
     private boolean swExpModeChangeListener(Preference preference, Object o) {
