@@ -130,8 +130,7 @@ public class ActivityManager extends AppCompatActivity {
     }
 
     /**
-     * Controlla se la versione vecchia era 0.6.1 e nel caso cancella i log e ritorna true
-     * @return true se la versione vecchia era 0.6.1, false altrimenti
+     * Controlla se la versione vecchia era 0.6.1 e nel caso cancella i log e imposta l'intro
      */
     private void checkFor061Update(){
         if(SettingsData.getSettingString(this, SettingKey.APP_VER).contains("0.6.1")

@@ -85,6 +85,11 @@ class CustomSlidePolicyFragment(
 
         noButton.setOnClickListener {
             viewed = true
+            Toast.makeText(
+                requireContext(),
+                "Ora puoi andare avanti!",
+                Toast.LENGTH_SHORT
+            ).show()
         }
 
         vTitle.text = title
