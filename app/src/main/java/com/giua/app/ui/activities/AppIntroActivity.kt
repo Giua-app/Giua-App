@@ -62,7 +62,7 @@ class AppIntroActivity : AppIntro2(){
                 "Segui questa breve introduzione per scoprire le novità di Giua App " + AppUpdateManager.getPrettyAppVersion(),
                 backgroundDrawable = R.drawable.bg_intro_slide1,
                 layoutResId = R.layout.fragment_appintro_customslide_1,
-                gifRaw = R.raw.introv4
+                gifRaw = R.raw.introv5
             ))
         } else {
             addSlide(CustomSlideFragment.newInstance(
@@ -70,7 +70,7 @@ class AppIntroActivity : AppIntro2(){
                 "Segui questa breve introduzione per configurare Giua App",
                 backgroundDrawable = R.drawable.bg_intro_slide1,
                 layoutResId = R.layout.fragment_appintro_customslide_1,
-                gifRaw = R.raw.introv4
+                gifRaw = R.raw.introv5
             ))
         }
 
