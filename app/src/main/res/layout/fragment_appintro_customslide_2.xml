@@ -31,6 +31,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginBottom="252dp"
         android:fontFamily="@font/ubuntu_light"
         android:gravity="start"
         android:textAlignment="textStart"
@@ -39,8 +40,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.687"
         app:layout_constraintVertical_chainStyle="spread"
         tools:text="Welcome" />
 
@@ -71,8 +70,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image"
-        app:layout_constraintVertical_bias="0.301"
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        app:layout_constraintVertical_bias="0.064"
         tools:text="This is a demo of the AppIntro Library" />
 
     <androidx.constraintlayout.widget.Guideline
