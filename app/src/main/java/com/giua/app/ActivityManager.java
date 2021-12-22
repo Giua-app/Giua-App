@@ -142,7 +142,7 @@ public class ActivityManager extends AppCompatActivity {
             loggerManager.w("Ciao! Abbiamo notato che hai aggiornato versione dalla 0.6.1." +
                     " I log non sono compatibili con questa versione quindi sono stati cancellati");
 
-            SettingsData.saveSettingInt(this, SettingKey.INTRO_STATUS, 0);
+            SettingsData.saveSettingInt(this, SettingKey.INTRO_STATUS, -2);
         }
     }
 
