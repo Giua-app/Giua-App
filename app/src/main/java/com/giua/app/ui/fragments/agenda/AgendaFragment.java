@@ -78,6 +78,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     long lastRequestTime = 0;
     long lastOnDateCall = 0;
     boolean isLoadingData = false;
+    boolean firstStart = true;
     LoggerManager loggerManager;
 
     @SuppressLint("SetTextI18n")
@@ -176,7 +177,12 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                         swipeRefreshLayout.setRefreshing(false);
                         isLoadingData = false;
                     });
+                    if (firstStart) {
+                        showDateActivities(Calendar.getInstance());
+                        firstStart = false;
+                    }
                 }
+
             });
         }
     }
@@ -209,6 +215,72 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
     //region Listeners
 
+    private void showDateActivities(Calendar selectedDate) {
+        //Conto quanti oggetti ci sono nel giorno cliccato
+        List<AgendaObject> agendaObjectsOfTheDay = new Vector<>();
+        String day = String.valueOf(selectedDate.get(Calendar.DAY_OF_MONTH));
+        String month = String.valueOf(selectedDate.get(Calendar.MONTH) + 1);
+        String year = String.valueOf(selectedDate.get(Calendar.YEAR));
+        if (day.length() == 1)
+            day = "0" + day;
+        AgendaObject agendaObjectComparator = new AgendaObject(
+                day,
+                month,
+                year,
+                year + "-" + month + "-" + day
+        );
+
+        for (AgendaObject agendaObject : allAgendaObjects)
+            if (agendaObject.date.equals(agendaObjectComparator.date))
+                agendaObjectsOfTheDay.add(agendaObject);
+
+        if (!agendaObjectsOfTheDay.isEmpty()) {
+            activity.runOnUiThread(() -> {
+                viewsLayout.removeViews(2, viewsLayout.getChildCount() - 2);
+                tvNoElements.setVisibility(View.GONE);
+                viewsLayout.scrollTo(0, 0);
+            });
+            for (AgendaObject agendaObject : agendaObjectsOfTheDay) {
+                List<AgendaObject> objectsToShow = new Vector<>();
+                try {
+                    if (agendaObject.getRepresentingClass() == Test.class)
+                        objectsToShow.addAll(GlobalVariables.gS.getAgendaPage(false).getTests(agendaObject.date));
+                    else if (agendaObject.getRepresentingClass() == Homework.class)
+                        objectsToShow.addAll(GlobalVariables.gS.getAgendaPage(false).getHomeworks(agendaObject.date));
+                    else if (agendaObject.getRepresentingClass() == com.giua.objects.Activity.class)
+                        objectsToShow.addAll(GlobalVariables.gS.getAgendaPage(false).getActivities(agendaObject.date));
+                } catch (GiuaScraperExceptions.YourConnectionProblems e) {
+                    activity.runOnUiThread(() -> {
+                        setErrorMessage(activity.getString(R.string.your_connection_error), root);
+                        swipeRefreshLayout.setRefreshing(false);
+                    });
+                    return;
+                } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
+                    activity.runOnUiThread(() -> {
+                        setErrorMessage(activity.getString(R.string.site_connection_error), root);
+                        swipeRefreshLayout.setRefreshing(false);
+                    });
+                    return;
+                } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
+                    activity.runOnUiThread(() -> {
+                        setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
+                        swipeRefreshLayout.setRefreshing(false);
+                    });
+                    return;
+                }
+                activity.runOnUiThread(() -> addViews(objectsToShow));
+            }
+        } else {
+            activity.runOnUiThread(() -> {
+                tvNoElements.setText("Non ci sono compiti per questo giorno");
+                tvNoElements.setVisibility(View.VISIBLE);
+                isLoadingData = false;
+                swipeRefreshLayout.setRefreshing(false);
+                viewsLayout.removeViews(2, viewsLayout.getChildCount() - 2);
+            });
+        }
+    }
+
     private void onDayChanged(Date dateClicked) {
         Calendar selectedDate = Calendar.getInstance();
         selectedDate.setTime(dateClicked);
@@ -220,71 +292,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         lastOnDateCall = System.nanoTime();
         isLoadingData = true;
         swipeRefreshLayout.setRefreshing(true);
-        threadManager.addAndRun(() -> {
-            //Conto quanti oggetti ci sono nel giorno cliccato
-            List<AgendaObject> agendaObjectsOfTheDay = new Vector<>();
-            String day = String.valueOf(selectedDate.get(Calendar.DAY_OF_MONTH));
-            String month = String.valueOf(selectedDate.get(Calendar.MONTH) + 1);
-            String year = String.valueOf(selectedDate.get(Calendar.YEAR));
-            if (day.length() == 1)
-                day = "0" + day;
-            AgendaObject agendaObjectComparator = new AgendaObject(
-                    day,
-                    month,
-                    year,
-                    year + "-" + month + "-" + day
-            );
-
-            for (AgendaObject agendaObject : allAgendaObjects)
-                if (agendaObject.date.equals(agendaObjectComparator.date))
-                    agendaObjectsOfTheDay.add(agendaObject);
-
-            if (!agendaObjectsOfTheDay.isEmpty()) {
-                activity.runOnUiThread(() -> {
-                    viewsLayout.removeViews(2, viewsLayout.getChildCount() - 2);
-                    tvNoElements.setVisibility(View.GONE);
-                    viewsLayout.scrollTo(0, 0);
-                });
-                for (AgendaObject agendaObject : agendaObjectsOfTheDay) {
-                    List<AgendaObject> objectsToShow = new Vector<>();
-                    try {
-                        if (agendaObject.getRepresentingClass() == Test.class)
-                            objectsToShow.addAll(GlobalVariables.gS.getAgendaPage(false).getTests(agendaObject.date));
-                        else if (agendaObject.getRepresentingClass() == Homework.class)
-                            objectsToShow.addAll(GlobalVariables.gS.getAgendaPage(false).getHomeworks(agendaObject.date));
-                        else if (agendaObject.getRepresentingClass() == com.giua.objects.Activity.class)
-                            objectsToShow.addAll(GlobalVariables.gS.getAgendaPage(false).getActivities(agendaObject.date));
-                    } catch (GiuaScraperExceptions.YourConnectionProblems e) {
-                        activity.runOnUiThread(() -> {
-                            setErrorMessage(activity.getString(R.string.your_connection_error), root);
-                            swipeRefreshLayout.setRefreshing(false);
-                        });
-                        return;
-                    } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
-                        activity.runOnUiThread(() -> {
-                            setErrorMessage(activity.getString(R.string.site_connection_error), root);
-                            swipeRefreshLayout.setRefreshing(false);
-                        });
-                        return;
-                    } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
-                        activity.runOnUiThread(() -> {
-                            setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
-                            swipeRefreshLayout.setRefreshing(false);
-                        });
-                        return;
-                    }
-                    activity.runOnUiThread(() -> addViews(objectsToShow));
-                }
-            } else {
-                activity.runOnUiThread(() -> {
-                    tvNoElements.setText("Non ci sono compiti per questo giorno");
-                    tvNoElements.setVisibility(View.VISIBLE);
-                    isLoadingData = false;
-                    swipeRefreshLayout.setRefreshing(false);
-                    viewsLayout.removeViews(2, viewsLayout.getChildCount() - 2);
-                });
-            }
-        });
+        threadManager.addAndRun(() -> showDateActivities(selectedDate));
     }
 
     private void onMonthChanged(Date firstDayOfNewMonth) {
