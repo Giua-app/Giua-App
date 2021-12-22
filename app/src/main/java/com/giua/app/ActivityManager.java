@@ -123,6 +123,7 @@ public class ActivityManager extends AppCompatActivity {
         if(!SettingsData.getSettingString(this, SettingKey.APP_VER).equals("")
                 && !SettingsData.getSettingString(this, SettingKey.APP_VER).equals(BuildConfig.VERSION_NAME)){
             AppData.saveLastUpdateReminderDate(this, Calendar.getInstance()); //Imposta last reminder
+            new Thread(() -> AppData.increaseVisitCount("Aggiornamenti App"));
         }
 
         //Non salviamo la stringa della versione per permettere a DrawerActivity e MainLoginActivity di fare le loro cose

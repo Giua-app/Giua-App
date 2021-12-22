@@ -38,6 +38,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
+import com.giua.app.AppData;
 import com.giua.app.BuildConfig;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
@@ -120,6 +121,7 @@ public class CaocActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.caoc_settings_btn).setOnClickListener(this::btnSettingOnClick);
+        new Thread(() -> AppData.increaseVisitCount("Crash"));
 
     }
 

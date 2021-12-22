@@ -167,6 +167,8 @@ public class AppData {
      * - Nuove installazioni
      * - Login studente/genitore
      * - Errori di webview
+     * - Crash
+     * - Aggiornamenti
      * - Easter egg
      *
      * @param name Nome dell'oggetto su cui aumentare le visite
