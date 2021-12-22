@@ -133,8 +133,12 @@ public class ActivityManager extends AppCompatActivity {
      * Controlla se la versione vecchia era 0.6.1 e nel caso cancella i log e imposta l'intro
      */
     private void checkFor061Update(){
-        if(SettingsData.getSettingString(this, SettingKey.APP_VER).contains("0.6.1")
+        final String lastVer = SettingsData.getSettingString(this, SettingKey.APP_VER);
+        final String appVer = BuildConfig.VERSION_NAME;
+
+        if(!lastVer.equals(appVer) && lastVer.contains("0.6.1")
                 && SettingsData.getSettingInt(this, SettingKey.INTRO_STATUS) != 2){
+
             loggerManager.d("Rilevato aggiornamento da 0.6.1");
             loggerManager.d("Cancello log...");
             AppData.saveLogsString(this, "");

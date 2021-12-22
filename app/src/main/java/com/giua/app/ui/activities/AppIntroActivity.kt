@@ -74,12 +74,10 @@ class AppIntroActivity : AppIntro2(){
             ))
         }
 
-
-
         addSlide(CustomSlideFragment.newInstance(
             "Dubbi? Clicca sugli Aiuti!",
             "In ogni schermata troverai un pulsante con l'icona {cmd_help_circle_outline}, cliccalo per scoprire come usare quella schermata",
-            imageDrawable = R.mipmap.screen_help_icon,
+            imageDrawable = R.mipmap.help_tutorial,
             backgroundDrawable = R.drawable.bg_intro_slide3,
             layoutResId = R.layout.fragment_appintro_customslide_2
         ))

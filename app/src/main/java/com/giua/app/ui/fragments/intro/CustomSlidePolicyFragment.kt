@@ -81,6 +81,8 @@ class CustomSlidePolicyFragment(
             viewed = true
 
             startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+            noButton.visibility = View.INVISIBLE
+            yesButton.visibility = View.INVISIBLE
         }
 
         noButton.setOnClickListener {
@@ -90,6 +92,8 @@ class CustomSlidePolicyFragment(
                 "Ora puoi andare avanti!",
                 Toast.LENGTH_SHORT
             ).show()
+            yesButton.visibility = View.INVISIBLE
+            noButton.visibility = View.INVISIBLE
         }
 
         vTitle.text = title
