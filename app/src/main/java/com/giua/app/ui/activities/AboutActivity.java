@@ -231,6 +231,20 @@ public class AboutActivity extends MaterialAboutActivity {
                 "Material Drawer", "2021", "Mike Penz",
                 OpenSourceLicense.APACHE_2);
 
+        MaterialAboutCard calendarLicenseCard = ConvenienceBuilder.createLicenseCard(c,
+                new IconicsDrawable(c)
+                        .icon(CommunityMaterial.Icon.cmd_book)
+                        .sizeDp(18),
+                "Compact Calendar View", "2017", "Sundeepk",
+                OpenSourceLicense.MIT);
+
+        MaterialAboutCard glideLicenseCard = ConvenienceBuilder.createLicenseCard(c,
+                new IconicsDrawable(c)
+                        .icon(CommunityMaterial.Icon.cmd_book)
+                        .sizeDp(18),
+                "Glide", "2014", "bumptech",
+                OpenSourceLicense.APACHE_2); //FIXME: NON E' LA VERA LICENZA
+
 
 
         return new MaterialAboutList(giuaScraperLicenseCard,
@@ -240,7 +254,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 materialAboutLibraryLicenseCard,
                 androidIconicsLicenseCard,
                 leakCanaryLicenseCard, androidChartLicenseCard,
-                drawerLicenseCard);
+                drawerLicenseCard, calendarLicenseCard, glideLicenseCard);
     }
 
     @Nullable

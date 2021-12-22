@@ -121,7 +121,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.14.3'
 
     //--Giua scraper
-    implementation 'com.github.Giua-app:Giua-Webscraper:b61d61f131'
+    implementation 'com.github.Giua-app:Giua-Webscraper:4f50321'
     //implementation fileTree(dir: 'libs', include: ['*.jar'])     //DEBUG
     //implementation 'com.fasterxml.jackson.core:jackson-core:2.12.5'   //DEBUG
     //implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.5'    //DEBUG
@@ -147,11 +147,11 @@ dependencies {
         transitive = true
     }*/
 
-    //--Glide (https://github.com/bumptech/glide) TODO: aggiungere lib alle licenze
+    //--Glide (https://github.com/bumptech/glide)
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
 
-    //--Material Calendar View TODO: aggiungere lib alle licenze
+    //--Material Calendar View
     implementation 'com.github.sundeepk:compact-calendar-view:3.0.0'
 
     //--Android Iconics !!!NON AGGIORNARE!!!
