@@ -575,10 +575,14 @@ public class DrawerActivity extends AppCompatActivity {
                         message = "Puoi cliccare sui voti per vederne i dettagli (data, tipo, argomento).<br>" +
                                 "L'app calcolerà per te la media delle materie.<br>" +
                                 "<i>Legenda dei colori:<br>" +
-                                "Verde = Sufficiente<br>Arancione = Quasi Sufficiente<br>Rosso = Insufficiente</i>";
+                                "<font color='#69F169'>Verde</font> = Sufficiente<br><font color='#FFBC58'>Arancione</font> = Quasi Sufficiente<br><font color='#F86461'>Rosso</font> = Insufficiente</i>";
                         break;
                     case "FRAGMENT_AGENDA":
-                        message = "";
+                        message = "Puoi cliccare su una data per visualizzarne le attività.<br>" +
+                                "Per cambiare mese puoi utilizzare le frecce posizionate ai lati del nome del mese" +
+                                ", oppure trascinare il calendario verso destra o verso sinistra.<br>" +
+                                "Nel calendario le attività vengono rappresentate da un puntino colorato:<br>" +
+                                "<i><font color='#FFBC58'>Arancione</font> = Verifica<br><font color='#6BD5E4'>Celeste</font> = Compiti<br><font color='#7ADD7D'>Verde</font> = Eventi/Attività</i>";
                         break;
                     case "FRAGMENT_LESSONS":
                         message = "Puoi cliccare su una lezione per vederne i dettagli (argomenti, attività)<br>Clicca in basso, " +
