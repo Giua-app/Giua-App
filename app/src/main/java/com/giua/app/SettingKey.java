@@ -28,6 +28,7 @@ public abstract class SettingKey {
     /**
      * Lo stato dell'intro. Serve a ricordare se l'intro è già stata visualizzata o no
      **/
+    //TODO: DA SPOSTARE SU APPDATA
     public static final String INTRO_STATUS = "introStatus";
 
     /**
@@ -98,5 +99,6 @@ public abstract class SettingKey {
     /**
      * Versione dell'app. Se è diversa da quella corrente allora c'è stato un aggiornamento
      */
+    //TODO: DA SPOSTARE SU APPDATA
     public static final String APP_VER = "appVersion";
 }

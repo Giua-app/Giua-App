@@ -137,7 +137,7 @@ public class ActivityManager extends AppCompatActivity {
         final String lastVer = SettingsData.getSettingString(this, SettingKey.APP_VER);
         final String appVer = BuildConfig.VERSION_NAME;
 
-        if(!lastVer.equals(appVer) && lastVer.contains("0.6.1")
+        if(!lastVer.contains(appVer) && lastVer.contains("0.6.1")
                 && SettingsData.getSettingInt(this, SettingKey.INTRO_STATUS) != 2){
 
             loggerManager.d("Rilevato aggiornamento da 0.6.1");
