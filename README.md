@@ -4,6 +4,7 @@
   <a href='https://github.com/Giua-app/Giua-App/blob/master/LICENSE'><img src='https://img.shields.io/github/license/Giua-app/Giua-App'/></a>
   <img src='https://img.shields.io/github/v/tag/Giua-app/Giua-App?label=version&include_prereleases&color=success'/>
   <a href='https://github.com/Giua-app/Giua-App/actions/workflows/build_on_commit.yml'><img src='https://img.shields.io/github/workflow/status/Giua-app/Giua-App/Assemble%20app%20on%20commit?label=Build%20on%20commit'/></a>
+  <a href='https://github.com/Giua-app/Giua-App/releases'><img src='https://img.shields.io/github/downloads/Giua-app/Giua-App/total'/></a>
 </p>
 
 <p align='center'>
