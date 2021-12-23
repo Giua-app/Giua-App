@@ -145,6 +145,15 @@ public class ActivityManager extends AppCompatActivity {
             AppData.saveLogsString(this, "");
             loggerManager.w("Ciao! Abbiamo notato che hai aggiornato versione dalla 0.6.1." +
                     " I log non sono compatibili con questa versione quindi sono stati cancellati");
+            loggerManager.d("Imposto notifiche ai valori di default");
+            SettingsData.saveSettingBoolean(this, SettingKey.NOTIFICATION, true);
+
+            SettingsData.saveSettingBoolean(this, SettingKey.NEWSLETTER_NOTIFICATION, true);
+            SettingsData.saveSettingBoolean(this, SettingKey.ALERTS_NOTIFICATION, true);
+            SettingsData.saveSettingBoolean(this, SettingKey.UPDATES_NOTIFICATION, true);
+            SettingsData.saveSettingBoolean(this, SettingKey.VOTES_NOTIFICATION, true);
+            SettingsData.saveSettingBoolean(this, SettingKey.HOMEWORKS_NOTIFICATION, true);
+            SettingsData.saveSettingBoolean(this, SettingKey.TESTS_NOTIFICATION, true);
 
             SettingsData.saveSettingInt(this, SettingKey.INTRO_STATUS, -2);
         }

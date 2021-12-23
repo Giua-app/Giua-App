@@ -20,3 +20,9 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# anroid-iconics
+-keep class android.R
+-keep class **.R$* {
+    <fields>;
+}
