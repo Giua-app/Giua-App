@@ -58,6 +58,7 @@ public class MainLoginActivity extends AppCompatActivity {
     ProgressBar pgProgressBar;
     Button btnLogin;
     TextView btnLoginAsStudent;
+    TextView txtCardTitle;
     CheckBox chRememberCredentials;
     LoggerManager loggerManager;
 
@@ -70,6 +71,7 @@ public class MainLoginActivity extends AppCompatActivity {
 
         txtLayoutUsername = findViewById(R.id.login_txtlayout_user);
         txtLayoutPassword = findViewById(R.id.login_txtlayout_password);
+        txtCardTitle = findViewById(R.id.login_card_title);
         etUsername = txtLayoutUsername.getEditText();
         etPassword = txtLayoutPassword.getEditText();
 
@@ -90,6 +92,15 @@ public class MainLoginActivity extends AppCompatActivity {
 
         checkDisplayMetrics();
         checkForUpdateChangelog();
+
+        new Thread(() -> {
+            //TODO: rifarlo meglio
+            GlobalVariables.gS = new GiuaScraper("no", "no", null);
+            String str = GlobalVariables.gS.getSchoolName();
+            runOnUiThread(() -> txtCardTitle.setText("Accesso a " + str));
+            GlobalVariables.gS = null;
+        }).start();
+
     }
 
     private TextWatcher onTextChange(final TextInputLayout view) {
