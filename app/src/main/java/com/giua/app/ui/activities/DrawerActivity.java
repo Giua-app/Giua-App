@@ -146,7 +146,6 @@ public class DrawerActivity extends AppCompatActivity {
                     pendingIntent);
             loggerManager.d("Alarm per CheckNews settato a " + (interval / 60_000) + " minuti");
             //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000, pendingIntent);    //DEBUG
-
         }
 
         if (!offlineMode) {

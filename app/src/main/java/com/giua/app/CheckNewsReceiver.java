@@ -137,7 +137,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         }
     }
 
-    private void checkNewsAndSendNotifications() {
+    private void checkNewsAndSendNotifications() throws IOException {
         loggerManager.d("Controllo pagina home per le news");
 
         int numberNewslettersOld = -1;
@@ -210,122 +210,125 @@ public class CheckNewsReceiver extends BroadcastReceiver {
      *
      * @return La somma dei compiti e delle verifiche notificate. Serve a non far notificare anche gli avvisi.
      */
-    private int checkAndSendNotificationForAgenda() {
+    private int checkAndSendNotificationForAgenda() throws IOException {
         loggerManager.d("Inizio a controllare gli avvisi per le notifiche di compiti e verifiche");
         com.giua.utils.JsonParser jsonParser = new JsonParser();
         boolean canSendHomeworkNotification = SettingsData.getSettingBoolean(context, SettingKey.HOMEWORKS_NOTIFICATION);
         boolean canSendTestNotification = SettingsData.getSettingBoolean(context, SettingKey.TESTS_NOTIFICATION);
         if (!canSendTestNotification && !canSendHomeworkNotification)
             return 0;    //Se non puo inviare nessuna notifica lo blocco
-        try {
-            loggerManager.d("Leggo il json per vedere gli avvisi dei compiti e delle verifiche già notificati");
-            AlertsPage alertsPage = gS.getAlertsPage(false);
-            File f = new File(context.getCacheDir() + "/alertsToNotify.json");
-            if (!f.exists()) {
-                FileWriter fileWriter = new FileWriter(f);
-                fileWriter.write("");
-                fileWriter.close();
-                JsonBuilder jsonBuilder = new JsonBuilder(context.getCacheDir() + "/alertsToNotify.json", gS);
-                jsonBuilder.writeAlerts(alertsPage.getAllAlertsWithFilters(false, "per la materia"));
-                jsonBuilder.saveJson();
-                return 0; //Return perchè andrebbe a notificare tutti i vecchi compiti
-            }
-            BufferedReader file = new BufferedReader(new FileReader(context.getCacheDir() + "/alertsToNotify.json"));
-            StringBuilder oldAlertsString = new StringBuilder();
-            String read = file.readLine();
-            while (read != null) {
-                oldAlertsString.append(read);
-                read = file.readLine();
-            }
-            file.close();
-
-            loggerManager.d("Faccio il parsing del json");
-            //Lista con gli avvisi già notificati
-            List<Alert> oldAlerts;
-            if (oldAlertsString.toString().equals(""))
-                oldAlerts = new Vector<>();
-            else
-                oldAlerts = jsonParser.parseJsonForAlerts(oldAlertsString.toString());
-            //Lista degli avvisi da notificare
-            List<Alert> alertsToNotify = alertsPage.getAlertsToNotify(oldAlerts);
-            //Salva gli avvisi (compresi i nuovi) nel json
-            JsonBuilder jsonBuilder = new JsonBuilder(context.getCacheDir() + "/alertsToNotify.json", gS);
-            jsonBuilder.writeAlerts(alertsPage.getAllAlertsWithFilters(false, "per la materia"));
-            jsonBuilder.saveJson();
-
-            loggerManager.d("Conto i compiti e le verifiche da notificare");
-            int homeworkCounter = 0;    //Conta i compiti da notificare
-            int testCounter = 0;    //Conta le verifiche da notificare
-            List<String> homeworkDates = new Vector<>(40);  //Lista in cui ci sono tutte le date dei compiti da notificare
-            List<String> testDates = new Vector<>(40);   //Lista in cui ci sono tutte le date delle verifiche da notificare
-            List<String> homeworkSubjects = new Vector<>(40);    //Lista in cui ci sono tutte le materie dei compiti da notificare
-            List<String> testSubjects = new Vector<>(40);    //Lista in cui ci sono tutte le materie delle verifiche da notificare
-            for (Alert alert : alertsToNotify) {
-                if (alert.object.startsWith("C")) {
-                    homeworkDates.add(alert.date);
-                    homeworkSubjects.add(alert.object.split(" per la materia ")[1]);
-                    homeworkCounter++;
-                } else if (alert.object.startsWith("V")) {
-                    testDates.add(alert.date);
-                    testSubjects.add(alert.object.split(" per la materia ")[1]);
-                    testCounter++;
-                }
-            }
-            loggerManager.d("Preparo le notifiche");
-            StringBuilder homeworkNotificationText;
-            StringBuilder testNotificationText;
-            Notification homeworkNotification = null;
-            Notification testNotification = null;
-
-            if (canSendHomeworkNotification && homeworkCounter > 0) {
-                String contentText;
-                if (homeworkCounter == 1) {
-                    contentText = "Clicca per andare all' agenda";
-                    homeworkNotificationText = new StringBuilder("È stato programmato un nuovo compito di " + homeworkSubjects.get(0) + " per il giorno " + homeworkDates.get(0));
-                } else {
-                    contentText = "Clicca per andare all' agenda";
-                    homeworkNotificationText = new StringBuilder("Sono stati programmati nuovi compiti:\n");
-                    for (int i = 0; i < homeworkCounter; i++) {
-                        homeworkNotificationText.append(homeworkSubjects.get(i));
-                        homeworkNotificationText.append(" - ");
-                        homeworkNotificationText.append(homeworkDates.get(i));
-                        if (i != homeworkCounter - 1)
-                            homeworkNotificationText.append("\n");
-                    }
-                }
-                homeworkNotification = createNotificationForAgenda("Nuovi compiti", contentText, homeworkNotificationText.toString(), "Agenda", 5);
-            }
-            if (canSendTestNotification && testCounter > 0) {
-                String contentText;
-                if (testCounter == 1) {
-                    contentText = "Clicca per andare all' agenda";
-                    testNotificationText = new StringBuilder("È stata programmata una nuova verifica di " + testSubjects.get(0) + " per il giorno " + testDates.get(0));
-                } else {
-                    contentText = "Clicca per andare all' agenda";
-                    testNotificationText = new StringBuilder("Sono state programmate nuove verifiche:\n");
-                    for (int i = 0; i < testCounter; i++) {
-                        testNotificationText.append(testSubjects.get(i));
-                        testNotificationText.append(" - ");
-                        testNotificationText.append(testDates.get(i));
-                        if (i != testCounter - 1)
-                            testNotificationText.append("\n");
-                    }
-                }
-                testNotification = createNotificationForAgenda("Nuove verifiche", contentText, testNotificationText.toString(), "Agenda", 5);
-            }
-
-            loggerManager.d("Invio le notifiche");
-            if (canSendHomeworkNotification && homeworkNotification != null)
-                notificationManager.notify(13, homeworkNotification);
-            if (canSendTestNotification && testNotification != null)
-                notificationManager.notify(14, testNotification);
-
-            return testCounter + homeworkCounter;
-
-        } catch (IOException e) {
-            loggerManager.e("Errore " + e.getMessage());
+        loggerManager.d("Leggo il json per vedere gli avvisi dei compiti e delle verifiche già notificati");
+        AlertsPage alertsPage = gS.getAlertsPage(false);
+        File f = new File(context.getCacheDir() + "/alertsToNotify.json");
+        if (!f.exists()) {
+            createJsonNotificationFile(f, alertsPage);
+            return 0; //Return perchè andrebbe a notificare tutti i vecchi compiti
+        }
+        BufferedReader file = new BufferedReader(new FileReader(context.getCacheDir() + "/alertsToNotify.json"));
+        StringBuilder oldAlertsString = new StringBuilder();
+        String read = file.readLine();
+        if (read == null) {
+            createJsonNotificationFile(f, alertsPage);
             return 0;
         }
+        while (read != null) {
+            oldAlertsString.append(read);
+            read = file.readLine();
+        }
+        file.close();
+
+        loggerManager.d("Faccio il parsing del json");
+        //Lista con gli avvisi già notificati
+        List<Alert> oldAlerts;
+        if (oldAlertsString.toString().equals("")) {
+            loggerManager.w("oldAlertsString è vuoto");
+            oldAlerts = new Vector<>();
+        } else
+            oldAlerts = jsonParser.parseJsonForAlerts(oldAlertsString.toString());
+        //Lista degli avvisi da notificare
+        List<Alert> alertsToNotify = alertsPage.getAlertsToNotify(oldAlerts);
+        //Salva gli avvisi (compresi i nuovi) nel json
+        JsonBuilder jsonBuilder = new JsonBuilder(context.getCacheDir() + "/alertsToNotify.json", gS);
+        jsonBuilder.writeAlerts(alertsPage.getAllAlertsWithFilters(false, "per la materia"));
+        jsonBuilder.saveJson();
+
+        loggerManager.d("Conto i compiti e le verifiche da notificare");
+        int homeworkCounter = 0;    //Conta i compiti da notificare
+        int testCounter = 0;    //Conta le verifiche da notificare
+        List<String> homeworkDates = new Vector<>(40);  //Lista in cui ci sono tutte le date dei compiti da notificare
+        List<String> testDates = new Vector<>(40);   //Lista in cui ci sono tutte le date delle verifiche da notificare
+        List<String> homeworkSubjects = new Vector<>(40);    //Lista in cui ci sono tutte le materie dei compiti da notificare
+        List<String> testSubjects = new Vector<>(40);    //Lista in cui ci sono tutte le materie delle verifiche da notificare
+        for (Alert alert : alertsToNotify) {
+            if (alert.object.startsWith("C")) {
+                homeworkDates.add(alert.date);
+                homeworkSubjects.add(alert.object.split(" per la materia ")[1]);
+                homeworkCounter++;
+            } else if (alert.object.startsWith("V")) {
+                testDates.add(alert.date);
+                testSubjects.add(alert.object.split(" per la materia ")[1]);
+                testCounter++;
+            }
+        }
+        loggerManager.d("Preparo le notifiche");
+        StringBuilder homeworkNotificationText;
+        StringBuilder testNotificationText;
+        Notification homeworkNotification = null;
+        Notification testNotification = null;
+
+        if (canSendHomeworkNotification && homeworkCounter > 0) {
+            String contentText;
+            if (homeworkCounter == 1) {
+                contentText = "Clicca per andare all' agenda";
+                homeworkNotificationText = new StringBuilder("È stato programmato un nuovo compito di " + homeworkSubjects.get(0) + " per il giorno " + homeworkDates.get(0));
+            } else {
+                contentText = "Clicca per andare all' agenda";
+                homeworkNotificationText = new StringBuilder("Sono stati programmati nuovi compiti:\n");
+                for (int i = 0; i < homeworkCounter; i++) {
+                    homeworkNotificationText.append(homeworkSubjects.get(i));
+                    homeworkNotificationText.append(" - ");
+                    homeworkNotificationText.append(homeworkDates.get(i));
+                    if (i != homeworkCounter - 1)
+                        homeworkNotificationText.append("\n");
+                }
+            }
+            homeworkNotification = createNotificationForAgenda("Nuovi compiti", contentText, homeworkNotificationText.toString(), "Agenda", 5);
+        }
+        if (canSendTestNotification && testCounter > 0) {
+            String contentText;
+            if (testCounter == 1) {
+                contentText = "Clicca per andare all' agenda";
+                testNotificationText = new StringBuilder("È stata programmata una nuova verifica di " + testSubjects.get(0) + " per il giorno " + testDates.get(0));
+            } else {
+                contentText = "Clicca per andare all' agenda";
+                testNotificationText = new StringBuilder("Sono state programmate nuove verifiche:\n");
+                for (int i = 0; i < testCounter; i++) {
+                    testNotificationText.append(testSubjects.get(i));
+                    testNotificationText.append(" - ");
+                    testNotificationText.append(testDates.get(i));
+                    if (i != testCounter - 1)
+                        testNotificationText.append("\n");
+                }
+            }
+            testNotification = createNotificationForAgenda("Nuove verifiche", contentText, testNotificationText.toString(), "Agenda", 5);
+        }
+
+        loggerManager.d("Invio le notifiche");
+        if (canSendHomeworkNotification && homeworkNotification != null)
+            notificationManager.notify(13, homeworkNotification);
+        if (canSendTestNotification && testNotification != null)
+            notificationManager.notify(14, testNotification);
+
+        return testCounter + homeworkCounter;
+    }
+
+    private void createJsonNotificationFile(File f, AlertsPage alertsPage) throws IOException {
+        FileWriter fileWriter = new FileWriter(f);
+        fileWriter.write("");
+        fileWriter.close();
+        JsonBuilder jsonBuilder = new JsonBuilder(context.getCacheDir() + "/alertsToNotify.json", gS);
+        jsonBuilder.writeAlerts(alertsPage.getAllAlertsWithFilters(false, "per la materia"));
+        jsonBuilder.saveJson();
     }
 
     private Notification createNotificationForAgenda(String title, String contentText, String bigText, String goTo, int requestCode) {
