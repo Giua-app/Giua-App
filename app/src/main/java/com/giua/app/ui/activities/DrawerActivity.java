@@ -193,6 +193,7 @@ public class DrawerActivity extends AppCompatActivity {
 
             loggerManager.w("Aggiornamento installato rilevato");
             loggerManager.d("Cancello apk dell'aggiornamento e mostro changelog");
+            new Thread(() -> AppData.increaseVisitCount("Aggiornamenti App"));
             AppUpdateManager upd = new AppUpdateManager(DrawerActivity.this);
             upd.deleteOldApk();
             new Thread(upd::showDialogReleaseChangelog).start();
