@@ -53,10 +53,9 @@ class AppIntroActivity : AppIntro2(){
         ))
 
 
-        welcomeBack = intent.extras?.getBoolean("welcomeBack") == true
+        welcomeBack = intent.extras?.getBoolean("welcomeBack") == true //aiuto
 
-        //aiuto non so il kotlin help e odio gli "?"
-        if(welcomeBack == true){
+        if(welcomeBack){
             addSlide(CustomSlideFragment.newInstance(
                 "Bentornato!",
                 "Segui questa breve introduzione per scoprire le novità di Giua App " + AppUpdateManager.getPrettyAppVersion(),

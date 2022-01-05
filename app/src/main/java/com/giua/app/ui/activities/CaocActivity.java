@@ -121,8 +121,8 @@ public class CaocActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.caoc_settings_btn).setOnClickListener(this::btnSettingOnClick);
-        new Thread(() -> AppData.increaseVisitCount("Crash"));
 
+        AppData.increaseVisitCount("Crash"); //non dovrebbe dare problemi...in teoria...
     }
 
 
