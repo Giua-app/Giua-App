@@ -44,6 +44,7 @@ public class AppData {
     private static final String numberNewslettersKey = "number_newsletters";
     private static final String numberAlertsKey = "number_alerts";
     private static final String numberVotesKey = "number_votes";
+    private static final String notificationErrorsCounter = "notification_errors";
 
     //Chiavi per il salvataggio delle versioni
     private static final String lastUpdateVersionKey = "last_update_version";
@@ -119,6 +120,16 @@ public class AppData {
 
     public static int getNumberVotesInt(final Context context) {
         return getSharedPreferences(context).getInt(numberVotesKey, -1);
+    }
+
+    public static int getNumberNotificationErrors(final Context context) {
+        return getSharedPreferences(context).getInt(notificationErrorsCounter, 0);
+    }
+
+    public static void saveNumberNotificationErrors(final Context context, final int value) {
+        getSharedPreferences(context).edit()
+                .putInt(notificationErrorsCounter, value)
+                .apply();
     }
 
     //endregion

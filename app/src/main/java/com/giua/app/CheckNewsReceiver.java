@@ -79,8 +79,8 @@ public class CheckNewsReceiver extends BroadcastReceiver {
             try {
 
                 checkAndMakeLogin();
-
                 checkNewsAndSendNotifications();
+                AppData.saveNumberNotificationErrors(context, 0);
 
             } catch (Exception e) {
                 loggerManager.e("Errore sconosciuto - " + e.getMessage());
@@ -94,6 +94,19 @@ public class CheckNewsReceiver extends BroadcastReceiver {
                             .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
                     notificationManager.notify(12, builder.build());
+                }
+                if (e.getClass() == GiuaScraperExceptions.SessionCookieEmpty.class)
+                    loggerManager.e("Username utilizzato: " + gS.getUser());
+                int nErrors = AppData.getNumberNotificationErrors(context);
+                if (nErrors < 3 && e.getClass() != GiuaScraperExceptions.SiteConnectionProblems.class) {
+                    AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                    Intent iCheckNewsReceiver = new Intent(context, CheckNewsReceiver.class);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, 0);
+                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME,
+                            SystemClock.elapsedRealtime() + 900_000,   //Intervallo di 15 minuti
+                            pendingIntent);
+                    AppData.saveNumberNotificationErrors(context, ++nErrors);
+                    return;
                 }
             }
 
