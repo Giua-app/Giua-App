@@ -223,6 +223,8 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         String year = String.valueOf(selectedDate.get(Calendar.YEAR));
         if (day.length() == 1)
             day = "0" + day;
+        if (month.length() == 1)
+            month = "0" + month;
         AgendaObject agendaObjectComparator = new AgendaObject(
                 day,
                 month,
