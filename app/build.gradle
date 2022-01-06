@@ -17,12 +17,24 @@
  *     along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 
+buildscript {
+    repositories {
+        google()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.klaxit.hiddensecrets:HiddenSecretsPlugin:0.1.3"
+    }
+}
 
 plugins {
     id 'com.android.application'
     id 'com.gladed.androidgitversion' version '0.4.14'
 }
 
+apply plugin: 'com.klaxit.hiddensecrets'
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
@@ -73,6 +85,13 @@ android {
             storePassword System.getenv("SIGNING_STORE_PASSWORD")
             keyAlias System.getenv("SIGNING_KEY_ALIAS")
             keyPassword System.getenv("SIGNING_KEY_PASSWORD")
+        }
+
+        // Enable NDK build
+        externalNativeBuild {
+            cmake {
+                path "src/main/cpp/CMakeLists.txt"
+            }
         }
     }
 
