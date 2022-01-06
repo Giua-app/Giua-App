@@ -153,13 +153,13 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
                     if (allAgendaObjects.isEmpty()) {
                         activity.runOnUiThread(() -> {
-                            viewsLayout.removeViews(2, viewsLayout.getChildCount() - 2);
+                            viewsLayout.removeViews(1, viewsLayout.getChildCount() - 1);
                             tvNoElements.setText("Non ci sono compiti per questo mese");
                             tvNoElements.setVisibility(View.VISIBLE);
                         });
                     } else {
                         activity.runOnUiThread(() -> {
-                            viewsLayout.removeViews(2, viewsLayout.getChildCount() - 2);
+                            viewsLayout.removeViews(1, viewsLayout.getChildCount() - 1);
                             try {
                                 refreshCalendarEvents();
                             } catch (ParseException ignored) {
@@ -238,7 +238,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
         if (!agendaObjectsOfTheDay.isEmpty()) {
             activity.runOnUiThread(() -> {
-                viewsLayout.removeViews(2, viewsLayout.getChildCount() - 2);
+                viewsLayout.removeViews(1, viewsLayout.getChildCount() - 1);
                 tvNoElements.setVisibility(View.GONE);
                 viewsLayout.scrollTo(0, 0);
             });
@@ -278,7 +278,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                 tvNoElements.setVisibility(View.VISIBLE);
                 isLoadingData = false;
                 swipeRefreshLayout.setRefreshing(false);
-                viewsLayout.removeViews(2, viewsLayout.getChildCount() - 2);
+                viewsLayout.removeViews(1, viewsLayout.getChildCount() - 1);
             });
         }
     }
@@ -286,6 +286,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     private void onDayChanged(Date dateClicked) {
         Calendar selectedDate = Calendar.getInstance();
         selectedDate.setTime(dateClicked);
+        currentDisplayedDate = selectedDate.getTime();
         if (System.nanoTime() - lastOnDateCall < 400_000_000) {
             setErrorMessage("Clicca più lentamente!", root);
             return;

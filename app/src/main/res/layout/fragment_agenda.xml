@@ -51,70 +51,82 @@
                 android:orientation="vertical"
                 android:padding="10dp">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_gravity="center_horizontal">
+                    android:orientation="vertical">
 
                     <ImageView
                         android:id="@+id/agenda_prev_month"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_baseline_arrow_back_ios_24"
-                        android:layout_marginEnd="60dp"
+                        android:foreground="@drawable/ripple_effect"
                         android:padding="5dp"
-                        android:foreground="@drawable/ripple_effect" />
+                        android:src="@drawable/ic_baseline_arrow_back_ios_24"
+                        app:layout_constraintBottom_toBottomOf="@+id/agenda_calendar_month"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/agenda_calendar_month" />
 
                     <TextView
                         android:id="@+id/agenda_calendar_month"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        tools:text="Novembre"
                         android:fontFamily="@font/varelaroundregular"
+                        android:textColor="@color/adaptive_color_text"
                         android:textSize="20sp"
-                        android:layout_marginTop="5dp"
-                        android:textColor="@color/adaptive_color_text" />
+                        app:layout_constraintEnd_toStartOf="@+id/agenda_next_month"
+                        app:layout_constraintHorizontal_bias="0.327"
+                        app:layout_constraintStart_toEndOf="@+id/agenda_prev_month"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Novembre" />
 
                     <TextView
                         android:id="@+id/agenda_calendar_year"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/varelaroundregular"
-                        android:layout_marginStart="10dp"
-                        android:textSize="20sp"
-                        android:layout_marginTop="5dp"
                         android:textColor="@color/adaptive_color_text"
+                        android:textSize="20sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/agenda_calendar_month"
+                        app:layout_constraintEnd_toStartOf="@+id/agenda_next_month"
+                        app:layout_constraintHorizontal_bias="0.099"
+                        app:layout_constraintStart_toEndOf="@+id/agenda_calendar_month"
+                        app:layout_constraintTop_toTopOf="@+id/agenda_calendar_month"
+                        app:layout_constraintVertical_bias="0.0"
                         tools:text="2021" />
 
                     <ImageView
                         android:id="@+id/agenda_next_month"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_baseline_arrow_forward_ios_24"
-                        android:layout_marginStart="60dp"
+                        android:foreground="@drawable/ripple_effect"
                         android:padding="5dp"
-                        android:foreground="@drawable/ripple_effect" />
+                        android:src="@drawable/ic_baseline_arrow_forward_ios_24"
+                        app:layout_constraintBottom_toBottomOf="@+id/agenda_calendar_month"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/agenda_calendar_month" />
 
-                </LinearLayout>
+                    <com.github.sundeepk.compactcalendarview.CompactCalendarView
+                        android:id="@+id/agenda_calendar"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_marginTop="10dp"
+                        app:compactCalendarBackgroundColor="@color/background"
+                        app:compactCalendarCurrentDayBackgroundColor="@color/calendar_current_day"
+                        app:compactCalendarCurrentSelectedDayBackgroundColor="@color/main_color"
+                        app:compactCalendarDisplayOtherMonthDays="true"
+                        app:compactCalendarMultiEventIndicatorColor="#fff"
+                        app:compactCalendarShouldSelectFirstDayOfMonthOnScroll="false"
+                        app:compactCalendarTargetHeight="300dp"
+                        app:compactCalendarTextColor="@color/adaptive_color_text"
+                        app:compactCalendarTextSize="14sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/agenda_calendar_month" />
 
-                <com.github.sundeepk.compactcalendarview.CompactCalendarView
-                    android:id="@+id/agenda_calendar"
-                    android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    app:compactCalendarTargetHeight="300dp"
-                    app:compactCalendarTextSize="14sp"
-                    android:layout_marginTop="10dp"
-                    app:compactCalendarBackgroundColor="@color/background"
-                    app:compactCalendarTextColor="@color/adaptive_color_text"
-                    app:compactCalendarCurrentSelectedDayBackgroundColor="@color/main_color"
-                    app:compactCalendarCurrentDayBackgroundColor="@color/calendar_current_day"
-                    app:compactCalendarMultiEventIndicatorColor="#fff"
-                    app:compactCalendarShouldSelectFirstDayOfMonthOnScroll="false"
-                    app:compactCalendarDisplayOtherMonthDays="true" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
-
         </ScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
