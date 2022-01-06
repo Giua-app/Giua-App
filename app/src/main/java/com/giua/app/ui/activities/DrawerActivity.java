@@ -179,7 +179,7 @@ public class DrawerActivity extends AppCompatActivity {
         new Thread(() -> {
             loggerManager.d("Scarico le informazioni sulle funzionalità instabili");
             try {
-                unstableFeatures = GlobalVariables.gS.getExtPage("https://giua-app.github.io/unstable_features.txt").text();
+                unstableFeatures = GlobalVariables.gS.getExtPage("https://giua-app.github.io/unstable_features2.txt").text();
             } catch (Exception ignored) {}
 
         }).start();
@@ -476,12 +476,26 @@ public class DrawerActivity extends AppCompatActivity {
 
     private void changeFragmentWithManager(Fragment fragment, String tag, String toolbarTxt, String subtitle) {
         loggerManager.d("Cambio fragment a " + tag);
-        if(unstableFeatures.contains(tag)){
+        if(fragmentIsUnstable(tag)){
             loggerManager.w("Rilevata apertura funzionalità instabile (" + tag + "), avviso l'utente ");
             showUnstableDialog(fragment, tag, toolbarTxt, subtitle);
             return;
         }
         executeChangeFragment(fragment, tag, toolbarTxt, subtitle);
+    }
+
+    private boolean fragmentIsUnstable(String tag){
+        String[] uF = unstableFeatures.split("#");
+        try {
+            for (String feat : uF) {
+                String frag = feat.split("\\|")[0].trim();
+                String ver = feat.split("\\|")[1].trim();
+                if (frag.equals(tag) && ver.equals(BuildConfig.VERSION_NAME)) {
+                    return true;
+                }
+            }
+        } catch (Exception ignored){} //Se per qualche motivo c'è errore, vuol dire che unstableFeatures è vuoto
+        return false;
     }
 
     private void showUnstableDialog(Fragment fragment, String tag, String toolbarTxt, String subtitle){
