@@ -11,5 +11,5 @@ class Secrets {
         }
     }
 
-    external fun getBaROGUEY(packageName: String): String
+    external fun getgEPeTNbQ(packageName: String): String
 }

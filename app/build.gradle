@@ -44,6 +44,8 @@ androidGitVersion { //Usato soltanto durante lo sviluppo per differenziare le ve
     untrackedIsDirty = false
 }
 
+
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
@@ -60,18 +62,22 @@ android {
         //versionName "0.6.2-stable" //Da usare per le release
         versionName androidGitVersion.name() //Da usare per lo sviluppo
 
+        def localProperties = new Properties()
+        localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+
+        //Qualcuno sa a cosa serve questo?
+        if(localProperties['KEY1'] != null){
+            buildConfigField("String", "SECRET_KEY",localProperties['KEY1'])
+        } else {
+            buildConfigField("String", "SECRET_KEY", "\"syJIAIosdh376HAKHAsd\"")
+        }
+
+
+        buildConfigField("long", "BUILD_TIME", System.currentTimeMillis().toString())
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 	signingConfigs {
-        buildTypes {
-            debug {
-                buildConfigField("long", "BUILD_TIME", System.currentTimeMillis().toString())
-            }
-            release {
-                buildConfigField("long", "BUILD_TIME", System.currentTimeMillis().toString())
-            }
-        }
-
         release {
             def tmpFilePath = System.getProperty("user.home") + "/work/_temp/keystore/"
             def allFilesFromDir = new File(tmpFilePath).listFiles()

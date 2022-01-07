@@ -22,7 +22,6 @@ package com.giua.app.ui.activities;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -38,7 +37,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
-import com.giua.app.AppData;
+import com.giua.app.BugReportActivity;
 import com.giua.app.BuildConfig;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
@@ -76,7 +75,14 @@ public class CaocActivity extends AppCompatActivity {
             return;
         }
 
-        if (config.isShowRestartButton() && config.getRestartActivityClass() != null) {
+
+        restartButton.setText(R.string.customactivityoncrash_error_activity_restart_app);
+        restartButton.setOnClickListener(v -> {
+            loggerManager.w("Riavvio app");
+            CustomActivityOnCrash.restartApplication(CaocActivity.this, config);
+        });
+
+        /*if (config.isShowRestartButton() && config.getRestartActivityClass() != null) {
             restartButton.setText(R.string.customactivityoncrash_error_activity_restart_app);
             restartButton.setOnClickListener(v -> {
                 loggerManager.w("Riavvio app");
@@ -87,7 +93,7 @@ public class CaocActivity extends AppCompatActivity {
                 loggerManager.w("Chiusura app");
                 CustomActivityOnCrash.closeApplication(CaocActivity.this, config);
             });
-        }
+        }*/
 
         Button moreInfoButton = findViewById(R.id.caoc_error_info_btn);
 
@@ -114,15 +120,18 @@ public class CaocActivity extends AppCompatActivity {
         }
 
         reportCrash.setOnClickListener(v -> {
-            loggerManager.d("Apro github per inviare crash report");
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Giua-app/Giua-App/issues"));
-            startActivity(browserIntent);
-            copyErrorToClipboard();
+            loggerManager.d("Avvio BugReportActivity in un nuovo processo");
+            Intent intent = new Intent(this, BugReportActivity.class);
+            intent.putExtra("fromCAOC", true);
+            intent.putExtra("stacktrace", getAllErrorDetailsFromIntent(getIntent()));
+
+            CustomActivityOnCrash.restartApplicationWithIntent(this, intent, config);
         });
 
         findViewById(R.id.caoc_settings_btn).setOnClickListener(this::btnSettingOnClick);
 
-        AppData.increaseVisitCount("Crash"); //non dovrebbe dare problemi...in teoria...
+        //TODO: INSERIRLO DOPO L'AVVIO DELL'APP CON DEI FLAG INTENT E ALTRO IDK
+        //AppData.increaseVisitCount("Crash");
     }
 
 
