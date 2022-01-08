@@ -39,6 +39,12 @@
             android:key="experimentalMode"
             android:title="Abilita funzionalità sperimentali"
             app:isPreferenceVisible="false" />
+        <EditTextPreference
+            app:icon="@drawable/ic_web_search_24"
+            app:key="siteUrl"
+            app:negativeButtonText="Annulla"
+            app:positiveButtonText="Imposta"
+            app:title="Imposta l'url del sito" />
         <SwitchPreference
             app:defaultValue="false"
             app:icon="@drawable/ic_baseline_code_24"
@@ -92,12 +98,6 @@
             app:iconSpaceReserved="false"
             app:key="demoMode"
             app:title="Modalità demo" />
-        <EditTextPreference
-            app:iconSpaceReserved="false"
-            app:key="siteUrl"
-            app:negativeButtonText="Annulla"
-            app:positiveButtonText="Imposta"
-            app:title="Imposta l'url del sito" />
         <Preference
             app:iconSpaceReserved="false"
             app:key="crashScreen"

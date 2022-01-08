@@ -76,6 +76,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         setupAboutScreenObject();
         setupIntroScreenObject();
         setupExpModeObject();
+        setupSiteUrlObject();
         setupDebugModeObject();
 
         //endregion
@@ -95,7 +96,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         //region Debug
 
         setupDemoModeObject();
-        setupSiteUrlObject();
         setupCrashScreenObject();
         setupLogcatViewerObject();
 
