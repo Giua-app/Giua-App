@@ -322,7 +322,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private boolean siteUrlChanged(Preference preference, Object o) {
-        if (Pattern.matches("https?://([a-zA-Z0-9]+[.])+([a-zA-Z0-9]+)(:[0-9]+)?", (String) o)) {
+        if (Pattern.matches("https?://([a-zA-Z0-9]+[.])+([a-zA-Z0-9]+)(:[0-9]+)?((/[a-zA-Z0-9-_]+)+)?", (String) o)) {
             GiuaScraper.setSiteURL((String) o);
             SettingsData.saveSettingString(requireContext(), SettingKey.DEFAULT_URL, (String) o);
         } else {
