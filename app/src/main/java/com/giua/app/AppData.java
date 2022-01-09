@@ -51,6 +51,9 @@ public class AppData {
     private static final String nextUpdateReminderKey = "next_update_reminder";
     private static final String updatePresenceKey = "update_presence";
     private static final String logsStorageKey = "logs_storage";
+    public static final String appVersionKey = "app_version";
+
+    public static final String introStatusKey = "intro_status";
 
     private static SharedPreferences getSharedPreferences(final Context context) {
         return context.getSharedPreferences(appDataPreferenceKey, Context.MODE_PRIVATE);
@@ -146,6 +149,16 @@ public class AppData {
         return getSharedPreferences(context).getString(lastUpdateVersionKey, "");
     }
 
+    public static void saveAppVersion(final Context context, final String value) {
+        getSharedPreferences(context).edit()
+                .putString(appVersionKey, value)
+                .apply();
+    }
+
+    public static String getAppVersion(final Context context) {
+        return getSharedPreferences(context).getString(appVersionKey, "");
+    }
+
     @SuppressLint("SimpleDateFormat")
     public static void saveLastUpdateReminderDate(final Context context, final Calendar date) {
         getSharedPreferences(context).edit()
@@ -160,6 +173,15 @@ public class AppData {
 
     //endregion
 
+    public static void saveIntroStatus(final Context context, final int value) {
+        getSharedPreferences(context).edit()
+                .putInt(introStatusKey, value)
+                .apply();
+    }
+
+    public static int getIntroStatus(final Context context) {
+        return getSharedPreferences(context).getInt(introStatusKey, -1);
+    }
 
     public static void saveLogsString(final Context context, final String value) {
         getSharedPreferences(context).edit()

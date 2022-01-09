@@ -44,7 +44,8 @@
             app:key="siteUrl"
             app:negativeButtonText="Annulla"
             app:positiveButtonText="Imposta"
-            app:title="Imposta l'url del sito" />
+            app:title="Imposta l'url del sito"
+            app:dialogMessage="Inserire l'url del sito tipo: http://example.com oppure http://example.com/percorso . Il carattere '/' non è ammesso come ultimo carattere." />
         <SwitchPreference
             app:defaultValue="false"
             app:icon="@drawable/ic_baseline_code_24"

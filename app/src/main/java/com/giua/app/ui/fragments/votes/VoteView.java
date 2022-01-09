@@ -168,7 +168,10 @@ public class VoteView extends ConstraintLayout {
             else
                 tvVote.setText("*");
 
-            tvVote.setBackgroundTintList(getColorFromVote(getNumberFromVote(vote)));
+            if (vote.isRelevantForMean)
+                tvVote.setBackgroundTintList(getColorFromVote(getNumberFromVote(vote)));
+            else
+                tvVote.setBackgroundTintList(getResources().getColorStateList(R.color.non_vote, getContext().getTheme()));
             listVoteLayouts.get(listVoteLayoutsIndex).addView(tvVote);
         }
     }

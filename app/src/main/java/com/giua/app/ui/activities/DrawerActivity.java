@@ -188,8 +188,8 @@ public class DrawerActivity extends AppCompatActivity {
     }
 
     private void checkForUpdateChangelog(){
-        if(!SettingsData.getSettingString(this, SettingKey.APP_VER).equals("")
-                && !SettingsData.getSettingString(this, SettingKey.APP_VER).equals(BuildConfig.VERSION_NAME)){
+        if (!AppData.getAppVersion(this).equals("")
+                && !AppData.getAppVersion(this).equals(BuildConfig.VERSION_NAME)) {
 
             loggerManager.w("Aggiornamento installato rilevato");
             loggerManager.d("Cancello apk dell'aggiornamento e mostro changelog");
@@ -198,7 +198,7 @@ public class DrawerActivity extends AppCompatActivity {
             upd.deleteOldApk();
             new Thread(upd::showDialogReleaseChangelog).start();
         }
-        SettingsData.saveSettingString(this, SettingKey.APP_VER, BuildConfig.VERSION_NAME);
+        AppData.saveAppVersion(this, BuildConfig.VERSION_NAME);
     }
 
     private void setupMaterialDrawer() {
@@ -330,7 +330,7 @@ public class DrawerActivity extends AppCompatActivity {
         return primaryDrawerItem;
     }
 
-
+    //Usato per i pulsanti tipo quello delle impostazioni e del logout
     private PrimaryDrawerItem createDrawerSecondaryItem(int identifier, String name) {
         return new PrimaryDrawerItem()
                 .withIdentifier(identifier)
@@ -438,6 +438,23 @@ public class DrawerActivity extends AppCompatActivity {
         changeFragmentWithManager(fragment, tag, toolbarTxt, subtitle);
     }
 
+    private void changeFragmentWithManager(Fragment fragment, String tag, String toolbarTxt, String subtitle) {
+        loggerManager.d("Cambio fragment a " + tag);
+        if (fragmentIsUnstable(tag)) {
+            loggerManager.w("Rilevata apertura funzionalità instabile (" + tag + "), avviso l'utente ");
+            showUnstableDialog(fragment, tag, toolbarTxt, subtitle);
+            return;
+        }
+        executeChangeFragment(fragment, tag, toolbarTxt, subtitle);
+    }
+
+    private void executeChangeFragment(Fragment fragment, String tag, String toolbarTxt, String subtitle) {
+        setTextToolbar(toolbarTxt);
+        toolbar.setSubtitle(subtitle);
+        FragmentManager manager = getSupportFragmentManager();
+        manager.beginTransaction().replace(R.id.content_main, fragment, tag).commit();
+    }
+
     private void setTextToolbar(String defaultName) {
         if (offlineMode) {
             toolbar.setTitle(defaultName + " - Offline");
@@ -474,16 +491,6 @@ public class DrawerActivity extends AppCompatActivity {
         return "";
     }
 
-    private void changeFragmentWithManager(Fragment fragment, String tag, String toolbarTxt, String subtitle) {
-        loggerManager.d("Cambio fragment a " + tag);
-        if(fragmentIsUnstable(tag)){
-            loggerManager.w("Rilevata apertura funzionalità instabile (" + tag + "), avviso l'utente ");
-            showUnstableDialog(fragment, tag, toolbarTxt, subtitle);
-            return;
-        }
-        executeChangeFragment(fragment, tag, toolbarTxt, subtitle);
-    }
-
     private boolean fragmentIsUnstable(String tag){
         String[] uF = unstableFeatures.split("#");
         try {
@@ -518,13 +525,6 @@ public class DrawerActivity extends AppCompatActivity {
         });
 
         builder.show();
-    }
-
-    private void executeChangeFragment(Fragment fragment, String tag, String toolbarTxt, String subtitle) {
-        setTextToolbar(toolbarTxt);
-        toolbar.setSubtitle(subtitle);
-        FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.content_main, fragment, tag).commit();
     }
 
     public void selectItemInDrawer(long identifier) {

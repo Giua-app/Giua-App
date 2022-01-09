@@ -86,7 +86,7 @@ public class ActivityManager extends AppCompatActivity {
         //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
 
         checkFor061Update();
-        final int introStatus = SettingsData.getSettingInt(this, SettingKey.INTRO_STATUS);
+        final int introStatus = AppData.getIntroStatus(this);
 
         /*
          * 2 Intro & welcomeBack vista
@@ -119,9 +119,9 @@ public class ActivityManager extends AppCompatActivity {
             startAutomaticLoginActivity();
     }
 
-    private void checkForPreviousUpdate(){
-        if(!SettingsData.getSettingString(this, SettingKey.APP_VER).equals("")
-                && !SettingsData.getSettingString(this, SettingKey.APP_VER).equals(BuildConfig.VERSION_NAME)){
+    private void checkForPreviousUpdate() {
+        if (!AppData.getAppVersion(this).equals("")
+                && !AppData.getAppVersion(this).equals(BuildConfig.VERSION_NAME)) {
 
             AppData.saveLastUpdateReminderDate(this, Calendar.getInstance()); //Imposta last reminder
         }
@@ -133,12 +133,12 @@ public class ActivityManager extends AppCompatActivity {
     /**
      * Controlla se la versione vecchia era 0.6.1 e nel caso cancella i log e imposta l'intro
      */
-    private void checkFor061Update(){
-        final String lastVer = SettingsData.getSettingString(this, SettingKey.APP_VER);
+    private void checkFor061Update() {
+        final String lastVer = AppData.getAppVersion(this);
         final String appVer = BuildConfig.VERSION_NAME;
 
-        if(!lastVer.contains(appVer) && lastVer.contains("0.6.1")
-                && SettingsData.getSettingInt(this, SettingKey.INTRO_STATUS) != 2){
+        if (!lastVer.contains(appVer) && lastVer.contains("0.6.1")
+                && AppData.getIntroStatus(this) != 2) {
 
             loggerManager.d("Rilevato aggiornamento da 0.6.1");
             loggerManager.d("Cancello log...");
@@ -155,7 +155,7 @@ public class ActivityManager extends AppCompatActivity {
             SettingsData.saveSettingBoolean(this, SettingKey.HOMEWORKS_NOTIFICATION, true);
             SettingsData.saveSettingBoolean(this, SettingKey.TESTS_NOTIFICATION, true);
 
-            SettingsData.saveSettingInt(this, SettingKey.INTRO_STATUS, -2);
+            AppData.saveIntroStatus(this, -2);
         }
     }
 

@@ -26,12 +26,6 @@ public abstract class SettingKey {
     public static final String DEFAULT_URL = "defaultUrl";
 
     /**
-     * Lo stato dell'intro. Serve a ricordare se l'intro è già stata visualizzata o no
-     **/
-    //TODO: DA SPOSTARE SU APPDATA
-    public static final String INTRO_STATUS = "introStatus";
-
-    /**
      * Mostra i centesimi nella media dei voti
      */
     public static final String SHOW_CENTS = "show_cents";
@@ -96,9 +90,5 @@ public abstract class SettingKey {
      */
     public static final String EXP_MODE = "experimentalMode";
 
-    /**
-     * Versione dell'app. Se è diversa da quella corrente allora c'è stato un aggiornamento
-     */
-    //TODO: DA SPOSTARE SU APPDATA
-    public static final String APP_VER = "appVersion";
+
 }

@@ -94,11 +94,12 @@ public class MainLoginActivity extends AppCompatActivity {
         checkForUpdateChangelog();
 
         new Thread(() -> {
-            //TODO: rifarlo meglio
-            GlobalVariables.gS = new GiuaScraper("no", "no", null);
-            String str = GlobalVariables.gS.getSchoolName();
-            runOnUiThread(() -> txtCardTitle.setText("Accesso a " + str));
-            GlobalVariables.gS = null;
+            try {
+                String str = GiuaScraper.getSchoolName();
+                runOnUiThread(() -> txtCardTitle.setText("Accesso a " + str));
+            } catch (Exception e) {
+                runOnUiThread(() -> txtCardTitle.setText("Accesso al registro"));
+            }
         }).start();
 
     }
@@ -142,9 +143,9 @@ public class MainLoginActivity extends AppCompatActivity {
         }
     }
 
-    private void checkForUpdateChangelog(){
-        if(!SettingsData.getSettingString(this, SettingKey.APP_VER).equals("")
-                && !SettingsData.getSettingString(this, SettingKey.APP_VER).equals(BuildConfig.VERSION_NAME)){
+    private void checkForUpdateChangelog() {
+        if (!AppData.getAppVersion(this).equals("")
+                && !AppData.getAppVersion(this).equals(BuildConfig.VERSION_NAME)) {
 
             loggerManager.w("Aggiornamento installato rilevato");
             loggerManager.d("Cancello apk dell'aggiornamento e mostro changelog");
@@ -153,7 +154,7 @@ public class MainLoginActivity extends AppCompatActivity {
             upd.deleteOldApk();
             new Thread(upd::showDialogReleaseChangelog).start();
         }
-        SettingsData.saveSettingString(this, SettingKey.APP_VER, BuildConfig.VERSION_NAME);
+        AppData.saveAppVersion(this, BuildConfig.VERSION_NAME);
     }
 
     private void login() {
@@ -268,7 +269,7 @@ public class MainLoginActivity extends AppCompatActivity {
         }
 
 
-        if(etPassword.getText().length() > 0 && etUsername.getText().length() > 0){
+        if (etPassword.getText().length() > 0 && etUsername.getText().length() > 0) {
             pgProgressBar.setVisibility(View.VISIBLE);
             btnLogin.setVisibility(View.INVISIBLE);
             hideKeyboard();

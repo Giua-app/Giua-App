@@ -110,9 +110,9 @@ class AppIntroActivity : AppIntro2(){
 
     private fun finishIntro(){
         if(welcomeBack){
-            SettingsData.saveSettingInt(this, SettingKey.INTRO_STATUS, 2)
+            AppData.saveIntroStatus(this, 2)
         } else {
-            SettingsData.saveSettingInt(this, SettingKey.INTRO_STATUS, 1)
+            AppData.saveIntroStatus(this, 1)
         }
 
         //Ritorna all'activity manager per decidere cosa fare
