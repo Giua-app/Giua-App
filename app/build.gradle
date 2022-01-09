@@ -63,12 +63,14 @@ android {
         versionName androidGitVersion.name() //Da usare per lo sviluppo
 
         def localProperties = new Properties()
-        localProperties.load(new FileInputStream(rootProject.file("local.properties")))
-
-        //Qualcuno sa a cosa serve questo?
-        if(localProperties['KEY1'] != null){
-            buildConfigField("String", "SECRET_KEY",localProperties['KEY1'])
-        } else {
+        try{
+            localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+            if(localProperties['KEY1'] != null){
+                buildConfigField("String", "SECRET_KEY",localProperties['KEY1'])
+            } else {
+                buildConfigField("String", "SECRET_KEY", "\"syJIAIosdh376HAKHAsd\"")
+            }
+        } catch(Exception e){
             buildConfigField("String", "SECRET_KEY", "\"syJIAIosdh376HAKHAsd\"")
         }
 
