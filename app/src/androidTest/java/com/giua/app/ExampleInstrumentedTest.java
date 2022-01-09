@@ -1,7 +1,7 @@
 /*
  * Giua App
  * Android app to view data from the giua@school workbook
- * Copyright (C) 2021 - 2021 Hiem, Franck1421 and contributors
+ * Copyright (C) 2021 - 2022 Hiem, Franck1421 and contributors
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
@@ -19,6 +19,8 @@
 
 package com.giua.app;
 
+import static org.junit.Assert.assertEquals;
+
 import android.content.Context;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -26,8 +28,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Instrumented test, which will execute on an Android device.
