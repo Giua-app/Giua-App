@@ -225,7 +225,6 @@ public class AppData {
         }
         try {
             Jsoup.newSession().url("https://app.piratepx.com/ship?p=6af8462c-efe0-4f9a-96d0-ec9a8bbb9060&i=" + name)
-                    .timeout(10_000)
                     .get();
         } catch (IOException ignored) { } //Non ci interessa se va in errore
     }

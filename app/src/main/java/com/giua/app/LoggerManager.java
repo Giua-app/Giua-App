@@ -35,5 +35,14 @@ public class LoggerManager extends com.giua.utils.LoggerManager {
     protected void saveToData(Log log) {
         String old = AppData.getLogsString(c);
         AppData.saveLogsString(c, log.toString() + old);
+        if(log.type.equals("DEBUG")) {
+            android.util.Log.d("APP:" + log.tag, log.text);
+        }
+        if(log.type.equals("WARNING")) {
+            android.util.Log.w("APP:" + log.tag, log.text);
+        }
+        if(log.type.equals("ERROR")) {
+            android.util.Log.e("APP:" + log.tag, log.text);
+        }
     }
 }
