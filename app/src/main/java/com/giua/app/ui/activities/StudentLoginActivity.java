@@ -68,9 +68,9 @@ public class StudentLoginActivity extends AppCompatActivity {
             public boolean shouldOverrideUrlLoading(WebView webView, WebResourceRequest request) {
                 loggerManager.d("Richiesto caricamento dell'url " + request.getUrl().toString());
                 String requestedUrl = request.getUrl().toString();
-                if (requestedUrl.equals("https://registro.giua.edu.it/") || requestedUrl.equals("https://registro.giua.edu.it/#")) {
+                if (requestedUrl.equals(GiuaScraper.getSiteURL() + "/") || requestedUrl.equals(GiuaScraper.getSiteURL() + "/#")) {
                     loggerManager.d("Ottengo cookie del registro...");
-                    String rawCookie = CookieManager.getInstance().getCookie("https://registro.giua.edu.it");
+                    String rawCookie = CookieManager.getInstance().getCookie(GiuaScraper.getSiteURL());
                     if (rawCookie != null) {
                         cookie = rawCookie.split("=")[1];
                         onStoppedWebView(getIntent().getStringExtra("sender").equals("MainLogin")); //Aumenta il conteggio solo se StudentLogin viene chiamata dal MainLogin
@@ -99,7 +99,7 @@ public class StudentLoginActivity extends AppCompatActivity {
         webView.getSettings().setUserAgentString(userAgent);
         webView.getSettings().setJavaScriptEnabled(true);
 
-        webView.loadUrl("https://registro.giua.edu.it/login/gsuite");
+        webView.loadUrl(GiuaScraper.getSiteURL() + "/login/gsuite");
     }
 
 
