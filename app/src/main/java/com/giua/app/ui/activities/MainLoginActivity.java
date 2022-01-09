@@ -45,10 +45,13 @@ import com.giua.app.LoginData;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
+import com.giua.objects.Maintenance;
 import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
+
+import java.text.SimpleDateFormat;
 
 public class MainLoginActivity extends AppCompatActivity {
     EditText etUsername;
@@ -205,7 +208,13 @@ public class MainLoginActivity extends AppCompatActivity {
                 });
             } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
                 loggerManager.e("Errore: Manutenzione attiva");
-                setErrorMessage(getString(R.string.site_in_maintenace_error));
+                try {
+                    Maintenance maintenance = GlobalVariables.gS.getMaintenanceInfo();
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+                    runOnUiThread(() -> setErrorMessage("Il sito è in manutenzione sino alle " + simpleDateFormat.format(maintenance.end)));
+                } catch (Exception e2) {
+                    runOnUiThread(() -> setErrorMessage(getString(R.string.maintenance_is_active_error)));
+                }
                 this.runOnUiThread(() -> {
                     etPassword.setText("");
                     txtLayoutPassword.setError("In manutenzione, riprova più tardi!");

@@ -35,9 +35,12 @@ import com.giua.app.LoginData;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
+import com.giua.objects.Maintenance;
 import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
+
+import java.text.SimpleDateFormat;
 
 public class AutomaticLoginActivity extends AppCompatActivity {
     int waitToReLogin = 5;
@@ -114,11 +117,18 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                 }
             } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
                 loggerManager.e("Errore: sito in manutenzione");
+                try {
+                    Maintenance maintenance = GlobalVariables.gS.getMaintenanceInfo();
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+                    runOnUiThread(() -> setErrorMessage("Il sito è in manutenzione sino alle " + simpleDateFormat.format(maintenance.end)));
+                } catch (Exception e2) {
+                    runOnUiThread(() -> setErrorMessage(getString(R.string.maintenance_is_active_error)));
+                }
                 runOnUiThread(() -> btnLogout.setVisibility(View.VISIBLE));
                 //runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));
                 runOnUiThread(() -> pbLoadingScreen.setVisibility(View.GONE));
                 runOnUiThread(() -> tvAutoLogin.setText("Accesso fallito."));
-                runOnUiThread(() -> setErrorMessage(getString(R.string.site_in_maintenace_error)));
+
             }
         }).start();
     }

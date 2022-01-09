@@ -84,23 +84,6 @@
                 android:text="Inserisci ora i passaggi che hai fatto per riprodurre il bug"
                 android:textSize="14sp" />
 
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/txtBugDesc2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:hint="Passaggi per riprodurre il bug">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:allowUndo="true"
-                    android:inputType="textAutoCorrect|textMultiLine"
-                    android:singleLine="false"
-                    android:text="1. Andare su...\n2. Cliccare il pulsante...\n3. ...\n\n\n" />
-            </com.google.android.material.textfield.TextInputLayout>
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/txtBugTitle"
                 android:layout_width="match_parent"
@@ -130,6 +113,22 @@
                     android:inputType="textAutoCorrect|textMultiLine"
                     android:singleLine="false"
                     android:text="Descrizione del bug\nPuoi usare più linee" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/txtBugDesc2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:hint="Passaggi per riprodurre il bug">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:allowUndo="true"
+                    android:inputType="textAutoCorrect|textMultiLine"
+                    android:singleLine="false"
+                    android:text="1. Andare su...\n2. Cliccare il pulsante...\n3. ...\n\n\n" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <ProgressBar
