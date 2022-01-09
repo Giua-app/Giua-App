@@ -83,6 +83,11 @@ public class ActivityManager extends AppCompatActivity {
         if (!defaultUrl.equals(""))
             GiuaScraper.setSiteURL(defaultUrl);
 
+        if(AppData.getCrashStatus(this)){
+            new Thread(() -> AppData.increaseVisitCount("Crash"));
+            AppData.saveCrashStatus(this, false);
+        }
+
         //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
 
         checkFor061Update();

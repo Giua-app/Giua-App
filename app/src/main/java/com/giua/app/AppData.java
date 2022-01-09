@@ -54,6 +54,8 @@ public class AppData {
     public static final String appVersionKey = "app_version";
 
     public static final String introStatusKey = "intro_status";
+    private static final String crashStatusKey = "crash_status";
+
 
     private static SharedPreferences getSharedPreferences(final Context context) {
         return context.getSharedPreferences(appDataPreferenceKey, Context.MODE_PRIVATE);
@@ -191,6 +193,16 @@ public class AppData {
 
     public static String getLogsString(final Context context) {
         return getSharedPreferences(context).getString(logsStorageKey, "");
+    }
+
+    public static void saveCrashStatus(final Context context, final boolean value) {
+        getSharedPreferences(context).edit()
+                .putBoolean(crashStatusKey, value)
+                .apply();
+    }
+
+    public static boolean getCrashStatus(final Context context) {
+        return getSharedPreferences(context).getBoolean(crashStatusKey, false);
     }
 
     /**

@@ -37,6 +37,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
+import com.giua.app.AppData;
 import com.giua.app.BugReportActivity;
 import com.giua.app.BuildConfig;
 import com.giua.app.LoggerManager;
@@ -130,8 +131,7 @@ public class CaocActivity extends AppCompatActivity {
 
         findViewById(R.id.caoc_settings_btn).setOnClickListener(this::btnSettingOnClick);
 
-        //TODO: INSERIRLO DOPO L'AVVIO DELL'APP CON DEI FLAG INTENT E ALTRO IDK
-        //AppData.increaseVisitCount("Crash");
+        AppData.saveCrashStatus(this, true);
     }
 
 
