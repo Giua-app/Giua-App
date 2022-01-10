@@ -26,6 +26,7 @@ import com.github.appintro.AppIntro2
 import com.github.appintro.AppIntroPageTransformerType
 import com.giua.app.*
 import com.giua.app.ui.fragments.intro.CustomSlideFragment
+import com.giua.app.ui.fragments.intro.CustomSlidePolicy2Fragment
 import com.giua.app.ui.fragments.intro.CustomSlidePolicyFragment
 import com.mikepenz.iconics.context.IconicsLayoutInflater2
 
@@ -83,10 +84,22 @@ class AppIntroActivity : AppIntro2(){
 
         addSlide(CustomSlidePolicyFragment.newInstance(
             "Risparmio Batteria",
-            "Disattiva il Risparmio Batteria per consentirci di inviarti notifiche sui nuovi compiti, verifiche, avvisi e tanto altro",
+            "Disattiva il Risparmio Batteria per consentirci di inviarti notifiche sui nuovi compiti, verifiche, avvisi e tanto altro\n" +
+                    "(l'app non può funzionare senza)",
             imageDrawable = R.mipmap.battery_tutorial,
             backgroundDrawable = R.drawable.bg_intro_slide4,
             layoutResId = R.layout.fragment_appintro_customslide_policy
+        ))
+
+        addSlide(CustomSlidePolicy2Fragment.newInstance(
+            "Notifiche",
+            "Consenti all'app di avviarsi all'avvio per poter controllare le nuove notifiche.",
+            imageDrawable = R.mipmap.battery_tutorial,
+            backgroundDrawable = R.drawable.bg_intro_slide6,
+            layoutResId = R.layout.fragment_appintro_customslide_policy_2,
+            description2 = "L'app avvierà un processo separato per controllare le notifiche, non consuma molta batteria ma puoi comunque " +
+                    "decidere di saltare questo passaggio, in questo caso l'app inizierà a controllare nuove notifiche automaticamente " +
+                    "SOLO quando la aprirai tu per la prima volta dopo aver avviato il telefono."
         ))
 
         addSlide(CustomSlideFragment.newInstance(

@@ -176,6 +176,9 @@ dependencies {
     //--Material Calendar View
     implementation 'com.github.sundeepk:compact-calendar-view:3.0.0'
 
+    //--AutoStarter
+    implementation 'com.github.judemanutd:autostarter:1.1.0'
+
     //--Android Iconics !!!NON AGGIORNARE!!!
     //noinspection GradleDependency
     implementation "com.mikepenz:iconics-core:3.2.5"
