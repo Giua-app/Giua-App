@@ -38,7 +38,7 @@
         android:theme="@style/Theme.GiuaApp"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".BugReportActivity"
+            android:name=".ui.activities.BugReportActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.GiuaApp.NoActionBar"
             tools:ignore="LockedOrientationActivity" />

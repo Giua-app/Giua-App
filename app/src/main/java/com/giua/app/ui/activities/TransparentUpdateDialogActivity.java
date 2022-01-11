@@ -28,6 +28,10 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -90,16 +94,20 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
     private void showDialogUpdateChangelog(){
         loggerManager.d("Mostro dialogo changelog");
         String body = rootNode.findPath("body").asText();
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Novità della versione " + tagName)
 
-                .setMessage(Html.fromHtml(body, 0))
+        final SpannableString txt = new SpannableString(Html.fromHtml(body, 0));
+        Linkify.addLinks(txt, Linkify.ALL);
 
+        AlertDialog d = new AlertDialog.Builder(this)
+                .setTitle("Novità della versione " + tagName)
+                .setMessage(txt)
                 .setPositiveButton("Chiudi", (dialog, id) -> finish())
+                .setOnDismissListener(dialog -> finish())
+                .create();
 
-                .setOnDismissListener(dialog -> finish());
+        d.show();
 
-        builder.show();
+        ((TextView)d.findViewById(R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
     }
 
 

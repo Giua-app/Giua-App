@@ -22,7 +22,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BugReportActivity">
+    tools:context=".ui.activities.BugReportActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout2"
@@ -147,7 +147,7 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/bug_send_button"
+                    android:id="@+id/btn_bug_send"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="50dp"
@@ -155,7 +155,7 @@
                     android:text="Invia" />
 
                 <Button
-                    android:id="@+id/button"
+                    android:id="@+id/btn_bug_cancel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="50dp"

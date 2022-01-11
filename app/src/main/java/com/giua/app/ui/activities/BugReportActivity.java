@@ -17,15 +17,22 @@
  *     along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 
-package com.giua.app;
+package com.giua.app.ui.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.giua.app.ActivityManager;
+import com.giua.app.BuildConfig;
+import com.giua.app.LoggerManager;
+import com.giua.app.R;
+import com.giua.app.Secrets;
 import com.giua.utils.JsonBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
@@ -36,11 +43,13 @@ import org.jsoup.Jsoup;
 public class BugReportActivity extends AppCompatActivity {
 
     Button btnSend;
+    Button btnCancel;
     TextInputLayout bugTitle;
     TextInputLayout bugDesc;
     ProgressBar progressBar;
     String dontStealMePlease = "dontStealMePlease";
     String stacktrace;
+    LoggerManager lm;
     boolean fromCAOC;
 
     @Override
@@ -48,12 +57,16 @@ public class BugReportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bugreport);
 
-        btnSend = findViewById(R.id.bug_send_button);
+        lm = new LoggerManager("BugReportActivity", this);
+
+        btnSend = findViewById(R.id.btn_bug_send);
+        btnCancel = findViewById(R.id.btn_bug_cancel);
         bugTitle = findViewById(R.id.txtBugTitle);
         bugDesc = findViewById(R.id.txtBugDesc);
         progressBar = findViewById(R.id.bug_progressbar);
 
         btnSend.setOnClickListener(v -> onSendBug());
+        btnCancel.setOnClickListener(v -> exitActivity());
         dontStealMePlease = BuildConfig.SECRET_KEY;
 
         fromCAOC = getIntent().getBooleanExtra("fromCAOC", false);
@@ -63,8 +76,17 @@ public class BugReportActivity extends AppCompatActivity {
         }
     }
 
+    private void exitActivity(){
+        if(fromCAOC){
+            lm.w("Tento di avviare ActivityManager");
+            startActivity(new Intent(this, ActivityManager.class));
+        }
+        finish();
+    }
+
     private void onSendBug() {
         btnSend.setVisibility(View.INVISIBLE);
+        btnCancel.setVisibility(View.INVISIBLE);
         bugTitle.setEnabled(false);
         bugDesc.setEnabled(false);
         progressBar.setVisibility(View.VISIBLE);
@@ -83,7 +105,7 @@ public class BugReportActivity extends AppCompatActivity {
 
             try {
                 Connection session = Jsoup.newSession().ignoreContentType(true);
-                session.url("https://api.github.com/repos/HiemSword/regnodellasintassi-site/issues")
+                session.url("https://api.github.com/repos/Giua-app/Giua-App/issues")
                         .header("Authorization", "token " + new Secrets().getgEPeTNbQ(getPackageName()) + dontStealMePlease)
                         .header("Accept", "application/vnd.github.v3+json")
                         .requestBody("{\"title\": \"" + bugTitle.getEditText().getText() + "\"," +
@@ -91,13 +113,16 @@ public class BugReportActivity extends AppCompatActivity {
                         .post();
             } catch(Exception e){
                 Snackbar.make(findViewById(android.R.id.content), "Errore durante l'invio del Bug Report", Snackbar.LENGTH_SHORT).show();
+                runOnUiThread(() -> {
+                    btnSend.setVisibility(View.VISIBLE);
+                    btnCancel.setVisibility(View.VISIBLE);
+                    bugTitle.setEnabled(true);
+                    bugDesc.setEnabled(true);
+                    progressBar.setVisibility(View.INVISIBLE);
+                });
             }
-            runOnUiThread(() -> {
-                btnSend.setVisibility(View.VISIBLE);
-                bugTitle.setEnabled(true);
-                bugDesc.setEnabled(true);
-                progressBar.setVisibility(View.INVISIBLE);
-            });
+            Toast.makeText(this, "Bug inviato. Grazie!", Toast.LENGTH_SHORT).show();
+            exitActivity();
         }).start();
     }
 }

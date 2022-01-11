@@ -44,6 +44,7 @@ import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
 import com.giua.app.ui.activities.AboutActivity;
 import com.giua.app.ui.activities.AppIntroActivity;
+import com.giua.app.ui.activities.BugReportActivity;
 import com.giua.app.ui.activities.LogdogViewerActivity;
 import com.giua.webscraper.GiuaScraper;
 import com.google.android.material.snackbar.Snackbar;
@@ -77,6 +78,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         setupIntroScreenObject();
         setupExpModeObject();
         setupSiteUrlObject();
+        setupBugReportObject();
         setupDebugModeObject();
 
         //endregion
@@ -104,6 +106,20 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
 
         //endregion
+    }
+
+    private void setupBugReportObject() {
+        Preference btnBugReport = Objects.requireNonNull(findPreference("bugReport"));
+        btnBugReport.setOnPreferenceClickListener(this::btnBugReportOnClick);
+        if(requireActivity().getIntent().getBooleanExtra("fromCaoc", false)){
+            btnBugReport.setEnabled(false);
+            btnBugReport.setTitle("Segnala un bug (segnala dal crash invece!)");
+        }
+    }
+
+    private boolean btnBugReportOnClick(Preference preference) {
+        startActivity(new Intent(requireContext(), BugReportActivity.class));
+        return true;
     }
 
     private void setupShowCentsObject() {

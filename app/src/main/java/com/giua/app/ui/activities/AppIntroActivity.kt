@@ -92,7 +92,7 @@ class AppIntroActivity : AppIntro2(){
             layoutResId = R.layout.fragment_appintro_customslide_policy
         ))
 
-        if(AutoStartPermissionHelper.getInstance().getAutoStartPermission(this)){
+        if(AutoStartPermissionHelper.getInstance().getAutoStartPermission(this, false)){
             addSlide(CustomSlidePolicy2Fragment.newInstance(
                 "Notifiche",
                 "Consenti all'app di avviarsi all'avvio per poter controllare le nuove notifiche.",
@@ -105,6 +105,7 @@ class AppIntroActivity : AppIntro2(){
             ))
         }
 
+        //TODO: Inserire slide per scegliere la scuola
 
         addSlide(CustomSlideFragment.newInstance(
             "E' tutto pronto!",
