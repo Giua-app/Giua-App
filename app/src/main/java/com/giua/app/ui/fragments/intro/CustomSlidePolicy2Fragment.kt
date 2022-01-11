@@ -78,6 +78,7 @@ class CustomSlidePolicy2Fragment(
         noButton.text = "No grazie"
 
         vTitle.text = title
+        view.findViewById<TextView>(R.id.txt_csp_icon).text = "{cmd_checkbox_marked_circle_outline}"
 
         vDescription.text = Html.fromHtml(description,0)
         vDescription2.text = Html.fromHtml(description2,0)
@@ -89,22 +90,22 @@ class CustomSlidePolicy2Fragment(
             AutoStartPermissionHelper.getInstance().getAutoStartPermission(requireContext(), true)
             Toast.makeText(
                 requireContext(),
-                "Abilita !",
+                "Abilita l'avvio automatico a Giua App!",
                 Toast.LENGTH_SHORT
             ).show()
             viewed = true
+            yesButton.visibility = View.INVISIBLE
+            noButton.visibility = View.INVISIBLE
+            view.findViewById<TextView>(R.id.txt_csp_icon).visibility = View.VISIBLE
         }
 
 
 
         noButton.setOnClickListener {
-            AutoStartPermissionHelper.getInstance().getAutoStartPermission(requireContext(), true)
-            Toast.makeText(
-                requireContext(),
-                "Disattiva il risparmio batteria!",
-                Toast.LENGTH_SHORT
-            ).show()
             viewed = true
+            yesButton.visibility = View.INVISIBLE
+            noButton.visibility = View.INVISIBLE
+            view.findViewById<TextView>(R.id.txt_csp_icon).visibility = View.VISIBLE
         }
 
 
