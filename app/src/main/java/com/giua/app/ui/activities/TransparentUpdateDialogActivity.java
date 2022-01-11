@@ -106,8 +106,7 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
                 .create();
 
         d.show();
-
-        ((TextView)d.findViewById(R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+        ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
     }
 
 
