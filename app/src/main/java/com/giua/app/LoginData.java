@@ -26,6 +26,7 @@ public class LoginData {
 
     /**
      * Controlla la memorizzazione delle credenziali
+     * Qui si trovano i dati riguardanti l'account attivo
      */
 
     private static final String loginPreferenceKey = "login";

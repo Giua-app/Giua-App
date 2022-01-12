@@ -92,6 +92,11 @@ public class DrawerActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (GlobalVariables.gS == null) {
+            loggerManager.w("gs è null ma non dovrebbe esserlo quindi avvio AutomaticLogin");
+            startActivity(new Intent(this, AutomaticLoginActivity.class));
+            finish();
+        }
         if (savedInstanceState != null)
             savedInstanceState.clear();
         offlineMode = getIntent().getBooleanExtra("offline", false);
@@ -107,14 +112,6 @@ public class DrawerActivity extends AppCompatActivity {
 
         bundle = new Bundle();
         bundle.putBoolean("offline", offlineMode);
-
-        //Non usato? NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-
-        if(GlobalVariables.gS == null){
-            loggerManager.e("ERRORE: gS è null ma siamo dentro DrawerActivity!! Avvio ActivityManager");
-            startActivity(new Intent(this, ActivityManager.class));
-            finish();
-        }
 
         if (goTo == null || goTo.equals(""))
             changeFragment(R.id.nav_home);
