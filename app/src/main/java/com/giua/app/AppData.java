@@ -51,10 +51,11 @@ public class AppData {
     private static final String nextUpdateReminderKey = "next_update_reminder";
     private static final String updatePresenceKey = "update_presence";
     private static final String logsStorageKey = "logs_storage";
-    public static final String appVersionKey = "app_version";
+    private static final String appVersionKey = "app_version";
 
     public static final String introStatusKey = "intro_status";
     private static final String crashStatusKey = "crash_status";
+    private static final String lastSentReportTimeKey = "last_sent_report_time";
 
 
     private static SharedPreferences getSharedPreferences(final Context context) {
@@ -203,6 +204,16 @@ public class AppData {
 
     public static boolean getCrashStatus(final Context context) {
         return getSharedPreferences(context).getBoolean(crashStatusKey, false);
+    }
+
+    public static void saveLastSentReportTime(final Context context, final long value) {
+        getSharedPreferences(context).edit()
+                .putLong(lastSentReportTimeKey, value)
+                .apply();
+    }
+
+    public static long getLastSentReportTime(final Context context) {
+        return getSharedPreferences(context).getLong(lastSentReportTimeKey, -1L);
     }
 
     /**

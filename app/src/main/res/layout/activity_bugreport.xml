@@ -76,14 +76,6 @@
                 android:layout_marginTop="10dp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="Inserisci ora i passaggi che hai fatto per riprodurre il bug"
-                android:textSize="14sp" />
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/txtBugTitle"
                 android:layout_width="match_parent"
@@ -95,8 +87,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:allowUndo="true"
-                    android:inputType="textShortMessage"
-                    android:text="Titolo descrittivo" />
+                    android:inputType="textShortMessage" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -111,8 +102,7 @@
                     android:layout_height="wrap_content"
                     android:allowUndo="true"
                     android:inputType="textAutoCorrect|textMultiLine"
-                    android:singleLine="false"
-                    android:text="Descrizione del bug\nPuoi usare più linee" />
+                    android:singleLine="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -120,15 +110,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:hint="Passaggi per riprodurre il bug">
+                android:hint="Passaggi per riprodurre il bug (opzionale)">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:allowUndo="true"
                     android:inputType="textAutoCorrect|textMultiLine"
-                    android:singleLine="false"
-                    android:text="1. Andare su...\n2. Cliccare il pulsante...\n3. ...\n\n\n" />
+                    android:singleLine="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <ProgressBar

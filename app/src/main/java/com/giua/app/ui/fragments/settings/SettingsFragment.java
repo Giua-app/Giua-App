@@ -46,6 +46,7 @@ import com.giua.app.ui.activities.AboutActivity;
 import com.giua.app.ui.activities.AppIntroActivity;
 import com.giua.app.ui.activities.BugReportActivity;
 import com.giua.app.ui.activities.LogdogViewerActivity;
+import com.giua.app.ui.activities.MainLoginActivity;
 import com.giua.webscraper.GiuaScraper;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -338,12 +339,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private boolean siteUrlChanged(Preference preference, Object o) {
+        String defaultUrl = SettingsData.getSettingString(requireActivity(), SettingKey.DEFAULT_URL);
         if (Pattern.matches("https?://([a-zA-Z0-9]+[.])+([a-zA-Z0-9]+)(:[0-9]+)?((/[a-zA-Z0-9-_]+)+)?", (String) o)) {
             GiuaScraper.setSiteURL((String) o);
-            SettingsData.saveSettingString(requireContext(), SettingKey.DEFAULT_URL, (String) o);
+            SettingsData.saveSettingString(requireActivity(), SettingKey.DEFAULT_URL, (String) o);
         } else {
             ((EditTextPreference) preference).setText("https://registro.giua.edu.it");
             setErrorMessage("Url sito non valido", requireView());
+        }
+        if (!o.equals(defaultUrl)) {
+            LoginData.clearAll(requireActivity());
+            startActivity(new Intent(requireActivity(), MainLoginActivity.class));
+            requireActivity().finish();
         }
         return true;
     }

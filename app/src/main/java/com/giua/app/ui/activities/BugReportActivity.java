@@ -29,6 +29,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.giua.app.ActivityManager;
+import com.giua.app.AppData;
 import com.giua.app.BuildConfig;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
@@ -44,8 +45,8 @@ public class BugReportActivity extends AppCompatActivity {
 
     Button btnSend;
     Button btnCancel;
-    TextInputLayout bugTitle;
-    TextInputLayout bugDesc;
+    TextInputLayout txBugTitle;
+    TextInputLayout txBugDesc;
     ProgressBar progressBar;
     String dontStealMePlease = "dontStealMePlease";
     String stacktrace;
@@ -61,8 +62,8 @@ public class BugReportActivity extends AppCompatActivity {
 
         btnSend = findViewById(R.id.btn_bug_send);
         btnCancel = findViewById(R.id.btn_bug_cancel);
-        bugTitle = findViewById(R.id.txtBugTitle);
-        bugDesc = findViewById(R.id.txtBugDesc);
+        txBugTitle = findViewById(R.id.txtBugTitle);
+        txBugDesc = findViewById(R.id.txtBugDesc);
         progressBar = findViewById(R.id.bug_progressbar);
 
         btnSend.setOnClickListener(v -> onSendBug());
@@ -71,7 +72,7 @@ public class BugReportActivity extends AppCompatActivity {
 
         fromCAOC = getIntent().getBooleanExtra("fromCAOC", false);
 
-        if(fromCAOC){
+        if (fromCAOC) {
             stacktrace = getIntent().getStringExtra("stacktrace");
         }
     }
@@ -85,15 +86,29 @@ public class BugReportActivity extends AppCompatActivity {
     }
 
     private void onSendBug() {
+        if (System.currentTimeMillis() - AppData.getLastSentReportTime(this) <= 60_000) {
+            setErrorMessage("Devi aspettare almeno un minuto dall'ultima segnalazione prima di inviarne un' altra");
+            return;
+        }
+
+        if (txBugTitle.getEditText().getText().toString().equals("")) {
+            setErrorMessage("Il titolo non può essere vuoto");
+            return;
+        }
+        if (txBugDesc.getEditText().getText().toString().equals("")) {
+            setErrorMessage("La descrizione non può essere vuota");
+            return;
+        }
+
         btnSend.setVisibility(View.INVISIBLE);
         btnCancel.setVisibility(View.INVISIBLE);
-        bugTitle.setEnabled(false);
-        bugDesc.setEnabled(false);
+        txBugTitle.setEnabled(false);
+        txBugDesc.setEnabled(false);
         progressBar.setVisibility(View.VISIBLE);
 
         new Thread(() -> {
             String body = "**Descrizione del bug**\n" +
-                    bugDesc.getEditText().getText() + "\n\n" +
+                    txBugDesc.getEditText().getText() + "\n\n" +
                     "**Indica i passaggi per riprodurre il bug**\n" +
                     "1. Andare su...\n" +
                     "2. Premere...\n" +
@@ -108,21 +123,32 @@ public class BugReportActivity extends AppCompatActivity {
                 session.url("https://api.github.com/repos/Giua-app/Giua-App/issues")
                         .header("Authorization", "token " + new Secrets().getgEPeTNbQ(getPackageName()) + dontStealMePlease)
                         .header("Accept", "application/vnd.github.v3+json")
-                        .requestBody("{\"title\": \"" + bugTitle.getEditText().getText() + "\"," +
+                        .requestBody("{\"title\": \"" + txBugTitle.getEditText().getText() + "\"," +
                                 "\"body\": \"" + JsonBuilder.escape(body) + "\"}")
                         .post();
-            } catch(Exception e){
-                Snackbar.make(findViewById(android.R.id.content), "Errore durante l'invio del Bug Report", Snackbar.LENGTH_SHORT).show();
                 runOnUiThread(() -> {
-                    btnSend.setVisibility(View.VISIBLE);
-                    btnCancel.setVisibility(View.VISIBLE);
-                    bugTitle.setEnabled(true);
-                    bugDesc.setEnabled(true);
-                    progressBar.setVisibility(View.INVISIBLE);
+                    AppData.saveLastSentReportTime(this, System.currentTimeMillis());
+                    Toast.makeText(this, "Bug inviato. Grazie!", Toast.LENGTH_SHORT).show();
+                    exitActivity();
+                });
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    setErrorMessage("Errore durante l'invio del Bug Report");
+                    resetComponents();
                 });
             }
-            Toast.makeText(this, "Bug inviato. Grazie!", Toast.LENGTH_SHORT).show();
-            exitActivity();
         }).start();
+    }
+
+    private void resetComponents() {
+        btnSend.setVisibility(View.VISIBLE);
+        btnCancel.setVisibility(View.VISIBLE);
+        txBugTitle.setEnabled(true);
+        txBugDesc.setEnabled(true);
+        progressBar.setVisibility(View.INVISIBLE);
+    }
+
+    private void setErrorMessage(String message) {
+        Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
     }
 }
