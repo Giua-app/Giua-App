@@ -110,7 +110,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:hint="Passaggi per riprodurre il bug (opzionale)">
+                android:hint="Passaggi per riprodurre il bug"
+                app:helperText="esempio: &quot;Andare sulla schermata Home, cliccare sul pulsante Aiuto, l'app crasha&quot;">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"

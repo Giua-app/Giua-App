@@ -20,14 +20,19 @@
 package com.giua.app.ui.activities;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.giua.app.ActivityManager;
 import com.giua.app.AppData;
 import com.giua.app.BuildConfig;
@@ -40,6 +45,13 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class BugReportActivity extends AppCompatActivity {
 
@@ -47,6 +59,7 @@ public class BugReportActivity extends AppCompatActivity {
     Button btnCancel;
     TextInputLayout txBugTitle;
     TextInputLayout txBugDesc;
+    TextInputLayout txBugDesc2;
     ProgressBar progressBar;
     String dontStealMePlease = "dontStealMePlease";
     String stacktrace;
@@ -64,6 +77,7 @@ public class BugReportActivity extends AppCompatActivity {
         btnCancel = findViewById(R.id.btn_bug_cancel);
         txBugTitle = findViewById(R.id.txtBugTitle);
         txBugDesc = findViewById(R.id.txtBugDesc);
+        txBugDesc2 = findViewById(R.id.txtBugDesc2);
         progressBar = findViewById(R.id.bug_progressbar);
 
         btnSend.setOnClickListener(v -> onSendBug());
@@ -99,38 +113,90 @@ public class BugReportActivity extends AppCompatActivity {
             setErrorMessage("La descrizione non può essere vuota");
             return;
         }
+        if (txBugDesc2.getEditText().getText().toString().equals("")) {
+            setErrorMessage("I passaggi non possono essere vuoti");
+            return;
+        }
 
         btnSend.setVisibility(View.INVISIBLE);
         btnCancel.setVisibility(View.INVISIBLE);
         txBugTitle.setEnabled(false);
         txBugDesc.setEnabled(false);
+        txBugDesc2.setEnabled(false);
         progressBar.setVisibility(View.VISIBLE);
 
+        String body = "**Descrizione del bug**\n" +
+                txBugDesc.getEditText().getText() + "\n\n" +
+                "**Indica i passaggi per riprodurre il bug**\n" +
+                txBugDesc2.getEditText().getText();
+
+        if(fromCAOC){
+            body += "\n\n**Stacktrace**\n" + stacktrace;
+        } else {
+            body += "\n\n**Informazioni dispositivo**\n" + deviceInfo();
+        }
+
+        viewPreview(body);
+    }
+
+    private void viewPreview(String body){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Anteprima");
+        builder.setMessage("Anteprima del Bug Report: \n" + body)
+                .setPositiveButton("Invia", (dialog, id) -> sendBug(body))
+
+                .setNegativeButton("Annulla", (dialog, id) -> resetComponents())
+
+                .setOnCancelListener(dialog -> {})
+                .setOnDismissListener(dialog -> {});
+
+        builder.show();
+    }
+
+    private void viewIssue(Document doc){
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        JsonNode rootNode = null;
+        try {
+            rootNode = objectMapper.readTree(doc.text());
+        } catch (IOException e) {
+            //Non dovrebbe MAI succedere
+            lm.e("Impossibile leggere json di risposta di github");
+            exitActivity();
+            return;
+        }
+
+        String url = rootNode.findPath("html_url").asText();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Bug report");
+        builder.setMessage("Vuoi vedere il bug report pubblicato? (" + url + ")")
+                .setPositiveButton("Si", (dialog, id) -> {
+                    Intent i = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(url));
+                    startActivity(i);
+                    exitActivity();
+                })
+
+                .setNegativeButton("No", (dialog, id) -> exitActivity())
+
+                .setOnCancelListener(dialog -> {})
+                .setOnDismissListener(dialog -> {});
+
+        builder.show();
+    }
+
+    private void sendBug(String body){
         new Thread(() -> {
-            String body = "**Descrizione del bug**\n" +
-                    txBugDesc.getEditText().getText() + "\n\n" +
-                    "**Indica i passaggi per riprodurre il bug**\n" +
-                    "1. Andare su...\n" +
-                    "2. Premere...\n" +
-                    "3. Cliccare su...\n\n";
-
-            if(fromCAOC){
-                body += "\n\n**Stacktrace**\n" + stacktrace;
-            }
-
             try {
                 Connection session = Jsoup.newSession().ignoreContentType(true);
-                session.url("https://api.github.com/repos/Giua-app/Giua-App/issues")
+                Document doc = session.url("https://api.github.com/repos/HiemSword/regnodellasintassi-site/issues")
                         .header("Authorization", "token " + new Secrets().getgEPeTNbQ(getPackageName()) + dontStealMePlease)
                         .header("Accept", "application/vnd.github.v3+json")
                         .requestBody("{\"title\": \"" + txBugTitle.getEditText().getText() + "\"," +
                                 "\"body\": \"" + JsonBuilder.escape(body) + "\"}")
                         .post();
-                runOnUiThread(() -> {
-                    AppData.saveLastSentReportTime(this, System.currentTimeMillis());
-                    Toast.makeText(this, "Bug inviato. Grazie!", Toast.LENGTH_SHORT).show();
-                    exitActivity();
-                });
+                AppData.saveLastSentReportTime(this, System.currentTimeMillis());
+                runOnUiThread(() -> viewIssue(doc));
             } catch (Exception e) {
                 runOnUiThread(() -> {
                     setErrorMessage("Errore durante l'invio del Bug Report");
@@ -140,15 +206,65 @@ public class BugReportActivity extends AppCompatActivity {
         }).start();
     }
 
+    private String deviceInfo(){
+        Date currentDate = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ITALY);
+
+
+        String info = "";
+
+        info += "Build version: " + BuildConfig.VERSION_NAME + " \n";
+        info += "Build date: " + dateFormat.format(new Date(BuildConfig.BUILD_TIME)) + " \n";
+        info += "Current date: " + dateFormat.format(currentDate) + " \n";
+        info += "Device: " + getDeviceModelName() + " \n";
+        info += "OS version: Android " + Build.VERSION.RELEASE + " (SDK " + Build.VERSION.SDK_INT + ")\n";
+
+        return info;
+    }
+
+
+
     private void resetComponents() {
         btnSend.setVisibility(View.VISIBLE);
         btnCancel.setVisibility(View.VISIBLE);
         txBugTitle.setEnabled(true);
         txBugDesc.setEnabled(true);
+        txBugDesc2.setEnabled(true);
         progressBar.setVisibility(View.INVISIBLE);
     }
 
     private void setErrorMessage(String message) {
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Code from CAOC
+     * @return
+     */
+    private String getDeviceModelName() {
+        String manufacturer = Build.MANUFACTURER;
+        String model = Build.MODEL;
+        if (model.startsWith(manufacturer)) {
+            return capitalize(model);
+        } else {
+            return capitalize(manufacturer) + " " + model;
+        }
+    }
+
+    /**
+     * Code from CAOC
+     * @param s
+     * @return
+     */
+    private String capitalize(@Nullable String s) {
+        if (s == null || s.length() == 0) {
+            return "";
+        }
+        char first = s.charAt(0);
+        if (Character.isUpperCase(first)) {
+            return s;
+        } else {
+            return Character.toUpperCase(first) + s.substring(1);
+        }
     }
 }
