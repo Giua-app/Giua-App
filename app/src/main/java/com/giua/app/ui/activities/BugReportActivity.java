@@ -147,8 +147,7 @@ public class BugReportActivity extends AppCompatActivity {
 
                 .setNegativeButton("Annulla", (dialog, id) -> resetComponents())
 
-                .setOnCancelListener(dialog -> {})
-                .setOnDismissListener(dialog -> {});
+                .setCancelable(false);
 
         builder.show();
     }
@@ -179,8 +178,7 @@ public class BugReportActivity extends AppCompatActivity {
 
                 .setNegativeButton("No", (dialog, id) -> exitActivity())
 
-                .setOnCancelListener(dialog -> {})
-                .setOnDismissListener(dialog -> {});
+                .setCancelable(false);
 
         builder.show();
     }
