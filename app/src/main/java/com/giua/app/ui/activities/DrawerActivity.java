@@ -92,19 +92,20 @@ public class DrawerActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (savedInstanceState != null)
+            savedInstanceState.clear();
+        super.onCreate(savedInstanceState);
+        loggerManager = new LoggerManager("DrawerActivity", this);
         if (GlobalVariables.gS == null) {
             loggerManager.w("gs è null ma non dovrebbe esserlo quindi avvio AutomaticLogin");
             startActivity(new Intent(this, AutomaticLoginActivity.class));
             finish();
+            return;
         }
-        if (savedInstanceState != null)
-            savedInstanceState.clear();
         offlineMode = getIntent().getBooleanExtra("offline", false);
         demoMode = SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE);
         goTo = getIntent().getStringExtra("goTo");
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer);
-        loggerManager = new LoggerManager("DrawerActivity", this);
         loggerManager.d("onCreate chiamato");
 
         toolbar = findViewById(R.id.toolbar);
