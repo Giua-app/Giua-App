@@ -23,4 +23,8 @@ import com.giua.webscraper.GiuaScraper;
 
 public class GlobalVariables {
     public static GiuaScraper gS = null;
+
+
+    //TODO: Metodo alternativo, usare una classe Application.
+    //      Può essere utile anche per altro (es. context ovunque senza passarlo come parametro)
 }

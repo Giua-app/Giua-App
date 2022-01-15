@@ -187,7 +187,7 @@ public class BugReportActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 Connection session = Jsoup.newSession().ignoreContentType(true);
-                Document doc = session.url("https://api.github.com/repos/HiemSword/regnodellasintassi-site/issues")
+                Document doc = session.url("https://api.github.com/repos/Giua-app/Giua-App/issues")
                         .header("Authorization", "token " + new Secrets().getgEPeTNbQ(getPackageName()) + dontStealMePlease)
                         .header("Accept", "application/vnd.github.v3+json")
                         .requestBody("{\"title\": \"" + txBugTitle.getEditText().getText() + "\"," +

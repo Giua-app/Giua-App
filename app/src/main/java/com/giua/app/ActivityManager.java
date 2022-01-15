@@ -90,7 +90,7 @@ public class ActivityManager extends AppCompatActivity {
 
         //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
 
-        checkFor061Update();
+        checkForCompatibility();
         final int introStatus = AppData.getIntroStatus(this);
 
         /*
@@ -136,31 +136,24 @@ public class ActivityManager extends AppCompatActivity {
     }
 
     /**
-     * Controlla se la versione vecchia era 0.6.1 e nel caso cancella i log e imposta l'intro
+     * Controlla compatibilità tra la nuova versione e quella vecchia
      */
-    private void checkFor061Update() {
+    private void checkForCompatibility() {
         final String lastVer = AppData.getAppVersion(this);
         final String appVer = BuildConfig.VERSION_NAME;
 
+        //0.6.1
         if (!lastVer.contains(appVer) && lastVer.contains("0.6.1")
                 && AppData.getIntroStatus(this) != 2) {
 
-            loggerManager.d("Rilevato aggiornamento da 0.6.1");
-            loggerManager.d("Cancello log...");
-            AppData.saveLogsString(this, "");
-            loggerManager.w("Ciao! Abbiamo notato che hai aggiornato versione dalla 0.6.1." +
-                    " I log non sono compatibili con questa versione quindi sono stati cancellati");
-            loggerManager.d("Imposto notifiche ai valori di default");
-            SettingsData.saveSettingBoolean(this, SettingKey.NOTIFICATION, true);
+            CompatibilityManager.checkFor061Update(this);
+        }
 
-            SettingsData.saveSettingBoolean(this, SettingKey.NEWSLETTER_NOTIFICATION, true);
-            SettingsData.saveSettingBoolean(this, SettingKey.ALERTS_NOTIFICATION, true);
-            SettingsData.saveSettingBoolean(this, SettingKey.UPDATES_NOTIFICATION, true);
-            SettingsData.saveSettingBoolean(this, SettingKey.VOTES_NOTIFICATION, true);
-            SettingsData.saveSettingBoolean(this, SettingKey.HOMEWORKS_NOTIFICATION, true);
-            SettingsData.saveSettingBoolean(this, SettingKey.TESTS_NOTIFICATION, true);
+        final String oldVer = SettingsData.getSettingString(this, "appVersion");
 
-            AppData.saveIntroStatus(this, -2);
+        //0.6.2
+        if(!oldVer.equals("") && oldVer.contains("0.6.2")){
+            CompatibilityManager.checkFor062Update(this);
         }
     }
 
