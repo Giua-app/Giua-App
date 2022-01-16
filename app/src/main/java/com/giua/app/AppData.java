@@ -53,7 +53,12 @@ public class AppData {
     private static final String logsStorageKey = "logs_storage";
     private static final String appVersionKey = "app_version";
 
-    public static final String introStatusKey = "intro_status";
+    //Chiavi per il salvataggio delle configurazioni per più account
+    private static final String allAccountNamesKey = "all_account_names";
+    private static final String allAccountPasswordsKey = "all_account_passwords";
+    private static final String allAccountCookiesKey = "all_account_cookies";
+
+    private static final String introStatusKey = "intro_status";
     private static final String crashStatusKey = "crash_status";
     private static final String lastSentReportTimeKey = "last_sent_report_time";
 
@@ -172,6 +177,56 @@ public class AppData {
     @SuppressLint("SimpleDateFormat")
     public static String getLastUpdateReminderDate(final Context context) {
         return getSharedPreferences(context).getString(nextUpdateReminderKey, "");
+    }
+
+    //endregion
+
+    //region Dati per più account
+
+    public static void addAccountCredentials(final Context context, final String username, final String password, final String cookie) {
+        getSharedPreferences(context).edit()
+                .putString(allAccountNamesKey, getAllAccountNames(context) + username + ";")
+                .putString(allAccountPasswordsKey, getAllAccountPasswords(context) + password + ";")
+                .putString(allAccountCookiesKey, getAllAccountCookies(context) + cookie + ";")
+                .apply();
+    }
+
+    public static void removeAccountCredentialsOfIndex(final Context context, final int index) {
+        String[] usernames = getAllAccountNames(context).split(";");
+        String[] passwords = getAllAccountPasswords(context).split(";");
+        String[] cookies = getAllAccountCookies(context).split(";");
+
+        //usernames
+    }
+
+    public static void saveAllAccountNames(final Context context, final String value) {
+        getSharedPreferences(context).edit()
+                .putString(allAccountNamesKey, value)
+                .apply();
+    }
+
+    public static String getAllAccountNames(final Context context) {
+        return getSharedPreferences(context).getString(allAccountNamesKey, "");
+    }
+
+    public static void saveAllAccountPasswords(final Context context, final String value) {
+        getSharedPreferences(context).edit()
+                .putString(allAccountPasswordsKey, value)
+                .apply();
+    }
+
+    public static String getAllAccountPasswords(final Context context) {
+        return getSharedPreferences(context).getString(allAccountPasswordsKey, "");
+    }
+
+    public static void saveAllAccountCookies(final Context context, final String value) {
+        getSharedPreferences(context).edit()
+                .putString(allAccountCookiesKey, value)
+                .apply();
+    }
+
+    public static String getAllAccountCookies(final Context context) {
+        return getSharedPreferences(context).getString(allAccountCookiesKey, "");
     }
 
     //endregion

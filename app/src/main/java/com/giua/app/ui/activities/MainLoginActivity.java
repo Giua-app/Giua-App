@@ -64,6 +64,7 @@ public class MainLoginActivity extends AppCompatActivity {
     TextView txtCardTitle;
     CheckBox chRememberCredentials;
     LoggerManager loggerManager;
+    boolean isAddingAccount = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +105,15 @@ public class MainLoginActivity extends AppCompatActivity {
                 runOnUiThread(() -> txtCardTitle.setText("Accesso al registro"));
             }
         }).start();
+
+        //Se vero vuol dire che si vuole aggiungere un account
+        if (!LoginData.getUser(this).equals("")) {
+            isAddingAccount = true;
+            btnLogin.setText("Aggiungi account");
+            chRememberCredentials.setChecked(true);
+            etUsername.setText("");
+            etPassword.setText("");
+        }
 
     }
 
@@ -163,14 +173,25 @@ public class MainLoginActivity extends AppCompatActivity {
     private void login() {
         new Thread(() -> {
             try {
+                /*if(AppData.getAllAccountNames(this).contains(etUsername.getText().toString())) {
+                    runOnUiThread(() -> {
+                        txtLayoutUsername.setError("Username già salvato");
+                        etPassword.setText("");
+                        pgProgressBar.setVisibility(View.INVISIBLE);
+                        btnLogin.setVisibility(View.VISIBLE);
+                    });
+                    return;
+                }*/
                 loggerManager.d("Eseguo login...");
-                GlobalVariables.gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString(), LoginData.getCookie(this), true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
+                GlobalVariables.gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString(), true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
                 GlobalVariables.gS.login();
                 loggerManager.d("Devo ricordare le credenziali? " + chRememberCredentials.isChecked());
 
                 if (GlobalVariables.gS.checkLogin()) {
-                    if (chRememberCredentials.isChecked())
+                    if (chRememberCredentials.isChecked()) {
                         LoginData.setCredentials(this, etUsername.getText().toString(), etPassword.getText().toString(), GlobalVariables.gS.getCookie());
+                        AppData.addAccountCredentials(this, etUsername.getText().toString(), etPassword.getText().toString(), GlobalVariables.gS.getCookie());
+                    }
                     startDrawerActivity();
                 } else {
                     loggerManager.e("Errore sconosciuto, login eseguito ma checkLogin ritorna false");
@@ -306,9 +327,17 @@ public class MainLoginActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        if (!isAddingAccount) {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } else {
+            new Thread(() -> {
+                GlobalVariables.gS = new GiuaScraper(LoginData.getUser(this), LoginData.getPassword(this), LoginData.getCookie(this), true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
+                GlobalVariables.gS.login();
+                runOnUiThread(this::startDrawerActivity);
+            }).start();
+        }
     }
 }

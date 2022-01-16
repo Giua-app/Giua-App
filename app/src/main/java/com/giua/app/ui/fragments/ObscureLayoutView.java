@@ -40,7 +40,6 @@ public class ObscureLayoutView extends ConstraintLayout {
     private boolean isShown;
     private final Animation hideAnimation;
     private final Animation showAnimation;
-    private boolean isClickable = true;
 
     public ObscureLayoutView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs) {
         super(context, attrs);

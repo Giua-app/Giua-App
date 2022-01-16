@@ -125,7 +125,9 @@ public class CheckNewsReceiver extends BroadcastReceiver {
     }
 
     private void checkAndMakeLogin() {
-        //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090"); //DEBUG
+        String defaultUrl = SettingsData.getSettingString(context, SettingKey.DEFAULT_URL);
+        if (!defaultUrl.equals(""))
+            GiuaScraper.setSiteURL(defaultUrl);
         String username = LoginData.getUser(context);   //Serve a capire perche accade il bug dell' utente non valido
         loggerManager.d("Username letto: " + username);
         if (GlobalVariables.gS != null) {    //Se un istanza di Giuascraper esiste già non ricrearla ed usa quella

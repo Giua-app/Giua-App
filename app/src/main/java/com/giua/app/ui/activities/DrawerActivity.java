@@ -244,6 +244,9 @@ public class DrawerActivity extends AppCompatActivity {
                         createDrawerSecondaryItem(17, "Impostazioni")
                                 .withOnDrawerItemClickListener(this::settingsItemOnClick)
                                 .withSelectable(false),
+                        createDrawerSecondaryItem(17, "Aggiungi account")
+                                .withOnDrawerItemClickListener(this::addAccountOnClick)
+                                .withSelectable(false),
                         createDrawerSecondaryItem(18, "Esci")
                                 .withOnDrawerItemClickListener(this::logoutItemOnClick)
                                 .withSelectable(false)
@@ -346,8 +349,17 @@ public class DrawerActivity extends AppCompatActivity {
         Intent iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
         boolean alarmUp = (PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE) != null);  //Controlla se l'allarme è già settato
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, 0);
-        if(alarmUp)
+        if (alarmUp)
             alarmManager.cancel(pendingIntent);
+        String[] allAccountNames = AppData.getAllAccountNames(this).split(";");
+        String name = LoginData.getUser(this);
+        int index = -1;
+        for (int j = 0; j < allAccountNames.length; j++) {
+            if (allAccountNames[j].equals(name))
+                index = j;
+        }
+        //if(index != -1)
+        //    AppData.
         LoginData.clearAll(this);
         startActivity(intent);
         finish();
@@ -357,6 +369,12 @@ public class DrawerActivity extends AppCompatActivity {
     private boolean settingsItemOnClick(View view, int i, IDrawerItem item) {
         loggerManager.d("Avvio SettingsActivity");
         startActivity(new Intent(this, SettingsActivity.class));
+        return true;
+    }
+
+    private boolean addAccountOnClick(View view, int i, IDrawerItem item) {
+        startActivity(new Intent(this, MainLoginActivity.class));
+        finish();
         return true;
     }
 
