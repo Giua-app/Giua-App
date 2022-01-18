@@ -33,7 +33,7 @@ import com.danielstone.materialaboutlibrary.items.MaterialAboutTitleItem;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutCard;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutList;
 import com.danielstone.materialaboutlibrary.util.OpenSourceLicense;
-import com.giua.app.AppData;
+import com.giua.app.Analytics;
 import com.giua.app.BuildConfig;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
@@ -271,7 +271,7 @@ public class AboutActivity extends MaterialAboutActivity {
         switch(importantInteger){
             case 3:
                 Snackbar.make(findViewById(android.R.id.content), ";)", Snackbar.LENGTH_SHORT).show();
-                new Thread(() -> AppData.increaseVisitCount(";)")).start();
+                Analytics.sendDefaultRequest(";)");
                 loggerManager.d(";)");
                 break;
             case 6:

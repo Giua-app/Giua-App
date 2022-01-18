@@ -32,7 +32,7 @@ import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.giua.app.AppData;
+import com.giua.app.Analytics;
 import com.giua.app.GlobalVariables;
 import com.giua.app.LoggerManager;
 import com.giua.app.LoginData;
@@ -77,7 +77,7 @@ public class StudentLoginActivity extends AppCompatActivity {
                         return true;
                     }
                     loggerManager.e("Errore, cookie ottenuto è null. Impossibile continuare");
-                    new Thread(() -> AppData.increaseVisitCount("WebView cookie error")).start();
+                    Analytics.sendDefaultRequest("WebView cookie error");
                     Snackbar.make(findViewById(android.R.id.content), "Login studente non disponibile, contatta gli sviluppatori", Snackbar.LENGTH_LONG).show();
                 }
                 return false;
@@ -106,7 +106,7 @@ public class StudentLoginActivity extends AppCompatActivity {
     private void onStoppedWebView(boolean increaseVisitCount) {
         loggerManager.d("onStoppedWebView chiamato");
         if (increaseVisitCount)
-            new Thread(() -> AppData.increaseVisitCount("Login OK (Studente/Google)")).start();
+            Analytics.sendDefaultRequest("Login OK (Studente/Google)");
         webView.setVisibility(View.INVISIBLE);
         obscureLayoutView.setVisibility(View.VISIBLE);
 

@@ -37,6 +37,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
+import com.giua.app.ActivityManager;
 import com.giua.app.AppData;
 import com.giua.app.BuildConfig;
 import com.giua.app.LoggerManager;
@@ -79,7 +80,11 @@ public class CaocActivity extends AppCompatActivity {
         restartButton.setText(R.string.customactivityoncrash_error_activity_restart_app);
         restartButton.setOnClickListener(v -> {
             loggerManager.w("Riavvio app");
-            CustomActivityOnCrash.restartApplication(CaocActivity.this, config);
+            Intent intent = new Intent(this, ActivityManager.class);
+            intent.putExtra("fromCAOC", true);
+            intent.putExtra("stacktrace", getAllErrorDetailsFromIntent(getIntent()));
+
+            CustomActivityOnCrash.restartApplicationWithIntent(this, intent, config);
         });
 
         /*if (config.isShowRestartButton() && config.getRestartActivityClass() != null) {

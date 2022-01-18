@@ -38,6 +38,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.giua.app.ActivityManager;
+import com.giua.app.Analytics;
 import com.giua.app.AppData;
 import com.giua.app.AppUpdateManager;
 import com.giua.app.BuildConfig;
@@ -191,7 +192,7 @@ public class DrawerActivity extends AppCompatActivity {
 
             loggerManager.w("Aggiornamento installato rilevato");
             loggerManager.d("Cancello apk dell'aggiornamento e mostro changelog");
-            new Thread(() -> AppData.increaseVisitCount("Aggiornamenti App"));
+            Analytics.sendDefaultRequest("Aggiornamenti App");
             AppUpdateManager upd = new AppUpdateManager(DrawerActivity.this);
             upd.deleteOldApk();
             new Thread(upd::showDialogReleaseChangelog).start();
@@ -342,9 +343,7 @@ public class DrawerActivity extends AppCompatActivity {
 
     private boolean logoutItemOnClick(View view, int i, IDrawerItem item) {
         loggerManager.d("Logout richiesto dall'utente");
-        new Thread(() -> {
-            AppData.increaseVisitCount("Log out");
-        }).start();
+        Analytics.sendDefaultRequest("Log out");
         Intent intent = new Intent(this, ActivityManager.class);
         Intent iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
         boolean alarmUp = (PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE) != null);  //Controlla se l'allarme è già settato

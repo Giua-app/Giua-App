@@ -36,6 +36,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.giua.app.Analytics;
 import com.giua.app.AppData;
 import com.giua.app.AppUpdateManager;
 import com.giua.app.BuildConfig;
@@ -162,7 +163,7 @@ public class MainLoginActivity extends AppCompatActivity {
 
             loggerManager.w("Aggiornamento installato rilevato");
             loggerManager.d("Cancello apk dell'aggiornamento e mostro changelog");
-            new Thread(() -> AppData.increaseVisitCount("Aggiornamenti App"));
+            Analytics.sendDefaultRequest("Aggiornamenti App");
             AppUpdateManager upd = new AppUpdateManager(MainLoginActivity.this);
             upd.deleteOldApk();
             new Thread(upd::showDialogReleaseChangelog).start();
@@ -271,7 +272,7 @@ public class MainLoginActivity extends AppCompatActivity {
 
     private void startDrawerActivity() {
         loggerManager.d("Avvio DrawerActivity");
-        new Thread(() -> AppData.increaseVisitCount("Login OK (Genitore)")).start();
+        Analytics.sendDefaultRequest("Login OK (Genitore)");
         Intent intent = new Intent(MainLoginActivity.this, DrawerActivity.class);
         startActivity(intent);
     }

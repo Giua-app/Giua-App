@@ -59,7 +59,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 30
         versionCode androidGitVersion.code()
-        //versionName "0.6.2-stable" //Da usare per le release
+        //versionName "0.6.3-stable" //Da usare per le release
         versionName androidGitVersion.name() //Da usare per lo sviluppo
 
         def localProperties = new Properties()
@@ -70,8 +70,15 @@ android {
             } else {
                 buildConfigField("String", "SECRET_KEY", "\"syJIAIosdh376HAKHAsd\"")
             }
+
+            if(localProperties['KEY2'] != null){
+                buildConfigField("String", "SUPER_SECRET_KEY",localProperties['KEY2'])
+            } else {
+                buildConfigField("String", "SUPER_SECRET_KEY", "\"dhsHDIhdusgHhuaGGYDAG\"")
+            }
         } catch(Exception ignored){
             buildConfigField("String", "SECRET_KEY", "\"syJIAIosdh376HAKHAsd\"")
+            buildConfigField("String", "SUPER_SECRET_KEY", "\"dhsHDIhdusgHhuaGGYDAG\"")
         }
 
 

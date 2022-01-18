@@ -23,9 +23,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import org.jsoup.Jsoup;
-
-import java.io.IOException;
 import java.util.Calendar;
 
 public class AppData {
@@ -283,7 +280,7 @@ public class AppData {
      * - Easter egg
      *
      * @param name Nome dell'oggetto su cui aumentare le visite
-     */
+     *//*
     public static void increaseVisitCount(String name){
         if(BuildConfig.BUILD_TYPE.equals("debug")){
             //Ignora le build di debug
@@ -293,5 +290,6 @@ public class AppData {
             Jsoup.newSession().url("https://app.piratepx.com/ship?p=6af8462c-efe0-4f9a-96d0-ec9a8bbb9060&i=" + name)
                     .get();
         } catch (IOException ignored) { } //Non ci interessa se va in errore
-    }
+
+    }*/
 }
