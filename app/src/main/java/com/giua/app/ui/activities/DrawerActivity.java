@@ -99,7 +99,7 @@ public class DrawerActivity extends AppCompatActivity {
         loggerManager = new LoggerManager("DrawerActivity", this);
         if (GlobalVariables.gS == null) {
             loggerManager.w("gs è null ma non dovrebbe esserlo quindi avvio AutomaticLogin");
-            startActivity(new Intent(this, AutomaticLoginActivity.class));
+            startActivity(new Intent(this, ActivityManager.class));
             finish();
             return;
         }

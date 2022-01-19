@@ -133,7 +133,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/varelaroundregular"
-                android:maxHeight="100dp"
+                android:maxHeight="120dp"
                 android:scrollbars="vertical"
                 android:text="@string/detail_vote_arguments"
                 android:textSize="15sp"
@@ -144,7 +144,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/varelaroundregular"
-                android:maxHeight="100dp"
+                android:scrollbars="vertical"
+                android:maxHeight="120dp"
                 android:text="@string/detail_vote_judge"
                 android:textSize="15sp"
                 android:visibility="gone" />

@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.View;
+import android.webkit.CookieManager;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.EditTextPreference;
@@ -79,6 +80,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         setupIntroScreenObject();
         setupExpModeObject();
         setupSiteUrlObject();
+        setupDiscardStudentLoginObject();
         setupBugReportObject();
         setupDebugModeObject();
 
@@ -109,10 +111,21 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         //endregion
     }
 
+    private void setupDiscardStudentLoginObject() {
+        Preference btnBugReport = Objects.requireNonNull(findPreference("discardStudentLogin"));
+        btnBugReport.setOnPreferenceClickListener(this::btnDiscardStudentLoginOnClick);
+    }
+
+    private boolean btnDiscardStudentLoginOnClick(Preference preference) {
+        CookieManager.getInstance().removeAllCookies(null);
+        setErrorMessage("Dimenticato con successo", requireView());
+        return true;
+    }
+
     private void setupBugReportObject() {
         Preference btnBugReport = Objects.requireNonNull(findPreference("bugReport"));
         btnBugReport.setOnPreferenceClickListener(this::btnBugReportOnClick);
-        if(requireActivity().getIntent().getBooleanExtra("fromCaoc", false)){
+        if (requireActivity().getIntent().getBooleanExtra("fromCaoc", false)) {
             btnBugReport.setEnabled(false);
             btnBugReport.setTitle("Segnala un bug (segnala dal crash invece!)");
         }
@@ -343,14 +356,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (Pattern.matches("https?://([a-zA-Z0-9]+[.])+([a-zA-Z0-9]+)(:[0-9]+)?((/[a-zA-Z0-9-_]+)+)?", (String) o)) {
             GiuaScraper.setSiteURL((String) o);
             SettingsData.saveSettingString(requireActivity(), SettingKey.DEFAULT_URL, (String) o);
+            if (!o.equals(defaultUrl)) {
+                LoginData.clearAll(requireActivity());
+                startActivity(new Intent(requireActivity(), MainLoginActivity.class));
+                requireActivity().finish();
+            }
         } else {
             ((EditTextPreference) preference).setText("https://registro.giua.edu.it");
             setErrorMessage("Url sito non valido", requireView());
-        }
-        if (!o.equals(defaultUrl)) {
-            LoginData.clearAll(requireActivity());
-            startActivity(new Intent(requireActivity(), MainLoginActivity.class));
-            requireActivity().finish();
         }
         return true;
     }

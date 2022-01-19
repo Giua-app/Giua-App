@@ -394,7 +394,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
             float voteCounter = 0;     //Conta solamente i voti che ci sono e non gli asterischi
 
             for (Vote vote : Objects.requireNonNull(votes.get(subject))) {      //Cicla ogni voto della materia
-                if (vote.value.length() > 0 && !vote.isAsterisk) {
+                if (vote.value.length() > 0 && !vote.isAsterisk && vote.isRelevantForMean) {
                     mean += vote.toFloat();
                     voteCounter++;
                 }
