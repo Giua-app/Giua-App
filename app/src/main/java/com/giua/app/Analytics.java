@@ -30,8 +30,8 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 
 public class Analytics {
-    private static String API_ENDPOINT = "https://app.posthog.com/capture/";
-    private static String API_KEY = BuildConfig.SUPER_SECRET_KEY + new Secrets().getAABqCLTr("com.giua.app");
+    private final static String API_ENDPOINT = "https://app.posthog.com/capture/";
+    private final static String API_KEY = BuildConfig.SUPER_SECRET_KEY + new Secrets().getjFsBBWqO("com.giua.app");
 
     public static void sendDefaultRequest(String eventName){
         String body = "{" +
@@ -71,7 +71,6 @@ public class Analytics {
                     .header("Content-Type", "application/json")
                     .requestBody(body).post();
         } catch (IOException e){
-            e.printStackTrace();
             return null;
         }
         //System.out.println(doc.text());

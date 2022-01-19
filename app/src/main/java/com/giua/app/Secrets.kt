@@ -32,5 +32,5 @@ class Secrets {
 
     external fun getgEPeTNbQ(packageName: String): String
 
-    external fun getAABqCLTr(packageName: String): String
+    external fun getjFsBBWqO(packageName: String): String
 }

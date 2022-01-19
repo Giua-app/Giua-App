@@ -136,6 +136,7 @@ public class CaocActivity extends AppCompatActivity {
         findViewById(R.id.caoc_settings_btn).setOnClickListener(this::btnSettingOnClick);
 
         AppData.saveCrashStatus(this, true);
+        loggerManager.e(getAllErrorDetailsFromIntent(getIntent()));
     }
 
 

@@ -73,8 +73,6 @@ public class ActivityManager extends AppCompatActivity {
 
         GiuaScraper.setDebugMode(true);
 
-        new Analytics.Builder("Avvio").send();
-
         if (!SettingsData.getSettingBoolean(this, SettingKey.NOT_FIRST_START))
             firstStart();
 
@@ -84,6 +82,7 @@ public class ActivityManager extends AppCompatActivity {
 
         if (!defaultUrl.equals(""))
             GiuaScraper.setSiteURL(defaultUrl);
+
 
         if(getIntent().getBooleanExtra("fromCAOC", false)){
             loggerManager.d("Individuato crash precedente, invio segnalazione");
@@ -108,7 +107,7 @@ public class ActivityManager extends AppCompatActivity {
         loggerManager.d("introStatus è " + introStatus);
         if (introStatus < 1) {
             if(introStatus != -2) //non è una prima installazione se è -2
-                Analytics.sendDefaultRequest("Primo avvio (nuove installazioni)");
+                Analytics.sendDefaultRequest("Primo avvio");
 
             loggerManager.d("Avvio App Intro Activity");
             Intent intent = new Intent(this, AppIntroActivity.class);
