@@ -60,6 +60,17 @@ public class LoginData {
                 .apply();
     }
 
+    //add final String APIUrl to parameters
+    public static void setCredentialsSynchronously(final Context context, final String user, final String password, String cookie) {
+
+        getSharedPreferences(context).edit()
+                //.putString(APIUrlKey, APIUrl)
+                .putString(userKey, user)
+                .putString(passwordKey, password)
+                .putString(cookieKey, cookie)
+                .commit();
+    }
+
     public static String getUser(final Context context) {
         return getSharedPreferences(context).getString(userKey, "");
     }

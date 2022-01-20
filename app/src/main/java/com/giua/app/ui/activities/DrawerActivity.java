@@ -63,6 +63,7 @@ import com.giua.app.ui.fragments.votes.VotesFragment;
 import com.giua.objects.Vote;
 import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
+import com.google.android.material.snackbar.Snackbar;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -71,7 +72,9 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.ExpandableDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import java.util.List;
 import java.util.Map;
@@ -201,15 +204,49 @@ public class DrawerActivity extends AppCompatActivity {
     }
 
     private void setupMaterialDrawer() {
+        String actualUsername = LoginData.getUser(this);
+
         // Create the AccountHeader
-        AccountHeader accountHeader = new AccountHeaderBuilder()
+        AccountHeaderBuilder accountHeaderBuilder = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.color.relative_main_color)
                 .withTextColor(getColor(R.color.white))
-                .withSelectionListEnabled(false)
+                .withSelectionListEnabled(true)
+                .withOnlyMainProfileImageVisible(true)
+                .withOnAccountHeaderListener(this::onChangeAccountFromDrawer)
+                .withCurrentProfileHiddenInList(true)
                 .addProfiles(
-                        new ProfileDrawerItem().withName(username).withEmail(userType).withIcon(R.mipmap.ic_launcher)
-                ).build();
+                        new ProfileDrawerItem().withName(username).withEmail(actualUsername)
+                                .withIcon(R.mipmap.ic_launcher)
+                                .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
+                );
+
+        String[] allUsernames = AppData.getAllAccountNames(this).split(";");
+        for (String _username : allUsernames) {
+            if (_username.equals(actualUsername)) continue;
+
+            if (_username.equals("gsuite")) {
+                accountHeaderBuilder.addProfiles(
+                        new ProfileDrawerItem().withName(_username).withEmail("Studente")
+                                .withIcon(R.mipmap.ic_launcher)
+                                .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
+                );
+            } else {
+                accountHeaderBuilder.addProfiles(
+                        new ProfileDrawerItem().withName(_username).withEmail(_username)
+                                .withIcon(R.mipmap.ic_launcher)
+                                .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
+                );
+            }
+        }
+
+        accountHeaderBuilder.addProfiles(
+                new ProfileSettingDrawerItem().withName("Aggiungi account")
+                        .withIcon(android.R.color.transparent)
+                        .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
+        );
+
+        AccountHeader accountHeader = accountHeaderBuilder.build();
 
         mDrawer = new DrawerBuilder()
                 .withActivity(this)
@@ -245,14 +282,39 @@ public class DrawerActivity extends AppCompatActivity {
                         createDrawerSecondaryItem(17, "Impostazioni")
                                 .withOnDrawerItemClickListener(this::settingsItemOnClick)
                                 .withSelectable(false),
-                        createDrawerSecondaryItem(17, "Aggiungi account")
-                                .withOnDrawerItemClickListener(this::addAccountOnClick)
-                                .withSelectable(false),
                         createDrawerSecondaryItem(18, "Esci")
                                 .withOnDrawerItemClickListener(this::logoutItemOnClick)
                                 .withSelectable(false)
                 )
                 .build();
+    }
+
+    private boolean onChangeAccountFromDrawer(View view, IProfile iProfile, boolean b) {
+        if (iProfile.getName().getText().equals("Aggiungi account")) {
+            startActivity(new Intent(this, MainLoginActivity.class).putExtra("addAccount", true));
+            finish();
+        } else {
+            String selectedProfileUsername = iProfile.getName().toString();
+            String[] allUsernames = AppData.getAllAccountNames(this).split(";");
+            String[] allPasswords = AppData.getAllAccountPasswords(this).split(";");
+            int indexOfSelectedUsername = -1;
+            for (int i = 0; i < allUsernames.length; i++) {
+                if (allUsernames[i].equals(selectedProfileUsername)) {
+                    indexOfSelectedUsername = i;
+                    break;
+                }
+            }
+            if (indexOfSelectedUsername == -1) {
+                loggerManager.e("Non ho trovato lo username selezionato da drawer in AppData");
+                Snackbar.make(view, "Qualcosa è andato storto, impossibile continuare.", Snackbar.LENGTH_SHORT).show();
+                return false;   //Chiudi il drawer
+            }
+            LoginData.setCredentialsSynchronously(this, allUsernames[indexOfSelectedUsername], allPasswords[indexOfSelectedUsername], "");
+            GlobalVariables.gS = null;
+            startActivity(new Intent(this, ActivityManager.class));
+            finish();
+        }
+        return true;    //Non chiudere il drawer
     }
 
     private ExpandableDrawerItem createDrawerCategory(int identifier, String name) {
@@ -368,12 +430,6 @@ public class DrawerActivity extends AppCompatActivity {
     private boolean settingsItemOnClick(View view, int i, IDrawerItem item) {
         loggerManager.d("Avvio SettingsActivity");
         startActivity(new Intent(this, SettingsActivity.class));
-        return true;
-    }
-
-    private boolean addAccountOnClick(View view, int i, IDrawerItem item) {
-        startActivity(new Intent(this, MainLoginActivity.class));
-        finish();
         return true;
     }
 
@@ -656,15 +712,18 @@ public class DrawerActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         new Thread(() -> {  //Questo serve a prevenire la perdita di news
-            AppData.saveNumberNewslettersInt(this, GlobalVariables.gS.getHomePage(false).getNumberNewsletters());
-            AppData.saveNumberAlertsInt(this, GlobalVariables.gS.getHomePage(false).getNumberAlerts());
+            try {
+                AppData.saveNumberNewslettersInt(this, GlobalVariables.gS.getHomePage(false).getNumberNewsletters());
+                AppData.saveNumberAlertsInt(this, GlobalVariables.gS.getHomePage(false).getNumberAlerts());
 
-            Map<String, List<Vote>> votes = GlobalVariables.gS.getVotesPage(false).getAllVotes();
-            int numberVotes = 0;
-            for (String subject : votes.keySet()) {
-                numberVotes += votes.get(subject).size();
+                Map<String, List<Vote>> votes = GlobalVariables.gS.getVotesPage(false).getAllVotes();
+                int numberVotes = 0;
+                for (String subject : votes.keySet()) {
+                    numberVotes += votes.get(subject).size();
+                }
+                AppData.saveNumberVotesInt(this, numberVotes);
+            } catch (Exception ignored) {
             }
-            AppData.saveNumberVotesInt(this, numberVotes);
         }).start();
         super.onStop();
     }

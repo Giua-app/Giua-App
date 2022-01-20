@@ -180,18 +180,20 @@ public class AppData {
 
     //region Dati per più account
 
-    public static void addAccountCredentials(final Context context, final String username, final String password, final String cookie) {
+    public static void addAccountCredentials(final Context context, final String username, final String password) {
         getSharedPreferences(context).edit()
                 .putString(allAccountNamesKey, getAllAccountNames(context) + username + ";")
                 .putString(allAccountPasswordsKey, getAllAccountPasswords(context) + password + ";")
-                .putString(allAccountCookiesKey, getAllAccountCookies(context) + cookie + ";")
                 .apply();
     }
 
     public static void removeAccountCredentialsOfIndex(final Context context, final int index) {
         String[] usernames = getAllAccountNames(context).split(";");
         String[] passwords = getAllAccountPasswords(context).split(";");
-        String[] cookies = getAllAccountCookies(context).split(";");
+
+        if (index >= usernames.length) return;
+        usernames[index] = "";
+        passwords[index] = "";
 
         //usernames
     }
@@ -214,16 +216,6 @@ public class AppData {
 
     public static String getAllAccountPasswords(final Context context) {
         return getSharedPreferences(context).getString(allAccountPasswordsKey, "");
-    }
-
-    public static void saveAllAccountCookies(final Context context, final String value) {
-        getSharedPreferences(context).edit()
-                .putString(allAccountCookiesKey, value)
-                .apply();
-    }
-
-    public static String getAllAccountCookies(final Context context) {
-        return getSharedPreferences(context).getString(allAccountCookiesKey, "");
     }
 
     //endregion

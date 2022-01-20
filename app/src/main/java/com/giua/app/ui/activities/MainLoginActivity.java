@@ -71,6 +71,7 @@ public class MainLoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_normal_login);
+        isAddingAccount = getIntent().getBooleanExtra("addAccount", false);
         loggerManager = new LoggerManager("MainLoginActivity", this);
         loggerManager.d("onCreate chiamato");
 
@@ -85,9 +86,6 @@ public class MainLoginActivity extends AppCompatActivity {
         chRememberCredentials = findViewById(R.id.checkbox_remember_credentials);
         btnLoginAsStudent = findViewById(R.id.btn_student_login);
         btnLoginAsStudent.setText(Html.fromHtml("<p>Sei uno studente?\n<u><i>Clicca qui!</i></u></p>", 0));
-
-        etUsername.setText(LoginData.getUser(getApplicationContext()));     //Imposta lo username memorizzato
-        etPassword.setText(LoginData.getPassword(getApplicationContext()));     //Imposta la password memorizzata
 
         txtLayoutUsername.getEditText().addTextChangedListener(onTextChange(txtLayoutUsername));
         txtLayoutPassword.getEditText().addTextChangedListener(onTextChange(txtLayoutPassword));
@@ -107,13 +105,9 @@ public class MainLoginActivity extends AppCompatActivity {
             }
         }).start();
 
-        //Se vero vuol dire che si vuole aggiungere un account
-        if (!LoginData.getUser(this).equals("")) {
-            isAddingAccount = true;
+        if (isAddingAccount) {
             btnLogin.setText("Aggiungi account");
             chRememberCredentials.setChecked(true);
-            etUsername.setText("");
-            etPassword.setText("");
         }
 
     }
@@ -174,7 +168,7 @@ public class MainLoginActivity extends AppCompatActivity {
     private void login() {
         new Thread(() -> {
             try {
-                /*if(AppData.getAllAccountNames(this).contains(etUsername.getText().toString())) {
+                if (isAddingAccount && AppData.getAllAccountNames(this).contains(etUsername.getText().toString())) {
                     runOnUiThread(() -> {
                         txtLayoutUsername.setError("Username già salvato");
                         etPassword.setText("");
@@ -182,7 +176,7 @@ public class MainLoginActivity extends AppCompatActivity {
                         btnLogin.setVisibility(View.VISIBLE);
                     });
                     return;
-                }*/
+                }
                 loggerManager.d("Eseguo login...");
                 GlobalVariables.gS = new GiuaScraper(etUsername.getText().toString(), etPassword.getText().toString(), true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
                 GlobalVariables.gS.login();
@@ -191,7 +185,7 @@ public class MainLoginActivity extends AppCompatActivity {
                 if (GlobalVariables.gS.checkLogin()) {
                     if (chRememberCredentials.isChecked()) {
                         LoginData.setCredentials(this, etUsername.getText().toString(), etPassword.getText().toString(), GlobalVariables.gS.getCookie());
-                        AppData.addAccountCredentials(this, etUsername.getText().toString(), etPassword.getText().toString(), GlobalVariables.gS.getCookie());
+                        AppData.addAccountCredentials(this, etUsername.getText().toString(), etPassword.getText().toString());
                     }
                     startDrawerActivity();
                 } else {
@@ -298,7 +292,6 @@ public class MainLoginActivity extends AppCompatActivity {
         if (etUsername.getText().length() < 1) {
             txtLayoutUsername.setError("Inserisci l'username");
         }
-
 
         if (etPassword.getText().length() > 0 && etUsername.getText().length() > 0) {
             pgProgressBar.setVisibility(View.VISIBLE);

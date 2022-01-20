@@ -76,11 +76,14 @@ public class AutomaticLoginActivity extends AppCompatActivity {
         new Thread(() -> {
             runOnUiThread(() -> pbLoadingScreen.setVisibility(View.VISIBLE));
             try {
-                GlobalVariables.gS = new GiuaScraper(LoginData.getUser(this), LoginData.getPassword(this), LoginData.getCookie(this), true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
+                String username = LoginData.getUser(this);
+                String password = LoginData.getPassword(this);
+                String cookie = LoginData.getCookie(this);
+                GlobalVariables.gS = new GiuaScraper(username, password, cookie, true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
                 GlobalVariables.gS.login();
-                LoginData.setCredentials(this, LoginData.getUser(this), LoginData.getPassword(this), GlobalVariables.gS.getCookie());
+                LoginData.setCredentials(this, username, password, GlobalVariables.gS.getCookie());
                 if (!AppData.getAllAccountNames(this).contains(GlobalVariables.gS.getUser()))
-                    AppData.addAccountCredentials(this, GlobalVariables.gS.getUser(), LoginData.getPassword(this), GlobalVariables.gS.getCookie());
+                    AppData.addAccountCredentials(this, GlobalVariables.gS.getUser(), LoginData.getPassword(this));
                 startDrawerActivity();
             } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.SiteConnectionProblems e) {
                 loggerManager.e("Errore di connessione - " + e.getMessage());
