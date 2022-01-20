@@ -98,6 +98,12 @@
             app:key="show_cents"
             app:title="Mostra i centesimi nelle medie" />
 
+        <SwitchPreference
+            android:icon="@drawable/ic_chart"
+            app:defaultValue="false"
+            app:key="show_vote_not_relevant_for_mean_on_chart"
+            app:title="Mostra nel grafico della home i voti che non valgono per la media" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

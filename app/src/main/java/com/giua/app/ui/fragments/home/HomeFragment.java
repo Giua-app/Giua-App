@@ -44,6 +44,8 @@ import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
+import com.giua.app.SettingKey;
+import com.giua.app.SettingsData;
 import com.giua.app.ThreadManager;
 import com.giua.app.ui.activities.DrawerActivity;
 import com.giua.objects.Vote;
@@ -287,13 +289,13 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
      * @return La lista dei voti ordinata per data
      */
     private List<Vote> sortVotes(Map<String, List<Vote>> allVotes) {
-
+        boolean showVoteNotRelevantForMean = SettingsData.getSettingBoolean(activity, SettingKey.VOTE_NRFM_ON_CHART);
         List<Vote> listToSort = new Vector<>();
         Set<String> allSubjects = allVotes.keySet();
         for (String subject : allSubjects) {
             List<Vote> subjectVotes = allVotes.get(subject);
             for (Vote vote : subjectVotes) {
-                if (!vote.isAsterisk) {
+                if (!vote.isAsterisk && (vote.isRelevantForMean || showVoteNotRelevantForMean)) {
                     listToSort.add(vote);
                 }
             }

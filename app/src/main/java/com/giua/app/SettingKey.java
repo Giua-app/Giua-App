@@ -90,5 +90,10 @@ public abstract class SettingKey {
      */
     public static final String EXP_MODE = "experimentalMode";
 
+    /**
+     * Indica se i voti che non valgono per la media devono essere visualizzati nel grafico della home
+     */
+    public static final String VOTE_NRFM_ON_CHART = "voteNotRelevantForMeanOnChart";
+
 
 }

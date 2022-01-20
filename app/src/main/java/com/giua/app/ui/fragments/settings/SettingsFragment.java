@@ -95,6 +95,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         setupThemeObject();
         setupShowCentsObject();
+        setupShowVoteNotRelevantForMeanOnChart();
 
         //endregion
 
@@ -109,6 +110,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
 
         //endregion
+    }
+
+    private void setupShowVoteNotRelevantForMeanOnChart() {
+        SwitchPreference swShowCents = findPreference("show_vote_not_relevant_for_mean_on_chart");
+        swShowCents.setChecked(SettingsData.getSettingBoolean(context, SettingKey.VOTE_NRFM_ON_CHART));
+        swShowCents.setOnPreferenceChangeListener(this::swShowVoteNotRelevantForMeanOnChartListener);
+    }
+
+    private boolean swShowVoteNotRelevantForMeanOnChartListener(Preference preference, Object o) {
+        SettingsData.saveSettingBoolean(requireContext(), SettingKey.VOTE_NRFM_ON_CHART, (boolean) o);
+        return true;
     }
 
     private void setupDiscardStudentLoginObject() {
