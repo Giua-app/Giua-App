@@ -195,6 +195,21 @@ public class AppData {
         usernames[index] = "";
         passwords[index] = "";
 
+        StringBuilder usernameAppDataString = new StringBuilder();
+        for (String username : usernames) {
+            if (!username.equals(""))
+                usernameAppDataString.append(username).append(";");
+        }
+        StringBuilder passwordAppDataString = new StringBuilder();
+        for (String password : passwords) {
+            if (!password.equals(""))
+                passwordAppDataString.append(password).append(";");
+        }
+        getSharedPreferences(context).edit()
+                .putString(allAccountNamesKey, usernameAppDataString.toString())
+                .putString(allAccountPasswordsKey, passwordAppDataString.toString())
+                .apply();
+
         //usernames
     }
 
@@ -260,20 +275,20 @@ public class AppData {
         return getSharedPreferences(context).getLong(lastSentReportTimeKey, -1L);
     }
 
-    /**
-     * Questa funzione, facendo una richiesta HTTP, aumenta il numero di visite
-     * Piratepx tiene traccia delle visite per 30 giorni
-     * In questo momento stiamo contando le visite per:
-     * - Nuove installazioni
-     * - Login studente/genitore
-     * - Errori di webview
-     * - Crash
-     * - Aggiornamenti
-     * - Easter egg
-     *
-     * @param name Nome dell'oggetto su cui aumentare le visite
-     *//*
-    public static void increaseVisitCount(String name){
+    /*
+      Questa funzione, facendo una richiesta HTTP, aumenta il numero di visite
+      Piratepx tiene traccia delle visite per 30 giorni
+      In questo momento stiamo contando le visite per:
+      - Nuove installazioni
+      - Login studente/genitore
+      - Errori di webview
+      - Crash
+      - Aggiornamenti
+      - Easter egg
+
+      @param name Nome dell'oggetto su cui aumentare le visite
+     */
+    /*public static void increaseVisitCount(String name){
         if(BuildConfig.BUILD_TYPE.equals("debug")){
             //Ignora le build di debug
             return;

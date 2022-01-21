@@ -28,6 +28,7 @@ import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.CookieManager;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -79,6 +80,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 
 public class DrawerActivity extends AppCompatActivity {
@@ -299,13 +301,7 @@ public class DrawerActivity extends AppCompatActivity {
             String selectedProfileUsername = iProfile.getName().toString();
             String[] allUsernames = AppData.getAllAccountNames(this).split(";");
             String[] allPasswords = AppData.getAllAccountPasswords(this).split(";");
-            int indexOfSelectedUsername = -1;
-            for (int i = 0; i < allUsernames.length; i++) {
-                if (allUsernames[i].equals(selectedProfileUsername)) {
-                    indexOfSelectedUsername = i;
-                    break;
-                }
-            }
+            int indexOfSelectedUsername = getIndexOf(allUsernames, selectedProfileUsername);
             if (indexOfSelectedUsername == -1) {
                 loggerManager.e("Non ho trovato lo username selezionato da drawer in AppData");
                 Snackbar.make(view, "Qualcosa è andato storto, impossibile continuare.", Snackbar.LENGTH_SHORT).show();
@@ -408,25 +404,47 @@ public class DrawerActivity extends AppCompatActivity {
     private boolean logoutItemOnClick(View view, int i, IDrawerItem item) {
         loggerManager.d("Logout richiesto dall'utente");
         Analytics.sendDefaultRequest("Log out");
-        Intent intent = new Intent(this, ActivityManager.class);
-        Intent iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
-        boolean alarmUp = (PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE) != null);  //Controlla se l'allarme è già settato
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, 0);
-        if (alarmUp)
-            alarmManager.cancel(pendingIntent);
         String[] allAccountNames = AppData.getAllAccountNames(this).split(";");
-        String name = LoginData.getUser(this);
-        int index = -1;
-        for (int j = 0; j < allAccountNames.length; j++) {
-            if (allAccountNames[j].equals(name))
-                index = j;
+        String activeUsername = LoginData.getUser(this);
+        if (activeUsername.equals("gsuite"))
+            CookieManager.getInstance().removeAllCookies(null); //Cancello il cookie della webview
+        int index = getIndexOf(allAccountNames, activeUsername);
+        if (index == -1) {
+            loggerManager.e("Non ho trovato lo username selezionato da drawer in AppData");
+            Snackbar.make(view, "Qualcosa è andato storto, impossibile continuare.", Snackbar.LENGTH_SHORT).show();
+            return false;   //Chiudi il drawer
         }
-        //if(index != -1)
-        //    AppData.
         LoginData.clearAll(this);
-        startActivity(intent);
+        AppData.removeAccountCredentialsOfIndex(this, index);
+        //Se vero vuol dire che ci sono altri account diponibili quindi lo faccio riloggare al primo che trovo
+        allAccountNames = AppData.getAllAccountNames(this).split(";");
+        if (allAccountNames.length > 0) {
+            index = 0;
+            //Cerca il primo username disponibile
+            while (index < allAccountNames.length && allAccountNames[index].equals(""))
+                index++;
+            String password = AppData.getAllAccountPasswords(this).split(";")[index];
+            LoginData.setCredentials(this, allAccountNames[index], password);
+        }
+        startActivity(new Intent(this, ActivityManager.class));
         finish();
         return true;
+    }
+
+    /**
+     * Cerca una stringa in un array di stringhe e ne ritorna l'index
+     *
+     * @param strings l'array in cui bisogna cercare {@code s}
+     * @param s       la stringa da cercare in {@code strings}
+     * @return l'indice di {@code s} in {@code strings}
+     */
+    private int getIndexOf(String[] strings, String s) {
+        int index = -1;
+        for (int j = 0; j < strings.length; j++) {
+            if (strings[j].equals(s))
+                index = j;
+        }
+        return index;
     }
 
     private boolean settingsItemOnClick(View view, int i, IDrawerItem item) {
@@ -455,8 +473,8 @@ public class DrawerActivity extends AppCompatActivity {
         Fragment fragment;
         String tag = getTagFromId(id);
         String toolbarTxt = "";
-
-        if (!manager.getFragments().isEmpty() && manager.getFragments().get(0).getTag().equals(tag)) //Se il fragment visualizzato è quello di id allora non fare nulla
+        //Se il fragment visualizzato è quello di id allora non fare nulla
+        if (!manager.getFragments().isEmpty() && Objects.requireNonNull(manager.getFragments().get(0).getTag()).equals(tag))
             return;
 
         if (tag.equals("")) {  //Se tag è vuoto vuol dire che questo id non è stato ancora implementato quindi finisci
@@ -584,18 +602,14 @@ public class DrawerActivity extends AppCompatActivity {
         builder.setIcon(R.drawable.ic_alert_outline);
         builder.setMessage("E' stato segnalato che la schermata \"" + toolbarTxt + "\" potrebbe non funzionare come previsto in questa versione.\n\nSei sicuro di continuare?")
 
-        .setPositiveButton("Si", (dialog, id) -> {
-            loggerManager.w("L'utente ha deciso di continuare con la funzionalità instabile, cambio fragment a " + tag);
-            executeChangeFragment(fragment, tag, toolbarTxt, subtitle);
-        })
+                .setPositiveButton("Si", (dialog, id) -> {
+                    loggerManager.w("L'utente ha deciso di continuare con la funzionalità instabile, cambio fragment a " + tag);
+                    executeChangeFragment(fragment, tag, toolbarTxt, subtitle);
+                })
 
-        .setNegativeButton("No", (dialog, id) -> {
-            loggerManager.d("L'utente ha deciso di NON continuare con la funzionalità instabile");
-        })
+                .setNegativeButton("No", (dialog, id) -> loggerManager.d("L'utente ha deciso di NON continuare con la funzionalità instabile"))
 
-        .setOnCancelListener(dialog -> {
-            loggerManager.d("L'utente ha deciso di NON continuare con la funzionalità instabile");
-        });
+                .setOnCancelListener(dialog -> loggerManager.d("L'utente ha deciso di NON continuare con la funzionalità instabile"));
 
         builder.show();
     }
@@ -721,7 +735,7 @@ public class DrawerActivity extends AppCompatActivity {
                 Map<String, List<Vote>> votes = GlobalVariables.gS.getVotesPage(false).getAllVotes();
                 int numberVotes = 0;
                 for (String subject : votes.keySet()) {
-                    numberVotes += votes.get(subject).size();
+                    numberVotes += Objects.requireNonNull(votes.get(subject)).size();
                 }
                 AppData.saveNumberVotesInt(this, numberVotes);
             } catch (Exception ignored) {

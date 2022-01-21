@@ -54,6 +54,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.SimpleDateFormat;
+import java.util.Locale;
+import java.util.Objects;
 
 public class MainLoginActivity extends AppCompatActivity {
     EditText etUsername;
@@ -92,8 +94,8 @@ public class MainLoginActivity extends AppCompatActivity {
         btnLoginAsStudent = findViewById(R.id.btn_student_login);
         btnLoginAsStudent.setText(Html.fromHtml("<p>Sei uno studente?\n<u><i>Clicca qui!</i></u></p>", 0));
 
-        txtLayoutUsername.getEditText().addTextChangedListener(onTextChange(txtLayoutUsername));
-        txtLayoutPassword.getEditText().addTextChangedListener(onTextChange(txtLayoutPassword));
+        Objects.requireNonNull(txtLayoutUsername.getEditText()).addTextChangedListener(onTextChange(txtLayoutUsername));
+        Objects.requireNonNull(txtLayoutPassword.getEditText()).addTextChangedListener(onTextChange(txtLayoutPassword));
         findViewById(R.id.login_btn_settings).setOnClickListener(this::btnSettingOnClick);
         btnLogin.setOnClickListener(this::btnLoginOnClick);
         btnLoginAsStudent.setOnClickListener(this::btnLoginAsStudentOnClick);
@@ -172,6 +174,8 @@ public class MainLoginActivity extends AppCompatActivity {
     }
 
     private void login() {
+        if (GlobalVariables.internetThread == null || GlobalVariables.internetThread.isInterrupted())
+            GlobalVariables.internetThread = new InternetThread();
         GlobalVariables.internetThread.addRunnableToRun(() -> {
             try {
                 if (isAddingAccount && AppData.getAllAccountNames(this).contains(etUsername.getText().toString())) {
@@ -232,7 +236,7 @@ public class MainLoginActivity extends AppCompatActivity {
                 loggerManager.e("Errore: Manutenzione attiva");
                 try {
                     Maintenance maintenance = GlobalVariables.gS.getMaintenanceInfo();
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm", Locale.ITALY);
                     runOnUiThread(() -> setErrorMessage("Il sito è in manutenzione sino alle " + simpleDateFormat.format(maintenance.end)));
                 } catch (Exception e2) {
                     runOnUiThread(() -> setErrorMessage(getString(R.string.maintenance_is_active_error)));

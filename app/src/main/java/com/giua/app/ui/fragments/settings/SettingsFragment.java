@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.View;
-import android.webkit.CookieManager;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.EditTextPreference;
@@ -80,7 +79,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         setupIntroScreenObject();
         setupExpModeObject();
         setupSiteUrlObject();
-        setupDiscardStudentLoginObject();
         setupBugReportObject();
         setupDebugModeObject();
 
@@ -113,24 +111,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void setupShowVoteNotRelevantForMeanOnChart() {
-        SwitchPreference swShowCents = findPreference("show_vote_not_relevant_for_mean_on_chart");
+        SwitchPreference swShowCents = Objects.requireNonNull(findPreference("show_vote_not_relevant_for_mean_on_chart"));
         swShowCents.setChecked(SettingsData.getSettingBoolean(context, SettingKey.VOTE_NRFM_ON_CHART));
         swShowCents.setOnPreferenceChangeListener(this::swShowVoteNotRelevantForMeanOnChartListener);
     }
 
     private boolean swShowVoteNotRelevantForMeanOnChartListener(Preference preference, Object o) {
         SettingsData.saveSettingBoolean(requireActivity(), SettingKey.VOTE_NRFM_ON_CHART, (boolean) o);
-        return true;
-    }
-
-    private void setupDiscardStudentLoginObject() {
-        Preference btnBugReport = Objects.requireNonNull(findPreference("discardStudentLogin"));
-        btnBugReport.setOnPreferenceClickListener(this::btnDiscardStudentLoginOnClick);
-    }
-
-    private boolean btnDiscardStudentLoginOnClick(Preference preference) {
-        CookieManager.getInstance().removeAllCookies(null);
-        setErrorMessage("Dimenticato con successo", requireView());
         return true;
     }
 
@@ -149,7 +136,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void setupShowCentsObject() {
-        SwitchPreference swShowCents = findPreference("show_cents");
+        SwitchPreference swShowCents = Objects.requireNonNull(findPreference("show_cents"));
         swShowCents.setChecked(SettingsData.getSettingBoolean(context, SettingKey.SHOW_CENTS));
         swShowCents.setOnPreferenceChangeListener(this::swShowCentsListener);
     }
@@ -160,7 +147,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void setupExpModeObject() {
-        SwitchPreference swExpMode = findPreference("experimentalMode");
+        SwitchPreference swExpMode = Objects.requireNonNull(findPreference("experimentalMode"));
         swExpMode.setChecked(SettingsData.getSettingBoolean(context, SettingKey.EXP_MODE));
         swExpMode.setOnPreferenceChangeListener(this::swExpModeChangeListener);
     }
@@ -172,7 +159,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void setupNotificationManager() {
-        MultiSelectListPreference multiSelectListPreference = findPreference("notification_manager");
+        MultiSelectListPreference multiSelectListPreference = Objects.requireNonNull(findPreference("notification_manager"));
         multiSelectListPreference.setEntries(new CharSequence[]{"Circolari", "Avvisi", "Aggiornamenti", "Voti", "Compiti", "Verifiche"});
         multiSelectListPreference.setEntryValues(new CharSequence[]{"0", "1", "2", "3", "4", "5"});
         multiSelectListPreference.setOnPreferenceChangeListener(this::setupNotificationManagerChangeListener);
@@ -208,7 +195,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void setupDemoModeObject() {
-        SwitchPreference swDemoMode = findPreference("demoMode");
+        SwitchPreference swDemoMode = Objects.requireNonNull(findPreference("demoMode"));
         swDemoMode.setChecked(SettingsData.getSettingBoolean(context, SettingKey.DEMO_MODE));
         swDemoMode.setOnPreferenceChangeListener(this::swDemoModeChangeListener);
     }
@@ -227,7 +214,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private boolean swDebugModeChangeListener(Preference preference, Object o) {
         SettingsData.saveSettingBoolean(requireActivity(), SettingKey.DEBUG_MODE, (boolean) o);
-        findPreference("debugCategory").setVisible((boolean) o);
+        ((Preference) Objects.requireNonNull(findPreference("debugCategory"))).setVisible((boolean) o);
         return true;
     }
 
