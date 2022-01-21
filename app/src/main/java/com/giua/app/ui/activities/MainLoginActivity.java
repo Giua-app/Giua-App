@@ -41,6 +41,7 @@ import com.giua.app.AppData;
 import com.giua.app.AppUpdateManager;
 import com.giua.app.BuildConfig;
 import com.giua.app.GlobalVariables;
+import com.giua.app.InternetThread;
 import com.giua.app.LoggerManager;
 import com.giua.app.LoginData;
 import com.giua.app.R;
@@ -71,6 +72,10 @@ public class MainLoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_normal_login);
+
+        if (GlobalVariables.internetThread == null || GlobalVariables.internetThread.isInterrupted())
+            GlobalVariables.internetThread = new InternetThread();
+
         isAddingAccount = getIntent().getBooleanExtra("addAccount", false);
         loggerManager = new LoggerManager("MainLoginActivity", this);
         loggerManager.d("onCreate chiamato");
@@ -108,6 +113,7 @@ public class MainLoginActivity extends AppCompatActivity {
         if (isAddingAccount) {
             btnLogin.setText("Aggiungi account");
             chRememberCredentials.setChecked(true);
+            chRememberCredentials.setVisibility(View.INVISIBLE);
         }
 
     }
@@ -166,7 +172,7 @@ public class MainLoginActivity extends AppCompatActivity {
     }
 
     private void login() {
-        new Thread(() -> {
+        GlobalVariables.internetThread.addRunnableToRun(() -> {
             try {
                 if (isAddingAccount && AppData.getAllAccountNames(this).contains(etUsername.getText().toString())) {
                     runOnUiThread(() -> {
@@ -256,7 +262,7 @@ public class MainLoginActivity extends AppCompatActivity {
                     btnLogin.setVisibility(View.VISIBLE);
                 });
             }
-        }).start();
+        });
     }
 
     private void startStudentLoginActivity() {
@@ -327,11 +333,11 @@ public class MainLoginActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } else {
-            new Thread(() -> {
+            GlobalVariables.internetThread.addRunnableToRun(() -> {
                 GlobalVariables.gS = new GiuaScraper(LoginData.getUser(this), LoginData.getPassword(this), LoginData.getCookie(this), true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
                 GlobalVariables.gS.login();
                 runOnUiThread(this::startDrawerActivity);
-            }).start();
+            });
         }
     }
 }

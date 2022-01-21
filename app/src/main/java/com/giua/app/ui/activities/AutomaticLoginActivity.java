@@ -73,7 +73,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
 
     private void loginWithPreviousCredentials() {
         loggerManager.d("Login automatico con credenziali salvate in corso");
-        new Thread(() -> {
+        GlobalVariables.internetThread.addRunnableToRun(() -> {
             runOnUiThread(() -> pbLoadingScreen.setVisibility(View.VISIBLE));
             try {
                 String username = LoginData.getUser(this);
@@ -136,7 +136,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                 runOnUiThread(() -> tvAutoLogin.setText("Accesso fallito."));
 
             }
-        }).start();
+        });
     }
 
     private void btnLogoutOnClick(View view) {

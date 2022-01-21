@@ -52,7 +52,6 @@ import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
-import com.giua.app.ThreadManager;
 import com.giua.app.ui.fragments.ObscureLayoutView;
 import com.giua.objects.Newsletter;
 import com.giua.webscraper.DownloadedFile;
@@ -81,7 +80,6 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     TextView tvNoElements;
     FragmentActivity activity;
     SwipeRefreshLayout swipeRefreshLayout;
-    ThreadManager threadManager;
     View root;
     boolean isDownloading = false;
     int currentPage = 1;
@@ -92,12 +90,13 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     boolean onlyNotRead = false;
     boolean canSendErrorMessage = true;
     boolean offlineMode = false;
+    boolean isFragmentDestroyed = false;
     String filterDate = "";
     String filterText = "";
     boolean demoMode = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        demoMode = SettingsData.getSettingBoolean(requireContext(), SettingKey.DEMO_MODE);
+        demoMode = SettingsData.getSettingBoolean(requireActivity(), SettingKey.DEMO_MODE);
         if (getArguments() != null)
             offlineMode = getArguments().getBoolean("offline");
         root = inflater.inflate(R.layout.fragment_newsletters, container, false);
@@ -129,7 +128,6 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         swipeRefreshLayout = root.findViewById(R.id.newsletter_swipe_refresh_layout);
 
         activity = requireActivity();
-        threadManager = new ThreadManager();
 
         pbLoadingNewsletters = new ProgressBar(getContext());
         pbLoadingNewsletters.setId(View.generateViewId());
@@ -157,7 +155,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             layout.addView(pbLoadingNewsletters);
 
         if (!loadedAllPages) {
-            threadManager.addAndRun(() -> {
+            GlobalVariables.internetThread.addRunnableToRun(() -> {
                 try {
                     if (!offlineMode) {
                         if (!isFilterApplied) {
@@ -170,7 +168,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                     } else {
                         loadedAllPages = true;
                         /*try {
-                            allNewsletter = new JsonHelper().parseJsonForNewsletters(AppData.getNewslettersString(requireContext()));
+                            allNewsletter = new JsonHelper().parseJsonForNewsletters(AppData.getNewslettersString(requireActivity()));
                         } catch (Exception ignored) {
                         }*/
                     }
@@ -297,7 +295,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             case MotionEvent.ACTION_UP:
                 if (!v.newsletter.isRead() && v.upperView.getTranslationX() >= (float) realMetrics.widthPixels * 240 / 1080) {
                     makeMarkAsReadAnimation(v, realMetrics);
-                    threadManager.addAndRun(() -> {
+                    GlobalVariables.internetThread.addRunnableToRun(() -> {
                         GlobalVariables.gS.getNewslettersPage(false).markNewsletterAsRead(v.newsletter);
                     });
                 } else
@@ -332,12 +330,12 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             tvAttachment.setText("Allegato " + (counter + 1));
             tvAttachment.setOnClickListener((view) -> onClickSingleAttachment(attachment));
             tvAttachment.setId(View.generateViewId());
-            tvAttachment.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.corner_radius_10dp, context.getTheme()));
-            tvAttachment.setBackgroundTintList(getResources().getColorStateList(R.color.general_view_color, context.getTheme()));
-            tvAttachment.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.varelaroundregular));
+            tvAttachment.setBackground(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.corner_radius_10dp, context.getTheme()));
+            tvAttachment.setBackgroundTintList(activity.getResources().getColorStateList(R.color.general_view_color, context.getTheme()));
+            tvAttachment.setTypeface(ResourcesCompat.getFont(requireActivity(), R.font.varelaroundregular));
             tvAttachment.setGravity(Gravity.CENTER);
             tvAttachment.setTextSize(16f);
-            tvAttachment.setForeground(ResourcesCompat.getDrawable(getResources(), R.drawable.ripple_effect, context.getTheme()));
+            tvAttachment.setForeground(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.ripple_effect, context.getTheme()));
 
             tvAttachment.setLayoutParams(params);
 
@@ -346,7 +344,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             attachmentLayout.addView(tvAttachment);
         }
 
-        attachmentLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
+        attachmentLayout.startAnimation(AnimationUtils.loadAnimation(requireActivity(), R.anim.visualizer_show_effect));
         attachmentLayout.setVisibility(View.VISIBLE);
         obscureLayoutView.show();
     }
@@ -393,7 +391,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             filterDate = filterDateTemp;
             filterText = filterTextTemp;
             layout.removeViews(1, layout.getChildCount() - 1);
-            filterLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
+            filterLayout.startAnimation(AnimationUtils.loadAnimation(requireActivity(), R.anim.visualizer_hide_effect));
             filterLayout.setVisibility(View.GONE);
             obscureLayoutView.hide();
             isFilterApplied = false;
@@ -402,14 +400,14 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             tvNoElements.setVisibility(View.GONE);
             loadDataAndViews();
         } else {
-            filterLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
+            filterLayout.startAnimation(AnimationUtils.loadAnimation(requireActivity(), R.anim.visualizer_hide_effect));
             filterLayout.setVisibility(View.GONE);
             obscureLayoutView.hide();
         }
     }
 
     private void btnFilterOnClick(View view) {
-        filterLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
+        filterLayout.startAnimation(AnimationUtils.loadAnimation(requireActivity(), R.anim.visualizer_show_effect));
         filterLayout.setVisibility(View.VISIBLE);
         obscureLayoutView.show();
         ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).setChecked(onlyNotRead);
@@ -419,12 +417,12 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
     private void obscureViewOnClick(View view) {
         if (filterLayout.getVisibility() == View.VISIBLE) {
-            filterLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
+            filterLayout.startAnimation(AnimationUtils.loadAnimation(requireActivity(), R.anim.visualizer_hide_effect));
             filterLayout.setVisibility(View.GONE);
         }
         obscureLayoutView.hide();
         if (attachmentLayout.getVisibility() == View.VISIBLE) {
-            attachmentLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
+            attachmentLayout.startAnimation(AnimationUtils.loadAnimation(requireActivity(), R.anim.visualizer_hide_effect));
             attachmentLayout.setVisibility(View.GONE);
         }
         attachmentLayout.removeAllViews();
@@ -505,10 +503,10 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         isDownloading = true;
         pbLoadingPage.setZ(10f);
         pbLoadingPage.setVisibility(View.VISIBLE);
-        threadManager.addAndRun(() -> {
+        GlobalVariables.internetThread.addRunnableToRun(() -> {
             try {
                 DownloadedFile downloadedFile = GlobalVariables.gS.download(url);
-                FileOutputStream out = new FileOutputStream(requireContext().getCacheDir() + "/" + "circolare." + downloadedFile.fileExtension);
+                FileOutputStream out = new FileOutputStream(requireActivity().getCacheDir() + "/" + "circolare." + downloadedFile.fileExtension);
                 if (downloadedFile.data != null && downloadedFile.data.length > 0) {
                     out.write(downloadedFile.data);
                     out.close();
@@ -535,7 +533,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
      */
     private void openFile(String fileName, String fileExtension) {
         Intent target = new Intent(Intent.ACTION_VIEW);
-        target.setData(FileProvider.getUriForFile(activity, "com.giua.app.fileprovider", new File(requireContext().getCacheDir() + "/" + fileName)));
+        target.setData(FileProvider.getUriForFile(activity, "com.giua.app.fileprovider", new File(requireActivity().getCacheDir() + "/" + fileName)));
         target.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         try {
@@ -547,11 +545,11 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
     private int convertDpToPx(float dp) {
         //https://stackoverflow.com/questions/4605527/converting-pixels-to-dp
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, activity.getResources().getDisplayMetrics());
     }
 
     public void setErrorMessage(String message, View root) {
-        if (!threadManager.isDestroyed() && canSendErrorMessage)
+        if (!isFragmentDestroyed && canSendErrorMessage)
             Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
 
@@ -585,7 +583,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onDestroyView() {
-        threadManager.destroyAllAndNullMe();
+        isFragmentDestroyed = true;
         super.onDestroyView();
     }
 }

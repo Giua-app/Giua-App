@@ -69,6 +69,9 @@ public class ActivityManager extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
 
+        if (GlobalVariables.internetThread == null)
+            GlobalVariables.internetThread = new InternetThread();
+
         setupCaoc(); //Crash handler
 
         GiuaScraper.setDebugMode(true);

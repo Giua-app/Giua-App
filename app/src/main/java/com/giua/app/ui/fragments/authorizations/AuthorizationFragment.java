@@ -35,7 +35,6 @@ import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
-import com.giua.app.ThreadManager;
 import com.giua.objects.Authorization;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
@@ -43,21 +42,20 @@ import com.google.android.material.snackbar.Snackbar;
 public class AuthorizationFragment extends Fragment implements IGiuaAppFragment {
 
     View root;
-    ThreadManager threadManager;
     Authorization authorization;
     Activity activity;
     boolean demoMode = false;
     boolean offlineMode = false;
     boolean refresh = false;
+    boolean isFragmentDestroyed = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        demoMode = SettingsData.getSettingBoolean(requireContext(), SettingKey.DEMO_MODE);
+        demoMode = SettingsData.getSettingBoolean(requireActivity(), SettingKey.DEMO_MODE);
         if (getArguments() != null)
             offlineMode = getArguments().getBoolean("offline");
         root = inflater.inflate(R.layout.fragment_autorizations, container, false);
 
         activity = requireActivity();
-        threadManager = new ThreadManager();
 
         ((SwipeRefreshLayout) root.findViewById(R.id.authorizations_swipe_refresh)).setRefreshing(true);
         ((SwipeRefreshLayout) root.findViewById(R.id.authorizations_swipe_refresh)).setOnRefreshListener(this::onRefresh);
@@ -67,7 +65,7 @@ public class AuthorizationFragment extends Fragment implements IGiuaAppFragment 
 
     @Override
     public void loadDataAndViews() {
-        threadManager.addAndRun(() -> {
+        GlobalVariables.internetThread.addRunnableToRun(() -> {
             try {
                 authorization = GlobalVariables.gS.getAuthorizationsPage(refresh).getAuthorizations();
                 activity.runOnUiThread(this::addViews);
@@ -101,13 +99,13 @@ public class AuthorizationFragment extends Fragment implements IGiuaAppFragment 
     }
 
     private void setErrorMessage(String message, View root) {
-        if (!threadManager.isDestroyed())
+        if (!isFragmentDestroyed)
             Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void onDestroyView() {
-        threadManager.destroyAllAndNullMe();
+        isFragmentDestroyed = true;
         super.onDestroyView();
     }
 }

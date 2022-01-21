@@ -41,7 +41,6 @@ import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
-import com.giua.app.ThreadManager;
 import com.giua.app.ui.fragments.ObscureLayoutView;
 import com.giua.objects.Vote;
 import com.giua.webscraper.GiuaScraperExceptions;
@@ -63,9 +62,9 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
     Map<String, List<Vote>> allVotes;
     Activity activity;
     View root;
-    ThreadManager threadManager;
     boolean refreshVotes = false;
     boolean offlineMode = false;
+    boolean isFragmentDestroyed = false;
 
     @SuppressLint("ClickableViewAccessibility")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -81,7 +80,6 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
         swipeRefreshLayout = root.findViewById(R.id.vote_swipe_refresh_layout);
 
         activity = requireActivity();
-        threadManager = new ThreadManager();
 
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         obscureLayoutView.setOnClickListener(this::obscureButtonOnClick);
@@ -94,13 +92,13 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void loadDataAndViews() {
-        threadManager.addAndRun(() -> {
+        GlobalVariables.internetThread.addRunnableToRun(() -> {
             try {
                 allVotes = GlobalVariables.gS.getVotesPage(refreshVotes).getAllVotes();
                 /*else
-                    allVotes = new JsonHelper().parseJsonForVotes(AppData.getVotesString(requireContext()));*/
+                    allVotes = new JsonHelper().parseJsonForVotes(AppData.getVotesString(requireActivity()));*/
                 refreshVotes = false;
-                if (threadManager.isDestroyed())
+                if (isFragmentDestroyed)
                     return;
                 activity.runOnUiThread(this::addViews);
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
@@ -164,7 +162,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void singleVoteOnClick(View view) {
-        Resources res = getResources();
+        Resources res = activity.getResources();
         SingleVoteView _view = (SingleVoteView) view;
         TextView detailVoteDate = root.findViewById(R.id.detail_vote_date);
         TextView detailVoteType = root.findViewById(R.id.detail_vote_type);
@@ -201,7 +199,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
     @SuppressLint("ClickableViewAccessibility")
     private void addVoteView(String subject) {
-        voteView = new VoteView(requireContext(), null, subject, SettingsData.getSettingBoolean(activity, SettingKey.SHOW_CENTS), allVotes.get(subject), this::singleVoteOnClick);
+        voteView = new VoteView(requireActivity(), null, subject, SettingsData.getSettingBoolean(activity, SettingKey.SHOW_CENTS), allVotes.get(subject), this::singleVoteOnClick);
         voteView.setId(View.generateViewId());
 
         voteView.setLayoutParams(params);
@@ -212,7 +210,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void setErrorMessage(String message, View root) {
-        if (!threadManager.isDestroyed())
+        if (!isFragmentDestroyed)
             Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
 
@@ -226,7 +224,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onDestroyView() {
-        threadManager.destroyAllAndNullMe();
+        isFragmentDestroyed = true;
         super.onDestroyView();
     }
 }

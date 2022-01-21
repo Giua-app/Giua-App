@@ -43,7 +43,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
-import com.giua.app.ThreadManager;
 import com.giua.app.ui.fragments.ObscureLayoutView;
 import com.giua.objects.Lesson;
 import com.giua.webscraper.GiuaScraperExceptions;
@@ -79,13 +78,13 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
     Date yesterdayDate;
     Date tomorrowDate;
     View root;
-    ThreadManager threadManager;
     SwipeRefreshLayout swipeRefreshLayout;
     SimpleDateFormat formatterForScraping = new SimpleDateFormat("yyyy-MM-dd", Locale.ITALIAN);
     SimpleDateFormat formatterForVisualize = new SimpleDateFormat("dd-MM-yyyy", Locale.ITALIAN);
     long lastCallTime = 0;
     boolean hasCompletedLoading = false;
     boolean isSpammingClick = false;
+    boolean isFragmentDestroyed = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_lessons, container, false);
@@ -108,7 +107,6 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         activity = requireActivity();
         calendar = Calendar.getInstance();
         currentDate = new Date();
-        threadManager = new ThreadManager();
 
         todayDate = currentDate;
         yesterdayDate = getPrevDate(currentDate);
@@ -140,14 +138,14 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         hasCompletedLoading = false;
 
         if (!isSpammingClick && System.nanoTime() - lastCallTime > 500_000_000) {     //Anti click spam
-            threadManager.addAndRun(() -> {
+            GlobalVariables.internetThread.addRunnableToRun(() -> {
                 lastCallTime = System.nanoTime();
                 try {
                     allLessons = GlobalVariables.gS.getLessonsPage(true).getAllLessonsFromDate(currentDate);
                     if (allLessons == null)
                         return;
                     hasCompletedLoading = true;
-                    if (!threadManager.isDestroyed())
+                    if (!isFragmentDestroyed)
                         activity.runOnUiThread(this::addViews);
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     //Errore di connessione
@@ -204,7 +202,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
             tvNoElements.setVisibility(View.VISIBLE);
         } else {
             for (Lesson lesson : allLessons) {
-                LessonView lessonView = new LessonView(requireContext(), null, lesson);
+                LessonView lessonView = new LessonView(requireActivity(), null, lesson);
                 lessonView.setId(View.generateViewId());
                 lessonView.setLayoutParams(params);
                 lessonView.setOnClickListener(this::lessonViewOnClick);
@@ -243,7 +241,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
 
     private void lessonViewOnClick(View view) {
         //Dettagli delle lezioni
-        visualizerLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
+        visualizerLayout.startAnimation(AnimationUtils.loadAnimation(requireActivity(), R.anim.visualizer_show_effect));
         visualizerLayout.setVisibility(View.VISIBLE);
         obscureLayoutView.show();
         bottomCardView.setZ(-10f);
@@ -276,9 +274,9 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
 
     private void obscureLayoutOnClick(View view) {
         if (visualizerLayout.getVisibility() == View.VISIBLE)
-            visualizerLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
+            visualizerLayout.startAnimation(AnimationUtils.loadAnimation(requireActivity(), R.anim.visualizer_hide_effect));
         if (frameLayout.getVisibility() == View.VISIBLE)
-            frameLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
+            frameLayout.startAnimation(AnimationUtils.loadAnimation(requireActivity(), R.anim.visualizer_hide_effect));
         frameLayout.setVisibility(View.GONE);
         visualizerLayout.setVisibility(View.GONE);
         obscureLayoutView.hide();
@@ -347,7 +345,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void setErrorMessage(String message, View root) {
-        if (!threadManager.isDestroyed())
+        if (!isFragmentDestroyed)
             Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
 
@@ -356,7 +354,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onDestroyView() {
-        threadManager.destroyAllAndNullMe();
+        isFragmentDestroyed = true;
         super.onDestroyView();
     }
 }

@@ -85,16 +85,20 @@ class CustomSlidePolicyFragment(
         image.setImageDrawable(ResourcesCompat.getDrawable(resources, imageDrawable, null))
 
 
-        if(powerManager.isIgnoringBatteryOptimizations(requireContext().packageName)){
+        if (powerManager.isIgnoringBatteryOptimizations(requireActivity().packageName)) {
             yesButton.text = "{cmd_checkbox_marked_circle_outline}"
             yesButton.textSize = 36F
             yesButton.background = null
         } else {
             yesButton.setOnClickListener {
-                //AutoStartPermissionHelper.getInstance().getAutoStartPermission(requireContext(), true)
-                startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).setData(Uri.parse("package:" + requireContext().packageName)))
+                //AutoStartPermissionHelper.getInstance().getAutoStartPermission(requireActivity(), true)
+                startActivity(
+                    Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).setData(
+                        Uri.parse("package:" + requireActivity().packageName)
+                    )
+                )
                 Toast.makeText(
-                    requireContext(),
+                    requireActivity(),
                     "Disattiva il risparmio batteria!",
                     Toast.LENGTH_SHORT
                 ).show()
@@ -108,12 +112,12 @@ class CustomSlidePolicyFragment(
 
     //getter per viewed, richiamato da SlidePolicy
     override val isPolicyRespected: Boolean
-        get() = powerManager.isIgnoringBatteryOptimizations(requireContext().packageName)
+        get() = powerManager.isIgnoringBatteryOptimizations(requireActivity().packageName)
 
     override fun onUserIllegallyRequestedNextPage() {
         //Eseguito quando isPolicyRespected è false
         Toast.makeText(
-            requireContext(),
+            requireActivity(),
             "Leggi le istruzioni!",
             Toast.LENGTH_SHORT
         ).show()

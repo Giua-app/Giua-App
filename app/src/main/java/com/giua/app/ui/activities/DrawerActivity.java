@@ -45,6 +45,7 @@ import com.giua.app.BuildConfig;
 import com.giua.app.CheckNewsReceiver;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
+import com.giua.app.InternetThread;
 import com.giua.app.LoggerManager;
 import com.giua.app.LoginData;
 import com.giua.app.R;
@@ -100,6 +101,8 @@ public class DrawerActivity extends AppCompatActivity {
             savedInstanceState.clear();
         super.onCreate(savedInstanceState);
         loggerManager = new LoggerManager("DrawerActivity", this);
+        if (GlobalVariables.internetThread == null || GlobalVariables.internetThread.isInterrupted())
+            GlobalVariables.internetThread = new InternetThread();
         if (GlobalVariables.gS == null) {
             loggerManager.w("gs è null ma non dovrebbe esserlo quindi avvio AutomaticLogin");
             startActivity(new Intent(this, ActivityManager.class));
@@ -157,7 +160,7 @@ public class DrawerActivity extends AppCompatActivity {
                 setupMaterialDrawer();
                 return;
             }
-            new Thread(() -> {
+            GlobalVariables.internetThread.addRunnableToRun(() -> {
                 try {
                     runOnUiThread(this::setupMaterialDrawer);
                     GiuaScraper.userTypes _userType = GlobalVariables.gS.getUserTypeEnum();
@@ -170,7 +173,7 @@ public class DrawerActivity extends AppCompatActivity {
                     runOnUiThread(this::setupMaterialDrawer);
                 } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.MaintenanceIsActiveException | GiuaScraperExceptions.SiteConnectionProblems ignored) {
                 }
-            }).start();
+            });
         } else {
             loggerManager.w("Applicazione in offline mode");
             userType = "Offline";
@@ -292,7 +295,6 @@ public class DrawerActivity extends AppCompatActivity {
     private boolean onChangeAccountFromDrawer(View view, IProfile iProfile, boolean b) {
         if (iProfile.getName().getText().equals("Aggiungi account")) {
             startActivity(new Intent(this, MainLoginActivity.class).putExtra("addAccount", true));
-            finish();
         } else {
             String selectedProfileUsername = iProfile.getName().toString();
             String[] allUsernames = AppData.getAllAccountNames(this).split(";");
@@ -309,11 +311,11 @@ public class DrawerActivity extends AppCompatActivity {
                 Snackbar.make(view, "Qualcosa è andato storto, impossibile continuare.", Snackbar.LENGTH_SHORT).show();
                 return false;   //Chiudi il drawer
             }
-            LoginData.setCredentialsSynchronously(this, allUsernames[indexOfSelectedUsername], allPasswords[indexOfSelectedUsername], "");
+            LoginData.setCredentials(this, allUsernames[indexOfSelectedUsername], allPasswords[indexOfSelectedUsername], "");
             GlobalVariables.gS = null;
             startActivity(new Intent(this, ActivityManager.class));
-            finish();
         }
+        finish();
         return true;    //Non chiudere il drawer
     }
 
@@ -711,7 +713,7 @@ public class DrawerActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        new Thread(() -> {  //Questo serve a prevenire la perdita di news
+        GlobalVariables.internetThread.addRunnableToRun(() -> {  //Questo serve a prevenire la perdita di news
             try {
                 AppData.saveNumberNewslettersInt(this, GlobalVariables.gS.getHomePage(false).getNumberNewsletters());
                 AppData.saveNumberAlertsInt(this, GlobalVariables.gS.getHomePage(false).getNumberAlerts());
@@ -724,13 +726,14 @@ public class DrawerActivity extends AppCompatActivity {
                 AppData.saveNumberVotesInt(this, numberVotes);
             } catch (Exception ignored) {
             }
-        }).start();
+        });
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
         loggerManager.d("onDestroy chiamato");
+        GlobalVariables.internetThread.interrupt();
         super.onDestroy();
     }
 }

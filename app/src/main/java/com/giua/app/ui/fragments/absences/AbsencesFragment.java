@@ -38,7 +38,6 @@ import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
-import com.giua.app.ThreadManager;
 import com.giua.app.ui.fragments.ObscureLayoutView;
 import com.giua.objects.Absence;
 import com.giua.pages.AbsencesPage;
@@ -52,7 +51,6 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
     View root;
     LoggerManager loggerManager;
     Activity activity;
-    ThreadManager threadManager;
     List<Absence> absences;
     SwipeRefreshLayout swipeRefreshLayout;
     TextView tvConfirmText;
@@ -62,6 +60,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
     LinearLayout otherInfoLayoutButton;
     LinearLayout confirmLayout;
     AbsencesPage absencesPage;
+    boolean isFragmentDestroyed = false;
     boolean confirmActionIsDelete;  //Indica cosa deve fare il bottone di conferma una volta cliccato. true: elimina la giustificazione ; false: la modifica/pubblica
     boolean refresh = false;
 
@@ -77,7 +76,6 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
         confirmLayout = root.findViewById(R.id.absences_confirm_layout);
 
         activity = requireActivity();
-        threadManager = new ThreadManager();
 
         swipeRefreshLayout.setRefreshing(true);
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
@@ -92,10 +90,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void loadDataAndViews() {
-        if (threadManager.isDestroyed())
-            return;
-
-        threadManager.addAndRun(() -> {
+        GlobalVariables.internetThread.addRunnableToRun(() -> {
             try {
                 absencesPage = GlobalVariables.gS.getAbsencesPage(refresh);
                 absences = absencesPage.getAllAbsences();
@@ -217,7 +212,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
             AbsenceView absenceView = latestAbsenceViewClicked;
             latestAbsenceViewClicked = null;
 
-            threadManager.addAndRun(() -> {
+            GlobalVariables.internetThread.addRunnableToRun(() -> {
                 activity.runOnUiThread(() -> swipeRefreshLayout.setRefreshing(true));
                 try {
                     if (!confirmActionIsDelete)
@@ -242,13 +237,13 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void setErrorMessage(String message, View root) {
-        if (!threadManager.isDestroyed())
+        if (!isFragmentDestroyed)
             Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void onDestroyView() {
-        threadManager.destroyAllAndNullMe();
+        isFragmentDestroyed = true;
         super.onDestroyView();
     }
 }

@@ -87,9 +87,9 @@ class CustomSlidePolicy2Fragment(
 
 
         yesButton.setOnClickListener {
-            AutoStartPermissionHelper.getInstance().getAutoStartPermission(requireContext(), true)
+            AutoStartPermissionHelper.getInstance().getAutoStartPermission(requireActivity(), true)
             Toast.makeText(
-                requireContext(),
+                requireActivity(),
                 "Abilita l'avvio automatico a Giua App!",
                 Toast.LENGTH_SHORT
             ).show()
@@ -119,7 +119,7 @@ class CustomSlidePolicy2Fragment(
     override fun onUserIllegallyRequestedNextPage() {
         //Eseguito quando isPolicyRespected è false
         Toast.makeText(
-            requireContext(),
+            requireActivity(),
             "Leggi le istruzioni!",
             Toast.LENGTH_SHORT
         ).show()

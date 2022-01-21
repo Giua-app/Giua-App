@@ -43,7 +43,6 @@ import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
-import com.giua.app.ThreadManager;
 import com.giua.objects.AgendaObject;
 import com.giua.objects.Homework;
 import com.giua.objects.Test;
@@ -72,13 +71,13 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     ScrollView scrollView;
     CompactCalendarView calendarView;
     SwipeRefreshLayout swipeRefreshLayout;
-    ThreadManager threadManager;
     SimpleDateFormat dateFormatForMonth;
     SimpleDateFormat dateFormatForYear;
     long lastRequestTime = 0;
     long lastOnDateCall = 0;
     boolean isLoadingData = false;
     boolean firstStart = true;
+    boolean isFragmentDestroyed = false;
     LoggerManager loggerManager;
 
     @SuppressLint("SetTextI18n")
@@ -99,7 +98,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         dateFormatForMonth = new SimpleDateFormat("MM", Locale.ITALIAN);
         dateFormatForYear = new SimpleDateFormat("yyyy", Locale.ITALIAN);
 
-        if (SettingsData.getSettingBoolean(requireContext(), SettingKey.DEMO_MODE)) {
+        if (SettingsData.getSettingBoolean(requireActivity(), SettingKey.DEMO_MODE)) {
             calendar = Calendar.getInstance();
             calendar.set(2021, 11, 1);
             currentDisplayedDate = calendar.getTime();
@@ -126,7 +125,6 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
             }
         });
 
-        threadManager = new ThreadManager();
         ((TextView) root.findViewById(R.id.agenda_calendar_month)).setText(getMonthFromNumber(Integer.parseInt(dateFormatForMonth.format(new Date()))));
         ((TextView) root.findViewById(R.id.agenda_calendar_year)).setText(dateFormatForYear.format(new Date()));
 
@@ -145,7 +143,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         if (!isLoadingData && System.nanoTime() - lastRequestTime > 500_000_000) {  //Anti click spam
             lastRequestTime = System.nanoTime();
             swipeRefreshLayout.setRefreshing(true);
-            threadManager.addAndRun(() -> {
+            GlobalVariables.internetThread.addRunnableToRun(() -> {
                 isLoadingData = true;
                 try {
                     allAgendaObjects = GlobalVariables.gS.getAgendaPage(false)
@@ -295,7 +293,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         lastOnDateCall = System.nanoTime();
         isLoadingData = true;
         swipeRefreshLayout.setRefreshing(true);
-        threadManager.addAndRun(() -> showDateActivities(selectedDate));
+        GlobalVariables.internetThread.addRunnableToRun(() -> showDateActivities(selectedDate));
     }
 
     private void onMonthChanged(Date firstDayOfNewMonth) {
@@ -437,7 +435,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void setErrorMessage(String message, View root) {
-        if (!threadManager.isDestroyed())
+        if (!isFragmentDestroyed)
             Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
     //endregion
@@ -445,7 +443,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void onDestroyView() {
         loggerManager.d("onDestroyView chiamato");
-        threadManager.destroyAllAndNullMe();
+        isFragmentDestroyed = true;
         super.onDestroyView();
     }
 }

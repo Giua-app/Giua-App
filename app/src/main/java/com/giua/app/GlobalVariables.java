@@ -23,4 +23,5 @@ import com.giua.webscraper.GiuaScraper;
 
 public class GlobalVariables {
     public static GiuaScraper gS = null;
+    public static InternetThread internetThread = null;
 }

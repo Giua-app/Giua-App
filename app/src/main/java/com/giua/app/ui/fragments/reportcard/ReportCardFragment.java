@@ -34,7 +34,6 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
-import com.giua.app.ThreadManager;
 import com.giua.objects.ReportCard;
 
 public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
@@ -46,9 +45,9 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
     ProgressBar pbLoadingPage;
     TextView tvNoElements;
     FragmentActivity activity;
-    ThreadManager threadManager;
     View root;
     boolean isFirstQuarter = true;
+    boolean isFragmentDestroyed = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_reportcard, container, false);
@@ -60,7 +59,6 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
         btnChangeQuarter = root.findViewById(R.id.report_card_btn_change_quarter);
 
         activity = requireActivity();
-        threadManager = new ThreadManager();
 
         //btnChangeQuarter.setOnClickListener(this::changeQuarterOnClick);
         //tvCurrentQuarter.setOnClickListener(this::changeQuarterOnClick);
@@ -96,9 +94,9 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
                 if (reportCard.exists) {
                     activity.runOnUiThread(this::addViews);
                     if (reportCard.finalResult.equals("AMMESSO")) {
-                        ((TextView) root.findViewById(R.id.report_card_txt_final_result)).setTextColor(getResources().getColor(R.color.good_vote, requireContext().getTheme()));
+                        ((TextView) root.findViewById(R.id.report_card_txt_final_result)).setTextColor(activity.getResources().getColor(R.color.good_vote, requireActivity().getTheme()));
                     } else {
-                        ((TextView) root.findViewById(R.id.report_card_txt_final_result)).setTextColor(getResources().getColor(R.color.bad_vote, requireContext().getTheme()));
+                        ((TextView) root.findViewById(R.id.report_card_txt_final_result)).setTextColor(activity.getResources().getColor(R.color.bad_vote, requireActivity().getTheme()));
                     }
                     activity.runOnUiThread(() -> ((TextView) root.findViewById(R.id.report_card_txt_final_result)).setText("Esito finale: " + reportCard.finalResult));
                     activity.runOnUiThread(() -> ((TextView) root.findViewById(R.id.report_card_txt_credits)).setText("Crediti: " + reportCard.credits));
@@ -153,7 +151,7 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
     //region Listeners
 
     private void changeQuarterOnClick(View view) {
-        Animation animation = AnimationUtils.loadAnimation(requireContext(), R.anim.change_quarter);
+        Animation animation = AnimationUtils.loadAnimation(requireActivity(), R.anim.change_quarter);
         btnChangeQuarter.startAnimation(animation);
         isFirstQuarter = !isFirstQuarter;
         if (isFirstQuarter)

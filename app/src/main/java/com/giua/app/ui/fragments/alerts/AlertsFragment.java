@@ -45,7 +45,6 @@ import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
-import com.giua.app.ThreadManager;
 import com.giua.app.ui.fragments.ObscureLayoutView;
 import com.giua.objects.Alert;
 import com.giua.webscraper.DownloadedFile;
@@ -75,7 +74,6 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
     ObscureLayoutView obscureLayoutView;
     View root;
     FragmentActivity activity;
-    ThreadManager threadManager;
     int currentPage = 1;    //Rappresenta la pagina degli avvisi da caricare
     boolean hasLoadedAllPages = false;
     boolean isLoadingContent = false;
@@ -83,9 +81,10 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
     boolean isDownloading = false;
     boolean offlineMode = false;
     boolean demoMode = false;
+    boolean isFragmentDestroyed = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        demoMode = SettingsData.getSettingBoolean(requireContext(), SettingKey.DEMO_MODE);
+        demoMode = SettingsData.getSettingBoolean(requireActivity(), SettingKey.DEMO_MODE);
         if (getArguments() != null)
             offlineMode = getArguments().getBoolean("offline");
         root = inflater.inflate(R.layout.fragment_alerts, container, false);
@@ -108,16 +107,15 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
         obscureLayoutView = root.findViewById(R.id.alert_obscure_layout);
         detailsLayout = root.findViewById(R.id.alert_details_layout);
         attachmentLayout = root.findViewById(R.id.alert_attachment_layout);
-        pbLoadingContent = new ProgressBar(requireContext());
+        pbLoadingContent = new ProgressBar(requireActivity());
 
         activity = requireActivity();
-        threadManager = new ThreadManager();
 
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         fabGoUp.setOnClickListener(this::btnGoUpOnClick);
         scrollView.setOnScrollChangeListener(this::scrollViewOnScroll);
         obscureLayoutView.setOnClickListener((view) -> {
-            detailsLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_hide_effect));
+            detailsLayout.startAnimation(AnimationUtils.loadAnimation(requireActivity(), R.anim.visualizer_hide_effect));
             obscureLayoutView.hide();
             detailsLayout.setVisibility(View.GONE);
         });
@@ -134,14 +132,14 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
             isLoadingContent = true;
             if (currentPage > 1 && pbLoadingContent.getParent() == null)
                 viewsLayout.addView(pbLoadingContent);
-            threadManager.addAndRun(() -> {
+            GlobalVariables.internetThread.addRunnableToRun(() -> {
                 try {
                     if (!offlineMode)
                         allAlerts = GlobalVariables.gS.getAlertsPage(false).getAllAlerts(currentPage);
                     else {
                         hasLoadedAllPages = true;
                         /*try {
-                            allAlerts = new JsonHelper().parseJsonForAlerts(AppData.getAlertsString(requireContext()));
+                            allAlerts = new JsonHelper().parseJsonForAlerts(AppData.getAlertsString(requireActivity()));
                         } catch (Exception ignored) {
                         }*/
                     }
@@ -190,7 +188,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
         params.setMargins(0, 40, 0, 0);
 
         for (Alert alert : allAlerts) {
-            AlertView view = new AlertView(requireContext(), null, alert);
+            AlertView view = new AlertView(requireActivity(), null, alert);
             view.setLayoutParams(params);
             view.setId(View.generateViewId());
 
@@ -215,7 +213,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
     private void alertViewOnClick(View view) {
         pbLoadingPage.setVisibility(View.VISIBLE);
 
-        threadManager.addAndRun(() -> {
+        GlobalVariables.internetThread.addRunnableToRun(() -> {
             try {
                 ((AlertView) view).alert.getDetails(GlobalVariables.gS);
 
@@ -237,20 +235,20 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                     params.setMargins(0, 20, 0, 0);
                     for (int i = 0; i < urlsListLength; i++) {
-                        TextView tvUrl = new TextView(requireContext());
+                        TextView tvUrl = new TextView(requireActivity());
                         tvUrl.setText("Allegato " + (i + 1));
                         tvUrl.setTypeface(tvNoElements.getTypeface(), Typeface.NORMAL);
-                        tvUrl.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.corner_radius_10dp, activity.getTheme()));
-                        tvUrl.setBackgroundTintList(getResources().getColorStateList(R.color.main_color, activity.getTheme()));
+                        tvUrl.setBackground(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.corner_radius_10dp, activity.getTheme()));
+                        tvUrl.setBackgroundTintList(activity.getResources().getColorStateList(R.color.main_color, activity.getTheme()));
                         tvUrl.setPadding(20, 20, 20, 20);
                         tvUrl.setLayoutParams(params);
-                        tvUrl.setTextColor(getResources().getColorStateList(R.color.light_white_night_black, activity.getTheme()));
+                        tvUrl.setTextColor(activity.getResources().getColorStateList(R.color.light_white_night_black, activity.getTheme()));
                         int finalI = i;
                         tvUrl.setOnClickListener((view2) -> downloadAndOpenFile(alert.attachmentUrls.get(finalI)));
                         attachmentLayout.addView(tvUrl);
                     }
 
-                    detailsLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.visualizer_show_effect));
+                    detailsLayout.startAnimation(AnimationUtils.loadAnimation(requireActivity(), R.anim.visualizer_show_effect));
                     detailsLayout.setVisibility(View.VISIBLE);
                     obscureLayoutView.show();
                     pbLoadingPage.setVisibility(View.GONE);
@@ -314,10 +312,10 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
             isDownloading = true;
             pbLoadingPage.setZ(10f);
             pbLoadingPage.setVisibility(View.VISIBLE);
-            threadManager.addAndRun(() -> {
+            GlobalVariables.internetThread.addRunnableToRun(() -> {
                 try {
                     DownloadedFile downloadedFile = GlobalVariables.gS.download(url);
-                    FileOutputStream out = new FileOutputStream(requireContext().getFilesDir() + "/" + "allegato." + downloadedFile.fileExtension);
+                    FileOutputStream out = new FileOutputStream(requireActivity().getFilesDir() + "/" + "allegato." + downloadedFile.fileExtension);
                     if (downloadedFile.data != null && downloadedFile.data.length > 0) {
                         out.write(downloadedFile.data);
                         out.close();
@@ -343,7 +341,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
      */
     private void openFile(String fileName, String fileExtension) {
         Intent target = new Intent(Intent.ACTION_VIEW);
-        target.setData(FileProvider.getUriForFile(activity, "com.giua.app.fileprovider", new File(requireContext().getFilesDir() + "/" + fileName)));
+        target.setData(FileProvider.getUriForFile(activity, "com.giua.app.fileprovider", new File(requireActivity().getFilesDir() + "/" + fileName)));
         target.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         Intent intent = Intent.createChooser(target, "Apri con:");
@@ -362,7 +360,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
     }
 
     public void setErrorMessage(String message, View root) {
-        if (!threadManager.isDestroyed() && canSendErrorMessage)
+        if (!isFragmentDestroyed && canSendErrorMessage)
             Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
 
@@ -400,7 +398,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onDestroyView() {
-        threadManager.destroyAllAndNullMe();
+        isFragmentDestroyed = true;
         super.onDestroyView();
     }
 }

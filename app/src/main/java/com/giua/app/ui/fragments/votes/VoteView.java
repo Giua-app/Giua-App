@@ -134,7 +134,7 @@ public class VoteView extends ConstraintLayout {
         int dp = convertDpToPx(5);
         textView.setPadding(dp, dp, dp, dp);
         textView.setBackgroundTintList(getColorFromVote(mean));
-        textView.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.corner_radius_10dp, context.getTheme()));
+        textView.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.corner_radius_10dp, context.getTheme()));
         textView.setLayoutParams(layoutParams);
 
         return textView;

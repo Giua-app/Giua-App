@@ -67,7 +67,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         // Load the preferences from an XML resource
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
-        this.context = requireContext();
+        this.context = requireActivity();
         loggerManager = new LoggerManager("SettingsFragment", context);
         setupAllObjects();
     }
@@ -119,7 +119,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private boolean swShowVoteNotRelevantForMeanOnChartListener(Preference preference, Object o) {
-        SettingsData.saveSettingBoolean(requireContext(), SettingKey.VOTE_NRFM_ON_CHART, (boolean) o);
+        SettingsData.saveSettingBoolean(requireActivity(), SettingKey.VOTE_NRFM_ON_CHART, (boolean) o);
         return true;
     }
 
@@ -144,7 +144,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private boolean btnBugReportOnClick(Preference preference) {
-        startActivity(new Intent(requireContext(), BugReportActivity.class));
+        startActivity(new Intent(requireActivity(), BugReportActivity.class));
         return true;
     }
 
@@ -155,7 +155,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private boolean swShowCentsListener(Preference preference, Object o) {
-        SettingsData.saveSettingBoolean(requireContext(), SettingKey.SHOW_CENTS, (boolean) o);
+        SettingsData.saveSettingBoolean(requireActivity(), SettingKey.SHOW_CENTS, (boolean) o);
         return true;
     }
 
@@ -166,7 +166,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private boolean swExpModeChangeListener(Preference preference, Object o) {
-        SettingsData.saveSettingBoolean(requireContext(), SettingKey.EXP_MODE, (boolean) o);
+        SettingsData.saveSettingBoolean(requireActivity(), SettingKey.EXP_MODE, (boolean) o);
         new LoggerManager("SettigsFragment", getContext()).w("Funzionalità Sperimentali: " + (boolean) o);
         return true;
     }
@@ -181,29 +181,29 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private boolean setupNotificationManagerOnClick(Preference preference) {
         Set<String> l = new HashSet<>();
-        if (SettingsData.getSettingBoolean(requireContext(), SettingKey.NEWSLETTER_NOTIFICATION))
+        if (SettingsData.getSettingBoolean(requireActivity(), SettingKey.NEWSLETTER_NOTIFICATION))
             l.add("0");
-        if (SettingsData.getSettingBoolean(requireContext(), SettingKey.ALERTS_NOTIFICATION))
+        if (SettingsData.getSettingBoolean(requireActivity(), SettingKey.ALERTS_NOTIFICATION))
             l.add("1");
-        if (SettingsData.getSettingBoolean(requireContext(), SettingKey.UPDATES_NOTIFICATION))
+        if (SettingsData.getSettingBoolean(requireActivity(), SettingKey.UPDATES_NOTIFICATION))
             l.add("2");
-        if (SettingsData.getSettingBoolean(requireContext(), SettingKey.VOTES_NOTIFICATION))
+        if (SettingsData.getSettingBoolean(requireActivity(), SettingKey.VOTES_NOTIFICATION))
             l.add("3");
-        if (SettingsData.getSettingBoolean(requireContext(), SettingKey.HOMEWORKS_NOTIFICATION))
+        if (SettingsData.getSettingBoolean(requireActivity(), SettingKey.HOMEWORKS_NOTIFICATION))
             l.add("4");
-        if (SettingsData.getSettingBoolean(requireContext(), SettingKey.TESTS_NOTIFICATION))
+        if (SettingsData.getSettingBoolean(requireActivity(), SettingKey.TESTS_NOTIFICATION))
             l.add("5");
         ((MultiSelectListPreference) preference).setValues(l);
         return true;
     }
 
     private boolean setupNotificationManagerChangeListener(Preference preference, Object o) {
-        SettingsData.saveSettingBoolean(requireContext(), SettingKey.NEWSLETTER_NOTIFICATION, ((HashSet) o).contains("0"));
-        SettingsData.saveSettingBoolean(requireContext(), SettingKey.ALERTS_NOTIFICATION, ((HashSet) o).contains("1"));
-        SettingsData.saveSettingBoolean(requireContext(), SettingKey.UPDATES_NOTIFICATION, ((HashSet) o).contains("2"));
-        SettingsData.saveSettingBoolean(requireContext(), SettingKey.VOTES_NOTIFICATION, ((HashSet) o).contains("3"));
-        SettingsData.saveSettingBoolean(requireContext(), SettingKey.HOMEWORKS_NOTIFICATION, ((HashSet) o).contains("4"));
-        SettingsData.saveSettingBoolean(requireContext(), SettingKey.TESTS_NOTIFICATION, ((HashSet) o).contains("5"));
+        SettingsData.saveSettingBoolean(requireActivity(), SettingKey.NEWSLETTER_NOTIFICATION, ((HashSet) o).contains("0"));
+        SettingsData.saveSettingBoolean(requireActivity(), SettingKey.ALERTS_NOTIFICATION, ((HashSet) o).contains("1"));
+        SettingsData.saveSettingBoolean(requireActivity(), SettingKey.UPDATES_NOTIFICATION, ((HashSet) o).contains("2"));
+        SettingsData.saveSettingBoolean(requireActivity(), SettingKey.VOTES_NOTIFICATION, ((HashSet) o).contains("3"));
+        SettingsData.saveSettingBoolean(requireActivity(), SettingKey.HOMEWORKS_NOTIFICATION, ((HashSet) o).contains("4"));
+        SettingsData.saveSettingBoolean(requireActivity(), SettingKey.TESTS_NOTIFICATION, ((HashSet) o).contains("5"));
         return true;
     }
 
@@ -214,7 +214,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private boolean swDemoModeChangeListener(Preference preference, Object o) {
-        SettingsData.saveSettingBoolean(requireContext(), SettingKey.DEMO_MODE, (boolean) o);
+        SettingsData.saveSettingBoolean(requireActivity(), SettingKey.DEMO_MODE, (boolean) o);
         startActivity(new Intent(requireActivity(), ActivityManager.class));
         return true;
     }
@@ -226,7 +226,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private boolean swDebugModeChangeListener(Preference preference, Object o) {
-        SettingsData.saveSettingBoolean(requireContext(), SettingKey.DEBUG_MODE, (boolean) o);
+        SettingsData.saveSettingBoolean(requireActivity(), SettingKey.DEBUG_MODE, (boolean) o);
         findPreference("debugCategory").setVisible((boolean) o);
         return true;
     }
@@ -238,7 +238,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private boolean swNotificationChangeListener(Preference preference, Object o) {
-        SettingsData.saveSettingBoolean(requireContext(), SettingKey.NOTIFICATION, (boolean) o);
+        SettingsData.saveSettingBoolean(requireActivity(), SettingKey.NOTIFICATION, (boolean) o);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent iCheckNewsReceiver = new Intent(context, CheckNewsReceiver.class);
         boolean alarmUp = (PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE) != null);  //Controlla se l'allarme è già settato
@@ -307,7 +307,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void setupSiteUrlObject() {
         EditTextPreference etSiteUrl = Objects.requireNonNull(findPreference("siteUrl"));
-        String defaultUrl = SettingsData.getSettingString(requireContext(), SettingKey.DEFAULT_URL);
+        String defaultUrl = SettingsData.getSettingString(requireActivity(), SettingKey.DEFAULT_URL);
         if (!defaultUrl.equals(""))
             etSiteUrl.setText(defaultUrl);
         else
@@ -318,7 +318,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private boolean siteUrlOnClick(Preference preference) {
         if (!Pattern.matches("https?://([a-zA-Z0-9]+[.])+([a-zA-Z0-9]+)(:[0-9]+)?", ((EditTextPreference) preference).getText())) {
-            String defaultUrl = SettingsData.getSettingString(requireContext(), SettingKey.DEFAULT_URL);
+            String defaultUrl = SettingsData.getSettingString(requireActivity(), SettingKey.DEFAULT_URL);
             if (!defaultUrl.equals(""))
                 ((EditTextPreference) preference).setText(defaultUrl);
             else
@@ -329,7 +329,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private boolean lThemeChangeListener(Preference preference, Object o) {
-        SettingsData.saveSettingString(requireContext(), SettingKey.THEME, (String) o);
+        SettingsData.saveSettingString(requireActivity(), SettingKey.THEME, (String) o);
         switch ((String) o) {
             case "0":
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -349,17 +349,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private boolean btnAboutScreenOnClick(Preference preference) {
-        startActivity(new Intent(requireContext(), AboutActivity.class));
+        startActivity(new Intent(requireActivity(), AboutActivity.class));
         return true;
     }
 
     private boolean btnViewLogScreenOnClick(Preference preference) {
-        startActivity(new Intent(requireContext(), LogdogViewerActivity.class));
+        startActivity(new Intent(requireActivity(), LogdogViewerActivity.class));
         return true;
     }
 
     private boolean btnIntroScreenOnClick(Preference preference) {
-        startActivity(new Intent(requireContext(), AppIntroActivity.class));
+        startActivity(new Intent(requireActivity(), AppIntroActivity.class));
         return true;
     }
 

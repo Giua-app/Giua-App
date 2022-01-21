@@ -46,7 +46,6 @@ import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
-import com.giua.app.ThreadManager;
 import com.giua.app.ui.activities.DrawerActivity;
 import com.giua.objects.Vote;
 import com.giua.webscraper.GiuaScraperExceptions;
@@ -62,7 +61,6 @@ import java.util.Vector;
 
 public class HomeFragment extends Fragment implements IGiuaAppFragment {
 
-    ThreadManager threadManager;
     LineChart chart;
     Activity activity;
     TextView tvHomeworks;
@@ -71,13 +69,13 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     View root;
     LoggerManager loggerManager;
     boolean forceRefresh = false;
+    boolean isFragmentDestroyed = false;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_home, container, false);
 
-        threadManager = new ThreadManager();
         activity = requireActivity();
         loggerManager = new LoggerManager("HomeFragment", activity);
 
@@ -85,7 +83,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         chart.getAxisLeft().setEnabled(false);
         chart.getAxisRight().setEnabled(true);
         chart.getAxisRight().setTextSize(14);
-        chart.getAxisRight().setTextColor(getResources().getColor(R.color.night_white_light_black, activity.getTheme()));
+        chart.getAxisRight().setTextColor(activity.getResources().getColor(R.color.night_white_light_black, activity.getTheme()));
         chart.getAxisRight().setAxisMinimum(0f);
         chart.getAxisRight().setAxisMaximum(10f);
         chart.getAxisRight().setLabelCount(5, false);
@@ -95,7 +93,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         desc.setText("");
         chart.setDescription(desc);
         chart.getLegend().setTextSize(13);
-        chart.getLegend().setTextColor(getResources().getColor(R.color.night_white_light_black, activity.getTheme()));
+        chart.getLegend().setTextColor(activity.getResources().getColor(R.color.night_white_light_black, activity.getTheme()));
         chart.getLegend().setWordWrapEnabled(true);
         chart.setTouchEnabled(false);
         chart.setDragEnabled(false);
@@ -111,7 +109,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         swipeRefreshLayout.setRefreshing(true);
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
 
-        new Thread(() -> {
+        GlobalVariables.internetThread.addRunnableToRun(() -> {
             //TODO: Mettere la cache for check updates (almeno tra activity manager e home fragemnt visto che in ogni caso viene chiamata due volte)
             AppUpdateManager manager = new AppUpdateManager(activity);
             if (manager.checkForUpdates()) {
@@ -121,8 +119,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
                     root.findViewById(R.id.home_app_update_reminder).setOnClickListener(this::updateReminderOnClick);
                 });
             }
-        }).start();
-
+        });
 
 
         loadDataAndViews();
@@ -131,7 +128,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void loadDataAndViews() {
-        threadManager.addAndRun(() -> {
+        GlobalVariables.internetThread.addRunnableToRun(() -> {
             try {
                 Map<String, List<Vote>> allVotes = GlobalVariables.gS.getVotesPage(forceRefresh).getAllVotes();
                 int homeworks = GlobalVariables.gS.getHomePage(forceRefresh).getNearHomeworks();
@@ -140,7 +137,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
                 if (forceRefresh)
                     forceRefresh = false;
 
-                if (threadManager.isDestroyed())
+                if (isFragmentDestroyed)
                     return;
 
                 activity.runOnUiThread(() -> {
@@ -202,11 +199,11 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
 
         root.findViewById(R.id.home_txt_homeworks).setVisibility(View.GONE);
         root.findViewById(R.id.home_txt_tests).setVisibility(View.GONE);
-        root.findViewById(R.id.home_agenda_alerts).setBackgroundTintList(getResources().getColorStateList(R.color.middle_vote, activity.getTheme()));
+        root.findViewById(R.id.home_agenda_alerts).setBackgroundTintList(activity.getResources().getColorStateList(R.color.middle_vote, activity.getTheme()));
 
         if (homeworks == 0 && tests == 0) {
             root.findViewById(R.id.home_agenda_alerts).setVisibility(View.VISIBLE);
-            root.findViewById(R.id.home_agenda_alerts).setBackgroundTintList(getResources().getColorStateList(R.color.general_view_color, activity.getTheme()));
+            root.findViewById(R.id.home_agenda_alerts).setBackgroundTintList(activity.getResources().getColorStateList(R.color.general_view_color, activity.getTheme()));
             tvHomeworks.setVisibility(View.VISIBLE);
             tvHomeworks.setText("Non sono presenti attività nei prossimi giorni");
         }
@@ -341,13 +338,13 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         float meanFirstQuarter = getMeanOfAllVotes(allVotes);
 
         if (meanFirstQuarter == 0f)
-            ((TextView) root.findViewById(R.id.home_txt_mean)).setTextColor(getResources().getColorStateList(R.color.non_vote, activity.getTheme()));
+            ((TextView) root.findViewById(R.id.home_txt_mean)).setTextColor(activity.getResources().getColorStateList(R.color.non_vote, activity.getTheme()));
         else if (meanFirstQuarter >= 6)
-            ((TextView) root.findViewById(R.id.home_txt_mean)).setTextColor(getResources().getColorStateList(R.color.good_vote_darker, activity.getTheme()));
+            ((TextView) root.findViewById(R.id.home_txt_mean)).setTextColor(activity.getResources().getColorStateList(R.color.good_vote_darker, activity.getTheme()));
         else if (meanFirstQuarter < 6 && meanFirstQuarter >= 5)
-            ((TextView) root.findViewById(R.id.home_txt_mean)).setTextColor(getResources().getColorStateList(R.color.middle_vote, activity.getTheme()));
+            ((TextView) root.findViewById(R.id.home_txt_mean)).setTextColor(activity.getResources().getColorStateList(R.color.middle_vote, activity.getTheme()));
         else
-            ((TextView) root.findViewById(R.id.home_txt_mean)).setTextColor(getResources().getColorStateList(R.color.bad_vote, activity.getTheme()));
+            ((TextView) root.findViewById(R.id.home_txt_mean)).setTextColor(activity.getResources().getColorStateList(R.color.bad_vote, activity.getTheme()));
         if (meanFirstQuarter == 0f)
             ((TextView) root.findViewById(R.id.home_txt_mean)).setText("/");
         else
@@ -420,13 +417,13 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void setErrorMessage(String message, View root) {
-        if (!threadManager.isDestroyed())
+        if (!isFragmentDestroyed)
             Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void onDestroyView() {
-        threadManager.destroyAllAndNullMe();
+        isFragmentDestroyed = true;
         super.onDestroyView();
     }
 }
