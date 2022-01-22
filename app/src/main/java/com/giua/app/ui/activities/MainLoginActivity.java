@@ -165,7 +165,9 @@ public class MainLoginActivity extends AppCompatActivity {
 
             loggerManager.w("Aggiornamento installato rilevato");
             loggerManager.d("Cancello apk dell'aggiornamento e mostro changelog");
-            Analytics.sendDefaultRequest("Aggiornamenti App");
+            new Analytics.Builder("App aggiornata")
+                    .addCustomValue("new_ver", BuildConfig.VERSION_NAME)
+                    .addCustomValue("old_ver", AppData.getAppVersion(this)).send();
             AppUpdateManager upd = new AppUpdateManager(MainLoginActivity.this);
             upd.deleteOldApk();
             new Thread(upd::showDialogReleaseChangelog).start();
@@ -276,7 +278,8 @@ public class MainLoginActivity extends AppCompatActivity {
 
     private void startDrawerActivity() {
         loggerManager.d("Avvio DrawerActivity");
-        Analytics.sendDefaultRequest("Login OK (Genitore)");
+        new Analytics.Builder("Logged in")
+                .addCustomValue("account_type", GlobalVariables.gS.getUserTypeString()).send();
         Intent intent = new Intent(MainLoginActivity.this, DrawerActivity.class);
         startActivity(intent);
     }

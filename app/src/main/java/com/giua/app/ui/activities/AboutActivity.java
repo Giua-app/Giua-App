@@ -267,7 +267,6 @@ public class AboutActivity extends MaterialAboutActivity {
 
     private void justANormalJavaFunction(){
         importantInteger++;
-        loggerManager.d("...");
         switch(importantInteger){
             case 3:
                 Snackbar.make(findViewById(android.R.id.content), ";)", Snackbar.LENGTH_SHORT).show();

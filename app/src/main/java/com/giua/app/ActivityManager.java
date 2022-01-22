@@ -86,6 +86,7 @@ public class ActivityManager extends AppCompatActivity {
         if (!defaultUrl.equals(""))
             GiuaScraper.setSiteURL(defaultUrl);
 
+        Analytics.sendDefaultRequest("Avvio");
 
         if(getIntent().getBooleanExtra("fromCAOC", false)){
             loggerManager.d("Individuato crash precedente, invio segnalazione");
@@ -93,8 +94,6 @@ public class ActivityManager extends AppCompatActivity {
                     .addCustomValue("crash_stacktrace", getIntent().getStringExtra("stacktrace"))
                     .send();
         }
-
-        //GiuaScraper.setSiteURL("http://hiemvault.ddns.net:9090");       //Usami solo per DEBUG per non andare continuamente nelle impostazioni
 
         checkForCompatibility();
         final int introStatus = AppData.getIntroStatus(this);
@@ -104,7 +103,7 @@ public class ActivityManager extends AppCompatActivity {
          * 1 Intro già vista
          * 0 Intro mai vista
          * -1 Intro mai vista (default se non impostato)
-         * -2 App aggiornata (welcomeBack mai visto)
+         * -2 App aggiornata (welcomeBack 061 e 062 mai visto)
          *
          */
         loggerManager.d("introStatus è " + introStatus);

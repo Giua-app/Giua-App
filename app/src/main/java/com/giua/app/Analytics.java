@@ -20,6 +20,7 @@
 package com.giua.app;
 
 import android.os.Build;
+import android.util.Log;
 
 import com.giua.utils.JsonBuilder;
 import com.giua.webscraper.GiuaScraper;
@@ -65,15 +66,19 @@ public class Analytics {
      */
     public static String send(String body){
         Document doc;
+        Log.d("FINDME", "send: AAAAAAAAAAAAAA");
         try {
             doc = Jsoup.newSession().ignoreContentType(true).ignoreHttpErrors(true)
                     .url(API_ENDPOINT)
                     .header("Content-Type", "application/json")
                     .requestBody(body).post();
         } catch (IOException e){
+            e.printStackTrace();
+            Log.e("FINDME", "crash ", e);
             return null;
         }
-        //System.out.println(doc.text());
+        Log.d("FINDME", "send: " + doc.text());
+        System.out.println(doc.text());
         return doc.text();
     }
 
@@ -97,6 +102,7 @@ public class Analytics {
             body += "}}";
             Analytics.safeSend(body);
         }
+
 
         public Builder addCustomValue(String key, String value){
             body += ",\"" + key + "\": " + "\"" + JsonBuilder.escape(value) + "\"";
