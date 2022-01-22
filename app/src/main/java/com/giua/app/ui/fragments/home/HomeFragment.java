@@ -179,7 +179,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void agendaAlertsOnClick(View view) {
-        ((DrawerActivity) activity).changeFragment(R.id.nav_agenda);
+        ((DrawerActivity) activity).myFragmentManager.changeFragment(R.id.nav_agenda);
         ((DrawerActivity) activity).selectItemInDrawer(16);
     }
 

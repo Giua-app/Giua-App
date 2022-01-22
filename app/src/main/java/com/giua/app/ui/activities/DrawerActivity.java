@@ -30,13 +30,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.CookieManager;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.giua.app.ActivityManager;
 import com.giua.app.Analytics;
@@ -49,32 +47,16 @@ import com.giua.app.IGiuaAppFragment;
 import com.giua.app.InternetThread;
 import com.giua.app.LoggerManager;
 import com.giua.app.LoginData;
+import com.giua.app.MyDrawerManager;
+import com.giua.app.MyFragmentManager;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
-import com.giua.app.ui.fragments.absences.AbsencesFragment;
-import com.giua.app.ui.fragments.agenda.AgendaFragment;
-import com.giua.app.ui.fragments.alerts.AlertsFragment;
-import com.giua.app.ui.fragments.authorizations.AuthorizationFragment;
-import com.giua.app.ui.fragments.home.HomeFragment;
-import com.giua.app.ui.fragments.lessons.LessonsFragment;
-import com.giua.app.ui.fragments.newsletters.NewslettersFragment;
-import com.giua.app.ui.fragments.not_implemented.NotImplementedFragment;
-import com.giua.app.ui.fragments.reportcard.ReportCardFragment;
-import com.giua.app.ui.fragments.votes.VotesFragment;
 import com.giua.objects.Vote;
 import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
-import com.mikepenz.materialdrawer.AccountHeader;
-import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
-import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
-import com.mikepenz.materialdrawer.model.ExpandableDrawerItem;
-import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
-import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
-import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
@@ -93,9 +75,11 @@ public class DrawerActivity extends AppCompatActivity {
     String goTo = "";
     LoggerManager loggerManager;
     String userType = "Tipo utente non caricato";
-    String username = "Nome utente non caricato";
+    String realUsername = "Nome utente non caricato";
     Drawer mDrawer;
     String unstableFeatures = "";
+    public MyFragmentManager myFragmentManager;
+    MyDrawerManager myDrawerManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,21 +104,26 @@ public class DrawerActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        myFragmentManager = new MyFragmentManager(this, toolbar, getSupportFragmentManager(), offlineMode, demoMode, unstableFeatures);
+        myDrawerManager = new MyDrawerManager(this, this::onChangeAccountFromDrawer,
+                this::settingsItemOnClick, this::logoutItemOnClick,
+                realUsername, userType, toolbar, myFragmentManager, demoMode);
+
         bundle = new Bundle();
         bundle.putBoolean("offline", offlineMode);
 
         if (goTo == null || goTo.equals(""))
-            changeFragment(R.id.nav_home);
+            myFragmentManager.changeFragment(R.id.nav_home);
         else if (goTo.equals("Newsletters"))
-            changeFragment(R.id.nav_newsletters);
+            myFragmentManager.changeFragment(R.id.nav_newsletters);
         else if (goTo.equals("Alerts"))
-            changeFragment(R.id.nav_alerts);
+            myFragmentManager.changeFragment(R.id.nav_alerts);
         else if (goTo.equals("Votes"))
-            changeFragment(R.id.nav_votes);
+            myFragmentManager.changeFragment(R.id.nav_votes);
         else if (goTo.equals("Agenda"))
-            changeFragment(R.id.nav_agenda);
+            myFragmentManager.changeFragment(R.id.nav_agenda);
         else
-            changeFragment(R.id.nav_home);
+            myFragmentManager.changeFragment(R.id.nav_home);
 
         //Setup CheckNewsReceiver
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -142,51 +131,58 @@ public class DrawerActivity extends AppCompatActivity {
         boolean alarmUp = (PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE) != null);  //Controlla se l'allarme è già settato
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, 0);
         loggerManager.d("L'allarme è già settato?: " + alarmUp);
-        //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000, pendingIntent);    //DEBUG
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000, pendingIntent);    //DEBUG
         if (!alarmUp && !LoginData.getUser(this).equals("") && SettingsData.getSettingBoolean(this, SettingKey.NOTIFICATION)) {
 
             Random r = new Random(SystemClock.elapsedRealtime());
             long interval = AlarmManager.INTERVAL_HOUR + r.nextInt(3_600_000);
 
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME,
+            /*alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME,
                     SystemClock.elapsedRealtime() + interval,   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
-                    pendingIntent);
+                    pendingIntent);*/
             loggerManager.d("Alarm per CheckNews settato a " + (interval / 60_000) + " minuti");
-            //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000, pendingIntent);    //DEBUG
+            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000, pendingIntent);    //DEBUG
         }
 
         if (!offlineMode) {
             if (SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE)) {
                 userType = "DEMO";
-                username = "DEMO";
-                setupMaterialDrawer();
+                realUsername = "DEMO";
+                myDrawerManager.userType = userType;
+                myDrawerManager.realUsername = realUsername;
+                mDrawer = myDrawerManager.setupMaterialDrawer();
                 return;
             }
             GlobalVariables.internetThread.addRunnableToRun(() -> {
                 try {
-                    runOnUiThread(this::setupMaterialDrawer);
+                    runOnUiThread(() -> mDrawer = myDrawerManager.setupMaterialDrawer());
                     GiuaScraper.userTypes _userType = GlobalVariables.gS.getUserTypeEnum();
                     String user = GlobalVariables.gS.loadUserFromDocument();
                     if (_userType == GiuaScraper.userTypes.PARENT)
                         userType = "Genitore";
                     else if (_userType == GiuaScraper.userTypes.STUDENT)
                         userType = "Studente";
-                    username = user;
-                    runOnUiThread(this::setupMaterialDrawer);
+                    realUsername = user;
+                    myDrawerManager.userType = userType;
+                    myDrawerManager.realUsername = realUsername;
+                    runOnUiThread(() -> mDrawer = myDrawerManager.setupMaterialDrawer());
                 } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.MaintenanceIsActiveException | GiuaScraperExceptions.SiteConnectionProblems ignored) {
                 }
             });
         } else {
             loggerManager.w("Applicazione in offline mode");
             userType = "Offline";
-            username = "Offline";
-            setupMaterialDrawer();
+            realUsername = "Offline";
+            myDrawerManager.userType = userType;
+            myDrawerManager.realUsername = realUsername;
+            mDrawer = myDrawerManager.setupMaterialDrawer();
         }
 
         new Thread(() -> {
             loggerManager.d("Scarico le informazioni sulle funzionalità instabili");
             try {
                 unstableFeatures = GlobalVariables.gS.getExtPage("https://giua-app.github.io/unstable_features2.txt").text();
+                myFragmentManager.unstableFeatures = unstableFeatures;
             } catch (Exception ignored) {}
 
         }).start();
@@ -211,90 +207,36 @@ public class DrawerActivity extends AppCompatActivity {
         AppData.saveAppVersion(this, BuildConfig.VERSION_NAME);
     }
 
-    private void setupMaterialDrawer() {
-        String actualUsername = LoginData.getUser(this);
 
-        // Create the AccountHeader
-        AccountHeaderBuilder accountHeaderBuilder = new AccountHeaderBuilder()
-                .withActivity(this)
-                .withHeaderBackground(R.color.relative_main_color)
-                .withTextColor(getColor(R.color.white))
-                .withSelectionListEnabled(true)
-                .withOnlyMainProfileImageVisible(true)
-                .withOnAccountHeaderListener(this::onChangeAccountFromDrawer)
-                .withCurrentProfileHiddenInList(true)
-                .addProfiles(
-                        new ProfileDrawerItem().withName(username).withEmail(actualUsername)
-                                .withIcon(R.mipmap.ic_launcher)
-                                .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
-                );
 
-        String[] allUsernames = AppData.getAllAccountNames(this).split(";");
-        for (String _username : allUsernames) {
-            if (_username.equals(actualUsername)) continue;
-
-            if (_username.equals("gsuite")) {
-                accountHeaderBuilder.addProfiles(
-                        new ProfileDrawerItem().withName(_username).withEmail("Studente")
-                                .withIcon(R.mipmap.ic_launcher)
-                                .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
-                );
-            } else {
-                accountHeaderBuilder.addProfiles(
-                        new ProfileDrawerItem().withName(_username).withEmail(_username)
-                                .withIcon(R.mipmap.ic_launcher)
-                                .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
-                );
-            }
+    private boolean logoutItemOnClick(View view, int i, IDrawerItem item) {
+        loggerManager.d("Logout richiesto dall'utente");
+        Analytics.sendDefaultRequest("Log out");
+        String[] allAccountNames = AppData.getAllAccountNames(this).split(";");
+        String activeUsername = LoginData.getUser(this);
+        if (activeUsername.equals("gsuite"))
+            CookieManager.getInstance().removeAllCookies(null); //Cancello il cookie della webview
+        int index = getIndexOf(allAccountNames, activeUsername);
+        if (index == -1) {
+            loggerManager.e("Non ho trovato lo username selezionato da drawer in AppData");
+            Snackbar.make(view, "Qualcosa è andato storto, impossibile continuare.", Snackbar.LENGTH_SHORT).show();
+            return false;   //Chiudi il drawer
         }
-
-        accountHeaderBuilder.addProfiles(
-                new ProfileSettingDrawerItem().withName("Aggiungi account")
-                        .withIcon(android.R.color.transparent)
-                        .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
-        );
-
-        AccountHeader accountHeader = accountHeaderBuilder.build();
-
-        mDrawer = new DrawerBuilder()
-                .withActivity(this)
-                .withTranslucentStatusBar(false)
-                .withActionBarDrawerToggle(true)
-                .withToolbar(toolbar)
-                .withAccountHeader(accountHeader)
-                .withSliderBackgroundColor(getResources().getColor(R.color.general_view_color, getTheme()))
-                .addDrawerItems(
-                        createDrawerMainItem(0, "Home", R.id.nav_home, true, false),
-                        createDrawerCategory(1, "Lezioni").withSubItems(
-                                createDrawerMainItem(2, "Lezioni svolte", R.id.nav_lessons, true, true),
-                                createDrawerMainItem(3, "Argomenti e attività", "/genitori/argomenti", true, true)
-                        ),
-                        createDrawerCategory(4, "Situazione").withSubItems(
-                                createDrawerMainItem(5, "Voti", R.id.nav_votes, true, true),
-                                createDrawerMainItem(6, "Assenze", R.id.nav_absences, true, true),
-                                createDrawerMainItem(7, "Note", "/genitori/note/", true, true),
-                                createDrawerMainItem(8, "Osservazioni", "/genitori/osservazioni/", !userType.equals("Studente"), true), //SOLO GENITORE,
-                                createDrawerMainItem(9, "Autorizzazioni", R.id.nav_authorization, true, true)
-                        ),
-                        createDrawerMainItem(10, "Pagella", "/genitori/pagelle", true, false),
-                        createDrawerMainItem(11, "Colloqui", "/genitori/colloqui", !userType.equals("Studente"), false),    //SOLO GENITORE,
-                        createDrawerCategory(12, "Bacheca").withSubItems(
-                                createDrawerMainItem(13, "Circolari", R.id.nav_newsletters, true, true),
-                                createDrawerMainItem(14, "Avvisi", R.id.nav_alerts, true, true),
-                                createDrawerMainItem(15, "Documenti", "/documenti/bacheca", true, true)
-                        ),
-                        createDrawerMainItem(16, "Agenda", R.id.nav_agenda, true, false),
-
-                        new DividerDrawerItem(),
-
-                        createDrawerSecondaryItem(17, "Impostazioni")
-                                .withOnDrawerItemClickListener(this::settingsItemOnClick)
-                                .withSelectable(false),
-                        createDrawerSecondaryItem(18, "Esci")
-                                .withOnDrawerItemClickListener(this::logoutItemOnClick)
-                                .withSelectable(false)
-                )
-                .build();
+        LoginData.clearAll(this);
+        AppData.removeAccountCredentialsOfIndex(this, index);
+        allAccountNames = AppData.getAllAccountNames(this).split(";");
+        //Se vero vuol dire che ci sono altri account diponibili quindi lo faccio riloggare al primo che trovo
+        if (allAccountNames.length > 0) {
+            index = 0;
+            //Cerca il primo username disponibile
+            while (index < allAccountNames.length && allAccountNames[index].equals(""))
+                index++;
+            String password = AppData.getAllAccountPasswords(this).split(";")[index];
+            LoginData.setCredentials(this, allAccountNames[index], password);
+        }
+        startActivity(new Intent(this, ActivityManager.class));
+        finish();
+        return true;
     }
 
     private boolean onChangeAccountFromDrawer(View view, IProfile iProfile, boolean b) {
@@ -318,120 +260,14 @@ public class DrawerActivity extends AppCompatActivity {
         return true;    //Non chiudere il drawer
     }
 
-    private ExpandableDrawerItem createDrawerCategory(int identifier, String name) {
-        return new ExpandableDrawerItem()
-                .withIdentifier(identifier)
-                .withIconTintingEnabled(true)
-                .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
-                .withArrowColor(getResources().getColor(R.color.night_white_light_black, getTheme()))
-                .withSelectable(false)
-                .withName(name);
-    }
-
-    //Usato per fragment implementati
-    private PrimaryDrawerItem createDrawerMainItem(int identifier, String name, @IdRes int id, boolean enabled, boolean withMoreSpace) {
-        PrimaryDrawerItem primaryDrawerItem = new PrimaryDrawerItem()
-                .withIdentifier(identifier)
-                .withIconTintingEnabled(true)
-                //.withIcon(icon)
-                .withName(name)
-                .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
-                .withEnabled(enabled)
-                .withOnDrawerItemClickListener((view, i, item) -> {
-                    changeFragment(id);
-                    return false;
-                });
-
-        if (withMoreSpace)
-            primaryDrawerItem.withIcon(R.color.transparent);
-
-        return primaryDrawerItem;
-    }
-
-    //Usato per fragment non implementati
-    private PrimaryDrawerItem createDrawerMainItem(int identifier, String name, String url, boolean enabled, boolean withMoreSpace) {
-        if (demoMode)    //Nella modalità demo si possono vedere solo le schermate implementate
-            enabled = false;
-
-        PrimaryDrawerItem primaryDrawerItem = new PrimaryDrawerItem()
-                .withIdentifier(identifier)
-                .withIconTintingEnabled(true)
-                //.withIcon(icon)
-                .withName(name)
-                .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
-                .withEnabled(enabled)
-                .withOnDrawerItemClickListener((view, i, item) -> {
-                    changeToFragmentNotImplemented(name, url);
-                    return false;
-                });
-
-        if (withMoreSpace)
-            primaryDrawerItem.withIcon(R.color.transparent);
-
-        return primaryDrawerItem;
-    }
-
-    //Usato per funzionalità sperimentali
-    private PrimaryDrawerItem createDrawerMainItem(int identifier, String name, String url, @IdRes int id, boolean enabled, boolean withMoreSpace) {
-        PrimaryDrawerItem primaryDrawerItem = new PrimaryDrawerItem()
-                .withIdentifier(identifier)
-                .withIconTintingEnabled(true)
-                //.withIcon(icon)
-                .withName(name)
-                .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
-                .withEnabled(enabled)
-                .withOnDrawerItemClickListener((view, i, item) -> {
-                    if(SettingsData.getSettingBoolean(this, SettingKey.EXP_MODE)){
-                        changeFragment(id, "Funzione Sperimentale!");
-                        return false;
-                    }
-                    changeToFragmentNotImplemented(name, url);
-                    return false;
-                });
-
-        if (withMoreSpace)
-            primaryDrawerItem.withIcon(R.color.transparent);
-
-        return primaryDrawerItem;
-    }
-
-    //Usato per i pulsanti tipo quello delle impostazioni e del logout
-    private PrimaryDrawerItem createDrawerSecondaryItem(int identifier, String name) {
-        return new PrimaryDrawerItem()
-                .withIdentifier(identifier)
-                .withName(name)
-                .withTextColor(getResources().getColor(R.color.adaptive_color_text, getTheme()))
-                .withIconTintingEnabled(true);
-    }
-
-    private boolean logoutItemOnClick(View view, int i, IDrawerItem item) {
-        loggerManager.d("Logout richiesto dall'utente");
-        Analytics.sendDefaultRequest("Log out");
-        String[] allAccountNames = AppData.getAllAccountNames(this).split(";");
-        String activeUsername = LoginData.getUser(this);
-        if (activeUsername.equals("gsuite"))
-            CookieManager.getInstance().removeAllCookies(null); //Cancello il cookie della webview
-        int index = getIndexOf(allAccountNames, activeUsername);
-        if (index == -1) {
-            loggerManager.e("Non ho trovato lo username selezionato da drawer in AppData");
-            Snackbar.make(view, "Qualcosa è andato storto, impossibile continuare.", Snackbar.LENGTH_SHORT).show();
-            return false;   //Chiudi il drawer
-        }
-        LoginData.clearAll(this);
-        AppData.removeAccountCredentialsOfIndex(this, index);
-        //Se vero vuol dire che ci sono altri account diponibili quindi lo faccio riloggare al primo che trovo
-        allAccountNames = AppData.getAllAccountNames(this).split(";");
-        if (allAccountNames.length > 0) {
-            index = 0;
-            //Cerca il primo username disponibile
-            while (index < allAccountNames.length && allAccountNames[index].equals(""))
-                index++;
-            String password = AppData.getAllAccountPasswords(this).split(";")[index];
-            LoginData.setCredentials(this, allAccountNames[index], password);
-        }
-        startActivity(new Intent(this, ActivityManager.class));
-        finish();
+    private boolean settingsItemOnClick(View view, int i, IDrawerItem item) {
+        loggerManager.d("Avvio SettingsActivity");
+        startActivity(new Intent(this, SettingsActivity.class));
         return true;
+    }
+
+    public void selectItemInDrawer(long identifier) {
+        mDrawer.setSelection(identifier);
     }
 
     /**
@@ -450,177 +286,6 @@ public class DrawerActivity extends AppCompatActivity {
         return index;
     }
 
-    private boolean settingsItemOnClick(View view, int i, IDrawerItem item) {
-        loggerManager.d("Avvio SettingsActivity");
-        startActivity(new Intent(this, SettingsActivity.class));
-        return true;
-    }
-
-    private void changeToFragmentNotImplemented(String toolbarTitle, String url) {
-        Fragment fragment;
-        String tag = "FRAGMENT_NOT_IMPLEMENTED";
-
-        if (!toolbarTitle.contentEquals(toolbar.getTitle())) {  //Se l'elemento cliccato non è già visualizzato allora visualizzalo
-            loggerManager.w("Pagina " + toolbarTitle + " non ancora implementata, la faccio visualizzare dalla webview");
-            fragment = new NotImplementedFragment(GiuaScraper.getSiteURL() + url, GlobalVariables.gS.getCookie());
-            changeFragmentWithManager(fragment, tag, toolbarTitle, "Non ancora implementato!");
-        }
-    }
-
-    public void changeFragment(@IdRes int id) {
-        changeFragment(id, "");
-    }
-
-    private void changeFragment(@IdRes int id, String subtitle) {
-        FragmentManager manager = getSupportFragmentManager();
-        Fragment fragment;
-        String tag = getTagFromId(id);
-        String toolbarTxt = "";
-        //Se il fragment visualizzato è quello di id allora non fare nulla
-        if (!manager.getFragments().isEmpty() && Objects.requireNonNull(manager.getFragments().get(0).getTag()).equals(tag))
-            return;
-
-        if (tag.equals("")) {  //Se tag è vuoto vuol dire che questo id non è stato ancora implementato quindi finisci
-            loggerManager.e("Tag vuoto, fragment non ancora implementato");
-            return;
-        }
-        if (id == 0) {
-            loggerManager.w("Dovrebbe essere chiamato changeToFragmentNotImplemented non changeFragment");
-            return;
-        }
-
-        fragment = manager.findFragmentByTag(tag);
-
-        //FIXME: Troppi if, lo switch non si può usare perchè R.id.x in futuro non sarà final
-        if (id == R.id.nav_home) {
-            if (fragment == null)
-                fragment = new HomeFragment();
-            toolbarTxt = "Home";
-        } else if (id == R.id.nav_absences) {
-            if (fragment == null)
-                fragment = new AbsencesFragment();
-            toolbarTxt = "Assenze";
-        } else if (id == R.id.nav_authorization) {
-            if (fragment == null)
-                fragment = new AuthorizationFragment();
-            toolbarTxt = "Autorizzazioni";
-        } else if (id == R.id.nav_votes) {
-            if (fragment == null)
-                fragment = new VotesFragment();
-            toolbarTxt = "Voti";
-        } else if (id == R.id.nav_agenda) {
-            if (fragment == null)
-                fragment = new AgendaFragment();
-            toolbarTxt = "Agenda";
-        } else if (id == R.id.nav_lessons) {
-            if (fragment == null)
-                fragment = new LessonsFragment();
-            toolbarTxt = "Lezioni";
-        } else if (id == R.id.nav_newsletters) {
-            if (fragment == null)
-                fragment = new NewslettersFragment();
-            toolbarTxt = "Circolari";
-        } else if (id == R.id.nav_alerts) {
-            if (fragment == null)
-                fragment = new AlertsFragment();
-            toolbarTxt = "Avvisi";
-        } else if (id == R.id.nav_report_card) {
-            if (fragment == null)
-                fragment = new ReportCardFragment();
-            toolbarTxt = "Pagella";
-        }
-        changeFragmentWithManager(fragment, tag, toolbarTxt, subtitle);
-    }
-
-    private void changeFragmentWithManager(Fragment fragment, String tag, String toolbarTxt, String subtitle) {
-        loggerManager.d("Cambio fragment a " + tag);
-        if (fragmentIsUnstable(tag)) {
-            loggerManager.w("Rilevata apertura funzionalità instabile (" + tag + "), avviso l'utente ");
-            showUnstableDialog(fragment, tag, toolbarTxt, subtitle);
-            return;
-        }
-        executeChangeFragment(fragment, tag, toolbarTxt, subtitle);
-    }
-
-    private void executeChangeFragment(Fragment fragment, String tag, String toolbarTxt, String subtitle) {
-        setTextToolbar(toolbarTxt);
-        toolbar.setSubtitle(subtitle);
-        FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.content_main, fragment, tag).commit();
-    }
-
-    private void setTextToolbar(String defaultName) {
-        if (offlineMode) {
-            toolbar.setTitle(defaultName + " - Offline");
-            return;
-        }
-        if (demoMode) {
-            toolbar.setTitle(defaultName + " - DEMO");
-            return;
-        }
-        toolbar.setTitle(defaultName);
-    }
-
-    private String getTagFromId(@IdRes int id) {
-        if (id == 0)
-            return "FRAGMENT_NOT_IMPLEMENTED";
-        if (id == R.id.nav_home)
-            return "FRAGMENT_HOME";
-        if (id == R.id.nav_votes)
-            return "FRAGMENT_VOTES";
-        if (id == R.id.nav_agenda)
-            return "FRAGMENT_AGENDA";
-        if (id == R.id.nav_lessons)
-            return "FRAGMENT_LESSONS";
-        if (id == R.id.nav_alerts)
-            return "FRAGMENT_ALERTS";
-        if (id == R.id.nav_newsletters)
-            return "FRAGMENT_NEWSLETTERS";
-        if (id == R.id.nav_report_card)
-            return "FRAGMENT_REPORT_CARD";
-        if (id == R.id.nav_authorization)
-            return "FRAGMENT_AUTHORIZATIONS";
-        if (id == R.id.nav_absences)
-            return "FRAGMENT_ABSENCES";
-        return "";
-    }
-
-    private boolean fragmentIsUnstable(String tag){
-        String[] uF = unstableFeatures.split("#");
-        try {
-            for (String feat : uF) {
-                String frag = feat.split("\\|")[0].trim();
-                String ver = feat.split("\\|")[1].trim();
-                if (frag.equals(tag) && ver.equals(BuildConfig.VERSION_NAME)) {
-                    return true;
-                }
-            }
-        } catch (Exception ignored){} //Se per qualche motivo c'è errore, vuol dire che unstableFeatures è vuoto
-        return false;
-    }
-
-    private void showUnstableDialog(Fragment fragment, String tag, String toolbarTxt, String subtitle){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Funzionalità Instabile");
-        builder.setIcon(R.drawable.ic_alert_outline);
-        builder.setMessage("E' stato segnalato che la schermata \"" + toolbarTxt + "\" potrebbe non funzionare come previsto in questa versione.\n\nSei sicuro di continuare?")
-
-                .setPositiveButton("Si", (dialog, id) -> {
-                    loggerManager.w("L'utente ha deciso di continuare con la funzionalità instabile, cambio fragment a " + tag);
-                    executeChangeFragment(fragment, tag, toolbarTxt, subtitle);
-                })
-
-                .setNegativeButton("No", (dialog, id) -> loggerManager.d("L'utente ha deciso di NON continuare con la funzionalità instabile"))
-
-                .setOnCancelListener(dialog -> loggerManager.d("L'utente ha deciso di NON continuare con la funzionalità instabile"));
-
-        builder.show();
-    }
-
-    public void selectItemInDrawer(long identifier) {
-        mDrawer.setSelection(identifier);
-    }
-
     @Override
     public void onBackPressed() {
         if (mDrawer.isDrawerOpen()) {
@@ -635,7 +300,7 @@ public class DrawerActivity extends AppCompatActivity {
 
         if (!toolbar.getTitle().toString().contains("Home")) {  //Se non sei nella home vacci
             mDrawer.setSelection(0, false);
-            changeFragment(R.id.nav_home);
+            myFragmentManager.changeFragment(R.id.nav_home);
         } else {   //Vai alla home del telefono se sei già nella home dell'app
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_HOME);
@@ -751,6 +416,8 @@ public class DrawerActivity extends AppCompatActivity {
     protected void onDestroy() {
         loggerManager.d("onDestroy chiamato");
         GlobalVariables.internetThread.interrupt();
+        myDrawerManager = null;
+        myFragmentManager = null;
         super.onDestroy();
     }
 }
