@@ -229,7 +229,7 @@ public class DrawerActivity extends AppCompatActivity {
         if (allAccountNames.length > 0) {
             index = 0;
             //Cerca il primo username disponibile
-            while (index < allAccountNames.length && allAccountNames[index].equals(""))
+            while (index < allAccountNames.length - 1 && allAccountNames[index].equals(""))
                 index++;
             String password = AppData.getAllAccountPasswords(this).split(";")[index];
             LoginData.setCredentials(this, allAccountNames[index], password);
