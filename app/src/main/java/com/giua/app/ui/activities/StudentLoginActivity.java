@@ -106,7 +106,7 @@ public class StudentLoginActivity extends AppCompatActivity {
     private void onStoppedWebView(boolean increaseVisitCount) {
         loggerManager.d("onStoppedWebView chiamato");
         if (increaseVisitCount)
-            new Analytics.Builder("Logged in").addCustomValue("account_type", "STUDENT (GOOGLE)").send();
+            new Analytics.Builder("Logged in").addCustomValue("account_type", "Studente (Google)").send();
         webView.setVisibility(View.INVISIBLE);
         obscureLayoutView.setVisibility(View.VISIBLE);
 

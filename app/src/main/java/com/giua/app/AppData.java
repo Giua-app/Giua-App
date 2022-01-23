@@ -19,7 +19,6 @@
 
 package com.giua.app;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -58,6 +57,7 @@ public class AppData {
     private static final String introStatusKey = "intro_status";
     private static final String crashStatusKey = "crash_status";
     private static final String lastSentReportTimeKey = "last_sent_report_time";
+    private static final String lastStartupDateKey = "last_startup_date";
 
 
     private static SharedPreferences getSharedPreferences(final Context context) {
@@ -164,14 +164,12 @@ public class AppData {
         return getSharedPreferences(context).getString(appVersionKey, "");
     }
 
-    @SuppressLint("SimpleDateFormat")
     public static void saveLastUpdateReminderDate(final Context context, final Calendar date) {
         getSharedPreferences(context).edit()
                 .putString(nextUpdateReminderKey, date.get(Calendar.DAY_OF_YEAR) + "#" + date.get(Calendar.YEAR))
                 .apply();
     }
 
-    @SuppressLint("SimpleDateFormat")
     public static String getLastUpdateReminderDate(final Context context) {
         return getSharedPreferences(context).getString(nextUpdateReminderKey, "");
     }
@@ -273,6 +271,16 @@ public class AppData {
 
     public static long getLastSentReportTime(final Context context) {
         return getSharedPreferences(context).getLong(lastSentReportTimeKey, -1L);
+    }
+
+    public static void saveLastStartupDate(final Context context, final Calendar date) {
+        getSharedPreferences(context).edit()
+                .putString(lastStartupDateKey, date.get(Calendar.DAY_OF_YEAR) + "#" + date.get(Calendar.YEAR))
+                .apply();
+    }
+
+    public static String getLastStartupDate(final Context context) {
+        return getSharedPreferences(context).getString(lastStartupDateKey, "");
     }
 
     /*

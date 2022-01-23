@@ -86,7 +86,7 @@ public class ActivityManager extends AppCompatActivity {
         if (!defaultUrl.equals(""))
             GiuaScraper.setSiteURL(defaultUrl);
 
-        Analytics.sendDefaultRequest("Avvio");
+        sendStartupAnalyticsRequest();
 
         if(getIntent().getBooleanExtra("fromCAOC", false)){
             loggerManager.d("Individuato crash precedente, invio segnalazione");
@@ -128,6 +128,55 @@ public class ActivityManager extends AppCompatActivity {
         else
             startAutomaticLoginActivity();
     }
+
+    private void sendStartupAnalyticsRequest(){
+        Analytics.sendDefaultRequest("Avvio");
+
+        if(checkLastStartupDate()){
+            Analytics.sendDefaultRequest("Avvio giornaliero");
+            AppData.saveLastStartupDate(this, Calendar.getInstance());
+        }
+    }
+
+    /**
+     * Controlla LastStartupDate (copiato da {@link AppUpdateManager#checkUpdateReminderDate()})
+     * @return true se si può notificare l'avvio, false se bisogna aspettare ad un altro giorno
+     */
+    public boolean checkLastStartupDate(){
+        int dayOfYear;
+        int year;
+        Calendar yesterdayCal = Calendar.getInstance();
+        yesterdayCal.set(Calendar.DAY_OF_YEAR, Calendar.getInstance().get(Calendar.DAY_OF_YEAR)-1);
+        try {
+            dayOfYear = Integer.parseInt(AppData.getLastStartupDate(this).split("#")[0]);
+            year = Integer.parseInt(AppData.getLastStartupDate(this).split("#")[1]);
+        } catch(Exception e){
+            loggerManager.e("Errore critico nel parsing di LastStartup, è possibile che non esista?");
+            loggerManager.e("Sovrascrivo LastStartup con la data di ieri");
+            AppData.saveLastUpdateReminderDate(this, yesterdayCal);
+            return true;
+        }
+        loggerManager.d("L'ultimo avvio è stato il " + dayOfYear + "° giorno dell'anno " + year);
+        loggerManager.d("Oggi è " + Calendar.getInstance().get(Calendar.DAY_OF_YEAR) + ", ieri invece era il " + yesterdayCal.get(Calendar.DAY_OF_YEAR));
+
+
+        if(Calendar.getInstance().get(Calendar.YEAR) != year){
+            loggerManager.e("Errore, anno diverso da quello corrente. " +
+                    "Non è possibile confrontare LastStartup, cambio data a ieri");
+            AppData.saveLastUpdateReminderDate(this, yesterdayCal);
+            return true;
+        }
+
+        if(Calendar.getInstance().get(Calendar.DAY_OF_YEAR) > dayOfYear){
+            loggerManager.d("Reminder passato, bisogna ricordare l'utente dell'update");
+            return true;
+        }
+
+        loggerManager.w("Il LastStartup è di oggi (o avanti nel tempo).");
+        return false;
+    }
+
+
 
     private void checkForPreviousUpdate() {
         if (!AppData.getAppVersion(this).equals("")
