@@ -1,4 +1,4 @@
-# Giua-App
+# Giua-App (Beta)
 
 <p align='center'>
   <a href='https://github.com/Giua-app/Giua-App/blob/master/LICENSE'><img src='https://img.shields.io/github/license/Giua-app/Giua-App'/></a>
