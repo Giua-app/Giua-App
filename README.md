@@ -69,5 +69,6 @@ Il sito https://giua-app.github.io ti darà sempre l'ultima versione dell'app
 
 In alternativa puoi andare sulle [Release](https://github.com/Giua-app/Giua-App/releases)
 
-## Come posso contribuire?
-Contatta HiemSword o Franck1421
+## Contatti
+Puoi contattarci creando una [Issue](https://github.com/Giua-app/Giua-App/issues) qui su GitHub oppure via email all'indirizzo [contact@appgiua.slmail.me](mailto:contact@appgiua.slmail.me)
+
