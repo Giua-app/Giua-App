@@ -31,6 +31,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.giua.app.AppData;
 import com.giua.app.GlobalVariables;
+import com.giua.app.InternetThread;
 import com.giua.app.LoggerManager;
 import com.giua.app.LoginData;
 import com.giua.app.R;
@@ -59,6 +60,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
         loggerManager.d("onCreate chiamato");
 
         btnLogout = findViewById(R.id.loading_screen_logout_btn);
+
         tvAutoLogin = findViewById(R.id.loading_screen_minor_text_view);
         pbLoadingScreen = findViewById(R.id.loading_screen_progressbar);
         btnOffline = findViewById(R.id.loading_screen_offline_btn);
@@ -72,6 +74,9 @@ public class AutomaticLoginActivity extends AppCompatActivity {
     }
 
     private void loginWithPreviousCredentials() {
+        if (GlobalVariables.internetThread == null || GlobalVariables.internetThread.isInterrupted() || GlobalVariables.internetThread.isInterrupting())
+            GlobalVariables.internetThread = new InternetThread();
+
         loggerManager.d("Login automatico con credenziali salvate in corso");
         GlobalVariables.internetThread.addTask(() -> {
             runOnUiThread(() -> pbLoadingScreen.setVisibility(View.VISIBLE));
@@ -82,7 +87,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                 GlobalVariables.gS = new GiuaScraper(username, password, cookie, true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
                 GlobalVariables.gS.login();
                 LoginData.setCredentials(this, username, password, GlobalVariables.gS.getCookie());
-                if (!AppData.getAllAccountNames(this).contains(GlobalVariables.gS.getUser()))
+                if (!AppData.getAllAccountUsernames(this).contains(GlobalVariables.gS.getUser()))
                     AppData.addAccountCredentials(this, GlobalVariables.gS.getUser(), LoginData.getPassword(this));
                 startDrawerActivity();
             } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.SiteConnectionProblems e) {

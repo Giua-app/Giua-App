@@ -21,8 +21,10 @@ package com.giua.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.ArraySet;
 
 import java.util.Calendar;
+import java.util.Set;
 
 public class AppData {
 
@@ -179,56 +181,51 @@ public class AppData {
     //region Dati per più account
 
     public static void addAccountCredentials(final Context context, final String username, final String password) {
+        Set<String> allNames = getAllAccountUsernames(context);
+        Set<String> allPasswords = getAllAccountPasswords(context);
+
+        allNames.add(username);
+        allPasswords.add(password);
+
         getSharedPreferences(context).edit()
-                .putString(allAccountNamesKey, getAllAccountNames(context) + username + ";")
-                .putString(allAccountPasswordsKey, getAllAccountPasswords(context) + password + ";")
+                .putStringSet(allAccountNamesKey, allNames)
+                .putStringSet(allAccountPasswordsKey, allPasswords)
                 .apply();
     }
 
-    public static void removeAccountCredentialsOfIndex(final Context context, final int index) {
-        String[] usernames = getAllAccountNames(context).split(";");
-        String[] passwords = getAllAccountPasswords(context).split(";");
+    public static void removeAccountCredentials(final Context context, final String username, final String password) {
+        Set<String> allNames = getAllAccountUsernames(context);
+        Set<String> allPasswords = getAllAccountPasswords(context);
 
-        if (index >= usernames.length) return;
-        usernames[index] = "";
-        passwords[index] = "";
+        allNames.remove(username);
+        allPasswords.remove(password);
 
-        StringBuilder usernameAppDataString = new StringBuilder();
-        for (String username : usernames) {
-            if (!username.equals(""))
-                usernameAppDataString.append(username).append(";");
-        }
-        StringBuilder passwordAppDataString = new StringBuilder();
-        for (String password : passwords) {
-            if (!password.equals(""))
-                passwordAppDataString.append(password).append(";");
-        }
         getSharedPreferences(context).edit()
-                .putString(allAccountNamesKey, usernameAppDataString.toString())
-                .putString(allAccountPasswordsKey, passwordAppDataString.toString())
+                .putStringSet(allAccountNamesKey, allNames)
+                .putStringSet(allAccountPasswordsKey, allPasswords)
                 .apply();
 
         //usernames
     }
 
-    public static void saveAllAccountNames(final Context context, final String value) {
+    public static void saveAllAccountNames(final Context context, final Set<String> value) {
         getSharedPreferences(context).edit()
-                .putString(allAccountNamesKey, value)
+                .putStringSet(allAccountNamesKey, value)
                 .apply();
     }
 
-    public static String getAllAccountNames(final Context context) {
-        return getSharedPreferences(context).getString(allAccountNamesKey, "");
+    public static Set<String> getAllAccountUsernames(final Context context) {
+        return getSharedPreferences(context).getStringSet(allAccountNamesKey, new ArraySet<>());
     }
 
-    public static void saveAllAccountPasswords(final Context context, final String value) {
+    public static void saveAllAccountPasswords(final Context context, final Set<String> value) {
         getSharedPreferences(context).edit()
-                .putString(allAccountPasswordsKey, value)
+                .putStringSet(allAccountPasswordsKey, value)
                 .apply();
     }
 
-    public static String getAllAccountPasswords(final Context context) {
-        return getSharedPreferences(context).getString(allAccountPasswordsKey, "");
+    public static Set<String> getAllAccountPasswords(final Context context) {
+        return getSharedPreferences(context).getStringSet(allAccountPasswordsKey, new ArraySet<>());
     }
 
     //endregion

@@ -49,6 +49,15 @@ public class InternetThread extends Thread {
             allRunnableToRun.add(runnable);
     }
 
+    public boolean isInterrupting() {
+        return isInterrupted && isRunning;
+    }
+
+    /**
+     * Controlla se il thread è stato interrotto, ma non tiene conto se sta comunque completando
+     *
+     * @return
+     */
     @Override
     public boolean isInterrupted() {
         return isInterrupted || super.isInterrupted();

@@ -64,6 +64,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
 
 public class DrawerActivity extends AppCompatActivity {
 
@@ -81,6 +82,7 @@ public class DrawerActivity extends AppCompatActivity {
 
     boolean offlineMode = false;
     boolean demoMode = false;
+    boolean isStartingAnotherActivity = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +95,7 @@ public class DrawerActivity extends AppCompatActivity {
         if (GlobalVariables.gS == null) {
             loggerManager.w("gs è null ma non dovrebbe esserlo quindi avvio AutomaticLogin");
             startActivity(new Intent(this, ActivityManager.class));
+            isStartingAnotherActivity = true;
             finish();
             return;
         }
@@ -179,29 +182,19 @@ public class DrawerActivity extends AppCompatActivity {
     private boolean logoutItemOnClick(View view, int i, IDrawerItem item) {
         loggerManager.d("Logout richiesto dall'utente");
         Analytics.sendDefaultRequest("Log out");
-        String[] allAccountNames = AppData.getAllAccountNames(this).split(";");
-        String activeUsername = LoginData.getUser(this);
-        if (activeUsername.equals("gsuite"))
+        AppData.removeAccountCredentials(this, LoginData.getUser(this), LoginData.getPassword(this));
+        if (GlobalVariables.gS.getUser().equals("gsuite"))
             CookieManager.getInstance().removeAllCookies(null); //Cancello il cookie della webview
-        int index = getIndexOf(allAccountNames, activeUsername);
-        if (index == -1) {
-            loggerManager.e("Non ho trovato lo username selezionato da drawer in AppData");
-            Snackbar.make(view, "Qualcosa è andato storto, impossibile continuare.", Snackbar.LENGTH_SHORT).show();
-            return false;   //Chiudi il drawer
-        }
         LoginData.clearAll(this);
-        AppData.removeAccountCredentialsOfIndex(this, index);
-        allAccountNames = AppData.getAllAccountNames(this).split(";");
-        //Se vero vuol dire che ci sono altri account diponibili quindi lo faccio riloggare al primo che trovo
-        if (allAccountNames.length > 0) {
-            index = 0;
-            //Cerca il primo username disponibile
-            while (index < allAccountNames.length - 1 && allAccountNames[index].equals(""))
-                index++;
-            String password = AppData.getAllAccountPasswords(this).split(";")[index];
-            LoginData.setCredentials(this, allAccountNames[index], password);
+        Set<String> allAccountUsernames = AppData.getAllAccountUsernames(this);
+        //Se vero vuol dire che ci sono altri account diponibili quindi lo faccio riloggare col primo
+        if (allAccountUsernames.size() > 0) {
+            String password = (String) AppData.getAllAccountPasswords(this).toArray()[0];
+            String username = (String) AppData.getAllAccountUsernames(this).toArray()[0];
+            LoginData.setCredentials(this, username, password);
         }
         startActivity(new Intent(this, ActivityManager.class));
+        isStartingAnotherActivity = true;
         finish();
         return true;
     }
@@ -209,19 +202,21 @@ public class DrawerActivity extends AppCompatActivity {
     private boolean onChangeAccountFromDrawer(View view, IProfile iProfile, boolean b) {
         if (iProfile.getName().getText().equals("Aggiungi account")) {
             startActivity(new Intent(this, MainLoginActivity.class).putExtra("addAccount", true));
+            isStartingAnotherActivity = true;
         } else {
             String selectedProfileUsername = iProfile.getName().toString();
-            String[] allUsernames = AppData.getAllAccountNames(this).split(";");
-            String[] allPasswords = AppData.getAllAccountPasswords(this).split(";");
+            Object[] allUsernames = AppData.getAllAccountUsernames(this).toArray();
+            Object[] allPasswords = AppData.getAllAccountPasswords(this).toArray();
             int indexOfSelectedUsername = getIndexOf(allUsernames, selectedProfileUsername);
             if (indexOfSelectedUsername == -1) {
                 loggerManager.e("Non ho trovato lo username selezionato da drawer in AppData");
                 Snackbar.make(view, "Qualcosa è andato storto, impossibile continuare.", Snackbar.LENGTH_SHORT).show();
                 return false;   //Chiudi il drawer
             }
-            LoginData.setCredentials(this, allUsernames[indexOfSelectedUsername], allPasswords[indexOfSelectedUsername], "");
+            LoginData.setCredentials(this, (String) allUsernames[indexOfSelectedUsername], (String) allPasswords[indexOfSelectedUsername], "");
             GlobalVariables.gS = null;
             startActivity(new Intent(this, ActivityManager.class));
+            isStartingAnotherActivity = true;
         }
         finish();
         return true;    //Non chiudere il drawer
@@ -230,6 +225,7 @@ public class DrawerActivity extends AppCompatActivity {
     private boolean settingsItemOnClick(View view, int i, IDrawerItem item) {
         loggerManager.d("Avvio SettingsActivity");
         startActivity(new Intent(this, SettingsActivity.class));
+        isStartingAnotherActivity = true;
         return true;
     }
 
@@ -244,7 +240,7 @@ public class DrawerActivity extends AppCompatActivity {
      * @param s       la stringa da cercare in {@code strings}
      * @return l'indice di {@code s} in {@code strings}
      */
-    private int getIndexOf(String[] strings, String s) {
+    private int getIndexOf(Object[] strings, String s) {
         int index = -1;
         for (int j = 0; j < strings.length; j++) {
             if (strings[j].equals(s))
@@ -395,6 +391,12 @@ public class DrawerActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+        isStartingAnotherActivity = false;
+    }
+
+    @Override
     protected void onStop() {
         GlobalVariables.internetThread.addTask(() -> {  //Questo serve a prevenire la perdita di news
             try {
@@ -416,9 +418,11 @@ public class DrawerActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         loggerManager.d("onDestroy chiamato");
-        GlobalVariables.internetThread.interrupt();
-        myDrawerManager = null;
-        myFragmentManager = null;
+        if (!isStartingAnotherActivity) {
+            GlobalVariables.internetThread.interrupt();
+            myDrawerManager = null;
+            myFragmentManager = null;
+        }
         super.onDestroy();
     }
 }

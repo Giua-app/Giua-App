@@ -83,19 +83,20 @@ public class MyDrawerManager {
                 );
 
         //Aggiungi nel drawer gli account disponibili
-        String[] allUsernames = AppData.getAllAccountNames(activity).split(";");
-        for (String _username : allUsernames) {
-            if (_username.equals(actualUsername)) continue;
+        Object[] allUsernames = AppData.getAllAccountUsernames(activity).toArray();
+        for (Object _username : allUsernames) {
+            String u = (String) _username;
+            if (u.equals(actualUsername)) continue;
 
-            if (_username.equals("gsuite")) {
+            if (u.equals("gsuite")) {
                 accountHeaderBuilder.addProfiles(
-                        new ProfileDrawerItem().withName(_username).withEmail("Studente")
+                        new ProfileDrawerItem().withName(u).withEmail("Studente")
                                 .withIcon(R.mipmap.ic_launcher)
                                 .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme()))
                 );
             } else {
                 accountHeaderBuilder.addProfiles(
-                        new ProfileDrawerItem().withName(_username).withEmail(_username)
+                        new ProfileDrawerItem().withName(u).withEmail(u)
                                 .withIcon(R.mipmap.ic_launcher)
                                 .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme()))
                 );

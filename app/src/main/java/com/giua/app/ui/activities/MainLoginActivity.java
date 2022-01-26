@@ -180,7 +180,7 @@ public class MainLoginActivity extends AppCompatActivity {
             GlobalVariables.internetThread = new InternetThread();
         GlobalVariables.internetThread.addTask(() -> {
             try {
-                if (isAddingAccount && AppData.getAllAccountNames(this).contains(etUsername.getText().toString())) {
+                if (isAddingAccount && AppData.getAllAccountUsernames(this).contains(etUsername.getText().toString())) {
                     runOnUiThread(() -> {
                         txtLayoutUsername.setError("Username già salvato");
                         etPassword.setText("");

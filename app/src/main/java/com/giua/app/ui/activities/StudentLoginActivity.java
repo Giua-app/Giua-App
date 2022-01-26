@@ -33,6 +33,7 @@ import android.widget.ProgressBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.giua.app.Analytics;
+import com.giua.app.AppData;
 import com.giua.app.GlobalVariables;
 import com.giua.app.LoggerManager;
 import com.giua.app.LoginData;
@@ -115,6 +116,8 @@ public class StudentLoginActivity extends AppCompatActivity {
         LoginData.setCredentials(this, "gsuite", "gsuite", cookie);
         obscureLayoutView.setVisibility(View.GONE);
         loggerManager.d("Avvio DrawerActivity");
+        if (!AppData.getAllAccountUsernames(this).contains("gsuite"))
+            AppData.addAccountCredentials(this, "gsuite", "gsuite");
         String goTo = getIntent().getStringExtra("goTo");
         if (goTo == null)
             goTo = "";
