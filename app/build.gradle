@@ -49,10 +49,7 @@ androidGitVersion { //Usato soltanto durante lo sviluppo per differenziare le ve
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
-    
-    lintOptions { 
-         abortOnError false 
-     } 
+
 
     defaultConfig {
         applicationId "com.giua.app"
@@ -126,6 +123,9 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    lint {
+        abortOnError false
     }
 }
 
