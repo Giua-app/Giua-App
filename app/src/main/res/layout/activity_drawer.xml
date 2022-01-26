@@ -43,7 +43,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Questo e da intendere come un fragment placeholder che viene sosituito dai fragment racchiusi nel navGraph -->
+    <!-- Questo è da intendere come un fragment placeholder che viene sosituito dai fragment racchiusi nel navGraph -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/content_main"
         android:layout_width="match_parent"

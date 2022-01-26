@@ -65,6 +65,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     Activity activity;
     TextView tvHomeworks;
     TextView tvTests;
+    TextView txUserInfo;
     SwipeRefreshLayout swipeRefreshLayout;
     View root;
     LoggerManager loggerManager;
@@ -104,12 +105,13 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         tvHomeworks = root.findViewById(R.id.home_txt_homeworks);
         tvTests = root.findViewById(R.id.home_txt_tests);
         swipeRefreshLayout = root.findViewById(R.id.home_swipe_refresh_layout);
+        txUserInfo = root.findViewById(R.id.home_user_info);
 
         root.findViewById(R.id.home_agenda_alerts).setOnClickListener(this::agendaAlertsOnClick);
         swipeRefreshLayout.setRefreshing(true);
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
 
-        GlobalVariables.internetThread.addRunnableToRun(() -> {
+        GlobalVariables.internetThread.addTask(() -> {
             //TODO: Mettere la cache for check updates (almeno tra activity manager e home fragemnt visto che in ogni caso viene chiamata due volte)
             AppUpdateManager manager = new AppUpdateManager(activity);
             if (manager.checkForUpdates()) {
@@ -119,8 +121,10 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
                     root.findViewById(R.id.home_app_update_reminder).setOnClickListener(this::updateReminderOnClick);
                 });
             }
-        });
 
+            String userType = GlobalVariables.gS.getUserTypeString();
+            activity.runOnUiThread(() -> txUserInfo.setText("Accesso eseguito nell'account " + GlobalVariables.gS.getUser() + " (" + GlobalVariables.gS.getUserTypeString() + ")"));
+        });
 
         loadDataAndViews();
         return root;
@@ -128,7 +132,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void loadDataAndViews() {
-        GlobalVariables.internetThread.addRunnableToRun(() -> {
+        GlobalVariables.internetThread.addTask(() -> {
             try {
                 Map<String, List<Vote>> allVotes = GlobalVariables.gS.getVotesPage(forceRefresh).getAllVotes();
                 int homeworks = GlobalVariables.gS.getHomePage(forceRefresh).getNearHomeworks();

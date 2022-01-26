@@ -65,7 +65,7 @@ public class AuthorizationFragment extends Fragment implements IGiuaAppFragment 
 
     @Override
     public void loadDataAndViews() {
-        GlobalVariables.internetThread.addRunnableToRun(() -> {
+        GlobalVariables.internetThread.addTask(() -> {
             try {
                 authorization = GlobalVariables.gS.getAuthorizationsPage(refresh).getAuthorizations();
                 activity.runOnUiThread(this::addViews);

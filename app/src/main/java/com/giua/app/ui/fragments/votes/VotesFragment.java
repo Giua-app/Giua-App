@@ -92,7 +92,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void loadDataAndViews() {
-        GlobalVariables.internetThread.addRunnableToRun(() -> {
+        GlobalVariables.internetThread.addTask(() -> {
             try {
                 allVotes = GlobalVariables.gS.getVotesPage(refreshVotes).getAllVotes();
                 /*else

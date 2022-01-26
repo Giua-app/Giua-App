@@ -132,7 +132,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
             isLoadingContent = true;
             if (currentPage > 1 && pbLoadingContent.getParent() == null)
                 viewsLayout.addView(pbLoadingContent);
-            GlobalVariables.internetThread.addRunnableToRun(() -> {
+            GlobalVariables.internetThread.addTask(() -> {
                 try {
                     if (!offlineMode)
                         allAlerts = GlobalVariables.gS.getAlertsPage(false).getAllAlerts(currentPage);
@@ -213,7 +213,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
     private void alertViewOnClick(View view) {
         pbLoadingPage.setVisibility(View.VISIBLE);
 
-        GlobalVariables.internetThread.addRunnableToRun(() -> {
+        GlobalVariables.internetThread.addTask(() -> {
             try {
                 ((AlertView) view).alert.getDetails(GlobalVariables.gS);
 
@@ -312,7 +312,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
             isDownloading = true;
             pbLoadingPage.setZ(10f);
             pbLoadingPage.setVisibility(View.VISIBLE);
-            GlobalVariables.internetThread.addRunnableToRun(() -> {
+            GlobalVariables.internetThread.addTask(() -> {
                 try {
                     DownloadedFile downloadedFile = GlobalVariables.gS.download(url);
                     FileOutputStream out = new FileOutputStream(requireActivity().getFilesDir() + "/" + "allegato." + downloadedFile.fileExtension);

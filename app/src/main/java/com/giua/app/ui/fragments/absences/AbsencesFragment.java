@@ -90,7 +90,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void loadDataAndViews() {
-        GlobalVariables.internetThread.addRunnableToRun(() -> {
+        GlobalVariables.internetThread.addTask(() -> {
             try {
                 absencesPage = GlobalVariables.gS.getAbsencesPage(refresh);
                 absences = absencesPage.getAllAbsences();
@@ -212,7 +212,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
             AbsenceView absenceView = latestAbsenceViewClicked;
             latestAbsenceViewClicked = null;
 
-            GlobalVariables.internetThread.addRunnableToRun(() -> {
+            GlobalVariables.internetThread.addTask(() -> {
                 activity.runOnUiThread(() -> swipeRefreshLayout.setRefreshing(true));
                 try {
                     if (!confirmActionIsDelete)

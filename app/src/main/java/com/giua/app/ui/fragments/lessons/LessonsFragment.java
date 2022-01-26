@@ -138,7 +138,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         hasCompletedLoading = false;
 
         if (!isSpammingClick && System.nanoTime() - lastCallTime > 500_000_000) {     //Anti click spam
-            GlobalVariables.internetThread.addRunnableToRun(() -> {
+            GlobalVariables.internetThread.addTask(() -> {
                 lastCallTime = System.nanoTime();
                 try {
                     allLessons = GlobalVariables.gS.getLessonsPage(true).getAllLessonsFromDate(currentDate);

@@ -73,7 +73,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
 
     private void loginWithPreviousCredentials() {
         loggerManager.d("Login automatico con credenziali salvate in corso");
-        GlobalVariables.internetThread.addRunnableToRun(() -> {
+        GlobalVariables.internetThread.addTask(() -> {
             runOnUiThread(() -> pbLoadingScreen.setVisibility(View.VISIBLE));
             try {
                 String username = LoginData.getUser(this);

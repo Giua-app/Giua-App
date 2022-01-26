@@ -155,7 +155,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             layout.addView(pbLoadingNewsletters);
 
         if (!loadedAllPages) {
-            GlobalVariables.internetThread.addRunnableToRun(() -> {
+            GlobalVariables.internetThread.addTask(() -> {
                 try {
                     if (!offlineMode) {
                         if (!isFilterApplied) {
@@ -295,7 +295,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             case MotionEvent.ACTION_UP:
                 if (!v.newsletter.isRead() && v.upperView.getTranslationX() >= (float) realMetrics.widthPixels * 240 / 1080) {
                     makeMarkAsReadAnimation(v, realMetrics);
-                    GlobalVariables.internetThread.addRunnableToRun(() -> {
+                    GlobalVariables.internetThread.addTask(() -> {
                         GlobalVariables.gS.getNewslettersPage(false).markNewsletterAsRead(v.newsletter);
                     });
                 } else
@@ -503,7 +503,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         isDownloading = true;
         pbLoadingPage.setZ(10f);
         pbLoadingPage.setVisibility(View.VISIBLE);
-        GlobalVariables.internetThread.addRunnableToRun(() -> {
+        GlobalVariables.internetThread.addTask(() -> {
             try {
                 DownloadedFile downloadedFile = GlobalVariables.gS.download(url);
                 FileOutputStream out = new FileOutputStream(requireActivity().getCacheDir() + "/" + "circolare." + downloadedFile.fileExtension);

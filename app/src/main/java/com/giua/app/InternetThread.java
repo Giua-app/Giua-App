@@ -26,14 +26,27 @@ public class InternetThread extends Thread {
     private final Queue<Runnable> allRunnableToRun;
     private boolean isInterrupted = false;
     private boolean isRunning = false;
+    private boolean isOffline = false;
 
     public InternetThread() {
         allRunnableToRun = new LinkedList<>();
         start();
     }
 
-    public void addRunnableToRun(Runnable runnable) {
-        allRunnableToRun.add(runnable);
+    /**
+     * Disattiva il thread cancellando silenziosamente le richieste di aggiunta di task
+     * ATTENZIONE: il thread rimane comunque in esecuzione in background
+     * <br><br>
+     *
+     * @param mode {@code true} per andare offline, {@code false} per andare online
+     */
+    public void setOfflineMode(boolean mode) {
+        isOffline = mode;
+    }
+
+    public void addTask(Runnable runnable) {
+        if (!isOffline)
+            allRunnableToRun.add(runnable);
     }
 
     @Override
@@ -62,9 +75,11 @@ public class InternetThread extends Thread {
             Runnable executingRunnable = allRunnableToRun.poll();
             if (executingRunnable != null)
                 executingRunnable.run();
-            try {
-                sleep(10);
-            } catch (InterruptedException ignored) {
+            else {   //Se non ha niente da fare allora riposa in attesa di una task
+                try {
+                    sleep(10);
+                } catch (InterruptedException ignored) {
+                }
             }
         }
         isRunning = false;

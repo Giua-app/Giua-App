@@ -70,16 +70,17 @@ public class DrawerActivity extends AppCompatActivity {
     AlarmManager alarmManager;
     Toolbar toolbar;
     Bundle bundle;
-    boolean offlineMode = false;
-    boolean demoMode = false;
     String goTo = "";
     LoggerManager loggerManager;
     String userType = "Tipo utente non caricato";
     String realUsername = "Nome utente non caricato";
     Drawer mDrawer;
     String unstableFeatures = "";
-    public MyFragmentManager myFragmentManager;
     MyDrawerManager myDrawerManager;
+    public MyFragmentManager myFragmentManager;
+
+    boolean offlineMode = false;
+    boolean demoMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,39 +145,7 @@ public class DrawerActivity extends AppCompatActivity {
             //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000, pendingIntent);    //DEBUG
         }
 
-        if (!offlineMode) {
-            if (SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE)) {
-                userType = "DEMO";
-                realUsername = "DEMO";
-                myDrawerManager.userType = userType;
-                myDrawerManager.realUsername = realUsername;
-                mDrawer = myDrawerManager.setupMaterialDrawer();
-                return;
-            }
-            GlobalVariables.internetThread.addRunnableToRun(() -> {
-                try {
-                    runOnUiThread(() -> mDrawer = myDrawerManager.setupMaterialDrawer());
-                    GiuaScraper.userTypes _userType = GlobalVariables.gS.getUserTypeEnum();
-                    String user = GlobalVariables.gS.loadUserFromDocument();
-                    if (_userType == GiuaScraper.userTypes.PARENT)
-                        userType = "Genitore";
-                    else if (_userType == GiuaScraper.userTypes.STUDENT)
-                        userType = "Studente";
-                    realUsername = user;
-                    myDrawerManager.userType = userType;
-                    myDrawerManager.realUsername = realUsername;
-                    runOnUiThread(() -> mDrawer = myDrawerManager.setupMaterialDrawer());
-                } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.MaintenanceIsActiveException | GiuaScraperExceptions.SiteConnectionProblems ignored) {
-                }
-            });
-        } else {
-            loggerManager.w("Applicazione in offline mode");
-            userType = "Offline";
-            realUsername = "Offline";
-            myDrawerManager.userType = userType;
-            myDrawerManager.realUsername = realUsername;
-            mDrawer = myDrawerManager.setupMaterialDrawer();
-        }
+        getAndSetupUsernameUsertype();
 
         new Thread(() -> {
             loggerManager.d("Scarico le informazioni sulle funzionalità instabili");
@@ -206,8 +175,6 @@ public class DrawerActivity extends AppCompatActivity {
         }
         AppData.saveAppVersion(this, BuildConfig.VERSION_NAME);
     }
-
-
 
     private boolean logoutItemOnClick(View view, int i, IDrawerItem item) {
         loggerManager.d("Logout richiesto dall'utente");
@@ -284,6 +251,40 @@ public class DrawerActivity extends AppCompatActivity {
                 index = j;
         }
         return index;
+    }
+
+    private void getAndSetupUsernameUsertype() {
+        if (offlineMode) {
+            loggerManager.w("Applicazione in offline mode");
+            userType = "Offline";
+            realUsername = "Offline";
+            myDrawerManager.userType = userType;
+            myDrawerManager.realUsername = realUsername;
+            mDrawer = myDrawerManager.setupMaterialDrawer();
+        } else if (SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE)) {
+            userType = "DEMO";
+            realUsername = "DEMO";
+            myDrawerManager.userType = userType;
+            myDrawerManager.realUsername = realUsername;
+            mDrawer = myDrawerManager.setupMaterialDrawer();
+        } else {
+            GlobalVariables.internetThread.addTask(() -> {
+                try {
+                    runOnUiThread(() -> mDrawer = myDrawerManager.setupMaterialDrawer());
+                    GiuaScraper.userTypes _userType = GlobalVariables.gS.getUserTypeEnum();
+                    String user = GlobalVariables.gS.loadUserFromDocument();
+                    if (_userType == GiuaScraper.userTypes.PARENT)
+                        userType = "Genitore";
+                    else if (_userType == GiuaScraper.userTypes.STUDENT)
+                        userType = "Studente";
+                    realUsername = user;
+                    myDrawerManager.userType = userType;
+                    myDrawerManager.realUsername = realUsername;
+                    runOnUiThread(() -> mDrawer = myDrawerManager.setupMaterialDrawer());
+                } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.MaintenanceIsActiveException | GiuaScraperExceptions.SiteConnectionProblems ignored) {
+                }
+            });
+        }
     }
 
     @Override
@@ -395,7 +396,7 @@ public class DrawerActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        GlobalVariables.internetThread.addRunnableToRun(() -> {  //Questo serve a prevenire la perdita di news
+        GlobalVariables.internetThread.addTask(() -> {  //Questo serve a prevenire la perdita di news
             try {
                 AppData.saveNumberNewslettersInt(this, GlobalVariables.gS.getHomePage(false).getNumberNewsletters());
                 AppData.saveNumberAlertsInt(this, GlobalVariables.gS.getHomePage(false).getNumberAlerts());

@@ -178,7 +178,7 @@ public class MainLoginActivity extends AppCompatActivity {
     private void login() {
         if (GlobalVariables.internetThread == null || GlobalVariables.internetThread.isInterrupted())
             GlobalVariables.internetThread = new InternetThread();
-        GlobalVariables.internetThread.addRunnableToRun(() -> {
+        GlobalVariables.internetThread.addTask(() -> {
             try {
                 if (isAddingAccount && AppData.getAllAccountNames(this).contains(etUsername.getText().toString())) {
                     runOnUiThread(() -> {
@@ -340,7 +340,7 @@ public class MainLoginActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } else {
-            GlobalVariables.internetThread.addRunnableToRun(() -> {
+            GlobalVariables.internetThread.addTask(() -> {
                 GlobalVariables.gS = new GiuaScraper(LoginData.getUser(this), LoginData.getPassword(this), LoginData.getCookie(this), true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
                 GlobalVariables.gS.login();
                 runOnUiThread(this::startDrawerActivity);

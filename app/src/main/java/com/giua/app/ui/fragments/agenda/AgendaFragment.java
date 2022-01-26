@@ -143,7 +143,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         if (!isLoadingData && System.nanoTime() - lastRequestTime > 500_000_000) {  //Anti click spam
             lastRequestTime = System.nanoTime();
             swipeRefreshLayout.setRefreshing(true);
-            GlobalVariables.internetThread.addRunnableToRun(() -> {
+            GlobalVariables.internetThread.addTask(() -> {
                 isLoadingData = true;
                 try {
                     allAgendaObjects = GlobalVariables.gS.getAgendaPage(false)
@@ -293,7 +293,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         lastOnDateCall = System.nanoTime();
         isLoadingData = true;
         swipeRefreshLayout.setRefreshing(true);
-        GlobalVariables.internetThread.addRunnableToRun(() -> showDateActivities(selectedDate));
+        GlobalVariables.internetThread.addTask(() -> showDateActivities(selectedDate));
     }
 
     private void onMonthChanged(Date firstDayOfNewMonth) {
