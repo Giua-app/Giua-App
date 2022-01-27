@@ -137,7 +137,7 @@ dependencies {
     //noinspection KtxExtensionAvailable
     implementation 'androidx.navigation:navigation-fragment:2.3.5'
     //noinspection KtxExtensionAvailable
-    implementation 'androidx.navigation:navigation-ui:2.3.5'
+    implementation 'androidx.navigation:navigation-ui:2.4.0'
     //noinspection GradleDependency
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
     //noinspection GradleDependency
