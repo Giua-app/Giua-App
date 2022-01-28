@@ -19,6 +19,7 @@
 
 package com.giua.app;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -90,6 +91,7 @@ public class LoginData {
     }
 
     //add final String APIUrl to parameters
+    @SuppressLint("ApplySharedPref")
     public static void setCredentialsSynchronously(final Context context, final String username, final String password, String cookie) {
 
         getSharedPreferences(context, username).edit()

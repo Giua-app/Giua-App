@@ -203,6 +203,7 @@ public class ActivityManager extends AppCompatActivity {
             CompatibilityManager.checkFor061Update(this);
         }
 
+        //Serve perchè in nuove versioni la versione non è più su Settings
         final String oldVer = SettingsData.getSettingString(this, "appVersion");
 
         //0.6.2
@@ -211,7 +212,7 @@ public class ActivityManager extends AppCompatActivity {
         }
 
         //0.6.3
-        if (!oldVer.equals("") && oldVer.contains("0.6.2")) {
+        if (!lastVer.contains(appVer) && lastVer.contains("0.6.3")) {
             CompatibilityManager.checkFor063Update(this);
         }
     }

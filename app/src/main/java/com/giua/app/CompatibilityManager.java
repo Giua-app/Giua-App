@@ -79,7 +79,7 @@ public class CompatibilityManager {
         LoginData.setCredentials(context, username, password);
 
         lm.d("Elimino le credenziali dal LoginData vecchio");
-        sharedPreferences.edit().putString("user", "").putString("password", "").apply();
+        sharedPreferences.edit().putString("user", null).putString("password", null).apply();
 
     }
 }
