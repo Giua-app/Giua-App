@@ -36,9 +36,9 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 
 import com.giua.app.ActivityManager;
+import com.giua.app.AppData;
 import com.giua.app.CheckNewsReceiver;
 import com.giua.app.LoggerManager;
-import com.giua.app.LoginData;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
@@ -233,7 +233,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         loggerManager.d("L'allarme è già settato?: " + alarmUp);
 
         if ((boolean) o) {
-            if (!alarmUp && !LoginData.getUser(context).equals("")) {
+            if (!alarmUp && !AppData.getActiveUsername(context).equals("")) {
                 Random r = new Random(SystemClock.elapsedRealtime());
                 long interval = AlarmManager.INTERVAL_HOUR + r.nextInt(3_600_000);
 
@@ -356,7 +356,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             GiuaScraper.setSiteURL((String) o);
             SettingsData.saveSettingString(requireActivity(), SettingKey.DEFAULT_URL, (String) o);
             if (!o.equals(defaultUrl)) {
-                LoginData.clearAll(requireActivity());
+                AppData.saveActiveUsername(context, "");
                 startActivity(new Intent(requireActivity(), MainLoginActivity.class));
                 requireActivity().finish();
             }

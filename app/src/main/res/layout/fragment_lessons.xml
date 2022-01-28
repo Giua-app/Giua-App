@@ -191,7 +191,9 @@
             android:fontFamily="@font/varelaroundregular"
             android:maxHeight="120dp"
             android:text="@string/fragmentlezioni_textview_visualizer_arguments"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:scrollbars="vertical"
+            android:scrollbarAlwaysDrawVerticalTrack="true" />
 
         <TextView
             android:id="@+id/lezioni_visualizer_activities"

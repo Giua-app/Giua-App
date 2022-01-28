@@ -117,7 +117,7 @@ public class StudentLoginActivity extends AppCompatActivity {
         obscureLayoutView.setVisibility(View.GONE);
         loggerManager.d("Avvio DrawerActivity");
         if (!AppData.getAllAccountUsernames(this).contains("gsuite"))
-            AppData.addAccountCredentials(this, "gsuite", "gsuite");
+            AppData.addAccountUsername(this, "gsuite");
         String goTo = getIntent().getStringExtra("goTo");
         if (goTo == null)
             goTo = "";

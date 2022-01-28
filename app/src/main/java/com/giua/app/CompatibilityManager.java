@@ -20,6 +20,7 @@
 package com.giua.app;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 /**
  * Controlla la compatibilità tra un aggiornamento e l'altro
@@ -61,5 +62,24 @@ public class CompatibilityManager {
 
         AppData.saveIntroStatus(context, -2);
         AppData.saveAppVersion(context, oldVer);
+    }
+
+    public static void checkFor063Update(Context context) {
+        LoggerManager lm = new LoggerManager("CompatManager", context);
+        final String oldVer = SettingsData.getSettingString(context, "appVersion");
+
+        lm.w("Rilevato aggiornamento da 0.6.3");
+        lm.d("Sposto le credenziali da LoginData non sicuro a LoginData sicuro");
+
+        SharedPreferences sharedPreferences = LoginData.getSharedPreferencesForOldLogin(context);
+        String username = sharedPreferences.getString("user", "");
+        String password = sharedPreferences.getString("password", "");
+
+        AppData.saveActiveUsername(context, username);
+        LoginData.setCredentials(context, username, password);
+
+        lm.d("Elimino le credenziali dal LoginData vecchio");
+        sharedPreferences.edit().putString("user", "").putString("password", "").apply();
+
     }
 }

@@ -123,7 +123,7 @@ public class ActivityManager extends AppCompatActivity {
 
         if (GlobalVariables.gS != null)
             startDrawerActivity();
-        if (LoginData.getUser(this).equals(""))
+        if (AppData.getActiveUsername(this).equals(""))
             startMainLoginActivity();
         else
             startAutomaticLoginActivity();
@@ -206,8 +206,13 @@ public class ActivityManager extends AppCompatActivity {
         final String oldVer = SettingsData.getSettingString(this, "appVersion");
 
         //0.6.2
-        if(!oldVer.equals("") && oldVer.contains("0.6.2")){
+        if (!oldVer.equals("") && oldVer.contains("0.6.2")) {
             CompatibilityManager.checkFor062Update(this);
+        }
+
+        //0.6.3
+        if (!oldVer.equals("") && oldVer.contains("0.6.2")) {
+            CompatibilityManager.checkFor063Update(this);
         }
     }
 

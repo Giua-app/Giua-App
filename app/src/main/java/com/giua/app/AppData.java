@@ -52,9 +52,8 @@ public class AppData {
     private static final String appVersionKey = "app_version";
 
     //Chiavi per il salvataggio delle configurazioni per più account
-    private static final String allAccountNamesKey = "all_account_names";
-    private static final String allAccountPasswordsKey = "all_account_passwords";
-    private static final String allAccountCookiesKey = "all_account_cookies";
+    private static final String allAccountUsernamesKey = "all_account_usernames";
+    private static final String activeUsername = "active_username";
 
     private static final String introStatusKey = "intro_status";
     private static final String crashStatusKey = "crash_status";
@@ -180,52 +179,46 @@ public class AppData {
 
     //region Dati per più account
 
-    public static void addAccountCredentials(final Context context, final String username, final String password) {
+    public static void addAccountUsername(final Context context, final String username) {
         Set<String> allNames = getAllAccountUsernames(context);
-        Set<String> allPasswords = getAllAccountPasswords(context);
 
         allNames.add(username);
-        allPasswords.add(password);
 
         getSharedPreferences(context).edit()
-                .putStringSet(allAccountNamesKey, allNames)
-                .putStringSet(allAccountPasswordsKey, allPasswords)
+                .putStringSet(allAccountUsernamesKey, allNames)
                 .apply();
     }
 
-    public static void removeAccountCredentials(final Context context, final String username, final String password) {
+    public static void removeAccountUsername(final Context context, final String username) {
         Set<String> allNames = getAllAccountUsernames(context);
-        Set<String> allPasswords = getAllAccountPasswords(context);
 
         allNames.remove(username);
-        allPasswords.remove(password);
 
         getSharedPreferences(context).edit()
-                .putStringSet(allAccountNamesKey, allNames)
-                .putStringSet(allAccountPasswordsKey, allPasswords)
+                .putStringSet(allAccountUsernamesKey, allNames)
                 .apply();
 
         //usernames
     }
 
-    public static void saveAllAccountNames(final Context context, final Set<String> value) {
+    public static void saveAllAccountUsernames(final Context context, final Set<String> value) {
         getSharedPreferences(context).edit()
-                .putStringSet(allAccountNamesKey, value)
+                .putStringSet(allAccountUsernamesKey, value)
                 .apply();
     }
 
     public static Set<String> getAllAccountUsernames(final Context context) {
-        return getSharedPreferences(context).getStringSet(allAccountNamesKey, new ArraySet<>());
+        return getSharedPreferences(context).getStringSet(allAccountUsernamesKey, new ArraySet<>());
     }
 
-    public static void saveAllAccountPasswords(final Context context, final Set<String> value) {
+    public static void saveActiveUsername(final Context context, final String username) {
         getSharedPreferences(context).edit()
-                .putStringSet(allAccountPasswordsKey, value)
+                .putString(activeUsername, username)
                 .apply();
     }
 
-    public static Set<String> getAllAccountPasswords(final Context context) {
-        return getSharedPreferences(context).getStringSet(allAccountPasswordsKey, new ArraySet<>());
+    public static String getActiveUsername(final Context context) {
+        return getSharedPreferences(context).getString(activeUsername, "");
     }
 
     //endregion

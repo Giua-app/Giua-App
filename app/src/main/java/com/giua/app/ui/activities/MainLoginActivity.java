@@ -197,7 +197,8 @@ public class MainLoginActivity extends AppCompatActivity {
                 if (GlobalVariables.gS.checkLogin()) {
                     if (chRememberCredentials.isChecked()) {
                         LoginData.setCredentials(this, etUsername.getText().toString(), etPassword.getText().toString(), GlobalVariables.gS.getCookie());
-                        AppData.addAccountCredentials(this, etUsername.getText().toString(), etPassword.getText().toString());
+                        AppData.addAccountUsername(this, etUsername.getText().toString());
+                        AppData.saveActiveUsername(this, etUsername.getText().toString());
                     }
                     startDrawerActivity();
                 } else {
@@ -341,7 +342,8 @@ public class MainLoginActivity extends AppCompatActivity {
             startActivity(intent);
         } else {
             GlobalVariables.internetThread.addTask(() -> {
-                GlobalVariables.gS = new GiuaScraper(LoginData.getUser(this), LoginData.getPassword(this), LoginData.getCookie(this), true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
+                String username = AppData.getActiveUsername(this);
+                GlobalVariables.gS = new GiuaScraper(username, LoginData.getPassword(this, username), LoginData.getCookie(this, username), true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
                 GlobalVariables.gS.login();
                 runOnUiThread(this::startDrawerActivity);
             });

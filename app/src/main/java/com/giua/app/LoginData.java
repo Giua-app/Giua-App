@@ -22,6 +22,12 @@ package com.giua.app;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.security.crypto.EncryptedSharedPreferences;
+import androidx.security.crypto.MasterKeys;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 public class LoginData {
 
     /**
@@ -29,62 +35,80 @@ public class LoginData {
      * Qui si trovano i dati riguardanti l'account attivo
      */
 
-    private static final String loginPreferenceKey = "login";
+    private static final String loginPreferenceKeyOld = "login";
     //private static final String APIUrlKey = "APIUrl";
     private static final String passwordKey = "password";
-    private static final String userKey = "user";
     private static final String cookieKey = "cookie";
+    private static String masterKeyAlias = null;
 
-    private static SharedPreferences getSharedPreferences(final Context context) {
-        return context.getSharedPreferences(loginPreferenceKey, Context.MODE_PRIVATE);
+    private static void createMasterKeyValueForEncryption() throws GeneralSecurityException, IOException {
+        if (masterKeyAlias == null) {
+            masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
+        }
+    }
+
+    public static SharedPreferences getSharedPreferencesForOldLogin(final Context context) {
+        return context.getSharedPreferences(loginPreferenceKeyOld, Context.MODE_PRIVATE);
+    }
+
+    private static SharedPreferences getSharedPreferences(final Context context, final String fileName) {
+
+        try {
+            createMasterKeyValueForEncryption();
+
+            return EncryptedSharedPreferences.create(
+                    fileName,
+                    masterKeyAlias,
+                    context,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            );
+        } catch (GeneralSecurityException | IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
     //add final String APIUrl to parameters
-    public static void setCredentials(final Context context, final String user, final String password) {
+    public static void setCredentials(final Context context, final String username, final String password) {
 
-        getSharedPreferences(context).edit()
+        getSharedPreferences(context, username).edit()
                 //.putString(APIUrlKey, APIUrl)
-                .putString(userKey, user)
                 .putString(passwordKey, password)
                 .apply();
     }
 
     //add final String APIUrl to parameters
-    public static void setCredentials(final Context context, final String user, final String password, String cookie) {
+    public static void setCredentials(final Context context, final String username, final String password, String cookie) {
 
-        getSharedPreferences(context).edit()
+        getSharedPreferences(context, username).edit()
                 //.putString(APIUrlKey, APIUrl)
-                .putString(userKey, user)
                 .putString(passwordKey, password)
                 .putString(cookieKey, cookie)
                 .apply();
     }
 
     //add final String APIUrl to parameters
-    public static void setCredentialsSynchronously(final Context context, final String user, final String password, String cookie) {
+    public static void setCredentialsSynchronously(final Context context, final String username, final String password, String cookie) {
 
-        getSharedPreferences(context).edit()
+        getSharedPreferences(context, username).edit()
                 //.putString(APIUrlKey, APIUrl)
-                .putString(userKey, user)
                 .putString(passwordKey, password)
                 .putString(cookieKey, cookie)
                 .commit();
     }
 
-    public static String getUser(final Context context) {
-        return getSharedPreferences(context).getString(userKey, "");
+    public static String getPassword(final Context context, final String username) {
+        return getSharedPreferences(context, username).getString(passwordKey, "");
     }
 
-    public static String getPassword(final Context context) {
-        return getSharedPreferences(context).getString(passwordKey, "");
+    public static String getCookie(final Context context, final String username) {
+        return getSharedPreferences(context, username).getString(cookieKey, "");
     }
 
-    public static String getCookie(final Context context) {
-        return getSharedPreferences(context).getString(cookieKey, "");
-    }
-
-    public static void clearAll(final Context context) {
-        setCredentials(context, "", "", "");
+    public static void clearAllForAccount(final Context context, final String username) {
+        setCredentials(context, username, "", "");
     }
 
 }

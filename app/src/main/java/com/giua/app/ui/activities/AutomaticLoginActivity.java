@@ -81,14 +81,14 @@ public class AutomaticLoginActivity extends AppCompatActivity {
         GlobalVariables.internetThread.addTask(() -> {
             runOnUiThread(() -> pbLoadingScreen.setVisibility(View.VISIBLE));
             try {
-                String username = LoginData.getUser(this);
-                String password = LoginData.getPassword(this);
-                String cookie = LoginData.getCookie(this);
+                String username = AppData.getActiveUsername(this);
+                String password = LoginData.getPassword(this, username);
+                String cookie = LoginData.getCookie(this, username);
                 GlobalVariables.gS = new GiuaScraper(username, password, cookie, true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
                 GlobalVariables.gS.login();
                 LoginData.setCredentials(this, username, password, GlobalVariables.gS.getCookie());
                 if (!AppData.getAllAccountUsernames(this).contains(GlobalVariables.gS.getUser()))
-                    AppData.addAccountCredentials(this, GlobalVariables.gS.getUser(), LoginData.getPassword(this));
+                    AppData.addAccountUsername(this, GlobalVariables.gS.getUser());
                 startDrawerActivity();
             } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.SiteConnectionProblems e) {
                 loggerManager.e("Errore di connessione - " + e.getMessage());
@@ -111,13 +111,12 @@ public class AutomaticLoginActivity extends AppCompatActivity {
 
                 loginWithPreviousCredentials();
             } catch (GiuaScraperExceptions.SessionCookieEmpty sce) {     //Se il login non dovesse funzionare lancia l acitvity di login ed elimina le credenziali salvate
-                if (LoginData.getUser(this).equals("gsuite")) {   //Questa condizione si verifica quando è presente un acccount studente con il cookie scaduto
+                if (AppData.getActiveUsername(this).equals("gsuite")) {   //Questa condizione si verifica quando è presente un acccount studente con il cookie scaduto
                     loggerManager.w("Cookie gS dell'account studente scaduto, avvio StudentLoginActivity");
                     startStudentLoginActivity();
-                }
-                else {
+                } else {
                     loggerManager.w("Cookie gS scaduto, avvio MainLoginActivity");
-                    LoginData.clearAll(this);
+                    AppData.saveActiveUsername(this, "");
                     setErrorMessage("Le credenziali di accesso non sono più valide");
                     try {
                         Thread.sleep(2000);
@@ -146,7 +145,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
 
     private void btnLogoutOnClick(View view) {
         loggerManager.d("Logout richiesto dall'utente, avvio MainLoginActivity");
-        LoginData.clearAll(this);
+        AppData.saveActiveUsername(this, "");
         startActivity(new Intent(AutomaticLoginActivity.this, MainLoginActivity.class));
         finish();
     }

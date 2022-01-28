@@ -46,7 +46,6 @@ import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.InternetThread;
 import com.giua.app.LoggerManager;
-import com.giua.app.LoginData;
 import com.giua.app.MyDrawerManager;
 import com.giua.app.MyFragmentManager;
 import com.giua.app.R;
@@ -136,7 +135,7 @@ public class DrawerActivity extends AppCompatActivity {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, 0);
         loggerManager.d("L'allarme è già settato?: " + alarmUp);
         //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000, pendingIntent);    //DEBUG
-        if (!alarmUp && !LoginData.getUser(this).equals("") && SettingsData.getSettingBoolean(this, SettingKey.NOTIFICATION)) {
+        if (!alarmUp && !AppData.getActiveUsername(this).equals("") && SettingsData.getSettingBoolean(this, SettingKey.NOTIFICATION)) {
 
             Random r = new Random(SystemClock.elapsedRealtime());
             long interval = AlarmManager.INTERVAL_HOUR + r.nextInt(3_600_000);
@@ -182,16 +181,15 @@ public class DrawerActivity extends AppCompatActivity {
     private boolean logoutItemOnClick(View view, int i, IDrawerItem item) {
         loggerManager.d("Logout richiesto dall'utente");
         Analytics.sendDefaultRequest("Log out");
-        AppData.removeAccountCredentials(this, LoginData.getUser(this), LoginData.getPassword(this));
+        AppData.removeAccountUsername(this, AppData.getActiveUsername(this));
         if (GlobalVariables.gS.getUser().equals("gsuite"))
             CookieManager.getInstance().removeAllCookies(null); //Cancello il cookie della webview
-        LoginData.clearAll(this);
+        AppData.saveActiveUsername(this, "");
         Set<String> allAccountUsernames = AppData.getAllAccountUsernames(this);
         //Se vero vuol dire che ci sono altri account diponibili quindi lo faccio riloggare col primo
         if (allAccountUsernames.size() > 0) {
-            String password = (String) AppData.getAllAccountPasswords(this).toArray()[0];
             String username = (String) AppData.getAllAccountUsernames(this).toArray()[0];
-            LoginData.setCredentials(this, username, password);
+            AppData.saveActiveUsername(this, username);
         }
         startActivity(new Intent(this, ActivityManager.class));
         isStartingAnotherActivity = true;
@@ -206,14 +204,13 @@ public class DrawerActivity extends AppCompatActivity {
         } else {
             String selectedProfileUsername = iProfile.getName().toString();
             Object[] allUsernames = AppData.getAllAccountUsernames(this).toArray();
-            Object[] allPasswords = AppData.getAllAccountPasswords(this).toArray();
             int indexOfSelectedUsername = getIndexOf(allUsernames, selectedProfileUsername);
             if (indexOfSelectedUsername == -1) {
                 loggerManager.e("Non ho trovato lo username selezionato da drawer in AppData");
                 Snackbar.make(view, "Qualcosa è andato storto, impossibile continuare.", Snackbar.LENGTH_SHORT).show();
                 return false;   //Chiudi il drawer
             }
-            LoginData.setCredentials(this, (String) allUsernames[indexOfSelectedUsername], (String) allPasswords[indexOfSelectedUsername], "");
+            AppData.saveActiveUsername(this, (String) allUsernames[indexOfSelectedUsername]);
             GlobalVariables.gS = null;
             startActivity(new Intent(this, ActivityManager.class));
             isStartingAnotherActivity = true;

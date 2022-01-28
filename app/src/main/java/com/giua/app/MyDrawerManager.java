@@ -65,7 +65,7 @@ public class MyDrawerManager {
     }
 
     public Drawer setupMaterialDrawer() {
-        String actualUsername = LoginData.getUser(activity);
+        String actualUsername = AppData.getActiveUsername(activity);
 
         // Create the AccountHeader
         AccountHeaderBuilder accountHeaderBuilder = new AccountHeaderBuilder()
