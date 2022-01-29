@@ -20,9 +20,13 @@
 package com.giua.app;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.IdRes;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -33,6 +37,7 @@ import com.mikepenz.materialdrawer.model.ExpandableDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 public class MyDrawerManager {
 
@@ -40,6 +45,7 @@ public class MyDrawerManager {
     private final AccountHeader.OnAccountHeaderListener onChangeAccountFromDrawer;
     public String realUsername;
     public String userType;
+    public IProfile<ProfileDrawerItem> activeProfile;
     private final Toolbar toolbar;
     private final Drawer.OnDrawerItemClickListener settingsItemOnClick;
     private final Drawer.OnDrawerItemClickListener logoutItemOnClick;
@@ -66,6 +72,11 @@ public class MyDrawerManager {
 
     public Drawer setupMaterialDrawer() {
         String actualUsername = AppData.getActiveUsername(activity);
+        Drawable d = ResourcesCompat.getDrawable(activity.getResources(), R.drawable.ic_account, activity.getTheme());
+        d.setColorFilter(Color.BLACK, PorterDuff.Mode.ADD);
+        activeProfile = new ProfileDrawerItem().withName(realUsername).withEmail(actualUsername)
+                .withIcon(d)
+                .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme()));
 
         // Create the AccountHeader
         AccountHeaderBuilder accountHeaderBuilder = new AccountHeaderBuilder()
@@ -73,13 +84,10 @@ public class MyDrawerManager {
                 .withHeaderBackground(R.color.relative_main_color)
                 .withTextColor(activity.getColor(R.color.white))
                 .withSelectionListEnabled(true)
-                .withOnlyMainProfileImageVisible(true)
                 .withOnAccountHeaderListener(onChangeAccountFromDrawer)
                 .withCurrentProfileHiddenInList(true)
                 .addProfiles(
-                        new ProfileDrawerItem().withName(realUsername).withEmail(actualUsername)
-                                .withIcon(R.mipmap.ic_launcher)
-                                .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme()))
+                        activeProfile
                 );
 
         //Aggiungi nel drawer gli account disponibili
@@ -88,16 +96,19 @@ public class MyDrawerManager {
             String u = (String) _username;
             if (u.equals(actualUsername)) continue;
 
+            Drawable icon = ResourcesCompat.getDrawable(activity.getResources(), R.drawable.ic_account, activity.getTheme());
+            icon.setColorFilter(LoginData.getTheme(activity, u), PorterDuff.Mode.ADD);
+
             if (u.equals("gsuite")) {
                 accountHeaderBuilder.addProfiles(
                         new ProfileDrawerItem().withName(u).withEmail("Studente")
-                                .withIcon(R.mipmap.ic_launcher)
+                                .withIcon(icon)
                                 .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme()))
                 );
             } else {
                 accountHeaderBuilder.addProfiles(
                         new ProfileDrawerItem().withName(u).withEmail(u)
-                                .withIcon(R.mipmap.ic_launcher)
+                                .withIcon(icon)
                                 .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme()))
                 );
             }

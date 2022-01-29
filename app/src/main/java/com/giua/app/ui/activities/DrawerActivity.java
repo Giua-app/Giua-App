@@ -203,6 +203,8 @@ public class DrawerActivity extends AppCompatActivity {
             isStartingAnotherActivity = true;
         } else {
             String selectedProfileUsername = iProfile.getName().toString();
+            if (myDrawerManager.activeProfile.getName().toString().equals(selectedProfileUsername))
+                return true;
             Object[] allUsernames = AppData.getAllAccountUsernames(this).toArray();
             int indexOfSelectedUsername = getIndexOf(allUsernames, selectedProfileUsername);
             if (indexOfSelectedUsername == -1) {

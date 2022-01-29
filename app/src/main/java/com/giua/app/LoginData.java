@@ -22,6 +22,7 @@ package com.giua.app;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKeys;
@@ -36,10 +37,11 @@ public class LoginData {
      * Qui si trovano i dati riguardanti l'account attivo
      */
 
-    private static final String loginPreferenceKeyOld = "login";
+    private static final String loginPreferenceKeyOld = "login";    //DA NON UTILIZZARE
     //private static final String APIUrlKey = "APIUrl";
     private static final String passwordKey = "password";
     private static final String cookieKey = "cookie";
+    private static final String themeKey = "theme";
     private static String masterKeyAlias = null;
 
     private static void createMasterKeyValueForEncryption() throws GeneralSecurityException, IOException {
@@ -111,6 +113,16 @@ public class LoginData {
 
     public static void clearAllForAccount(final Context context, final String username) {
         setCredentials(context, username, "", "");
+    }
+
+    public static void setTheme(final Context context, final String username, final int color) {
+        getSharedPreferences(context, username).edit()
+                .putInt(themeKey, color)
+                .commit();
+    }
+
+    public static int getTheme(final Context context, final String username) {
+        return getSharedPreferences(context, username).getInt(themeKey, Color.rgb(0, 123, 255));
     }
 
 }
