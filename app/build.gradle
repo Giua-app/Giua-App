@@ -47,14 +47,14 @@ androidGitVersion { //Usato soltanto durante lo sviluppo per differenziare le ve
 
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     buildToolsVersion "30.0.3"
 
 
     defaultConfig {
         applicationId "com.giua.app"
         minSdkVersion 24
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode androidGitVersion.code()
         //versionName "0.6.3-stable" //Da usare per le release
         versionName androidGitVersion.name() //Da usare per lo sviluppo
@@ -131,22 +131,19 @@ android {
 
 dependencies {
 
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
     //noinspection KtxExtensionAvailable
-    implementation 'androidx.navigation:navigation-fragment:2.3.5'
+    implementation 'androidx.navigation:navigation-fragment:2.4.0'
     //noinspection KtxExtensionAvailable
-    implementation 'androidx.navigation:navigation-ui:2.3.5'
-    //noinspection GradleDependency
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
-    //noinspection GradleDependency
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
-    //noinspection GradleDependency
-    implementation 'androidx.annotation:annotation:1.2.0'
+    implementation 'androidx.navigation:navigation-ui:2.4.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
+    implementation 'androidx.annotation:annotation:1.3.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     //noinspection KtxExtensionAvailable
-    implementation "androidx.preference:preference:1.1.1"
+    implementation "androidx.preference:preference:1.2.0"
 
     //--Memory leak lib
     //implementation 'com.squareup.leakcanary:leakcanary-android:2.7'  //DEBUG
@@ -155,7 +152,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.14.3'
 
     //--Giua scraper
-    implementation 'com.github.Giua-app:Giua-Webscraper:f48f799320'
+    implementation 'com.github.Giua-app:Giua-Webscraper:91b767b'
     //implementation fileTree(dir: 'libs', include: ['*.jar'])     //DEBUG
     //implementation 'com.fasterxml.jackson.core:jackson-core:2.12.5'   //DEBUG
     //implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.5'    //DEBUG
@@ -174,7 +171,7 @@ dependencies {
     implementation 'com.mikepenz:materialdrawer:6.1.2'
 
     //--App Intro
-    implementation 'com.github.AppIntro:AppIntro:6.1.0'
+    implementation 'com.github.AppIntro:AppIntro:6.2.0'
 
     //--Glide (https://github.com/bumptech/glide)
     implementation 'com.github.bumptech.glide:glide:4.12.0'
