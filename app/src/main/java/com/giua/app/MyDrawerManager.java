@@ -20,7 +20,6 @@
 package com.giua.app;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 
@@ -73,7 +72,7 @@ public class MyDrawerManager {
     public Drawer setupMaterialDrawer() {
         String actualUsername = AppData.getActiveUsername(activity);
         Drawable d = ResourcesCompat.getDrawable(activity.getResources(), R.drawable.ic_account, activity.getTheme());
-        d.setColorFilter(Color.BLACK, PorterDuff.Mode.ADD);
+        d.setColorFilter(activity.getResources().getColor(R.color.main_color_lighter, activity.getTheme()), PorterDuff.Mode.ADD);
         activeProfile = new ProfileDrawerItem().withName(realUsername).withEmail(actualUsername)
                 .withIcon(d)
                 .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme()));
@@ -86,6 +85,7 @@ public class MyDrawerManager {
                 .withSelectionListEnabled(true)
                 .withOnAccountHeaderListener(onChangeAccountFromDrawer)
                 .withCurrentProfileHiddenInList(true)
+                .withOnlyMainProfileImageVisible(true)
                 .addProfiles(
                         activeProfile
                 );
@@ -96,19 +96,19 @@ public class MyDrawerManager {
             String u = (String) _username;
             if (u.equals(actualUsername)) continue;
 
-            Drawable icon = ResourcesCompat.getDrawable(activity.getResources(), R.drawable.ic_account, activity.getTheme());
-            icon.setColorFilter(LoginData.getTheme(activity, u), PorterDuff.Mode.ADD);
+            /*Drawable icon = ResourcesCompat.getDrawable(activity.getResources(), R.drawable.ic_account, activity.getTheme());
+            icon.setColorFilter(LoginData.getTheme(activity, u), PorterDuff.Mode.ADD);*/
 
             if (u.equals("gsuite")) {
                 accountHeaderBuilder.addProfiles(
                         new ProfileDrawerItem().withName(u).withEmail("Studente")
-                                .withIcon(icon)
+                                .withIcon(d)
                                 .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme()))
                 );
             } else {
                 accountHeaderBuilder.addProfiles(
                         new ProfileDrawerItem().withName(u).withEmail(u)
-                                .withIcon(icon)
+                                .withIcon(d)
                                 .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme()))
                 );
             }
