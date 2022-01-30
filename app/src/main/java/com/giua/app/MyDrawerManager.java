@@ -82,7 +82,7 @@ public class MyDrawerManager {
                 .withActivity(activity)
                 .withHeaderBackground(R.color.relative_main_color)
                 .withTextColor(activity.getColor(R.color.white))
-                .withSelectionListEnabled(true)
+                .withSelectionListEnabled(SettingsData.getSettingBoolean(activity, SettingKey.EXP_MODE))
                 .withOnAccountHeaderListener(onChangeAccountFromDrawer)
                 .withCurrentProfileHiddenInList(true)
                 .withOnlyMainProfileImageVisible(true)

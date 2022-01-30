@@ -21,62 +21,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
-        app:iconSpaceReserved="false"
-        app:title="Generale">
-
-        <Preference
-            app:icon="@drawable/ic_baseline_info_24"
-            app:key="aboutScreen"
-            app:title="Riguardo l'app" />
-        <Preference
-            app:icon="@drawable/ic_baseline_menu_book_24"
-            app:key="introScreen"
-            app:title="Rivedi l'intro" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_test_tube"
-            android:key="experimentalMode"
-            android:title="Abilita funzionalità sperimentali"
-            app:isPreferenceVisible="false" />
-        <EditTextPreference
-            app:icon="@drawable/ic_web_search_24"
-            app:key="siteUrl"
-            app:negativeButtonText="Annulla"
-            app:positiveButtonText="Imposta"
-            app:title="Imposta l'url del sito"
-            app:dialogMessage="Inserire l'url del sito tipo: http://example.com oppure http://example.com/percorso . Il carattere '/' non è ammesso come ultimo carattere." />
-        <Preference
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:icon="@drawable/ic_bug"
-            app:key="bugReport"
-            app:title="Segnala un bug" />
-        <SwitchPreference
-            app:defaultValue="false"
-            app:icon="@drawable/ic_baseline_code_24"
-            app:key="debugMode"
-            app:title="Modalità di debug (solo utenti esperti)" />
-
-    </PreferenceCategory>
-    <PreferenceCategory
-        app:iconSpaceReserved="false"
-        app:title="Notifiche">
-
-        <SwitchPreference
-            android:icon="@drawable/ic_baseline_notifications_none_24"
-            app:defaultValue="false"
-            app:key="notification"
-            app:title="Abilita le notifiche" />
-
-        <MultiSelectListPreference
-            android:icon="@drawable/ic_timer_cog"
-            android:key="notification_manager"
-            app:title="Gestione notifiche" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
         app:title="Personalizzazione"
         app:iconSpaceReserved="false">
 
@@ -97,6 +41,63 @@
             app:defaultValue="false"
             app:key="show_vote_not_relevant_for_mean_on_chart"
             app:title="Mostra nel grafico della home i voti che non valgono per la media" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="Notifiche">
+
+        <SwitchPreference
+            android:icon="@drawable/ic_baseline_notifications_none_24"
+            app:defaultValue="false"
+            app:key="notification"
+            app:title="Abilita le notifiche" />
+
+        <MultiSelectListPreference
+            android:icon="@drawable/ic_timer_cog"
+            android:key="notification_manager"
+            app:title="Gestione notifiche" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="Generale">
+
+        <Preference
+            app:icon="@drawable/ic_baseline_info_24"
+            app:key="aboutScreen"
+            app:title="Riguardo l'app" />
+        <Preference
+            app:icon="@drawable/ic_baseline_menu_book_24"
+            app:key="introScreen"
+            app:title="Rivedi l'intro" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_test_tube"
+            android:key="experimentalMode"
+            android:title="Abilita funzionalità sperimentali"
+            app:isPreferenceVisible="true" />
+        <EditTextPreference
+            app:icon="@drawable/ic_web_search_24"
+            app:key="siteUrl"
+            app:negativeButtonText="Annulla"
+            app:positiveButtonText="Imposta"
+            app:title="Imposta l'url del sito"
+            app:dialogMessage="Inserire l'url del sito tipo: http://example.com oppure http://example.com/percorso . Il carattere '/' non è ammesso come ultimo carattere." />
+        <Preference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_bug"
+            app:key="bugReport"
+            app:title="Segnala un bug" />
+        <SwitchPreference
+            app:defaultValue="false"
+            app:icon="@drawable/ic_baseline_code_24"
+            app:key="debugMode"
+            app:title="Modalità di debug (solo utenti esperti)" />
 
     </PreferenceCategory>
 

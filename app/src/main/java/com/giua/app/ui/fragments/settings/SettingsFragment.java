@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.View;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
@@ -155,6 +156,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private boolean swExpModeChangeListener(Preference preference, Object o) {
         SettingsData.saveSettingBoolean(requireActivity(), SettingKey.EXP_MODE, (boolean) o);
         new LoggerManager("SettigsFragment", getContext()).w("Funzionalità Sperimentali: " + (boolean) o);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Attenzione");
+        builder.setMessage("Per vedere le modifiche riavviare l'app");
+        builder.setPositiveButton("Chiudi", null);
+        builder.show();
         return true;
     }
 
