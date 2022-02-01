@@ -83,16 +83,19 @@ public class VoteView extends ConstraintLayout {
                 quarterlyCounter.add(allVotes.get(i).quarterlyToInt());
         }
 
+        //Indica se il quadrimestre che stiamo aggiungendo è il primo fra tutti
+        boolean isFirst = true;
         //Creo i quadrimestri visivamente
-        length = quarterlyCounter.size();
-        for (int i = 0; i < length; i++) {
-            TextView quarterlyTextView = createTextViewForQuarterly(context, GiuaScraperUtils.getQuarterNameWithNumbers(quarterlyCounter.get(i)), i == 0);
+        for (int quarter : quarterlyCounter) {
+            TextView quarterlyTextView = createTextViewForQuarterly(context, GiuaScraperUtils.getQuarterNameWithNumbers(quarter), isFirst);
             HorizontalScrollView horizontalScrollView = createHorizontalScrollView(context);
-            TextView meanTextView = createTextViewForMeans(context, votesPage.getMeanOf(allVotes, i + 1), i == 0);
+            TextView meanTextView = createTextViewForMeans(context, votesPage.getMeanOf(allVotes, quarter), isFirst);
 
             ((LinearLayout) findViewById(R.id.list_vote_layout)).addView(quarterlyTextView);
             ((LinearLayout) findViewById(R.id.list_vote_layout)).addView(horizontalScrollView);
             ((LinearLayout) findViewById(R.id.mean_vote_layout)).addView(meanTextView);
+
+            isFirst = false;
 
         }
 
