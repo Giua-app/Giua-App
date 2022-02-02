@@ -20,6 +20,7 @@
 package com.giua.app;
 
 
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -36,7 +37,11 @@ import org.jsoup.Jsoup;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
 
 public class AppUpdateManager {
 
@@ -83,7 +88,7 @@ public class AppUpdateManager {
     public boolean checkForUpdates(){
         loggerManager.d("Controllo aggiornamenti...");
 
-        JsonNode rootNode = getReleasesJson();
+        JsonNode rootNode = getReleasesJson().get(0);
 
         if (rootNode == null)    //Si è verificato un errore di qualche tipo
             return false;
@@ -120,7 +125,7 @@ public class AppUpdateManager {
         String response;
         try {
             response = session.newRequest()
-                    .url("https://api.github.com/repos/giua-app/giua-app/releases/latest")
+                    .url("https://api.github.com/repos/giua-app/giua-app/releases")
                     .execute().body();
         } catch (IOException e) {
             loggerManager.e("Impossibile contattare API di github! - " + e.getMessage());
@@ -223,6 +228,39 @@ public class AppUpdateManager {
         intent.putExtra("json", getReleasesJson().toString());
         intent.putExtra("doUpdate", true);
         context.startActivity(intent);
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    public static String buildChangelogForHTML(JsonNode rootNode){
+
+        StringBuilder changelog = new StringBuilder();
+        Iterator<JsonNode> releases = rootNode.elements();
+
+        while(releases.hasNext()){
+            JsonNode release = releases.next();
+
+            String tag = release.findPath("tag_name").asText();
+            String body = release.findPath("body").asText();
+
+            String date = release.findPath("published_at").asText();
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
+            Date date1 = new Date(0);
+            try {
+                date1 = format.parse(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            if(!body.equals("")){
+                changelog.append("<hr><h1>").append(tag).append(" <span style=\"font-size: 60%;\">(")
+                        .append(format1.format(date1)).append(")</span></h1>").append(body);
+            }
+        }
+
+        changelog.append("<br><br>");
+        return changelog.toString();
+
     }
 
 }

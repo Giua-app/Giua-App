@@ -22,9 +22,15 @@ package com.giua.app.ui.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
 import com.danielstone.materialaboutlibrary.ConvenienceBuilder;
 import com.danielstone.materialaboutlibrary.MaterialAboutActivity;
@@ -34,7 +40,8 @@ import com.danielstone.materialaboutlibrary.model.MaterialAboutCard;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutList;
 import com.danielstone.materialaboutlibrary.util.OpenSourceLicense;
 import com.giua.app.Analytics;
-import com.giua.app.BuildConfig;
+import com.giua.app.AppUpdateManager;
+import com.giua.app.GlobalVariables;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.google.android.material.snackbar.Snackbar;
@@ -73,14 +80,32 @@ public class AboutActivity extends MaterialAboutActivity {
                 false)
                 .setOnClickAction(this::justANormalJavaFunction));
 
-        //TODO: far aprire il changelog come dialogo e non webview
         appCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text("Changelog")
                 .icon(new IconicsDrawable(this)
                         .icon(CommunityMaterial.Icon2.cmd_history)
                         .sizeDp(18))
-                .setOnClickAction(ConvenienceBuilder.createWebViewDialogOnClickAction(this,"", "Chiudi",
-                        "https://github.com/Giua-app/Giua-App/releases/tag/" + BuildConfig.VERSION_NAME.split("-")[0], true, false))
+                .setOnClickAction(() -> {
+                    loggerManager.d("Mostro dialogo changelog");
+                    GlobalVariables.internetThread.addTask(() -> {
+                        String body = AppUpdateManager.buildChangelogForHTML(new AppUpdateManager(this).getReleasesJson());
+                        final SpannableString txt = new SpannableString(Html.fromHtml(body, 0));
+                        Linkify.addLinks(txt, Linkify.ALL);
+
+                        runOnUiThread(() -> {
+                            final AlertDialog d = new AlertDialog.Builder(this)
+                                    .setTitle("Changelog")
+                                    .setMessage(txt)
+                                    .setPositiveButton("Chiudi", (dialog, id) -> dialog.dismiss())
+                                    .setCancelable(true)
+                                    .create();
+
+                            d.show();
+
+                            ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+                        });
+                    });
+                })
                 .build());
 
         appCardBuilder.addItem(new MaterialAboutActionItem.Builder()

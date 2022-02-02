@@ -42,12 +42,11 @@ import androidx.core.content.FileProvider;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.giua.app.AppData;
+import com.giua.app.AppUpdateManager;
 import com.giua.app.BuildConfig;
 import com.giua.app.GlobalVariables;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
-
-import org.jsoup.Jsoup;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,8 +81,8 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
             finish();
         }
 
-        url = Objects.requireNonNull(rootNode).findPath("browser_download_url").asText();
-        tagName = rootNode.findPath("tag_name").asText();
+        url = Objects.requireNonNull(rootNode).get(0).findPath("browser_download_url").asText();
+        tagName = rootNode.get(0).findPath("tag_name").asText();
         date = Calendar.getInstance();
 
         if(getIntent().getBooleanExtra("doUpdate", false)){
@@ -97,22 +96,13 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
     private void showDialogUpdateChangelog(){
         loggerManager.d("Mostro dialogo changelog");
         GlobalVariables.internetThread.addTask(() -> {
-            String body;
-            try {
-                body = Jsoup.newSession()
-                        .url("https://giua-app.github.io/api/changelog")
-                        .ignoreContentType(true)
-                        .get().body().html();
-            } catch (IOException e) {
-                body = "<h3> Impossibile caricare changelog </h3>";
-            }
-
+            String body = AppUpdateManager.buildChangelogForHTML(rootNode);
             final SpannableString txt = new SpannableString(Html.fromHtml(body, 0));
             Linkify.addLinks(txt, Linkify.ALL);
 
             runOnUiThread(() -> {
                 AlertDialog d = new AlertDialog.Builder(this)
-                        .setTitle("Novità della versione " + tagName)
+                        .setTitle("Changelog")
                         .setMessage(txt)
                         .setPositiveButton("Chiudi", (dialog, id) -> finish())
                         .setOnDismissListener(dialog -> finish())
