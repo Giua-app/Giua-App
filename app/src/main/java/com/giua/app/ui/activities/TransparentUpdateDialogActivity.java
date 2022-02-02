@@ -43,8 +43,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.giua.app.AppData;
 import com.giua.app.BuildConfig;
+import com.giua.app.GlobalVariables;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
+
+import org.jsoup.Jsoup;
 
 import java.io.File;
 import java.io.IOException;
@@ -93,20 +96,33 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
 
     private void showDialogUpdateChangelog(){
         loggerManager.d("Mostro dialogo changelog");
-        String body = rootNode.findPath("body").asText();
+        GlobalVariables.internetThread.addTask(() -> {
+            String body;
+            try {
+                body = Jsoup.newSession()
+                        .url("https://giua-app.github.io/api/changelog")
+                        .ignoreContentType(true)
+                        .get().body().html();
+            } catch (IOException e) {
+                body = "<h3> Impossibile caricare changelog </h3>";
+            }
 
-        final SpannableString txt = new SpannableString(Html.fromHtml(body, 0));
-        Linkify.addLinks(txt, Linkify.ALL);
+            final SpannableString txt = new SpannableString(Html.fromHtml(body, 0));
+            Linkify.addLinks(txt, Linkify.ALL);
 
-        AlertDialog d = new AlertDialog.Builder(this)
-                .setTitle("Novità della versione " + tagName)
-                .setMessage(txt)
-                .setPositiveButton("Chiudi", (dialog, id) -> finish())
-                .setOnDismissListener(dialog -> finish())
-                .create();
+            runOnUiThread(() -> {
+                AlertDialog d = new AlertDialog.Builder(this)
+                        .setTitle("Novità della versione " + tagName)
+                        .setMessage(txt)
+                        .setPositiveButton("Chiudi", (dialog, id) -> finish())
+                        .setOnDismissListener(dialog -> finish())
+                        .create();
 
-        d.show();
-        ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+                d.show();
+
+                ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+            });
+        });
     }
 
 

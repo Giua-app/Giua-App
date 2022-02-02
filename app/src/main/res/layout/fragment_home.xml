@@ -47,21 +47,23 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:foreground="@drawable/ripple_effect"
+                    android:orientation="horizontal"
                     android:padding="8dp"
-                    android:visibility="gone"
-                    android:orientation="vertical">
+                    android:visibility="gone">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="24dp"
+                        android:layout_height="match_parent"
                         android:layout_gravity="end"
                         android:src="@drawable/ic_baseline_info_24" />
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/varelaroundregular"
-                        android:text="E' presente un aggiornamento!\nE' importante aggiornare l'app per avere le ultime novità!"
+                        android:paddingLeft="10dp"
+                        android:text="Aggiornamento disponibile\nE' importante aggiornare l'app per avere le ultime novità!"
+                        android:textAlignment="viewStart"
                         android:textSize="17sp" />
 
                 </LinearLayout>
@@ -104,11 +106,11 @@
                         android:id="@+id/home_txt_tests"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@color/loading_content"
-                        android:minWidth="250dp"
-                        android:fontFamily="@font/varelaroundregular"
-                        android:textSize="18sp"
                         android:layout_marginTop="30dp"
+                        android:background="@color/loading_content"
+                        android:fontFamily="@font/varelaroundregular"
+                        android:minWidth="250dp"
+                        android:textSize="18sp"
                         android:visibility="gone" />
 
                 </LinearLayout>
