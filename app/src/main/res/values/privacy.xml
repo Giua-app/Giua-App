@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Giua App
+  ~ Android app to view data from the giua@school workbook
+  ~ Copyright (C) 2021 - 2022 Hiem, Franck1421 and contributors
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see https://www.gnu.org/licenses/.
+  -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="privacy" tools:ignore="TypographyDashes">
+&lt;p&gt;Ultimo aggiornamento: 27/01/2022&lt;/p&gt;
+
+&lt;h3 id=&quot;ciao&quot;&gt;Ciao!&lt;/h3&gt;
+
+&lt;p&gt;Innanzitutto, grazie per aver usato Giua App! Siamo lieti che tu voglia sapere di più su come trattiamo i tuoi dati, ed è per questo che abbiamo reso questo documento il più leggibile e comprensibile possibile, anche senza particolari conoscenze legislative o informatiche. Ricordiamo che &lt;em&gt;questa Privacy Policy riguarda &lt;strong&gt;esclusivamente&lt;/strong&gt; l’app&lt;/em&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;che-informazioni-raccogliete&quot;&gt;Che informazioni raccogliete?&lt;/h2&gt;
+
+&lt;p&gt;Nel caso un utente entri nel registro selezionando l’opzione “Ricorda credenziali”, l’app raccoglie e memorizza nella memoria interna del tuo telefono le credenziali (&lt;em&gt;nome utente&lt;/em&gt; e &lt;em&gt;password&lt;/em&gt; nel caso di account normale e un &lt;em&gt;cookie di Google&lt;/em&gt; nel caso di account con Google).&lt;/p&gt;
+
+&lt;p&gt;L’unico caso in cui le credenziali vengono inviate in rete è quando l’app deve utilizzarle per entrare nel Registro Elettronico al posto tuo per velocizzare o automatizzare l’operazione. Questa funzione viene chiamata “Login Automatico” e viene effettuata all’avvio dell’app, nel caso la tua sessione scada durante l’esecuzione, o per controllare nuove notifiche.&lt;/p&gt;
+
+&lt;p&gt;In particolari situazioni inviamo al nostro provider di analytics &lt;a href=&quot;https://www.posthog.com/&quot;&gt;PostHog&lt;/a&gt; alcune informazioni sul tuo dispositivo e il suo stato. Queste informazioni non sono considerate “informazioni personali” in quanto non ti identificano individualmente. Per maggiori informazini vedere sezione &lt;em&gt;&lt;a href=&quot;#analytics&quot;&gt;In quali situazioni usate gli analytics nell’App?&lt;/a&gt;&lt;/em&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;come-usate-le-mie-informazioni&quot;&gt;Come usate le mie informazioni?&lt;/h2&gt;
+
+&lt;p&gt;Usiamo le tue informazioni solo per scopi legittimi. Ad esempio, nel caso delle informazioni di accesso o credenziali del Registro Elettronico, queste vengono usate localmente nel tuo telefono per effettuare l’accesso, invece per le informazioni usate per gli analytics vengono usate per migliorare l’esperienza dell’utente in prossime versioni dell’app.&lt;/p&gt;
+
+&lt;h2 id=&quot;le-mie-informazioni-verrano-condivise-con-qualcuno&quot;&gt;Le mie informazioni verrano condivise con qualcuno?&lt;/h2&gt;
+
+&lt;p&gt;Le tue informazioni personali non vengono condivise a nessun servizio esterno e neanche a noi stessi. Le informazioni di accesso e le tue preferenze non vengono trasmesse online e rimangono solo nella memoria interna del tuo telefono.&lt;/p&gt;
+
+&lt;p&gt;Riguardo invece alle informazioni da noi raccolte per gli analytics, esse verranno condivise con il nostro provider di analytics &lt;a href=&quot;https://www.posthog.com/&quot;&gt;PostHog&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;per-quanto-tempo-tenete-le-mie-informazioni&quot;&gt;Per quanto tempo tenete le mie informazioni?&lt;/h2&gt;
+
+&lt;p&gt;Le informazioni personali, come le credenziali utente, verranno conservate nella memoria interna del telefono fino a quando non verrà disinstallata l’app o si esce dall’account. Invece, le informazioni inviate a &lt;a href=&quot;https://www.posthog.com/&quot;&gt;PostHog&lt;/a&gt; verranno conservate fino a quando non saranno più necessarie.&lt;/p&gt;
+
+&lt;h2 id=&quot;in-quali-situazioni-usate-gli-analytics-nellapp&quot;&gt;In quali situazioni usate gli analytics nell’App?&lt;/h2&gt;
+
+&lt;div id=&quot;analytics&quot;&gt;&lt;/div&gt;
+
+&lt;p&gt;Usiamo gli analytics nelle seguenti situazioni:&lt;/p&gt;
+
+&lt;ul&gt;
+    &lt;li&gt;primo avvio di sempre dell’app&lt;/li&gt;
+    &lt;li&gt;primo avvio della giornata&lt;/li&gt;
+    &lt;li&gt;login completato con successo&lt;/li&gt;
+    &lt;li&gt;logout completato con successo&lt;/li&gt;
+    &lt;li&gt;errore critico dell’applicazione (crash)&lt;/li&gt;
+    &lt;li&gt;errore critico durante l’accesso con l’account google (dovuto ad un bug di Android)&lt;/li&gt;
+    &lt;li&gt;aggiornamento dell’app ad una nuova versione&lt;/li&gt;
+    &lt;li&gt;visualizzazione di un “&lt;a href=&quot;https://it.wikipedia.org/wiki/Easter_egg&quot;&gt;Easter Egg&lt;/a&gt;”&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;quali-informazioni-inviate-con-gli-analytics&quot;&gt;Quali informazioni inviate con gli analytics?&lt;/h2&gt;
+
+&lt;p&gt;Come base, inviamo le seguenti informazioni in ogni situazione:&lt;/p&gt;
+
+&lt;ul&gt;
+    &lt;li&gt;versione del sistema operativo Android + numero versione SDK (esempio: Android 11 SDK 30)&lt;/li&gt;
+    &lt;li&gt;versione dell’app (es: 0.6.3-stable)&lt;/li&gt;
+    &lt;li&gt;url usato per accedere al registro elettronico (es: https://example.com)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In particolari situazioni potremmo però inviarne altre.
+    Elenchiamo tutte le situazioni e le informazioni inviate qui sotto&lt;/p&gt;
+
+&lt;h4 id=&quot;--errore-critico-dellapplicazione-crash&quot;&gt;- Errore critico dell’applicazione (crash)&lt;/h4&gt;
+
+&lt;p&gt;Oltre alle informazioni di base, inviamo:&lt;/p&gt;
+
+&lt;ul&gt;
+    &lt;li&gt;stacktrace dell’errore&lt;/li&gt;
+    &lt;li&gt;informazioni dell’dispositivo (marca, versione, ecc)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;--aggiornamento-dellapp-ad-una-nuova-versione&quot;&gt;- Aggiornamento dell’app ad una nuova versione&lt;/h4&gt;
+
+&lt;p&gt;Oltre alle informazioni di base, inviamo:&lt;/p&gt;
+
+&lt;ul&gt;
+    &lt;li&gt;la nuova versione dell’app appena installata&lt;/li&gt;
+    &lt;li&gt;la precedente versione dell’app&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;--login-completato-con-successo&quot;&gt;- Login completato con successo&lt;/h4&gt;
+
+&lt;p&gt;Oltre alle informazioni di base, inviamo:&lt;/p&gt;
+
+&lt;ul&gt;
+    &lt;li&gt;il tipo di utente a cui si è effetuato l’accesso (es: Genitore, Studente)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Nessuna delle informazioni inviate contengono dati personali e non rendono l’utente identificabile individualmente.&lt;/p&gt;
+
+&lt;p&gt;Gli IP dei dispositivi vengono anonimizzati da PostHog una volta ricevuti (es: IP originale 192.168.0.1, IP ricevuto 0.0.0.0)&lt;/p&gt;
+
+&lt;h2 id=&quot;come-posso-contattarvi-riguardo-questa-privacy-policy&quot;&gt;Come posso contattarvi riguardo questa Privacy Policy?&lt;/h2&gt;
+
+&lt;p&gt;Puoi contattarci via email a &lt;em&gt;&lt;a href=&quot;mailto:privacy@appgiua.slmail.me&quot;&gt;privacy@appgiua.slmail.me&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;In nessun caso gli sviluppatori di Giua App o i suoi fornitori saranno responsabili per qualsiasi danno (inclusi, senza limitazione, danni per perdita di dati o profitti, o dovuti all’interruzione dell’attività) derivanti dall’uso o dall’impossibilità di usare l’applicazione Giua App.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;/p&gt;
+
+
+    </string>
+</resources>

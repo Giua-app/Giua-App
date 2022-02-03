@@ -68,7 +68,7 @@ public class AboutActivity extends MaterialAboutActivity {
 
         appCardBuilder.addItem(new MaterialAboutTitleItem.Builder()
                 .text("Giua App")
-                .desc("L'app non ufficiale dell'IIS Michele Giua")
+                .desc("L'app non ufficiale per registri giua@school")
                 .icon(R.mipmap.ic_launcher)
                 .build());
 
@@ -113,8 +113,23 @@ public class AboutActivity extends MaterialAboutActivity {
                 .icon(new IconicsDrawable(this)
                         .icon(CommunityMaterial.Icon2.cmd_lock)
                         .sizeDp(18))
-                .setOnClickAction(ConvenienceBuilder.createWebViewDialogOnClickAction(this,"", "Chiudi",
-                        "https://giua-app.github.io/privacy", true, false))
+                .setOnClickAction(() -> {
+                    loggerManager.d("Mostro dialogo privacy");
+                    String body = getString(R.string.privacy);
+                    final SpannableString txt = new SpannableString(Html.fromHtml(body, 0));
+                    Linkify.addLinks(txt, Linkify.ALL);
+
+                    final AlertDialog d = new AlertDialog.Builder(this)
+                            .setTitle("Privacy Policy")
+                            .setMessage(txt)
+                            .setPositiveButton("Chiudi", (dialog, id) -> dialog.dismiss())
+                            .setCancelable(true)
+                            .create();
+
+                    d.show();
+
+                    ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+                })
                 .build());
 
         appCardBuilder.addItem(new MaterialAboutActionItem.Builder()
@@ -179,7 +194,6 @@ public class AboutActivity extends MaterialAboutActivity {
 
         otherCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text("Guarda gli analytics pubblici")
-                .subText("più un \"contatore di visite\" rispettoso della privacy che un vero e proprio analytics")
                 .icon(new IconicsDrawable(this)
                         .icon(CommunityMaterial.Icon.cmd_google_analytics)
                         .sizeDp(18))
@@ -204,7 +218,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 new IconicsDrawable(c)
                         .icon(CommunityMaterial.Icon.cmd_book)
                         .sizeDp(18),
-                "Giua Webscraper", "2021", "Hiem, Franck1421 and contributors",
+                "Giua Webscraper", "2021-2022", "Hiem, Franck1421 and contributors",
                 OpenSourceLicense.GNU_GPL_3);
 
         MaterialAboutCard caocLicenseCard = ConvenienceBuilder.createLicenseCard(c,
