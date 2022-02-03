@@ -198,7 +198,7 @@ public class AboutActivity extends MaterialAboutActivity {
                         .icon(CommunityMaterial.Icon.cmd_google_analytics)
                         .sizeDp(18))
                 .setOnClickAction(ConvenienceBuilder.createWebsiteOnClickAction(this,
-                        Uri.parse("https://app.piratepx.com/shared/x9v-IWrD1ZG_Jvk6vyAT53tdz5wCCijE55V9pn060ZfuUJRXT9rcqTwPnR_PWz7R")))
+                        Uri.parse("https://app.posthog.com/shared_dashboard/11AwfEU2Eks9EXtGR50DtXgSLhnB2w")))
                 .build());
 
         loggerManager.d("Creazione pagina about completata");
