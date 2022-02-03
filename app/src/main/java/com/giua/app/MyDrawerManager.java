@@ -72,7 +72,7 @@ public class MyDrawerManager {
     public Drawer setupMaterialDrawer() {
         String actualUsername = AppData.getActiveUsername(activity);
         Drawable d = ResourcesCompat.getDrawable(activity.getResources(), R.drawable.ic_account, activity.getTheme());
-        d.setColorFilter(activity.getResources().getColor(R.color.main_color_lighter, activity.getTheme()), PorterDuff.Mode.ADD);
+        d.setColorFilter(activity.getResources().getColor(R.color.profile_background_color, activity.getTheme()), PorterDuff.Mode.SRC_OUT);
         activeProfile = new ProfileDrawerItem().withName(realUsername).withEmail(actualUsername)
                 .withIcon(d)
                 .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme()));

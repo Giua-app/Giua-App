@@ -206,9 +206,6 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
             agendaView.setId(View.generateViewId());
             viewsLayout.addView(agendaView);
         }
-
-        swipeRefreshLayout.setRefreshing(false);
-        isLoadingData = false;
     }
 
     //region Listeners
@@ -270,6 +267,8 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                 }
                 activity.runOnUiThread(() -> addViews(objectsToShow));
             }
+            activity.runOnUiThread(() -> swipeRefreshLayout.setRefreshing(false));
+            isLoadingData = false;
         } else {
             activity.runOnUiThread(() -> {
                 tvNoElements.setText("Non ci sono compiti per questo giorno");

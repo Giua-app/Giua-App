@@ -265,6 +265,7 @@ public class DrawerActivity extends AppCompatActivity {
         } else {
             GlobalVariables.internetThread.addTask(() -> {
                 try {
+                    runOnUiThread(() -> mDrawer = myDrawerManager.setupMaterialDrawer());
                     GiuaScraper.userTypes _userType = GlobalVariables.gS.getUserTypeEnum();
                     String user = GlobalVariables.gS.loadUserFromDocument();
                     if (_userType == GiuaScraper.userTypes.PARENT)
