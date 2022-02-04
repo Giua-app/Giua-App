@@ -1,6 +1,6 @@
 ---
-name: Custom issue template
-about: Bug Report
+name: Bug Report
+about: Segnala un problema nell'app
 title: ''
 labels: bug
 assignees: ''
