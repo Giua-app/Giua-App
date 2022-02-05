@@ -74,14 +74,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void setupAllObjects() {
 
-        //region Generale
+        //region Personalizzazione
 
-        setupAboutScreenObject();
-        setupIntroScreenObject();
-        setupExpModeObject();
-        setupSiteUrlObject();
-        setupBugReportObject();
-        setupDebugModeObject();
+        setupThemeObject();
+        setupShowCentsObject();
+        setupShowVoteNotRelevantForMeanOnChart();
 
         //endregion
 
@@ -90,11 +87,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         setupNotificationManager();
         //endregion
 
-        //region Personalizzazione
+        //region Generale
 
-        setupThemeObject();
-        setupShowCentsObject();
-        setupShowVoteNotRelevantForMeanOnChart();
+        setupAboutScreenObject();
+        setupIntroScreenObject();
+        setupExpModeObject();
+        setupSiteUrlObject();
+        setupBugReportObject();
+        setupDebugModeObject();
 
         //endregion
 
@@ -154,13 +154,33 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private boolean swExpModeChangeListener(Preference preference, Object o) {
-        SettingsData.saveSettingBoolean(requireActivity(), SettingKey.EXP_MODE, (boolean) o);
-        new LoggerManager("SettigsFragment", getContext()).w("Funzionalità Sperimentali: " + (boolean) o);
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Attenzione");
-        builder.setMessage("Per vedere le modifiche riavviare l'app");
-        builder.setPositiveButton("Chiudi", null);
-        builder.show();
+        SwitchPreference swExpMode = Objects.requireNonNull(findPreference("experimentalMode"));
+        boolean status = false;
+        if((boolean) o){
+            AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                    .setTitle("Attenzione")
+                    .setMessage("La modalità sperimentale include funzionalità incomplete oppure non testate, " +
+                            "per favore non segnalare bug con questa modalità attiva.\n\n" +
+                            "Dopo l'attivazione sarà necessario riavviare l'app.\n" +
+                            "Funzionalità incluse:\n" +
+                            "- Possibilità di usare più account\n\n" +
+                            "Vuoi attivare la modalità sperimentale?")
+                    .setPositiveButton("Si", (dialog, which) -> {
+                        SettingsData.saveSettingBoolean(requireActivity(), SettingKey.EXP_MODE, true);
+                        swExpMode.setChecked(true);
+                        new LoggerManager("SettigsFragment", getContext()).w("Funzionalità Sperimentali attivate");
+                    })
+                    .setNegativeButton("No", (dialog, which) -> {
+                        SettingsData.saveSettingBoolean(requireActivity(), SettingKey.EXP_MODE, false);
+                        swExpMode.setChecked(false);
+                        new LoggerManager("SettigsFragment", getContext()).w("Funzionalità Sperimentali disabilitate");
+                    });
+            builder.show();
+            return true;
+        }
+        SettingsData.saveSettingBoolean(requireActivity(), SettingKey.EXP_MODE, false);
+        swExpMode.setChecked(false);
+        new LoggerManager("SettigsFragment", getContext()).w("Funzionalità Sperimentali disabilitate");
         return true;
     }
 
