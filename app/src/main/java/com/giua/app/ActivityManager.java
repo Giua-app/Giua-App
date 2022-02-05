@@ -211,6 +211,7 @@ public class ActivityManager extends AppCompatActivity {
         }
 
         //0.6.3
+        //TODO: controllare che loginData esista
         if (!lastVer.contains(appVer) && lastVer.contains("0.6.3")) {
             CompatibilityManager.checkFor063Update(this);
         }

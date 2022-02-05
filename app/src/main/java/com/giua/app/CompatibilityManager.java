@@ -66,7 +66,6 @@ public class CompatibilityManager {
 
     public static void checkFor063Update(Context context) {
         LoggerManager lm = new LoggerManager("CompatManager", context);
-        final String oldVer = SettingsData.getSettingString(context, "appVersion");
 
         lm.w("Rilevato aggiornamento da 0.6.3");
         lm.d("Sposto le credenziali da LoginData non sicuro a LoginData sicuro");
@@ -78,8 +77,8 @@ public class CompatibilityManager {
         AppData.saveActiveUsername(context, username);
         LoginData.setCredentials(context, username, password);
 
-        lm.d("Elimino le credenziali dal LoginData vecchio");
-        sharedPreferences.edit().putString("user", null).putString("password", null).apply();
+        lm.d("Elimino LoginData vecchio");
+        sharedPreferences.edit().clear().apply();
 
     }
 }
