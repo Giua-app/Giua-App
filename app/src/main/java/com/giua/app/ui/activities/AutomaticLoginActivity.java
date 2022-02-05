@@ -84,9 +84,12 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                 String username = AppData.getActiveUsername(this);
                 String password = LoginData.getPassword(this, username);
                 String cookie = LoginData.getCookie(this, username);
+                String savedSiteUrl = LoginData.getSiteUrl(this, username);
+                if (!savedSiteUrl.equals("")) GiuaScraper.setSiteURL(savedSiteUrl);
                 GlobalVariables.gS = new GiuaScraper(username, password, cookie, true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
                 GlobalVariables.gS.login();
                 LoginData.setCredentials(this, username, password, GlobalVariables.gS.getCookie());
+                LoginData.setSiteUrl(this, username, GiuaScraper.getSiteURL());
                 if (!AppData.getAllAccountUsernames(this).contains(GlobalVariables.gS.getUser()))
                     AppData.addAccountUsername(this, GlobalVariables.gS.getUser());
                 startDrawerActivity();

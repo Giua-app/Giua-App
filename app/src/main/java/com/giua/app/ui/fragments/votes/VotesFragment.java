@@ -21,6 +21,7 @@ package com.giua.app.ui.fragments.votes;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Html;
@@ -86,6 +87,8 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
         swipeRefreshLayout.setRefreshing(true);
         loadDataAndViews();
+
+        activity.getSystemService(NotificationManager.class).cancel(12);
 
         return root;
     }

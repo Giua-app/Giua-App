@@ -80,15 +80,14 @@ public class ActivityManager extends AppCompatActivity {
             firstStart();
 
         final String defaultUrl = SettingsData.getSettingString(this, SettingKey.DEFAULT_URL);
-
-        setupNotificationManager();
-
         if (!defaultUrl.equals(""))
             GiuaScraper.setSiteURL(defaultUrl);
 
+        setupNotificationManager();
+
         sendStartupAnalyticsRequest();
 
-        if(getIntent().getBooleanExtra("fromCAOC", false)){
+        if (getIntent().getBooleanExtra("fromCAOC", false)) {
             loggerManager.d("Individuato crash precedente, invio segnalazione");
             new Analytics.Builder("Crash")
                     .addCustomValue("crash_stacktrace", getIntent().getStringExtra("stacktrace"))
@@ -302,12 +301,6 @@ public class ActivityManager extends AppCompatActivity {
             NotificationManager notificationManager2 = getSystemService(NotificationManager.class);
             notificationManager2.createNotificationChannel(channel2);
 
-            //Cancello tutte le notifiche
-            notificationManager.cancel(10);
-            notificationManager.cancel(11);
-            notificationManager.cancel(12);
-            notificationManager.cancel(13);
-            notificationManager.cancel(14);
         }
         loggerManager.d("Notification Manager setup completato");
     }

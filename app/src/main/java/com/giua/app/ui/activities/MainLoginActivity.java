@@ -197,6 +197,7 @@ public class MainLoginActivity extends AppCompatActivity {
                 if (GlobalVariables.gS.checkLogin()) {
                     if (chRememberCredentials.isChecked()) {
                         LoginData.setCredentials(this, etUsername.getText().toString(), etPassword.getText().toString(), GlobalVariables.gS.getCookie());
+                        LoginData.setSiteUrl(this, etUsername.getText().toString(), GiuaScraper.getSiteURL());
                         AppData.addAccountUsername(this, etUsername.getText().toString());
                         AppData.saveActiveUsername(this, etUsername.getText().toString());
                     }

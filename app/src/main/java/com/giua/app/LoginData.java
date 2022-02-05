@@ -41,6 +41,7 @@ public class LoginData {
     //private static final String APIUrlKey = "APIUrl";
     private static final String passwordKey = "password";
     private static final String cookieKey = "cookie";
+    private static final String siteUrlKey = "siteUrl";
     private static final String themeKey = "theme";
     private static String masterKeyAlias = null;
 
@@ -83,7 +84,7 @@ public class LoginData {
     }
 
     //add final String APIUrl to parameters
-    public static void setCredentials(final Context context, final String username, final String password, String cookie) {
+    public static void setCredentials(final Context context, final String username, final String password, final String cookie) {
 
         getSharedPreferences(context, username).edit()
                 //.putString(APIUrlKey, APIUrl)
@@ -111,6 +112,16 @@ public class LoginData {
         return getSharedPreferences(context, username).getString(cookieKey, "");
     }
 
+    public static void setSiteUrl(final Context context, final String username, final String siteUrl) {
+        getSharedPreferences(context, username).edit()
+                .putString(siteUrlKey, siteUrl)
+                .apply();
+    }
+
+    public static String getSiteUrl(final Context context, final String username) {
+        return getSharedPreferences(context, username).getString(siteUrlKey, "");
+    }
+
     public static void clearAllForAccount(final Context context, final String username) {
         setCredentials(context, username, "", "");
     }
@@ -118,7 +129,7 @@ public class LoginData {
     public static void setTheme(final Context context, final String username, final int color) {
         getSharedPreferences(context, username).edit()
                 .putInt(themeKey, color)
-                .commit();
+                .apply();
     }
 
     public static int getTheme(final Context context, final String username) {

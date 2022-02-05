@@ -21,6 +21,7 @@ package com.giua.app.ui.fragments.agenda;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -131,6 +132,9 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         root.findViewById(R.id.agenda_prev_month).setOnClickListener((view -> calendarView.scrollLeft()));
         root.findViewById(R.id.agenda_next_month).setOnClickListener((view -> calendarView.scrollRight()));
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
+
+        activity.getSystemService(NotificationManager.class).cancel(13);
+        activity.getSystemService(NotificationManager.class).cancel(14);
 
         loadDataAndViews();
 

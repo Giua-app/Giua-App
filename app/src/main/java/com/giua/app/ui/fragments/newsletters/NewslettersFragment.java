@@ -19,6 +19,7 @@
 
 package com.giua.app.ui.fragments.newsletters;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -143,6 +144,8 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         root.findViewById(R.id.newsletter_fragment_btn_go_up).setOnClickListener((view -> scrollView.smoothScrollTo(0, 0)));
 
         root.findViewById(R.id.newsletter_filter_btn_confirm).setOnClickListener(this::btnFilterConfirmOnClick);
+
+        activity.getSystemService(NotificationManager.class).cancel(10);
 
         return root;
     }

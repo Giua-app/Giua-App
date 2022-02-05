@@ -19,6 +19,7 @@
 
 package com.giua.app.ui.fragments.alerts;
 
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -119,6 +120,8 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
             obscureLayoutView.hide();
             detailsLayout.setVisibility(View.GONE);
         });
+
+        activity.getSystemService(NotificationManager.class).cancel(11);
 
         return root;
     }
