@@ -22,6 +22,7 @@ package com.giua.app;
 import android.app.Activity;
 
 import androidx.annotation.IdRes;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -152,7 +153,7 @@ public class MyFragmentManager {
             toolbarTxt = "Pagella";
         }
 
-        executeChangeFragment(fragment, tag, toolbarTxt, subtitle, url);
+        changeFragmentWithManager(fragment, tag, toolbarTxt, subtitle, url);
     }
 
     /**
@@ -164,17 +165,40 @@ public class MyFragmentManager {
      * @param subtitle   la scritta che apparirà sotto il nome della schermata
      * @param url        l'URL da far visualizzare nella webview nel caso in cui il fragment sia instabile
      */
-    private void executeChangeFragment(Fragment fragment, String tag, String toolbarTxt, String subtitle, String url) {
+    private void changeFragmentWithManager(Fragment fragment, String tag, String toolbarTxt, String subtitle, String url) {
         loggerManager.d("Cambio fragment a " + tag);
-
         if (fragmentIsUnstable(tag)) {
-            loggerManager.w("Rilevata apertura funzionalità instabile (" + tag + ")");
-            fragment = new NotImplementedFragment(GiuaScraper.getSiteURL() + "/" + url, GlobalVariables.gS.getCookie());
+            loggerManager.w("Rilevata apertura funzionalità instabile (" + tag + "), avviso l'utente ");
+            showUnstableDialog(fragment, tag, toolbarTxt, subtitle, url);
+            return;
         }
+        executeChangeFragment(fragment, tag, toolbarTxt, subtitle);
+    }
 
+    private void executeChangeFragment(Fragment fragment, String tag, String toolbarTxt, String subtitle) {
         setTextToolbar(toolbarTxt);
         toolbar.setSubtitle(subtitle);
         fragmentManager.beginTransaction().replace(R.id.content_main, fragment, tag).commit();
+    }
+
+    private void showUnstableDialog(Fragment fragment, String tag, String toolbarTxt, String subtitle, String url) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Funzionalità Instabile");
+        builder.setIcon(R.drawable.ic_alert_outline);
+        builder.setMessage("E' stato segnalato che la schermata \"" + toolbarTxt + "\" potrebbe non funzionare come previsto in questa versione.\n\n" +
+                "Cosa vuoi fare?")
+
+                .setPositiveButton("Apri come Web (consigliato)", (dialog, id) -> {
+                    loggerManager.w("Visualizzo la funzionalità instabile (" + tag +") come non implementata");
+                    executeChangeFragment(new NotImplementedFragment(GiuaScraper.getSiteURL() + "/" + url, GlobalVariables.gS.getCookie()), tag, toolbarTxt, subtitle);
+                })
+
+                .setNegativeButton("Apri come App", (dialog, id) -> {
+                    loggerManager.w("Visualizzo la funzionalità instabile (" + tag +") normalmente");
+                    executeChangeFragment(fragment, tag, toolbarTxt, subtitle);
+                });
+
+        builder.show();
     }
 
     /**
@@ -192,7 +216,7 @@ public class MyFragmentManager {
 
         loggerManager.w("Pagina " + toolbarTitle + " non ancora implementata, la faccio visualizzare dalla webview");
         fragment = new NotImplementedFragment(GiuaScraper.getSiteURL() + "/" + url, GlobalVariables.gS.getCookie());
-        executeChangeFragment(fragment, tag, toolbarTitle, "Non ancora implementato!", url);
+        changeFragmentWithManager(fragment, tag, toolbarTitle, "Non ancora implementato!", url);
     }
 
     /**

@@ -155,7 +155,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private boolean swExpModeChangeListener(Preference preference, Object o) {
         SwitchPreference swExpMode = Objects.requireNonNull(findPreference("experimentalMode"));
-        boolean status = false;
         if((boolean) o){
             AlertDialog.Builder builder = new AlertDialog.Builder(context)
                     .setTitle("Attenzione")
