@@ -198,10 +198,9 @@ public class DrawerActivity extends AppCompatActivity {
     }
 
     private boolean onChangeAccountFromDrawer(View view, IProfile iProfile, boolean b) {
-        if (iProfile.getName().getText().equals("Aggiungi account")) {
+        if (iProfile.getName().getText().equals("Aggiungi account"))
             startActivity(new Intent(this, MainLoginActivity.class).putExtra("addAccount", true));
-            isStartingAnotherActivity = true;
-        } else {
+        else {
             String selectedProfileUsername = iProfile.getName().toString();
             if (myDrawerManager.activeProfile.getName().toString().equals(selectedProfileUsername))
                 return true;
@@ -215,8 +214,8 @@ public class DrawerActivity extends AppCompatActivity {
             AppData.saveActiveUsername(this, (String) allUsernames[indexOfSelectedUsername]);
             GlobalVariables.gS = null;
             startActivity(new Intent(this, ActivityManager.class));
-            isStartingAnotherActivity = true;
         }
+        isStartingAnotherActivity = true;
         finish();
         return true;    //Non chiudere il drawer
     }

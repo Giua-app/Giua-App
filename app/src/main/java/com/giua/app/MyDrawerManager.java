@@ -24,9 +24,11 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
 
+import com.giua.pages.UrlPaths;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -36,6 +38,7 @@ import com.mikepenz.materialdrawer.model.ExpandableDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 public class MyDrawerManager {
@@ -130,40 +133,58 @@ public class MyDrawerManager {
                 .withAccountHeader(accountHeader)
                 .withSliderBackgroundColor(activity.getResources().getColor(R.color.general_view_color, activity.getTheme()))
                 .addDrawerItems(
-                        createDrawerMainItem(0, "Home", R.id.nav_home, true, false),
-                        createDrawerCategory(1, "Lezioni").withSubItems(
-                                createDrawerMainItem(2, "Lezioni svolte", R.id.nav_lessons, true, true),
-                                createDrawerMainItem(3, "Argomenti e attività", "/genitori/argomenti", true, true)
-                        ),
-                        createDrawerCategory(4, "Situazione").withSubItems(
-                                createDrawerMainItem(5, "Voti", R.id.nav_votes, true, true),
-                                createDrawerMainItem(6, "Assenze", R.id.nav_absences, true, true),
-                                createDrawerMainItem(7, "Note", "/genitori/note/", true, true),
-                                createDrawerMainItem(8, "Osservazioni", "/genitori/osservazioni/", !userType.equals("Studente"), true), //SOLO GENITORE,
-                                createDrawerMainItem(9, "Autorizzazioni", R.id.nav_authorization, true, true)
-                        ),
-                        createDrawerMainItem(10, "Pagella", "/genitori/pagelle", true, false),
-                        createDrawerMainItem(11, "Colloqui", "/genitori/colloqui", !userType.equals("Studente"), false),    //SOLO GENITORE,
-                        createDrawerCategory(12, "Bacheca").withSubItems(
-                                createDrawerMainItem(13, "Circolari", R.id.nav_newsletters, true, true),
-                                createDrawerMainItem(14, "Avvisi", R.id.nav_alerts, true, true),
-                                createDrawerMainItem(15, "Documenti", "/documenti/bacheca", true, true)
-                        ),
-                        createDrawerMainItem(16, "Agenda", R.id.nav_agenda, true, false),
-
-                        new DividerDrawerItem(),
-
-                        createDrawerSecondaryItem(17, "Impostazioni")
-                                .withOnDrawerItemClickListener(settingsItemOnClick)
-                                .withSelectable(false),
-                        createDrawerSecondaryItem(18, "Esci")
-                                .withOnDrawerItemClickListener(logoutItemOnClick)
-                                .withSelectable(false)
+                        createAllDrawerItems()
                 ).build();
     }
 
+    @NonNull
+    private IDrawerItem[] createAllDrawerItems() {
+        boolean isParent = !userType.equals("Studente");
 
-    private ExpandableDrawerItem createDrawerCategory(int identifier, String name) {
+        return new IDrawerItem[]{
+                createItem(0, R.id.nav_home, false, "Home"),
+
+                //CATEGORIA LEZIONI
+                createCategoryItem(1, "Lezioni").withSubItems(
+                        createItem(2, R.id.nav_lessons, true, "Lezioni svolte"),
+                        createNotImplementedItem(3, true, true, "Argomenti e attività", UrlPaths.ARGUMENTS_ACTIVITIES_PAGE)
+                ),
+
+                //CATEGORIA SITUAZIONE
+                createCategoryItem(4, "Situazione").withSubItems(
+                        createItem(5, R.id.nav_votes, true, "Voti"),
+                        createItem(6, R.id.nav_absences, true, "Assenze"),
+                        createNotImplementedItem(7, true, true, "Note", UrlPaths.DISCIPLINARY_NOTICES_PAGE),
+                        createNotImplementedItem(8, isParent, true, "Osservazioni", UrlPaths.OBSERVATIONS_PAGE), //SOLO GENITORE,
+                        createItem(9, R.id.nav_authorization, true, "Autorizzazioni")
+                ),
+
+
+                createNotImplementedItem(10, true, false, "Pagella", UrlPaths.REPORTCARD_PAGE),
+                createNotImplementedItem(11, isParent, false, "Colloqui", UrlPaths.INTERVIEWS_PAGE),    //SOLO GENITORE,
+
+                //CATEGORIA BACHECA
+                createCategoryItem(12, "Bacheca").withSubItems(
+                        createItem(13, R.id.nav_newsletters, true, "Circolari"),
+                        createItem(14, R.id.nav_alerts, true, "Avvisi"),
+                        createNotImplementedItem(15, true, true, "Documenti", UrlPaths.DOCUMENTS_PAGE)
+                ),
+
+
+                createItem(16, R.id.nav_agenda, false, "Agenda"),
+
+                new DividerDrawerItem(),
+
+                createDrawerSecondaryItem(17, "Impostazioni")
+                        .withOnDrawerItemClickListener(settingsItemOnClick)
+                        .withSelectable(false),
+                createDrawerSecondaryItem(18, "Esci")
+                        .withOnDrawerItemClickListener(logoutItemOnClick)
+                        .withSelectable(false)
+        };
+    }
+
+    private ExpandableDrawerItem createCategoryItem(int identifier, String name) {
         return new ExpandableDrawerItem()
                 .withIdentifier(identifier)
                 .withIconTintingEnabled(true)
@@ -174,14 +195,14 @@ public class MyDrawerManager {
     }
 
     //Usato per fragment implementati
-    private PrimaryDrawerItem createDrawerMainItem(int identifier, String name, @IdRes int id, boolean enabled, boolean withMoreSpace) {
+    private PrimaryDrawerItem createItem(int identifier, @IdRes int id, boolean withMoreSpace, String name) {
         PrimaryDrawerItem primaryDrawerItem = new PrimaryDrawerItem()
                 .withIdentifier(identifier)
                 .withIconTintingEnabled(true)
                 //.withIcon(icon)
                 .withName(name)
                 .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme()))
-                .withEnabled(enabled)
+                .withEnabled(true)
                 .withOnDrawerItemClickListener((view, i, item) -> {
                     myFragmentManager.changeFragment(id);
                     return false;
@@ -194,7 +215,7 @@ public class MyDrawerManager {
     }
 
     //Usato per fragment non implementati
-    private PrimaryDrawerItem createDrawerMainItem(int identifier, String name, String url, boolean enabled, boolean withMoreSpace) {
+    private PrimaryDrawerItem createNotImplementedItem(int identifier, boolean enabled, boolean withMoreSpace, String name, String url) {
         if (demoMode)    //Nella modalità demo si possono vedere solo le schermate implementate
             enabled = false;
 
@@ -206,30 +227,6 @@ public class MyDrawerManager {
                 .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme()))
                 .withEnabled(enabled)
                 .withOnDrawerItemClickListener((view, i, item) -> {
-                    myFragmentManager.changeToFragmentNotImplemented(name, url);
-                    return false;
-                });
-
-        if (withMoreSpace)
-            primaryDrawerItem.withIcon(R.color.transparent);
-
-        return primaryDrawerItem;
-    }
-
-    //Usato per funzionalità sperimentali
-    private PrimaryDrawerItem createDrawerMainItem(int identifier, String name, String url, @IdRes int id, boolean enabled, boolean withMoreSpace) {
-        PrimaryDrawerItem primaryDrawerItem = new PrimaryDrawerItem()
-                .withIdentifier(identifier)
-                .withIconTintingEnabled(true)
-                //.withIcon(icon)
-                .withName(name)
-                .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme()))
-                .withEnabled(enabled)
-                .withOnDrawerItemClickListener((view, i, item) -> {
-                    if (SettingsData.getSettingBoolean(activity, SettingKey.EXP_MODE)) {
-                        myFragmentManager.changeFragment(id, "Funzione Sperimentale!");
-                        return false;
-                    }
                     myFragmentManager.changeToFragmentNotImplemented(name, url);
                     return false;
                 });

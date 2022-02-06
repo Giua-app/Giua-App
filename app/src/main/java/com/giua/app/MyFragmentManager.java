@@ -22,7 +22,6 @@ package com.giua.app;
 import android.app.Activity;
 
 import androidx.annotation.IdRes;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -37,6 +36,7 @@ import com.giua.app.ui.fragments.newsletters.NewslettersFragment;
 import com.giua.app.ui.fragments.not_implemented.NotImplementedFragment;
 import com.giua.app.ui.fragments.reportcard.ReportCardFragment;
 import com.giua.app.ui.fragments.votes.VotesFragment;
+import com.giua.pages.UrlPaths;
 import com.giua.webscraper.GiuaScraper;
 
 import java.util.Objects;
@@ -64,25 +64,40 @@ public class MyFragmentManager {
         this.unstableFeatures = unstableFeatures;
     }
 
-    public void changeToFragmentNotImplemented(String toolbarTitle, String url) {
-        Fragment fragment;
-        String tag = "FRAGMENT_NOT_IMPLEMENTED";
-
-        if (!toolbarTitle.contentEquals(toolbar.getTitle())) {  //Se l'elemento cliccato non è già visualizzato allora visualizzalo
-            loggerManager.w("Pagina " + toolbarTitle + " non ancora implementata, la faccio visualizzare dalla webview");
-            fragment = new NotImplementedFragment(GiuaScraper.getSiteURL() + url, GlobalVariables.gS.getCookie());
-            changeFragmentWithManager(fragment, tag, toolbarTitle, "Non ancora implementato!");
-        }
+    private String getUrlFromId(int id) {
+        if (id == R.id.nav_home) return UrlPaths.HOME_PAGE;
+        else if (id == R.id.nav_absences) return UrlPaths.ABSENCES_PAGE;
+        else if (id == R.id.nav_authorization) return UrlPaths.AUTHORIZATIONS_PAGE;
+        else if (id == R.id.nav_votes) return UrlPaths.VOTES_PAGE;
+        else if (id == R.id.nav_agenda) return UrlPaths.PINBOARD_PAGE;
+        else if (id == R.id.nav_lessons) return UrlPaths.LESSONS_PAGE;
+        else if (id == R.id.nav_newsletters) return UrlPaths.NEWSLETTERS_PAGE;
+        else if (id == R.id.nav_alerts) return UrlPaths.ALERTS_PAGE;
+        else if (id == R.id.nav_report_card) return UrlPaths.REPORTCARD_PAGE;
+        return "";
     }
 
+    /**
+     * Cambia il fragment attuale in quello di {@code id}
+     *
+     * @param id l' id del layout del fragment da visualizzare
+     */
     public void changeFragment(@IdRes int id) {
-        changeFragment(id, "");
+        changeFragment(id, "", getUrlFromId(id));
     }
 
-    public void changeFragment(@IdRes int id, String subtitle) {
+    /**
+     * Cambia il fragment attuale in quello di {@code id}
+     *
+     * @param id       l' id del layout del fragment da visualizzare
+     * @param subtitle la scritta che apparirà sotto il nome della schermata
+     * @param url      l'URL da far visualizzare nella webview nel caso in cui il fragment sia instabile
+     */
+    public void changeFragment(@IdRes int id, String subtitle, String url) {
         Fragment fragment;
         String tag = getTagFromId(id);
         String toolbarTxt = "";
+
         //Se il fragment visualizzato è quello di id allora non fare nulla
         if (!fragmentManager.getFragments().isEmpty() && Objects.requireNonNull(fragmentManager.getFragments().get(0).getTag()).equals(tag))
             return;
@@ -136,35 +151,62 @@ public class MyFragmentManager {
                 fragment = new ReportCardFragment();
             toolbarTxt = "Pagella";
         }
-        changeFragmentWithManager(fragment, tag, toolbarTxt, subtitle);
+
+        executeChangeFragment(fragment, tag, toolbarTxt, subtitle, url);
     }
 
-    private void changeFragmentWithManager(Fragment fragment, String tag, String toolbarTxt, String subtitle) {
+    /**
+     * Esegue effetivamente il cambio di fragment
+     *
+     * @param fragment   il fragment da visualizzare
+     * @param tag        il tag del fragment da visualizzare
+     * @param toolbarTxt il nome che apparirà come nome della schermata
+     * @param subtitle   la scritta che apparirà sotto il nome della schermata
+     * @param url        l'URL da far visualizzare nella webview nel caso in cui il fragment sia instabile
+     */
+    private void executeChangeFragment(Fragment fragment, String tag, String toolbarTxt, String subtitle, String url) {
         loggerManager.d("Cambio fragment a " + tag);
-        if (fragmentIsUnstable(tag)) {
-            loggerManager.w("Rilevata apertura funzionalità instabile (" + tag + "), avviso l'utente ");
-            showUnstableDialog(fragment, tag, toolbarTxt, subtitle);
-            return;
-        }
-        executeChangeFragment(fragment, tag, toolbarTxt, subtitle);
-    }
 
-    private void executeChangeFragment(Fragment fragment, String tag, String toolbarTxt, String subtitle) {
+        if (fragmentIsUnstable(tag)) {
+            loggerManager.w("Rilevata apertura funzionalità instabile (" + tag + ")");
+            fragment = new NotImplementedFragment(GiuaScraper.getSiteURL() + "/" + url, GlobalVariables.gS.getCookie());
+        }
+
         setTextToolbar(toolbarTxt);
         toolbar.setSubtitle(subtitle);
         fragmentManager.beginTransaction().replace(R.id.content_main, fragment, tag).commit();
     }
 
+    /**
+     * Cambia il fragment in {@code NotImplementedFragment} per far visualizzare la webview
+     *
+     * @param toolbarTitle il nome che apparirà come nome della schermata
+     * @param url          l' URL della pagina visualizzata
+     */
+    public void changeToFragmentNotImplemented(String toolbarTitle, String url) {
+        Fragment fragment;
+        String tag = "FRAGMENT_NOT_IMPLEMENTED";
+
+        //Se l'elemento cliccato è già visualizzato allora non fare niente
+        if (toolbarTitle.contentEquals(toolbar.getTitle())) return;
+
+        loggerManager.w("Pagina " + toolbarTitle + " non ancora implementata, la faccio visualizzare dalla webview");
+        fragment = new NotImplementedFragment(GiuaScraper.getSiteURL() + "/" + url, GlobalVariables.gS.getCookie());
+        executeChangeFragment(fragment, tag, toolbarTitle, "Non ancora implementato!", url);
+    }
+
+    /**
+     * Imposta il nome della schermata
+     *
+     * @param defaultName il nome che apparirà nella schermata
+     */
     private void setTextToolbar(String defaultName) {
-        if (offlineMode) {
+        if (offlineMode)
             toolbar.setTitle(defaultName + " - Offline");
-            return;
-        }
-        if (demoMode) {
+        else if (demoMode)
             toolbar.setTitle(defaultName + " - DEMO");
-            return;
-        }
-        toolbar.setTitle(defaultName);
+        else
+            toolbar.setTitle(defaultName);
     }
 
     public static String getTagFromId(@IdRes int id) {
@@ -204,23 +246,5 @@ public class MyFragmentManager {
         } catch (Exception ignored) {
         } //Se per qualche motivo c'è errore, vuol dire che unstableFeatures è vuoto
         return false;
-    }
-
-    private void showUnstableDialog(Fragment fragment, String tag, String toolbarTxt, String subtitle) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle("Funzionalità Instabile");
-        builder.setIcon(R.drawable.ic_alert_outline);
-        builder.setMessage("E' stato segnalato che la schermata \"" + toolbarTxt + "\" potrebbe non funzionare come previsto in questa versione.\n\nSei sicuro di continuare?")
-
-                .setPositiveButton("Si", (dialog, id) -> {
-                    loggerManager.w("L'utente ha deciso di continuare con la funzionalità instabile, cambio fragment a " + tag);
-                    executeChangeFragment(fragment, tag, toolbarTxt, subtitle);
-                })
-
-                .setNegativeButton("No", (dialog, id) -> loggerManager.d("L'utente ha deciso di NON continuare con la funzionalità instabile"))
-
-                .setOnCancelListener(dialog -> loggerManager.d("L'utente ha deciso di NON continuare con la funzionalità instabile"));
-
-        builder.show();
     }
 }
