@@ -95,5 +95,10 @@ public abstract class SettingKey {
      */
     public static final String VOTE_NRFM_ON_CHART = "voteNotRelevantForMeanOnChart";
 
+    /**
+     * Indica il comportamento di default da usare per le funzionalità instabili
+     */
+    public static final String OPEN_UNSTABLE_FEAT_WITH_WEBVIEW = "openUnstableFeaturesWithWebview";
+
 
 }

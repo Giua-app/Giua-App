@@ -182,23 +182,37 @@ public class MyFragmentManager {
     }
 
     private void showUnstableDialog(Fragment fragment, String tag, String toolbarTxt, String subtitle, String url) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle("Funzionalità Instabile");
-        builder.setIcon(R.drawable.ic_alert_outline);
-        builder.setMessage("E' stato segnalato che la schermata \"" + toolbarTxt + "\" potrebbe non funzionare come previsto in questa versione.\n\n" +
-                "Cosa vuoi fare?")
+        int openWithWebview = SettingsData.getSettingInt(activity, SettingKey.OPEN_UNSTABLE_FEAT_WITH_WEBVIEW);
+        if(openWithWebview == 1){ //Apri in webview
+            executeChangeFragment(new NotImplementedFragment(GiuaScraper.getSiteURL() + "/" + url, GlobalVariables.gS.getCookie()), tag, toolbarTxt, subtitle);
+            return;
+        }
+        if(openWithWebview == 0){ //Apri come app
+            executeChangeFragment(fragment, tag, toolbarTxt, subtitle);
+            return;
+        }
+        if(openWithWebview == -1){ //Non impostato, chiedi all'utente
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle("Funzionalità Instabile");
+            builder.setIcon(R.drawable.ic_alert_outline);
+            builder.setMessage("E' stato segnalato che la schermata \"" + toolbarTxt + "\" potrebbe non funzionare come previsto in questa versione.\n\n" +
+                    "La schermata verrà aperta come funzione Non Implementata. Se invece vuoi visualizzarla normalmente cliccare su Annulla (sconsigliato)")
 
-                .setPositiveButton("Apri come Web (consigliato)", (dialog, id) -> {
-                    loggerManager.w("Visualizzo la funzionalità instabile (" + tag +") come non implementata");
-                    executeChangeFragment(new NotImplementedFragment(GiuaScraper.getSiteURL() + "/" + url, GlobalVariables.gS.getCookie()), tag, toolbarTxt, subtitle);
-                })
+                    .setPositiveButton("Ok", (dialog, id) -> {
+                        loggerManager.w("Visualizzo la funzionalità instabile (" + tag +") come non implementata");
+                        SettingsData.saveSettingInt(activity, SettingKey.OPEN_UNSTABLE_FEAT_WITH_WEBVIEW, 1);
+                        executeChangeFragment(new NotImplementedFragment(GiuaScraper.getSiteURL() + "/" + url, GlobalVariables.gS.getCookie()), tag, toolbarTxt, subtitle);
+                    })
 
-                .setNegativeButton("Apri come App", (dialog, id) -> {
-                    loggerManager.w("Visualizzo la funzionalità instabile (" + tag +") normalmente");
-                    executeChangeFragment(fragment, tag, toolbarTxt, subtitle);
-                });
+                    .setNegativeButton("Annulla", (dialog, id) -> {
+                        loggerManager.w("Visualizzo la funzionalità instabile (" + tag +") normalmente");
+                        SettingsData.saveSettingInt(activity, SettingKey.OPEN_UNSTABLE_FEAT_WITH_WEBVIEW, 0);
+                        executeChangeFragment(fragment, tag, toolbarTxt, subtitle);
+                    });
 
-        builder.show();
+            builder.show();
+        }
+
     }
 
     /**
@@ -258,7 +272,7 @@ public class MyFragmentManager {
     }
 
     private boolean fragmentIsUnstable(String tag) {
-        String[] uF = unstableFeatures.split("#");
+        /*String[] uF = unstableFeatures.split("#");
         try {
             for (String feat : uF) {
                 String frag = feat.split("\\|")[0].trim();
@@ -269,6 +283,7 @@ public class MyFragmentManager {
             }
         } catch (Exception ignored) {
         } //Se per qualche motivo c'è errore, vuol dire che unstableFeatures è vuoto
-        return false;
+        return false;*/
+        return true;
     }
 }

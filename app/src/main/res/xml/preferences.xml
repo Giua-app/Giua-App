@@ -41,6 +41,11 @@
             app:defaultValue="false"
             app:key="show_vote_not_relevant_for_mean_on_chart"
             app:title="Mostra nel grafico della home i voti che non valgono per la media" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_card_bulleted_outline"
+            android:key="open_unstable_feat_with_webview"
+            android:title="Apri funzionalità instabili come pagina web" />
 
     </PreferenceCategory>
 

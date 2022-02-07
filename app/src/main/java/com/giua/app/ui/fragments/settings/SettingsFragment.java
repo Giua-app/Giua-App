@@ -79,6 +79,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         setupThemeObject();
         setupShowCentsObject();
         setupShowVoteNotRelevantForMeanOnChart();
+        setupUnstableFeaturesWebview();
 
         //endregion
 
@@ -109,6 +110,19 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
 
         //endregion
+    }
+
+    private void setupUnstableFeaturesWebview(){
+        SwitchPreference swShowCents = Objects.requireNonNull(findPreference("open_unstable_feat_with_webview"));
+        //checked true se uguale a 1, false se uguale a 0, -1
+        swShowCents.setChecked(SettingsData.getSettingInt(context, SettingKey.OPEN_UNSTABLE_FEAT_WITH_WEBVIEW) == 1);
+        swShowCents.setOnPreferenceChangeListener(this::swUnstableFeaturesWebviewListener);
+    }
+
+    private boolean swUnstableFeaturesWebviewListener(Preference preference, Object o) {
+        //salva 1 se true, 0 se false
+        SettingsData.saveSettingInt(requireActivity(), SettingKey.OPEN_UNSTABLE_FEAT_WITH_WEBVIEW, (boolean) o ? 1 : 0);
+        return true;
     }
 
     private void setupShowVoteNotRelevantForMeanOnChart() {
