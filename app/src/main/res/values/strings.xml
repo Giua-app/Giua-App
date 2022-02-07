@@ -73,6 +73,7 @@
     <string name="fragmentlezioni_btn_confirmdate">Conferma data</string>
     <string name="fragmentlezioni_textview_visualizer_arguments">Argomenti</string>
     <string name="fragmentlezioni_textview_visualizer_activities">Attivita</string>
+    <string name="fragmentlezioni_textview_visualizer_support">Sostegno</string>
 
     <!-- Loading Screen -->
     <string name="loadingscreen_textview_automaticlogin" tools:ignore="TypographyEllipsis">Accesso automatico\n Attendere prego...</string>
@@ -102,6 +103,7 @@
     <string name="agenda_view_type_homeworks">Compiti</string>
     <string name="agenda_view_type_homework_and_tests">Compiti e Verifiche</string>
     <string name="agenda_view_type_tests">Verifiche</string>
+    <string name="agenda_view_type_interviews">Colloqui</string>
 
     <!-- Pagella fragment -->
     <string name="fragment_pagella">Pagella</string>

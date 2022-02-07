@@ -34,6 +34,7 @@ import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.giua.objects.AgendaObject;
 import com.giua.objects.Homework;
+import com.giua.objects.InterviewAgenda;
 import com.giua.objects.Test;
 
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +45,7 @@ import java.util.Calendar;
 public class AgendaView extends RelativeLayout {
     public final AgendaObject agendaObject;
     private LoggerManager loggerManager;
-    private int representedObject; //0 - Test; 1 - Homework; 2 - Activity
+    private int representedObject; //0 - Test; 1 - Homework; 2 - Activity; 3 - InterviewAgenda
 
     public AgendaView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, AgendaObject agendaObject) {
         super(context, attrs);
@@ -57,6 +58,8 @@ public class AgendaView extends RelativeLayout {
             representedObject = 1;
         else if (agendaObject.getClass() == com.giua.objects.Activity.class)
             representedObject = 2;
+        else if (agendaObject.getClass() == InterviewAgenda.class)
+            representedObject = 3;
 
         initializeComponent(context);
     }
@@ -103,6 +106,15 @@ public class AgendaView extends RelativeLayout {
             tvSubject.setVisibility(GONE);
             tvTeacher.setVisibility(GONE);
             layout.setBackgroundTintList(ResourcesCompat.getColorStateList(getResources(), R.color.adaptive_agenda_views_green, context.getTheme()));
+        } else if (getRepresentedObject() == InterviewAgenda.class) {
+            InterviewAgenda test = (InterviewAgenda) agendaObject;
+            objectDay.set(Integer.parseInt(test.year), Integer.parseInt(test.month) - 1, Integer.parseInt(test.day), 23, 59, 59);
+            tvDate.setText(test.day + "-" + test.month + "-" + test.year);
+            tvType.setText(R.string.agenda_view_type_interviews);
+            tvText.setText(test.details);
+            tvSubject.setText(test.period);
+            tvTeacher.setText(test.creator);
+            layout.setBackgroundTintList(ResourcesCompat.getColorStateList(getResources(), R.color.adaptive_agenda_views_yellow, context.getTheme()));
         }
 
         //Calendar fake = Calendar.getInstance();
@@ -163,6 +175,8 @@ public class AgendaView extends RelativeLayout {
                 return Homework.class;
             case 2:
                 return com.giua.objects.Activity.class;
+            case 3:
+                return InterviewAgenda.class;
             default:
                 return null;
         }

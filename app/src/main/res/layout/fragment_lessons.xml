@@ -205,6 +205,18 @@
             android:maxHeight="120dp"
             android:text="@string/fragmentlezioni_textview_visualizer_activities"
             android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/lezioni_visualizer_support"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/varelaroundregular"
+            android:maxHeight="120dp"
+            android:text="@string/fragmentlezioni_textview_visualizer_support"
+            android:textSize="15sp"
+            android:visibility="gone" />
     </LinearLayout>
 
     <FrameLayout
