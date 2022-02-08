@@ -184,7 +184,7 @@ public class MyFragmentManager {
     private void showUnstableDialog(Fragment fragment, String tag, String toolbarTxt, String subtitle, String url) {
         int openWithWebview = SettingsData.getSettingInt(activity, SettingKey.OPEN_UNSTABLE_FEAT_WITH_WEBVIEW);
         if(openWithWebview == 1){ //Apri in webview
-            executeChangeFragment(new NotImplementedFragment(GiuaScraper.getSiteURL() + "/" + url, GlobalVariables.gS.getCookie()), tag, toolbarTxt, subtitle);
+            executeChangeFragment(new NotImplementedFragment(GiuaScraper.getSiteURL() + "/" + url, GlobalVariables.gS.getCookie()), tag, toolbarTxt, "Funzionalità Instabile");
             return;
         }
         if(openWithWebview == 0){ //Apri come app
@@ -201,7 +201,7 @@ public class MyFragmentManager {
                     .setPositiveButton("Ok", (dialog, id) -> {
                         loggerManager.w("Visualizzo la funzionalità instabile (" + tag +") come non implementata");
                         SettingsData.saveSettingInt(activity, SettingKey.OPEN_UNSTABLE_FEAT_WITH_WEBVIEW, 1);
-                        executeChangeFragment(new NotImplementedFragment(GiuaScraper.getSiteURL() + "/" + url, GlobalVariables.gS.getCookie()), tag, "Funzionalità Instabile", subtitle);
+                        executeChangeFragment(new NotImplementedFragment(GiuaScraper.getSiteURL() + "/" + url, GlobalVariables.gS.getCookie()), tag, toolbarTxt, "Funzionalità Instabile");
                     })
 
                     .setNegativeButton("Annulla", (dialog, id) -> {
@@ -272,7 +272,7 @@ public class MyFragmentManager {
     }
 
     private boolean fragmentIsUnstable(String tag) {
-        /*String[] uF = unstableFeatures.split("#");
+        String[] uF = unstableFeatures.split("#");
         try {
             for (String feat : uF) {
                 String frag = feat.split("\\|")[0].trim();
@@ -283,7 +283,6 @@ public class MyFragmentManager {
             }
         } catch (Exception ignored) {
         } //Se per qualche motivo c'è errore, vuol dire che unstableFeatures è vuoto
-        return false;*/
-        return true;
+        return false;
     }
 }
