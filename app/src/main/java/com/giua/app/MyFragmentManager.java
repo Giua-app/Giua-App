@@ -201,7 +201,7 @@ public class MyFragmentManager {
                     .setPositiveButton("Ok", (dialog, id) -> {
                         loggerManager.w("Visualizzo la funzionalità instabile (" + tag +") come non implementata");
                         SettingsData.saveSettingInt(activity, SettingKey.OPEN_UNSTABLE_FEAT_WITH_WEBVIEW, 1);
-                        executeChangeFragment(new NotImplementedFragment(GiuaScraper.getSiteURL() + "/" + url, GlobalVariables.gS.getCookie()), tag, toolbarTxt, subtitle);
+                        executeChangeFragment(new NotImplementedFragment(GiuaScraper.getSiteURL() + "/" + url, GlobalVariables.gS.getCookie()), tag, "Funzionalità Instabile", subtitle);
                     })
 
                     .setNegativeButton("Annulla", (dialog, id) -> {
