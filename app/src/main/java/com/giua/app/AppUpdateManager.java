@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -87,11 +88,21 @@ public class AppUpdateManager {
 
     public boolean checkForUpdates(){
         loggerManager.d("Controllo aggiornamenti...");
-
-        JsonNode rootNode = getReleasesJson().get(0);
-
-        if (rootNode == null)    //Si è verificato un errore di qualche tipo
+        JsonNode rootNode;
+        try {
+            rootNode = getReleasesJson().get(0);
+        } catch(Exception e){
+            loggerManager.e("Errore critico: " + e.getMessage());
+            loggerManager.e(Arrays.toString(e.getStackTrace()));
             return false;
+        }
+
+
+        if (rootNode == null) {   //Si è verificato un errore di qualche tipo
+            loggerManager.e("Errore critico sconosciuto");
+            return false;
+        }
+
 
         tagName = rootNode.findPath("tag_name").asText();
 

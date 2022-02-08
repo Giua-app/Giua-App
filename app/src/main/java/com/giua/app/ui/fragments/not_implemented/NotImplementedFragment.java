@@ -20,17 +20,17 @@
 package com.giua.app.ui.fragments.not_implemented;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -55,6 +55,7 @@ public class NotImplementedFragment extends Fragment {
     @SuppressLint("SetJavaScriptEnabled")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_not_implemented, container, false);
+        ProgressBar pg = root.findViewById(R.id.webview_progressbar);
 
         WebView webView = root.findViewById(R.id.not_implemented_webview);
         webView.setWebViewClient(new WebViewClient() {
@@ -64,21 +65,22 @@ public class NotImplementedFragment extends Fragment {
 
             @Override
             public void onPageFinished(WebView view, String url) {
+                pg.setVisibility(View.INVISIBLE);
+                view.setVisibility(View.VISIBLE);
                 webView.evaluateJavascript("try {var exitNode = document.querySelector('[title=\"Esci dal Registro Elettronico\"]');" +
                         "exitNode.parentNode.removeChild(exitNode);" +
                         "var menuNode = document.querySelector('[class=\"navbar-toggle collapsed gs-navbar-toggle gs-pt-1 gs-pb-1 gs-mt-2 gs-mb-0\"]');" +
                         "menuNode.parentNode.removeChild(menuNode); } catch(e){}", null);
             }
-        });
-        webView.setWebChromeClient(new WebChromeClient() {
+
             @Override
-            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                Log.d("MyApplication", consoleMessage.message() + " -- From line "
-                        + consoleMessage.lineNumber() + " of "
-                        + consoleMessage.sourceId());
-                return super.onConsoleMessage(consoleMessage);
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                pg.setVisibility(View.VISIBLE);
+                view.setVisibility(View.INVISIBLE);
+                super.onPageStarted(view, url, favicon);
             }
         });
+        webView.setWebChromeClient(new WebChromeClient());
         webView.getSettings().setUserAgentString(userAgent);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setUseWideViewPort(true);
