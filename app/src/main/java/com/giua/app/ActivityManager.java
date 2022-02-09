@@ -129,7 +129,7 @@ public class ActivityManager extends AppCompatActivity {
     }
 
     private void sendStartupAnalyticsRequest(){
-        Analytics.sendDefaultRequest("Avvio");
+        //Analytics.sendDefaultRequest("Avvio"); //Debug
 
         if(checkLastStartupDate()){
             Analytics.sendDefaultRequest("Avvio giornaliero");
