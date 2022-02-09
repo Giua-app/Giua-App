@@ -75,8 +75,16 @@ public class AppUpdateManager {
 
 
     public void showDialogReleaseChangelog(){
+        String json;
+        try {
+            json = getReleasesJson().toString();
+        } catch(Exception e){
+            loggerManager.e("Errore critico: " + e.getMessage());
+            loggerManager.e(Arrays.toString(e.getStackTrace()));
+            return;
+        }
         Intent intent = new Intent(context, TransparentUpdateDialogActivity.class);
-        intent.putExtra("json", getReleasesJson().toString());
+        intent.putExtra("json", json);
 
         context.startActivity(intent);
     }
