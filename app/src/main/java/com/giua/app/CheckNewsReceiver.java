@@ -101,7 +101,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
                 if (nErrors < 3 && e.getClass() != GiuaScraperExceptions.SiteConnectionProblems.class) {
                     AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
                     Intent iCheckNewsReceiver = new Intent(context, CheckNewsReceiver.class);
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, 0);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, PendingIntent.FLAG_IMMUTABLE);
                     alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME,
                             SystemClock.elapsedRealtime() + 900_000,   //Intervallo di 15 minuti
                             pendingIntent);
@@ -115,7 +115,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
             long interval = AlarmManager.INTERVAL_HOUR + r.nextInt(3_600_000);
             Intent iCheckNewsReceiver = new Intent(context, CheckNewsReceiver.class);
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, 0);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, PendingIntent.FLAG_IMMUTABLE);
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME,
                     SystemClock.elapsedRealtime() + interval,   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
                     pendingIntent);
@@ -311,7 +311,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
                         homeworkNotificationText.append("\n");
                 }
             }
-            homeworkNotification = createNotificationForAgenda("Nuovi compiti", contentText, homeworkNotificationText.toString(), "Agenda", 5);
+            homeworkNotification = createNotificationForAgenda("Nuovi compiti", contentText, homeworkNotificationText.toString());
         }
         if (canSendTestNotification && testCounter > 0) {
             String contentText;
@@ -329,7 +329,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
                         testNotificationText.append("\n");
                 }
             }
-            testNotification = createNotificationForAgenda("Nuove verifiche", contentText, testNotificationText.toString(), "Agenda", 5);
+            testNotification = createNotificationForAgenda("Nuove verifiche", contentText, testNotificationText.toString());
         }
 
         loggerManager.d("Invio le notifiche");
@@ -350,10 +350,10 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         jsonBuilder.saveJson();
     }
 
-    private Notification createNotificationForAgenda(String title, String contentText, String bigText, String goTo, int requestCode) {
-        Intent intent = new Intent(context, ActivityManager.class).putExtra("goTo", goTo).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    private Notification createNotificationForAgenda(String title, String contentText, String bigText) {
+        Intent intent = new Intent(context, ActivityManager.class).putExtra("goTo", "Agenda").setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         return new NotificationCompat.Builder(context, "0")
-                .setContentIntent(PendingIntent.getActivity(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT))
+                .setContentIntent(PendingIntent.getActivity(context, 5, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE))
                 .setSmallIcon(R.drawable.ic_giuaschool_black)
                 .setContentTitle(title)
                 .setContentText(contentText)
@@ -366,7 +366,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
     private Notification createNotification(String title, String goTo, int requestCode) {
         Intent intent = new Intent(context, ActivityManager.class).putExtra("goTo", goTo).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         return new NotificationCompat.Builder(context, "0")
-                .setContentIntent(PendingIntent.getActivity(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT))
+                .setContentIntent(PendingIntent.getActivity(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE))
                 .setSmallIcon(R.drawable.ic_giuaschool_black)
                 .setContentTitle(title)
                 .setContentText("Clicca per avere più informazioni")

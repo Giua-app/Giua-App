@@ -267,8 +267,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         SettingsData.saveSettingBoolean(requireActivity(), SettingKey.NOTIFICATION, (boolean) o);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent iCheckNewsReceiver = new Intent(context, CheckNewsReceiver.class);
-        boolean alarmUp = (PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE) != null);  //Controlla se l'allarme è già settato
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, 0);
+        boolean alarmUp = (PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE) != null);  //Controlla se l'allarme è già settato
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, PendingIntent.FLAG_IMMUTABLE);
         loggerManager.d("L'allarme è già settato?: " + alarmUp);
 
         if ((boolean) o) {

@@ -131,8 +131,8 @@ public class DrawerActivity extends AppCompatActivity {
         //Setup CheckNewsReceiver
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
-        boolean alarmUp = (PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE) != null);  //Controlla se l'allarme è già settato
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, 0);
+        boolean alarmUp = (PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE) != null);  //Controlla se l'allarme è già settato
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_IMMUTABLE);
         loggerManager.d("L'allarme è già settato?: " + alarmUp);
         //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000, pendingIntent);    //DEBUG
         if (!alarmUp && !AppData.getActiveUsername(this).equals("") && SettingsData.getSettingBoolean(this, SettingKey.NOTIFICATION)) {

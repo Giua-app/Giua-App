@@ -229,7 +229,7 @@ public class AppUpdateManager {
         intent.putExtra("doUpdate", true);
         PendingIntent pendingIntent;
 
-        pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
                 .setSmallIcon(R.drawable.ic_giuaschool_black)
