@@ -46,7 +46,6 @@ import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
 import com.giua.objects.AgendaObject;
 import com.giua.objects.Homework;
-import com.giua.objects.InterviewAgenda;
 import com.giua.objects.Test;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
@@ -331,14 +330,14 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                         ResourcesCompat.getColor(activity.getResources(), R.color.agenda_views_orange, activity.getTheme()),
                         simpleDateFormat.parse(agendaObject.date).getTime()
                 );
-            } else if (agendaObject.getRepresentingClass() == InterviewAgenda.class) {
+            } else if (agendaObject.getRepresentingClass() == com.giua.objects.Activity.class) {
                 event = new Event(
                         ResourcesCompat.getColor(activity.getResources(), R.color.agenda_views_green, activity.getTheme()),
                         simpleDateFormat.parse(agendaObject.date).getTime()
                 );
             } else {
                 event = new Event(
-                        ResourcesCompat.getColor(activity.getResources(), R.color.agenda_views_yellow, activity.getTheme()),
+                        ResourcesCompat.getColor(activity.getResources(), R.color.agenda_views_purple, activity.getTheme()),
                         simpleDateFormat.parse(agendaObject.date).getTime()
                 );
             }

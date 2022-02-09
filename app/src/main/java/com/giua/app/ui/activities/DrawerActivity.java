@@ -346,7 +346,10 @@ public class DrawerActivity extends AppCompatActivity {
                                 "Per cambiare mese puoi utilizzare le frecce posizionate ai lati del nome del mese" +
                                 ", oppure trascinare il calendario verso destra o verso sinistra.<br>" +
                                 "Nel calendario le attività vengono rappresentate da un puntino colorato:<br>" +
-                                "<i><font color='#FFBC58'>Arancione</font> = Verifica<br><font color='#6BD5E4'>Celeste</font> = Compiti<br><font color='#7ADD7D'>Verde</font> = Eventi/Attività</i>";
+                                "<i><font color='#FFBC58'>Arancione</font> = Verifica<br>" +
+                                "<font color='#6BD5E4'>Celeste</font> = Compiti<br>" +
+                                "<font color='#7ADD7D'>Verde</font> = Eventi/Attività<br>" +
+                                "<font color='#673AB7'>Viola</font> = Colloqui</i>";
                         break;
                     case "FRAGMENT_LESSONS":
                         message = "Puoi cliccare su una lezione per vederne i dettagli (argomenti, attività)<br>Clicca in basso, " +

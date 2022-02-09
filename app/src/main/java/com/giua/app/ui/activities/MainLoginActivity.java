@@ -180,7 +180,7 @@ public class MainLoginActivity extends AppCompatActivity {
             GlobalVariables.internetThread = new InternetThread();
         GlobalVariables.internetThread.addTask(() -> {
             try {
-                if (isAddingAccount && AppData.getAllAccountUsernames(this).contains(etUsername.getText().toString())) {
+                if (isAddingAccount && AppData.getAllAccountUsernames(this).contains(etUsername.getText().toString().toLowerCase())) {
                     runOnUiThread(() -> {
                         txtLayoutUsername.setError("Username già salvato");
                         etPassword.setText("");
@@ -198,8 +198,8 @@ public class MainLoginActivity extends AppCompatActivity {
                     if (chRememberCredentials.isChecked()) {
                         LoginData.setCredentials(this, etUsername.getText().toString(), etPassword.getText().toString(), GlobalVariables.gS.getCookie());
                         LoginData.setSiteUrl(this, etUsername.getText().toString(), GiuaScraper.getSiteURL());
-                        AppData.addAccountUsername(this, etUsername.getText().toString());
-                        AppData.saveActiveUsername(this, etUsername.getText().toString());
+                        AppData.addAccountUsername(this, etUsername.getText().toString().toLowerCase());
+                        AppData.saveActiveUsername(this, etUsername.getText().toString().toLowerCase());
                     }
                     startDrawerActivity();
                 } else {

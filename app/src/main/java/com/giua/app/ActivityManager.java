@@ -211,13 +211,10 @@ public class ActivityManager extends AppCompatActivity {
         }
 
         //0.6.3
-        //TODO: controllare che loginData esista
-        if (!lastVer.contains(appVer) && lastVer.contains("0.6.3")) {
+        if (lastVer.contains(appVer) && lastVer.contains("0.6.3") && !LoginData.getSharedPreferencesForOldLogin(this).getString("user", "").equals("")) {
             CompatibilityManager.checkFor063Update(this);
         }
     }
-
-
 
     private void startDrawerActivity() {
         loggerManager.d("Avvio direttamente Drawer Activity dato che gS esiste già");

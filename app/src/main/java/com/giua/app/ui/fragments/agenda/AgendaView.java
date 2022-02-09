@@ -114,7 +114,7 @@ public class AgendaView extends RelativeLayout {
             tvText.setText(test.details);
             tvSubject.setText(test.period);
             tvTeacher.setText(test.creator);
-            layout.setBackgroundTintList(ResourcesCompat.getColorStateList(getResources(), R.color.adaptive_agenda_views_yellow, context.getTheme()));
+            layout.setBackgroundTintList(ResourcesCompat.getColorStateList(getResources(), R.color.adaptive_agenda_views_purple, context.getTheme()));
         }
 
         //Calendar fake = Calendar.getInstance();
