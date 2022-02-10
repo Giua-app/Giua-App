@@ -117,11 +117,15 @@ public class VoteView extends ConstraintLayout {
 
     private TextView createTextViewForMeans(Context context, float mean, boolean isFirst) {
         DecimalFormat df;
-        if (shouldShowCents)
+        LinearLayout.LayoutParams layoutParams;
+        if (shouldShowCents) {
             df = new DecimalFormat("0.00");
-        else
+            layoutParams = new LinearLayout.LayoutParams(convertDpToPx(60f), ViewGroup.LayoutParams.WRAP_CONTENT);
+        } else {
             df = new DecimalFormat("0.0");
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(convertDpToPx(50f), ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams = new LinearLayout.LayoutParams(convertDpToPx(50f), ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
         if (isFirst)
             layoutParams.setMargins(0, convertDpToPx(14), 0, 0);
         else
