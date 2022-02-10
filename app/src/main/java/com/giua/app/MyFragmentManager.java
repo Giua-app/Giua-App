@@ -178,7 +178,7 @@ public class MyFragmentManager {
     private void executeChangeFragment(Fragment fragment, String tag, String toolbarTxt, String subtitle) {
         setTextToolbar(toolbarTxt);
         toolbar.setSubtitle(subtitle);
-        fragmentManager.beginTransaction().replace(R.id.content_main, fragment, tag).commit();
+        fragmentManager.beginTransaction().replace(R.id.content_main, fragment, tag).commitNow();
     }
 
     private void showUnstableDialog(Fragment fragment, String tag, String toolbarTxt, String subtitle, String url) {

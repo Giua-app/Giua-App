@@ -44,7 +44,7 @@ public class SettingsActivity extends AppCompatActivity {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.settings_fragment_container, SettingsFragment.class, null)
-                .commit();
+                .commitNow();
     }
 
     @Override
