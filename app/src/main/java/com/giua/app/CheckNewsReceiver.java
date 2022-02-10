@@ -128,9 +128,9 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         String username = AppData.getActiveUsername(context);
         String accountUrl = LoginData.getSiteUrl(context, username);
         String defaultUrl = SettingsData.getSettingString(context, SettingKey.DEFAULT_URL);
-        if (!accountUrl.equals(""))
+        if (accountUrl.equals("") && !defaultUrl.equals(""))
             GiuaScraper.setSiteURL(defaultUrl);
-        else
+        else if(!accountUrl.equals(""))
             GiuaScraper.setSiteURL(accountUrl);
         loggerManager.d("Username letto: " + username);
         if (GlobalVariables.gS != null) {    //Se un istanza di Giuascraper esiste già non ricrearla ed usa quella
