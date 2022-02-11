@@ -20,12 +20,15 @@
 package com.giua.app;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyProperties;
 
 import androidx.security.crypto.EncryptedSharedPreferences;
-import androidx.security.crypto.MasterKeys;
+import androidx.security.crypto.MasterKey;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -43,11 +46,21 @@ public class LoginData {
     private static final String cookieKey = "cookie";
     private static final String siteUrlKey = "siteUrl";
     private static final String themeKey = "theme";
-    private static String masterKeyAlias = null;
+    private static MasterKey masterKey = null;
+    private static final String masterKeyAlias = "masterKeyAlias";
 
-    private static void createMasterKeyValueForEncryption() throws GeneralSecurityException, IOException {
-        if (masterKeyAlias == null) {
-            masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
+    private static void createMasterKeyValueForEncryption(Context context) throws GeneralSecurityException, IOException {
+        if (masterKey == null) {
+            KeyGenParameterSpec spec = new KeyGenParameterSpec.Builder(
+              masterKeyAlias,
+                    KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
+                    .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                    .setKeySize(256)
+                    .build();
+            masterKey = new MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build();
         }
     }
 
@@ -56,17 +69,15 @@ public class LoginData {
     }
 
     private static SharedPreferences getSharedPreferences(final Context context, final String fileName) {
-
         try {
-            createMasterKeyValueForEncryption();
+            createMasterKeyValueForEncryption(context);
 
             return EncryptedSharedPreferences.create(
-                    fileName,
-                    masterKeyAlias,
                     context,
+                    fileName,
+                    masterKey,
                     EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            );
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM);
         } catch (GeneralSecurityException | IOException e) {
             e.printStackTrace();
             return null;

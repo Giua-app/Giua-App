@@ -144,6 +144,7 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     //noinspection KtxExtensionAvailable
     implementation "androidx.preference:preference:1.2.0"
+    implementation "androidx.security:security-crypto:1.1.0-alpha03"
 
     //--Memory leak lib
     //implementation 'com.squareup.leakcanary:leakcanary-android:2.7'  //DEBUG
