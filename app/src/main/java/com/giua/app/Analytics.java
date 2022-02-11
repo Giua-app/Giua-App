@@ -65,8 +65,10 @@ public class Analytics {
      * @see #safeSend(String)
      */
     public static String send(String body){
+        if(BuildConfig.DEBUG){
+            return null;
+        }
         Document doc;
-        Log.d("FINDME", "send: AAAAAAAAAAAAAA");
         try {
             doc = Jsoup.newSession().ignoreContentType(true).ignoreHttpErrors(true)
                     .url(API_ENDPOINT)
@@ -74,7 +76,6 @@ public class Analytics {
                     .requestBody(body).post();
         } catch (IOException e){
             e.printStackTrace();
-            Log.e("FINDME", "crash ", e);
             return null;
         }
         Log.d("FINDME", "send: " + doc.text());
