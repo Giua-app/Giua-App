@@ -26,3 +26,5 @@
 -keep class **.R$* {
     <fields>;
 }
+
+-keep class com.giua.utils.GiuaScraperUtils

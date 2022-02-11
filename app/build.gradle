@@ -56,8 +56,8 @@ android {
         minSdkVersion 24
         targetSdkVersion 31
         versionCode androidGitVersion.code()
-        versionName "0.6.4-stable" //Da usare per le release
-        //versionName androidGitVersion.name() //Da usare per lo sviluppo
+        //versionName "0.6.6-stable" //Da usare per le release
+        versionName androidGitVersion.name() //Da usare per lo sviluppo
 
         def localProperties = new Properties()
         try{
