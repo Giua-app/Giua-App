@@ -14,10 +14,12 @@ jobs:
       - name: Decode Keystore
         env:
           ENCODED_STRING: ${{ secrets.KEYSTORE }}
+          LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
         run: |
             KEYSTORE_FILE_PATH="${GITHUB_WORKSPACE}"/app/keystore
             mkdir "${KEYSTORE_FILE_PATH}"
             echo $ENCODED_STRING | base64 -di > "${KEYSTORE_FILE_PATH}"/giua-app.jks
+            echo $LOCAL_PROPERTIES >> "${GITHUB_WORKSPACE}"/local.properties
           
       - uses: gradle/wrapper-validation-action@v1
 
