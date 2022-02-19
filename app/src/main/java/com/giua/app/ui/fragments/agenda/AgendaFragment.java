@@ -44,6 +44,7 @@ import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
+import com.giua.app.ui.activities.DrawerActivity;
 import com.giua.objects.AgendaObject;
 import com.giua.objects.Homework;
 import com.giua.objects.Test;
@@ -174,6 +175,10 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                     activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.site_connection_error), root));
                 } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
                     activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root));
+                } catch (GiuaScraperExceptions.NotLoggedIn e) {
+                    activity.runOnUiThread(() -> {
+                        ((DrawerActivity) activity).startAutomaticLoginActivity();
+                    });
                 } finally {
                     activity.runOnUiThread(() -> {
                         swipeRefreshLayout.setRefreshing(false);

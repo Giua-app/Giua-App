@@ -46,6 +46,7 @@ import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
+import com.giua.app.ui.activities.DrawerActivity;
 import com.giua.app.ui.fragments.ObscureLayoutView;
 import com.giua.objects.Alert;
 import com.giua.webscraper.DownloadedFile;
@@ -176,6 +177,10 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
                         setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
                         finishedLoading();
                         tvNoElements.setVisibility(View.VISIBLE);
+                    });
+                } catch (GiuaScraperExceptions.NotLoggedIn e) {
+                    activity.runOnUiThread(() -> {
+                        ((DrawerActivity) activity).startAutomaticLoginActivity();
                     });
                 }
             });

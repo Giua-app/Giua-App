@@ -53,6 +53,7 @@ import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
+import com.giua.app.ui.activities.DrawerActivity;
 import com.giua.app.ui.fragments.ObscureLayoutView;
 import com.giua.objects.Newsletter;
 import com.giua.webscraper.DownloadedFile;
@@ -216,6 +217,10 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                         swipeRefreshLayout.setRefreshing(false);
                     });
                     allNewsletter = new Vector<>();
+                } catch (GiuaScraperExceptions.NotLoggedIn e) {
+                    activity.runOnUiThread(() -> {
+                        ((DrawerActivity) activity).startAutomaticLoginActivity();
+                    });
                 }
                 activity.runOnUiThread(() -> layout.removeView(pbLoadingNewsletters));
                 swipeRefreshLayout.setRefreshing(false);

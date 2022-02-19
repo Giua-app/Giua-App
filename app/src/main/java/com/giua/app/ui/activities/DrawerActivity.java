@@ -93,11 +93,14 @@ public class DrawerActivity extends AppCompatActivity {
             GlobalVariables.internetThread = new InternetThread();
         if (GlobalVariables.gS == null) {
             loggerManager.w("gs è null ma non dovrebbe esserlo quindi avvio AutomaticLogin");
-            startActivity(new Intent(this, ActivityManager.class));
-            isStartingAnotherActivity = true;
-            finish();
+            startAutomaticLoginActivity();
             return;
         }
+        GlobalVariables.internetThread.addTask(() -> {
+            if (!GlobalVariables.gS.isSessionValid(GlobalVariables.gS.getCookie())) {
+                runOnUiThread(this::startAutomaticLoginActivity);
+            }
+        });
         offlineMode = getIntent().getBooleanExtra("offline", false);
         demoMode = SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE);
         goTo = getIntent().getStringExtra("goTo");
@@ -154,14 +157,15 @@ public class DrawerActivity extends AppCompatActivity {
             try {
                 unstableFeatures = GlobalVariables.gS.getExtPage("https://giua-app.github.io/unstable_features2.txt").text();
                 myFragmentManager.unstableFeatures = unstableFeatures;
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
 
         }).start();
 
         checkForUpdateChangelog();
     }
 
-    private void checkForUpdateChangelog(){
+    private void checkForUpdateChangelog() {
         if (!AppData.getAppVersion(this).equals("")
                 && !AppData.getAppVersion(this).equals(BuildConfig.VERSION_NAME)) {
 
@@ -281,6 +285,12 @@ public class DrawerActivity extends AppCompatActivity {
         }
     }
 
+    public void startAutomaticLoginActivity() {
+        startActivity(new Intent(this, ActivityManager.class));
+        isStartingAnotherActivity = true;
+        finish();
+    }
+
     @Override
     public void onBackPressed() {
         if (mDrawer.isDrawerOpen()) {
@@ -318,19 +328,21 @@ public class DrawerActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.help_menu_drawer){
+        if (item.getItemId() == R.id.help_menu_drawer) {
             Fragment fragment = getSupportFragmentManager().getFragments().get(0);
             AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setPositiveButton("Chiudi", (dialog, id) -> {})
+                    .setPositiveButton("Chiudi", (dialog, id) -> {
+                    })
 
-                .setOnDismissListener(dialog -> {});
-            if (fragment.getTag() != null && !fragment.getTag().equals("FRAGMENT_NOT_IMPLEMENTED")){
+                    .setOnDismissListener(dialog -> {
+                    });
+            if (fragment.getTag() != null && !fragment.getTag().equals("FRAGMENT_NOT_IMPLEMENTED")) {
                 //Se il fragment corrente ha un tag ed è una schermata implementata
 
                 builder.setTitle("Come si usa la pagina " + toolbar.getTitle());
                 String message = "";
 
-                switch (fragment.getTag()){
+                switch (fragment.getTag()) {
                     case "FRAGMENT_HOME":
                         message = "Nella Home puoi vedere il tuo andamento scolastico e " +
                                 "avvisi sulle verifiche o compiti per i prossimi giorni";

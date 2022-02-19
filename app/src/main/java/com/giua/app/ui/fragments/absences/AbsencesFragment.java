@@ -38,6 +38,7 @@ import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
+import com.giua.app.ui.activities.DrawerActivity;
 import com.giua.app.ui.fragments.ObscureLayoutView;
 import com.giua.objects.Absence;
 import com.giua.pages.AbsencesPage;
@@ -124,6 +125,10 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
                     setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
                     root.findViewById(R.id.absences_no_elements_text).setVisibility(View.VISIBLE);
                     swipeRefreshLayout.setRefreshing(false);
+                });
+            } catch (GiuaScraperExceptions.NotLoggedIn e) {
+                activity.runOnUiThread(() -> {
+                    ((DrawerActivity) activity).startAutomaticLoginActivity();
                 });
             }
         });

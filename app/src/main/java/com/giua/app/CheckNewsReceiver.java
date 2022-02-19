@@ -133,10 +133,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         else if(!accountUrl.equals(""))
             GiuaScraper.setSiteURL(accountUrl);
         loggerManager.d("Username letto: " + username);
-        if (GlobalVariables.gS != null) {    //Se un istanza di Giuascraper esiste già non ricrearla ed usa quella
-            gS = GlobalVariables.gS;
-            loggerManager.d("Riutilizzo istanza gS");
-        } else if (!username.equals("gsuite")) {  //Se l'account non è di gsuite fai il login normale
+        if (!username.equals("gsuite")) {  //Se l'account non è di gsuite fai il login normale
             loggerManager.d("Account non google rilevato, eseguo login");
             gS = new GiuaScraper(username, LoginData.getPassword(context, username), LoginData.getCookie(context, username), true, new LoggerManager("GiuaScraper", context));
             gS.login();

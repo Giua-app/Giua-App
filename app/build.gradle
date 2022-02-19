@@ -153,7 +153,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.14.3'
 
     //--Giua scraper
-    implementation 'com.github.Giua-app:Giua-Webscraper:2.0.4'
+    implementation 'com.github.Giua-app:Giua-Webscraper:174b816619'
     //implementation fileTree(dir: 'libs', include: ['*.jar'])     //DEBUG
     //implementation 'com.fasterxml.jackson.core:jackson-core:2.12.5'   //DEBUG
     //implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.5'    //DEBUG

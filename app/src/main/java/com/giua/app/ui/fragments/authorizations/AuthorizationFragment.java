@@ -35,6 +35,7 @@ import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
+import com.giua.app.ui.activities.DrawerActivity;
 import com.giua.objects.Authorization;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
@@ -75,6 +76,10 @@ public class AuthorizationFragment extends Fragment implements IGiuaAppFragment 
                 activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.site_connection_error), root));
             } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
                 activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root));
+            } catch (GiuaScraperExceptions.NotLoggedIn e) {
+                activity.runOnUiThread(() -> {
+                    ((DrawerActivity) activity).startAutomaticLoginActivity();
+                });
             }
         });
     }

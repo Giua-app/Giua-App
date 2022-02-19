@@ -100,6 +100,9 @@ public class StudentLoginActivity extends AppCompatActivity {
         webView.getSettings().setUserAgentString(userAgent);
         webView.getSettings().setJavaScriptEnabled(true);
 
+        CookieManager.getInstance().setAcceptCookie(true);
+        CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
+
         webView.loadUrl(GiuaScraper.getSiteURL() + "/login/gsuite");
     }
 

@@ -168,6 +168,10 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
                     setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
                     swipeRefreshLayout.setRefreshing(false);
                 });
+            } catch (GiuaScraperExceptions.NotLoggedIn e) {
+                activity.runOnUiThread(() -> {
+                    ((DrawerActivity) activity).startAutomaticLoginActivity();
+                });
             } catch (IllegalStateException ignored) {
             }   //Si verifica quando questa schermata è stata distrutta ma il thread cerca comunque di fare qualcosa
         });

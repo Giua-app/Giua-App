@@ -120,8 +120,6 @@ public class ActivityManager extends AppCompatActivity {
         checkForUpdates();
         checkForPreviousUpdate();
 
-        if (GlobalVariables.gS != null)
-            startDrawerActivity();
         if (AppData.getActiveUsername(this).equals(""))
             startMainLoginActivity();
         else
