@@ -20,8 +20,8 @@
 package com.giua.app;
 
 import android.os.Build;
-import android.util.Log;
 
+import com.giua.utils.GiuaScraperUtils;
 import com.giua.utils.JsonBuilder;
 import com.giua.webscraper.GiuaScraper;
 
@@ -78,7 +78,6 @@ public class Analytics {
             e.printStackTrace();
             return null;
         }
-        Log.d("FINDME", "send: " + doc.text());
         System.out.println(doc.text());
         return doc.text();
     }
@@ -93,8 +92,8 @@ public class Analytics {
                     "\"event\": \"" + eventName + "\"," +
                     "\"properties\": {" +
                     "\"distinct_id\": \"0\"," +
-                    "\"scraper_url\": \"" + JsonBuilder.escape(GiuaScraper.getSiteURL()) + "\"," +
-                    "\"app_ver\": \"" + JsonBuilder.escape(BuildConfig.VERSION_NAME) + "\"," +
+                    "\"scraper_url\": \"" + GiuaScraperUtils.escapeString(GiuaScraper.getSiteURL()) + "\"," +
+                    "\"app_ver\": \"" + GiuaScraperUtils.escapeString(BuildConfig.VERSION_NAME) + "\"," +
                     "\"os\": \"Android " + Build.VERSION.RELEASE + " (SDK " + Build.VERSION.SDK_INT + ")\"";
         }
 
@@ -106,7 +105,7 @@ public class Analytics {
 
 
         public Builder addCustomValue(String key, String value){
-            body += ",\"" + key + "\": " + "\"" + JsonBuilder.escape(value) + "\"";
+            body += ",\"" + key + "\": " + "\"" + GiuaScraperUtils.escapeString(value) + "\"";
             return this;
         }
     }

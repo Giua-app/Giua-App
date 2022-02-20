@@ -41,6 +41,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.giua.app.DBController;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
@@ -138,9 +139,10 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
                 viewsLayout.addView(pbLoadingContent);
             GlobalVariables.internetThread.addTask(() -> {
                 try {
-                    if (!offlineMode)
+                    if (!offlineMode){
                         allAlerts = GlobalVariables.gS.getAlertsPage(false).getAllAlerts(currentPage);
-                    else {
+                        new DBController(root.getContext()).addAlerts(allAlerts); //sperimentale
+                    } else {
                         hasLoadedAllPages = true;
                         /*try {
                             allAlerts = new JsonHelper().parseJsonForAlerts(AppData.getAlertsString(requireActivity()));
