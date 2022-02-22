@@ -53,6 +53,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -71,6 +72,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     LoggerManager loggerManager;
     boolean forceRefresh = false;
     boolean isFragmentDestroyed = false;
+    boolean offlineMode = false;
 
     @Nullable
     @Override
@@ -110,6 +112,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         root.findViewById(R.id.home_agenda_alerts).setOnClickListener(this::agendaAlertsOnClick);
         swipeRefreshLayout.setRefreshing(true);
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
+        offlineMode = activity.getIntent().getBooleanExtra("offline", false);
 
         GlobalVariables.internetThread.addTask(() -> {
             //TODO: Mettere la cache for check updates (almeno tra activity manager e home fragemnt visto che in ogni caso viene chiamata due volte)
@@ -122,12 +125,46 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
                 });
             }
 
-            String userType = GlobalVariables.gS.getUserTypeString();
-            activity.runOnUiThread(() -> txUserInfo.setText("Accesso eseguito nell'account " + GlobalVariables.gS.getUser() + " (" + GlobalVariables.gS.getUserTypeString() + ")"));
+            //String userType = GlobalVariables.gS.getUserTypeString();
+            if(offlineMode){
+                activity.runOnUiThread(() -> txUserInfo.setText("Accesso eseguito in modalità Offline"));
+            } else{
+                activity.runOnUiThread(() -> txUserInfo.setText("Accesso eseguito nell'account " + GlobalVariables.gS.getUser() + " (" + GlobalVariables.gS.getUserTypeString() + ")"));
+            }
         });
 
-        loadDataAndViews();
+        if(!offlineMode){
+            loadDataAndViews();
+            return root;
+        }
+        loadOfflineDataAndViews();
         return root;
+    }
+
+    @Override
+    public void loadOfflineDataAndViews() {
+        GlobalVariables.internetThread.addTask(() -> {
+            try {
+                Map<String, List<Vote>> allVotes = new HashMap<>();
+                int homeworks = 0;
+                int tests = 0;
+
+                if (isFragmentDestroyed)
+                    return;
+
+                activity.runOnUiThread(() -> {
+                    setupHomeworksTestsText(homeworks, tests);
+                    setupMeanVotesText(allVotes);
+                    if (!allVotes.isEmpty()) {
+                        chart.setData(generateLineData(allVotes));
+                        chart.invalidate();
+                    }
+                    swipeRefreshLayout.setRefreshing(false);
+                });
+            } catch (IllegalStateException ignored) {
+                //Si verifica quando questa schermata è stata distrutta ma il thread cerca comunque di fare qualcosa
+            }
+        });
     }
 
     @Override

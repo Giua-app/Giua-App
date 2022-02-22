@@ -135,6 +135,9 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
     }
 
     @Override
+    public void loadOfflineDataAndViews() {}
+
+    @Override
     public void loadDataAndViews() {
         tvNoElements.setVisibility(View.GONE);
         pbLoadingContent.setVisibility(View.VISIBLE);

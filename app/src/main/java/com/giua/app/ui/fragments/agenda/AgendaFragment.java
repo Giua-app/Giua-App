@@ -143,6 +143,9 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     }
 
     @Override
+    public void loadOfflineDataAndViews() {}
+
+    @Override
     public void loadDataAndViews() {
         loggerManager.d("Carico views...");
         if (!isLoadingData && System.nanoTime() - lastRequestTime > 500_000_000) {  //Anti click spam

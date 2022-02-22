@@ -27,6 +27,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.giua.objects.Alert;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
@@ -103,16 +104,16 @@ public class DBController extends SQLiteOpenHelper {
         db.close();
     }
 
-    //ATTENZIONE NON TESTATO
     public List<Alert> readAlerts() {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery("SELECT * FROM " + ALERTS_TABLE, null);
 
         List<Alert> alerts = new Vector<>();
-        List<String> tmp = new Vector<>();
 
         if (cursor.moveToFirst()) {
+            List<String> newsletters = Arrays.asList(cursor.getString(6).split(";"));
+
             do {
                 alerts.add(new Alert(cursor.getString(0),
                         cursor.getString(1),
@@ -120,7 +121,7 @@ public class DBController extends SQLiteOpenHelper {
                         cursor.getString(3),
                         cursor.getString(4),
                         cursor.getInt(5),
-                        tmp, //TODO: fare parsing per attachmentUrls
+                        newsletters,
                         cursor.getString(7),
                         cursor.getString(8),
                         cursor.getString(9)));

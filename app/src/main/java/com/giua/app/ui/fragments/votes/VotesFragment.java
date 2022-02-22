@@ -95,6 +95,9 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
     }
 
     @Override
+    public void loadOfflineDataAndViews() {}
+
+    @Override
     public void loadDataAndViews() {
         GlobalVariables.internetThread.addTask(() -> {
             try {

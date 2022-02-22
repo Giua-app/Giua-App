@@ -69,6 +69,9 @@ public class ReportCardFragment extends Fragment implements IGiuaAppFragment {
     }
 
     @Override
+    public void loadOfflineDataAndViews() {}
+
+    @Override
     public void loadDataAndViews() { }
 
     @Override

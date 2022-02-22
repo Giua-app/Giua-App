@@ -269,6 +269,7 @@ public class AppUpdateManager {
                 date1 = format.parse(date);
             } catch (ParseException e) {
                 e.printStackTrace();
+                return "Errore durante la lettura dei changelog";
             }
 
             if(!body.equals("")){

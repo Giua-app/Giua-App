@@ -69,7 +69,6 @@ public class DrawerActivity extends AppCompatActivity {
 
     AlarmManager alarmManager;
     Toolbar toolbar;
-    Bundle bundle;
     String goTo = "";
     LoggerManager loggerManager;
     String userType = "Tipo utente non caricato";
@@ -88,7 +87,16 @@ public class DrawerActivity extends AppCompatActivity {
         if (savedInstanceState != null)
             savedInstanceState.clear();
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_drawer);
         loggerManager = new LoggerManager("DrawerActivity", this);
+        loggerManager.d("onCreate chiamato");
+
+        offlineMode = getIntent().getBooleanExtra("offline", false);
+        demoMode = SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE);
+        goTo = getIntent().getStringExtra("goTo");
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         if (GlobalVariables.internetThread == null || GlobalVariables.internetThread.isInterrupted())
             GlobalVariables.internetThread = new InternetThread();
         if (GlobalVariables.gS == null) {
@@ -96,27 +104,19 @@ public class DrawerActivity extends AppCompatActivity {
             startAutomaticLoginActivity();
             return;
         }
-        GlobalVariables.internetThread.addTask(() -> {
-            if (!GlobalVariables.gS.isSessionValid(GlobalVariables.gS.getCookie())) {
-                runOnUiThread(this::startAutomaticLoginActivity);
-            }
-        });
-        offlineMode = getIntent().getBooleanExtra("offline", false);
-        demoMode = SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE);
-        goTo = getIntent().getStringExtra("goTo");
-        setContentView(R.layout.activity_drawer);
-        loggerManager.d("onCreate chiamato");
 
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        if(!offlineMode){
+            GlobalVariables.internetThread.addTask(() -> {
+                if (!GlobalVariables.gS.isSessionValid(GlobalVariables.gS.getCookie())) {
+                    runOnUiThread(this::startAutomaticLoginActivity);
+                }
+            });
+        }
 
         myFragmentManager = new MyFragmentManager(this, toolbar, getSupportFragmentManager(), offlineMode, demoMode, unstableFeatures);
         myDrawerManager = new MyDrawerManager(this, this::onChangeAccountFromDrawer,
                 this::settingsItemOnClick, this::logoutItemOnClick,
                 realUsername, userType, toolbar, myFragmentManager, demoMode);
-
-        bundle = new Bundle();
-        bundle.putBoolean("offline", offlineMode);
 
         if (goTo == null || goTo.equals(""))
             myFragmentManager.changeFragment(R.id.nav_home);
@@ -132,6 +132,7 @@ public class DrawerActivity extends AppCompatActivity {
             myFragmentManager.changeFragment(R.id.nav_home);
 
         //Setup CheckNewsReceiver
+        //FIXME: i setup di CheckNewsReceiver è meglio spostarli in un unica classe
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
         boolean alarmUp = (PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE) != null);  //Controlla se l'allarme è già settato
@@ -153,6 +154,7 @@ public class DrawerActivity extends AppCompatActivity {
         getAndSetupUsernameUsertype();
 
         new Thread(() -> {
+            //Anche se siamo in offline mode, proviamo a scaricarle comunque (magari il registro è in manutenzione)
             loggerManager.d("Scarico le informazioni sulle funzionalità instabili");
             try {
                 unstableFeatures = GlobalVariables.gS.getExtPage("https://giua-app.github.io/unstable_features2.txt").text();
@@ -202,6 +204,11 @@ public class DrawerActivity extends AppCompatActivity {
     }
 
     private boolean onChangeAccountFromDrawer(View view, IProfile iProfile, boolean b) {
+        if(offlineMode){
+            Snackbar.make(view, "Accounts non disponibili offline", Snackbar.LENGTH_SHORT).show();
+            return false; //Chiudi drawer
+        }
+
         if (iProfile.getName().getText().equals("Aggiungi account"))
             startActivity(new Intent(this, MainLoginActivity.class).putExtra("addAccount", true));
         else {
@@ -259,32 +266,36 @@ public class DrawerActivity extends AppCompatActivity {
             myDrawerManager.userType = userType;
             myDrawerManager.realUsername = realUsername;
             mDrawer = myDrawerManager.setupMaterialDrawer();
-        } else if (SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE)) {
+            return;
+        }
+        if (SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE)) {
             userType = "DEMO";
             realUsername = "DEMO";
             myDrawerManager.userType = userType;
             myDrawerManager.realUsername = realUsername;
             mDrawer = myDrawerManager.setupMaterialDrawer();
-        } else {
-            GlobalVariables.internetThread.addTask(() -> {
-                try {
-                    runOnUiThread(() -> mDrawer = myDrawerManager.setupMaterialDrawer());
-                    GiuaScraper.userTypes _userType = GlobalVariables.gS.getUserTypeEnum();
-                    String user = GlobalVariables.gS.loadUserFromDocument();
-                    if (_userType == GiuaScraper.userTypes.PARENT)
-                        userType = "Genitore";
-                    else if (_userType == GiuaScraper.userTypes.STUDENT)
-                        userType = "Studente";
-                    realUsername = user;
-                    myDrawerManager.userType = userType;
-                    myDrawerManager.realUsername = realUsername;
-                    runOnUiThread(() -> mDrawer = myDrawerManager.setupMaterialDrawer());
-                } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.MaintenanceIsActiveException | GiuaScraperExceptions.SiteConnectionProblems ignored) {
-                }
-            });
+            return;
         }
+
+        GlobalVariables.internetThread.addTask(() -> {
+            try {
+                runOnUiThread(() -> mDrawer = myDrawerManager.setupMaterialDrawer());
+                GiuaScraper.userTypes _userType = GlobalVariables.gS.getUserTypeEnum();
+                String user = GlobalVariables.gS.loadUserFromDocument();
+                if (_userType == GiuaScraper.userTypes.PARENT)
+                    userType = "Genitore";
+                else if (_userType == GiuaScraper.userTypes.STUDENT)
+                    userType = "Studente";
+                realUsername = user;
+                myDrawerManager.userType = userType;
+                myDrawerManager.realUsername = realUsername;
+                runOnUiThread(() -> mDrawer = myDrawerManager.setupMaterialDrawer());
+            } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.MaintenanceIsActiveException | GiuaScraperExceptions.SiteConnectionProblems ignored) {
+            }
+        });
     }
 
+    //FIXME: startAutomaticLoginActivity ma avvia ActivityManager???
     public void startAutomaticLoginActivity() {
         startActivity(new Intent(this, ActivityManager.class));
         isStartingAnotherActivity = true;

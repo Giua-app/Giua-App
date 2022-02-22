@@ -152,6 +152,9 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     }
 
     @Override
+    public void loadOfflineDataAndViews() {}
+
+    @Override
     public void loadDataAndViews() {
         loadingPage = true;
         hasCompletedLoading = false;

@@ -25,6 +25,8 @@ package com.giua.app;
 public interface IGiuaAppFragment {
     void loadDataAndViews();
 
+    void loadOfflineDataAndViews();
+
     void addViews();
 
     /**

@@ -128,6 +128,9 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
         return root;
     }
 
+    @Override
+    public void loadOfflineDataAndViews() {}
+
     /**
      * Riaggiorna i dati in modo asincrono e fa aggiungere le views con i dati raccolti
      */

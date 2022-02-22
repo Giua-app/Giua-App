@@ -43,6 +43,7 @@ import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 
 public class AutomaticLoginActivity extends AppCompatActivity {
     int waitToReLogin = 5;
@@ -95,8 +96,9 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                 startDrawerActivity();
             } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.SiteConnectionProblems e) {
                 loggerManager.e("Errore di connessione - " + e.getMessage());
+                loggerManager.e(Arrays.toString(e.getStackTrace()));
                 runOnUiThread(() -> btnLogout.setVisibility(View.VISIBLE));
-                //runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));  //TODO: togliere il commento quando sarà realmente disponibile e funzionante
+                runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));  //TODO: togliere il commento quando sarà realmente disponibile e funzionante
 
                 if (e.getClass() == GiuaScraperExceptions.YourConnectionProblems.class)
                     runOnUiThread(() -> setErrorMessage(getString(R.string.your_connection_error)));
