@@ -129,8 +129,6 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         calendarView.setOnDateChangeListener(this::calendarOnChangeDateListener);
         btnConfirmDate.setOnClickListener(this::btnConfirmDateOnClick);
 
-        loadDataAndViews();
-
         return root;
     }
 
@@ -145,7 +143,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         hasCompletedLoading = false;
 
         if (!isSpammingClick && System.nanoTime() - lastCallTime > 500_000_000) {     //Anti click spam
-            GlobalVariables.internetThread.addTask(() -> {
+            GlobalVariables.gsThread.addTask(() -> {
                 lastCallTime = System.nanoTime();
                 try {
                     allLessons = GlobalVariables.gS.getLessonsPage(true).getAllLessonsFromDate(currentDate);
@@ -180,7 +178,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
                     });
                 } catch (GiuaScraperExceptions.NotLoggedIn e) {
                     activity.runOnUiThread(() -> {
-                        ((DrawerActivity) activity).startAutomaticLoginActivity();
+                        ((DrawerActivity) activity).startActivityManager();
                     });
                 }
             });
@@ -369,6 +367,11 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
 
     //endregion
 
+    @Override
+    public void onStart() {
+        loadDataAndViews();
+        super.onStart();
+    }
 
     @Override
     public void onDestroyView() {

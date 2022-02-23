@@ -84,8 +84,6 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
         btnConfirm.setOnClickListener(this::btnConfirmOnClick);
         otherInfoLayoutButton.setOnClickListener(this::otherInfoOnClick);
 
-        loadDataAndViews();
-
         return root;
     }
 
@@ -94,7 +92,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void loadDataAndViews() {
-        GlobalVariables.internetThread.addTask(() -> {
+        GlobalVariables.gsThread.addTask(() -> {
             try {
                 absencesPage = GlobalVariables.gS.getAbsencesPage(refresh);
                 absences = absencesPage.getAllAbsences();
@@ -131,7 +129,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
                 });
             } catch (GiuaScraperExceptions.NotLoggedIn e) {
                 activity.runOnUiThread(() -> {
-                    ((DrawerActivity) activity).startAutomaticLoginActivity();
+                    ((DrawerActivity) activity).startActivityManager();
                 });
             }
         });
@@ -220,7 +218,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
             AbsenceView absenceView = latestAbsenceViewClicked;
             latestAbsenceViewClicked = null;
 
-            GlobalVariables.internetThread.addTask(() -> {
+            GlobalVariables.gsThread.addTask(() -> {
                 activity.runOnUiThread(() -> swipeRefreshLayout.setRefreshing(true));
                 try {
                     if (!confirmActionIsDelete)
@@ -247,6 +245,12 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
     private void setErrorMessage(String message, View root) {
         if (!isFragmentDestroyed)
             Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onStart() {
+        loadDataAndViews();
+        super.onStart();
     }
 
     @Override

@@ -44,7 +44,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.giua.app.AppData;
 import com.giua.app.AppUpdateManager;
 import com.giua.app.BuildConfig;
-import com.giua.app.GlobalVariables;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
 
@@ -95,7 +94,7 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
 
     private void showDialogUpdateChangelog(){
         loggerManager.d("Mostro dialogo changelog");
-        GlobalVariables.internetThread.addTask(() -> {
+        new Thread(() -> {
             String body = AppUpdateManager.buildChangelogForHTML(rootNode);
             final SpannableString txt = new SpannableString(Html.fromHtml(body, 0));
             Linkify.addLinks(txt, Linkify.ALL);
@@ -110,9 +109,9 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
 
                 d.show();
 
-                ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+                ((TextView) d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
             });
-        });
+        }).start();
     }
 
 

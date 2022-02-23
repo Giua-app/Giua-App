@@ -137,8 +137,6 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         activity.getSystemService(NotificationManager.class).cancel(13);
         activity.getSystemService(NotificationManager.class).cancel(14);
 
-        loadDataAndViews();
-
         return root;
     }
 
@@ -151,7 +149,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         if (!isLoadingData && System.nanoTime() - lastRequestTime > 500_000_000) {  //Anti click spam
             lastRequestTime = System.nanoTime();
             swipeRefreshLayout.setRefreshing(true);
-            GlobalVariables.internetThread.addTask(() -> {
+            GlobalVariables.gsThread.addTask(() -> {
                 isLoadingData = true;
                 try {
                     allAgendaObjects = GlobalVariables.gS.getAgendaPage(false)
@@ -180,7 +178,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                     activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root));
                 } catch (GiuaScraperExceptions.NotLoggedIn e) {
                     activity.runOnUiThread(() -> {
-                        ((DrawerActivity) activity).startAutomaticLoginActivity();
+                        ((DrawerActivity) activity).startActivityManager();
                     });
                 } finally {
                     activity.runOnUiThread(() -> {
@@ -306,7 +304,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         lastOnDateCall = System.nanoTime();
         isLoadingData = true;
         swipeRefreshLayout.setRefreshing(true);
-        GlobalVariables.internetThread.addTask(() -> showDateActivities(selectedDate));
+        GlobalVariables.gsThread.addTask(() -> showDateActivities(selectedDate));
     }
 
     private void onMonthChanged(Date firstDayOfNewMonth) {
@@ -457,6 +455,12 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
             Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
     //endregion
+
+    @Override
+    public void onStart() {
+        loadDataAndViews();
+        super.onStart();
+    }
 
     @Override
     public void onDestroyView() {

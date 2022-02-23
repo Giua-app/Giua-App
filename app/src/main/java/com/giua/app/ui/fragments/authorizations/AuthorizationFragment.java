@@ -60,7 +60,7 @@ public class AuthorizationFragment extends Fragment implements IGiuaAppFragment 
 
         ((SwipeRefreshLayout) root.findViewById(R.id.authorizations_swipe_refresh)).setRefreshing(true);
         ((SwipeRefreshLayout) root.findViewById(R.id.authorizations_swipe_refresh)).setOnRefreshListener(this::onRefresh);
-        loadDataAndViews();
+
         return root;
     }
 
@@ -69,7 +69,7 @@ public class AuthorizationFragment extends Fragment implements IGiuaAppFragment 
 
     @Override
     public void loadDataAndViews() {
-        GlobalVariables.internetThread.addTask(() -> {
+        GlobalVariables.gsThread.addTask(() -> {
             try {
                 authorization = GlobalVariables.gS.getAuthorizationsPage(refresh).getAuthorizations();
                 activity.runOnUiThread(this::addViews);
@@ -81,7 +81,7 @@ public class AuthorizationFragment extends Fragment implements IGiuaAppFragment 
                 activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root));
             } catch (GiuaScraperExceptions.NotLoggedIn e) {
                 activity.runOnUiThread(() -> {
-                    ((DrawerActivity) activity).startAutomaticLoginActivity();
+                    ((DrawerActivity) activity).startActivityManager();
                 });
             }
         });
@@ -109,6 +109,12 @@ public class AuthorizationFragment extends Fragment implements IGiuaAppFragment 
     private void setErrorMessage(String message, View root) {
         if (!isFragmentDestroyed)
             Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onStart() {
+        loadDataAndViews();
+        super.onStart();
     }
 
     @Override

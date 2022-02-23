@@ -162,7 +162,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             layout.addView(pbLoadingNewsletters);
 
         if (!loadedAllPages) {
-            GlobalVariables.internetThread.addTask(() -> {
+            GlobalVariables.gsThread.addTask(() -> {
                 try {
                     if (!offlineMode) {
                         if (!isFilterApplied) {
@@ -222,7 +222,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                     allNewsletter = new Vector<>();
                 } catch (GiuaScraperExceptions.NotLoggedIn e) {
                     activity.runOnUiThread(() -> {
-                        ((DrawerActivity) activity).startAutomaticLoginActivity();
+                        ((DrawerActivity) activity).startActivityManager();
                     });
                 }
                 activity.runOnUiThread(() -> layout.removeView(pbLoadingNewsletters));
@@ -306,7 +306,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             case MotionEvent.ACTION_UP:
                 if (!v.newsletter.isRead() && v.upperView.getTranslationX() >= (float) realMetrics.widthPixels * 240 / 1080) {
                     makeMarkAsReadAnimation(v, realMetrics);
-                    GlobalVariables.internetThread.addTask(() -> {
+                    GlobalVariables.gsThread.addTask(() -> {
                         GlobalVariables.gS.getNewslettersPage(false).markNewsletterAsRead(v.newsletter);
                     });
                 } else
@@ -514,7 +514,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         isDownloading = true;
         pbLoadingPage.setZ(10f);
         pbLoadingPage.setVisibility(View.VISIBLE);
-        GlobalVariables.internetThread.addTask(() -> {
+        GlobalVariables.gsThread.addTask(() -> {
             try {
                 DownloadedFile downloadedFile = GlobalVariables.gS.download(url);
                 FileOutputStream out = new FileOutputStream(requireActivity().getCacheDir() + "/" + "circolare." + downloadedFile.fileExtension);

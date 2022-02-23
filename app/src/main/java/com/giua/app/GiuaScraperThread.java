@@ -22,13 +22,13 @@ package com.giua.app;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class InternetThread extends Thread {
+public class GiuaScraperThread extends Thread {
     private final Queue<Runnable> allRunnableToRun;
     private boolean isInterrupted = false;
     private boolean isRunning = false;
     private boolean isOffline = false;
 
-    public InternetThread() {
+    public GiuaScraperThread() {
         allRunnableToRun = new LinkedList<>();
         start();
     }

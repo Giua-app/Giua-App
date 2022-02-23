@@ -42,9 +42,9 @@ import com.giua.app.AppData;
 import com.giua.app.AppUpdateManager;
 import com.giua.app.BuildConfig;
 import com.giua.app.CheckNewsReceiver;
+import com.giua.app.GiuaScraperThread;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
-import com.giua.app.InternetThread;
 import com.giua.app.LoggerManager;
 import com.giua.app.MyDrawerManager;
 import com.giua.app.MyFragmentManager;
@@ -97,18 +97,19 @@ public class DrawerActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if (GlobalVariables.internetThread == null || GlobalVariables.internetThread.isInterrupted())
-            GlobalVariables.internetThread = new InternetThread();
+        if (GlobalVariables.gsThread == null || GlobalVariables.gsThread.isInterrupted())
+            GlobalVariables.gsThread = new GiuaScraperThread();
+
         if (GlobalVariables.gS == null) {
             loggerManager.w("gs è null ma non dovrebbe esserlo quindi avvio AutomaticLogin");
-            startAutomaticLoginActivity();
+            startActivityManager();
             return;
         }
 
-        if(!offlineMode){
-            GlobalVariables.internetThread.addTask(() -> {
+        if (!offlineMode) {
+            GlobalVariables.gsThread.addTask(() -> {
                 if (!GlobalVariables.gS.isSessionValid(GlobalVariables.gS.getCookie())) {
-                    runOnUiThread(this::startAutomaticLoginActivity);
+                    runOnUiThread(this::startActivityManager);
                 }
             });
         }
@@ -131,8 +132,25 @@ public class DrawerActivity extends AppCompatActivity {
         else
             myFragmentManager.changeFragment(R.id.nav_home);
 
-        //Setup CheckNewsReceiver
-        //FIXME: i setup di CheckNewsReceiver è meglio spostarli in un unica classe
+        setupCheckNewsReceiver();
+
+        getAndSetupUsernameUsertype();
+
+        new Thread(() -> {
+            //Anche se siamo in offline mode, proviamo a scaricarle comunque (magari il registro è in manutenzione)
+            loggerManager.d("Scarico le informazioni sulle funzionalità instabili");
+            try {
+                unstableFeatures = GlobalVariables.gS.getExtPage("https://giua-app.github.io/unstable_features2.txt").text();
+                myFragmentManager.unstableFeatures = unstableFeatures;
+            } catch (Exception ignored) {
+            }
+
+        }).start();
+
+        checkForUpdateChangelog();
+    }
+
+    private void setupCheckNewsReceiver() {
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
         boolean alarmUp = (PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE) != null);  //Controlla se l'allarme è già settato
@@ -150,21 +168,6 @@ public class DrawerActivity extends AppCompatActivity {
             loggerManager.d("Alarm per CheckNews settato a " + (interval / 60_000) + " minuti");
             //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000, pendingIntent);    //DEBUG
         }
-
-        getAndSetupUsernameUsertype();
-
-        new Thread(() -> {
-            //Anche se siamo in offline mode, proviamo a scaricarle comunque (magari il registro è in manutenzione)
-            loggerManager.d("Scarico le informazioni sulle funzionalità instabili");
-            try {
-                unstableFeatures = GlobalVariables.gS.getExtPage("https://giua-app.github.io/unstable_features2.txt").text();
-                myFragmentManager.unstableFeatures = unstableFeatures;
-            } catch (Exception ignored) {
-            }
-
-        }).start();
-
-        checkForUpdateChangelog();
     }
 
     private void checkForUpdateChangelog() {
@@ -277,7 +280,7 @@ public class DrawerActivity extends AppCompatActivity {
             return;
         }
 
-        GlobalVariables.internetThread.addTask(() -> {
+        GlobalVariables.gsThread.addTask(() -> {
             try {
                 runOnUiThread(() -> mDrawer = myDrawerManager.setupMaterialDrawer());
                 GiuaScraper.userTypes _userType = GlobalVariables.gS.getUserTypeEnum();
@@ -295,8 +298,7 @@ public class DrawerActivity extends AppCompatActivity {
         });
     }
 
-    //FIXME: startAutomaticLoginActivity ma avvia ActivityManager???
-    public void startAutomaticLoginActivity() {
+    public void startActivityManager() {
         startActivity(new Intent(this, ActivityManager.class));
         isStartingAnotherActivity = true;
         finish();
@@ -422,7 +424,7 @@ public class DrawerActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        GlobalVariables.internetThread.addTask(() -> {  //Questo serve a prevenire la perdita di news
+        GlobalVariables.gsThread.addTask(() -> {  //Questo serve a prevenire la perdita di news
             try {
                 AppData.saveNumberNewslettersInt(this, GlobalVariables.gS.getHomePage(false).getNumberNewsletters());
                 AppData.saveNumberAlertsInt(this, GlobalVariables.gS.getHomePage(false).getNumberAlerts());
@@ -443,7 +445,7 @@ public class DrawerActivity extends AppCompatActivity {
     protected void onDestroy() {
         loggerManager.d("onDestroy chiamato");
         if (!isStartingAnotherActivity) {
-            GlobalVariables.internetThread.interrupt();
+            GlobalVariables.gsThread.interrupt();
             myDrawerManager = null;
             myFragmentManager = null;
         }

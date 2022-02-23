@@ -87,7 +87,6 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
         obscureLayoutView.setOnClickListener(this::obscureButtonOnClick);
 
         swipeRefreshLayout.setRefreshing(true);
-        loadDataAndViews();
 
         activity.getSystemService(NotificationManager.class).cancel(12);
 
@@ -99,7 +98,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void loadDataAndViews() {
-        GlobalVariables.internetThread.addTask(() -> {
+        GlobalVariables.gsThread.addTask(() -> {
             try {
                 allVotes = GlobalVariables.gS.getVotesPage(refreshVotes).getAllVotes();
                 /*else
@@ -131,7 +130,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
                 });
             } catch (GiuaScraperExceptions.NotLoggedIn e) {
                 activity.runOnUiThread(() -> {
-                    ((DrawerActivity) activity).startAutomaticLoginActivity();
+                    ((DrawerActivity) activity).startActivityManager();
                 });
             }
         });
@@ -223,6 +222,12 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
     private void setErrorMessage(String message, View root) {
         if (!isFragmentDestroyed)
             Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onStart() {
+        loadDataAndViews();
+        super.onStart();
     }
 
     @Override

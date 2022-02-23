@@ -140,9 +140,9 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
             isLoadingContent = true;
             if (currentPage > 1 && pbLoadingContent.getParent() == null)
                 viewsLayout.addView(pbLoadingContent);
-            GlobalVariables.internetThread.addTask(() -> {
+            GlobalVariables.gsThread.addTask(() -> {
                 try {
-                    if (!offlineMode){
+                    if (!offlineMode) {
                         allAlerts = GlobalVariables.gS.getAlertsPage(false).getAllAlerts(currentPage);
                         new DBController(root.getContext()).addAlerts(allAlerts); //sperimentale
                     } else {
@@ -185,7 +185,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
                     });
                 } catch (GiuaScraperExceptions.NotLoggedIn e) {
                     activity.runOnUiThread(() -> {
-                        ((DrawerActivity) activity).startAutomaticLoginActivity();
+                        ((DrawerActivity) activity).startActivityManager();
                     });
                 }
             });
@@ -226,7 +226,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
     private void alertViewOnClick(View view) {
         pbLoadingPage.setVisibility(View.VISIBLE);
 
-        GlobalVariables.internetThread.addTask(() -> {
+        GlobalVariables.gsThread.addTask(() -> {
             try {
                 ((AlertView) view).alert.getDetails(GlobalVariables.gS);
 
@@ -325,7 +325,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
             isDownloading = true;
             pbLoadingPage.setZ(10f);
             pbLoadingPage.setVisibility(View.VISIBLE);
-            GlobalVariables.internetThread.addTask(() -> {
+            GlobalVariables.gsThread.addTask(() -> {
                 try {
                     DownloadedFile downloadedFile = GlobalVariables.gS.download(url);
                     FileOutputStream out = new FileOutputStream(requireActivity().getFilesDir() + "/" + "allegato." + downloadedFile.fileExtension);

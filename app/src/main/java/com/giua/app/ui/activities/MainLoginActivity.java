@@ -40,8 +40,8 @@ import com.giua.app.Analytics;
 import com.giua.app.AppData;
 import com.giua.app.AppUpdateManager;
 import com.giua.app.BuildConfig;
+import com.giua.app.GiuaScraperThread;
 import com.giua.app.GlobalVariables;
-import com.giua.app.InternetThread;
 import com.giua.app.LoggerManager;
 import com.giua.app.LoginData;
 import com.giua.app.R;
@@ -75,8 +75,8 @@ public class MainLoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_normal_login);
 
-        if (GlobalVariables.internetThread == null || GlobalVariables.internetThread.isInterrupted())
-            GlobalVariables.internetThread = new InternetThread();
+        if (GlobalVariables.gsThread == null || GlobalVariables.gsThread.isInterrupted())
+            GlobalVariables.gsThread = new GiuaScraperThread();
 
         isAddingAccount = getIntent().getBooleanExtra("addAccount", false);
         loggerManager = new LoggerManager("MainLoginActivity", this);
@@ -102,6 +102,14 @@ public class MainLoginActivity extends AppCompatActivity {
 
         checkDisplayMetrics();
         checkForUpdateChangelog();
+
+        GlobalVariables.gsThread.addTask(() -> {
+            try {
+                if (!GiuaScraper.isGoogleLoginAvailable())
+                    runOnUiThread(() -> btnLoginAsStudent.setVisibility(View.INVISIBLE));
+            } catch (Exception ignored) {
+            }
+        });
 
         new Thread(() -> {
             try {
@@ -176,9 +184,9 @@ public class MainLoginActivity extends AppCompatActivity {
     }
 
     private void login() {
-        if (GlobalVariables.internetThread == null || GlobalVariables.internetThread.isInterrupted())
-            GlobalVariables.internetThread = new InternetThread();
-        GlobalVariables.internetThread.addTask(() -> {
+        if (GlobalVariables.gsThread == null || GlobalVariables.gsThread.isInterrupted())
+            GlobalVariables.gsThread = new GiuaScraperThread();
+        GlobalVariables.gsThread.addTask(() -> {
             try {
                 if (isAddingAccount && AppData.getAllAccountUsernames(this).contains(etUsername.getText().toString().toLowerCase())) {
                     runOnUiThread(() -> {
@@ -342,7 +350,7 @@ public class MainLoginActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } else {
-            GlobalVariables.internetThread.addTask(() -> {
+            GlobalVariables.gsThread.addTask(() -> {
                 String username = AppData.getActiveUsername(this);
                 GlobalVariables.gS = new GiuaScraper(username, LoginData.getPassword(this, username), LoginData.getCookie(this, username), true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
                 GlobalVariables.gS.login();

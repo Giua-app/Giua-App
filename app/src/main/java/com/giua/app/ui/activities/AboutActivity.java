@@ -41,7 +41,6 @@ import com.danielstone.materialaboutlibrary.model.MaterialAboutList;
 import com.danielstone.materialaboutlibrary.util.OpenSourceLicense;
 import com.giua.app.Analytics;
 import com.giua.app.AppUpdateManager;
-import com.giua.app.GlobalVariables;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.google.android.material.snackbar.Snackbar;
@@ -87,7 +86,7 @@ public class AboutActivity extends MaterialAboutActivity {
                         .sizeDp(18))
                 .setOnClickAction(() -> {
                     loggerManager.d("Mostro dialogo changelog");
-                    GlobalVariables.internetThread.addTask(() -> {
+                    new Thread(() -> {
                         String body = AppUpdateManager.buildChangelogForHTML(new AppUpdateManager(this).getReleasesJson());
                         final SpannableString txt = new SpannableString(Html.fromHtml(body, 0));
                         Linkify.addLinks(txt, Linkify.ALL);
@@ -102,9 +101,9 @@ public class AboutActivity extends MaterialAboutActivity {
 
                             d.show();
 
-                            ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+                            ((TextView) d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
                         });
-                    });
+                    }).start();
                 })
                 .build());
 

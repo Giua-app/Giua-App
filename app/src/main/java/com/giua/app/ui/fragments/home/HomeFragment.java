@@ -114,7 +114,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         offlineMode = activity.getIntent().getBooleanExtra("offline", false);
 
-        GlobalVariables.internetThread.addTask(() -> {
+        GlobalVariables.gsThread.addTask(() -> {
             //TODO: Mettere la cache for check updates (almeno tra activity manager e home fragemnt visto che in ogni caso viene chiamata due volte)
             AppUpdateManager manager = new AppUpdateManager(activity);
             if (manager.checkForUpdates()) {
@@ -133,17 +133,12 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
             }
         });
 
-        if(!offlineMode){
-            loadDataAndViews();
-            return root;
-        }
-        loadOfflineDataAndViews();
         return root;
     }
 
     @Override
     public void loadOfflineDataAndViews() {
-        GlobalVariables.internetThread.addTask(() -> {
+        new Thread(() -> {
             try {
                 Map<String, List<Vote>> allVotes = new HashMap<>();
                 int homeworks = 0;
@@ -164,12 +159,12 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
             } catch (IllegalStateException ignored) {
                 //Si verifica quando questa schermata è stata distrutta ma il thread cerca comunque di fare qualcosa
             }
-        });
+        }).start();
     }
 
     @Override
     public void loadDataAndViews() {
-        GlobalVariables.internetThread.addTask(() -> {
+        GlobalVariables.gsThread.addTask(() -> {
             try {
                 Map<String, List<Vote>> allVotes = GlobalVariables.gS.getVotesPage(forceRefresh).getAllVotes();
                 int homeworks = GlobalVariables.gS.getHomePage(forceRefresh).getNearHomeworks();
@@ -207,7 +202,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
                 });
             } catch (GiuaScraperExceptions.NotLoggedIn e) {
                 activity.runOnUiThread(() -> {
-                    ((DrawerActivity) activity).startAutomaticLoginActivity();
+                    ((DrawerActivity) activity).startActivityManager();
                 });
             } catch (IllegalStateException ignored) {
             }   //Si verifica quando questa schermata è stata distrutta ma il thread cerca comunque di fare qualcosa
@@ -464,6 +459,15 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     private void setErrorMessage(String message, View root) {
         if (!isFragmentDestroyed)
             Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onStart() {
+        if (!offlineMode)
+            loadDataAndViews();
+        else
+            loadOfflineDataAndViews();
+        super.onStart();
     }
 
     @Override

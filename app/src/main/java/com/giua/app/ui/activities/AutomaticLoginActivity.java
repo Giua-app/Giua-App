@@ -30,8 +30,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.giua.app.AppData;
+import com.giua.app.GiuaScraperThread;
 import com.giua.app.GlobalVariables;
-import com.giua.app.InternetThread;
 import com.giua.app.LoggerManager;
 import com.giua.app.LoginData;
 import com.giua.app.R;
@@ -75,11 +75,11 @@ public class AutomaticLoginActivity extends AppCompatActivity {
     }
 
     private void loginWithPreviousCredentials() {
-        if (GlobalVariables.internetThread == null || GlobalVariables.internetThread.isInterrupted() || GlobalVariables.internetThread.isInterrupting())
-            GlobalVariables.internetThread = new InternetThread();
+        if (GlobalVariables.gsThread == null || GlobalVariables.gsThread.isInterrupted() || GlobalVariables.gsThread.isInterrupting())
+            GlobalVariables.gsThread = new GiuaScraperThread();
 
         loggerManager.d("Login automatico con credenziali salvate in corso");
-        GlobalVariables.internetThread.addTask(() -> {
+        GlobalVariables.gsThread.addTask(() -> {
             runOnUiThread(() -> pbLoadingScreen.setVisibility(View.VISIBLE));
             try {
                 String username = AppData.getActiveUsername(this);
@@ -98,7 +98,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                 loggerManager.e("Errore di connessione - " + e.getMessage());
                 loggerManager.e(Arrays.toString(e.getStackTrace()));
                 runOnUiThread(() -> btnLogout.setVisibility(View.VISIBLE));
-                runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));  //TODO: togliere il commento quando sarà realmente disponibile e funzionante
+                runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));
 
                 if (e.getClass() == GiuaScraperExceptions.YourConnectionProblems.class)
                     runOnUiThread(() -> setErrorMessage(getString(R.string.your_connection_error)));
