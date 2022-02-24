@@ -25,7 +25,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.giua.objects.Absence;
 import com.giua.objects.Alert;
+import com.giua.objects.Activity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +41,10 @@ public class DBController extends SQLiteOpenHelper {
     private static final int DB_VERSION = 1;
 
     private static final String ALERTS_TABLE = "alerts";
+    private static final String ABSENCE_TABLE="absence";
+    private static final String ACTIVITY_TABLE="activity";
     private static final String NEWSLETTERS_TABLE = "newsletters";
+
 
     /**
      * Crea un istanza DbController. Se il database non esiste, ne crea uno nuovo
@@ -66,8 +71,31 @@ public class DBController extends SQLiteOpenHelper {
                 + DBAlert.IS_DETAILED_COL + " BOOLEAN" + ")";
 
         db.execSQL(query);
+
+        //Crea tabella con nome absence con le colonne specificate
+        String query2 = "CREATE TABLE " + ABSENCE_TABLE + " ("
+                + DBAbsece.DATE_COL + " TEXT,"
+                + DBAbsece.TYPE_COL + " TEXT,"
+                + DBAbsece.NOTES_COL+" TEXT,"
+                +DBAbsece.IS_JUSTIFIED_COL+" BOOLEAN,"
+                +DBAbsece.IS_MODIFICABLE_COL+" BOOLEAN,"
+                +DBAbsece.JUSTIFY_URL_COL+" TEXT"+")";
+        db.execSQL(query2);
+
+        //Crea tabella con nome activity con le colonne specificate
+        String query3 = "CREATE TABLE " + ACTIVITY_TABLE + " ("
+                + DBActivity.DATE_COL + " TEXT,"
+                + DBActivity.CREATOR_COL + " TEXT,"
+                + DBActivity.DETAILS_COL + " TEXT,"
+                +DBActivity.EXISTS_COL+" BOOLEAN"+")";
+        db.execSQL(query3);
+
+
     }
 
+
+
+    //region DB Alert
     private long addAlert(Alert alert, SQLiteDatabase db){
         ContentValues values = new ContentValues();
 
@@ -132,14 +160,6 @@ public class DBController extends SQLiteOpenHelper {
         return alerts;
     }
 
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        //Se c'è stato un aggiornamento del database, crea uno nuovo
-        db.execSQL("DROP TABLE IF EXISTS " + ALERTS_TABLE);
-        onCreate(db);
-    }
-
     //Identificativi delle colonne di Alert
     private static class DBAlert {
         private static final String STATUS_COL = "status";
@@ -153,5 +173,128 @@ public class DBController extends SQLiteOpenHelper {
         private static final String TYPE_COL = "type";
         private static final String ATTACHMENT_URLS_COL = "attachmentUrls";
         private static final String IS_DETAILED_COL = "isDetailed";
+    }
+    //endregion
+
+    //region DB Absence
+    private long addAbsence(Absence absence, SQLiteDatabase db){
+        ContentValues values = new ContentValues();
+        values.put(DBAbsece.DATE_COL, absence.date);
+        values.put(DBAbsece.TYPE_COL, absence.type);
+        values.put(DBAbsece.NOTES_COL, absence.notes);
+        values.put(DBAbsece.IS_JUSTIFIED_COL, absence.isJustified);
+        values.put(DBAbsece.IS_JUSTIFIED_COL, absence.isModificable);
+        values.put(DBAbsece.JUSTIFY_URL_COL, absence.justifyUrl);
+
+        return db.insert(ABSENCE_TABLE, null, values);
+    }
+
+    public void addAbsences(List<Absence> absences){
+        SQLiteDatabase db = getWritableDatabase();
+
+        for (Absence absence : absences) {
+            addAbsence(absence, db);
+        }
+
+        db.close();
+    }
+
+    public List<Absence> readAbsences() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + ABSENCE_TABLE, null);
+
+        List<Absence> absences = new Vector<>();
+
+        if (cursor.moveToFirst()) {
+            boolean isJustify=true;
+            if(cursor.getInt(3)==0) isJustify=false;
+            boolean isModificable=true;
+            if(cursor.getInt(4)==0) isModificable=false;
+            do {
+                absences.add(new Absence(cursor.getString(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        isJustify,
+                        isModificable,
+                        cursor.getString(5)));
+            } while (cursor.moveToNext());
+            //muovi il cursore nella prossima riga
+        }
+        cursor.close();
+        return absences;
+    }
+
+    //Identificativi delle colonne di Absence
+    private static class DBAbsece {
+        private static final String DATE_COL = "date";
+        private static final String TYPE_COL = "type";
+        private static final String NOTES_COL = "notes";
+        private static final String IS_JUSTIFIED_COL = "isJustified";
+        private static final String IS_MODIFICABLE_COL = "isModificable";
+        private static final String JUSTIFY_URL_COL = "justifyUrl";
+    }
+    //endregion
+
+    //region DB Activity
+    private long addActivity(Activity activity, SQLiteDatabase db){
+        ContentValues values = new ContentValues();
+        values.put(DBActivity.DATE_COL, activity.date);
+        values.put(DBActivity.CREATOR_COL, activity.creator);
+        values.put(DBActivity.DETAILS_COL, activity.details);
+        values.put(DBActivity.EXISTS_COL, activity.exists);
+
+        return db.insert(ACTIVITY_TABLE, null, values);
+    }
+
+    public void addActivities(List<Activity> activities){
+        SQLiteDatabase db = getWritableDatabase();
+
+        for (Activity activity : activities) {
+            addActivity(activity, db);
+        }
+
+        db.close();
+    }
+
+    public List<Activity> readActivity() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + ABSENCE_TABLE, null);
+
+        List<Activity> activities = new Vector<>();
+
+        if (cursor.moveToFirst()) {
+            boolean exists=true;
+            if(cursor.getInt(3)==0) exists=false;
+            do {
+                activities.add(new Activity(cursor.getString(0).split("-")[2],
+                        cursor.getString(0).split("-")[1],
+                        cursor.getString(0).split("-")[0],
+                        cursor.getString(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        exists));
+            } while (cursor.moveToNext());
+            //muovi il cursore nella prossima riga
+        }
+        cursor.close();
+        return activities;
+    }
+
+    //identificativi delle colonne di Activity
+    private static class DBActivity{
+        private static final String DATE_COL="date";
+        private static final String CREATOR_COL="creator";
+        private static final String DETAILS_COL="details";
+        private static final String EXISTS_COL="_exists";
+    }
+    //endregion
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        //Se c'è stato un aggiornamento del database, crea uno nuovo
+        db.execSQL("DROP TABLE IF EXISTS " + ALERTS_TABLE);
+        onCreate(db);
     }
 }
