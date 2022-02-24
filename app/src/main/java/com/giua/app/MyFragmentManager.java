@@ -239,9 +239,7 @@ public class MyFragmentManager {
      * @param defaultName il nome che apparirà nella schermata
      */
     private void setTextToolbar(String defaultName) {
-        if (offlineMode)
-            toolbar.setTitle(defaultName + " - Offline");
-        else if (demoMode)
+        if (demoMode)
             toolbar.setTitle(defaultName + " - DEMO");
         else
             toolbar.setTitle(defaultName);

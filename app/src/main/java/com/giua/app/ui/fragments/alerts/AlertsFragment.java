@@ -88,8 +88,6 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         demoMode = SettingsData.getSettingBoolean(requireActivity(), SettingKey.DEMO_MODE);
-        if (getArguments() != null)
-            offlineMode = getArguments().getBoolean("offline");
         root = inflater.inflate(R.layout.fragment_alerts, container, false);
 
         allAlerts = new Vector<>();
@@ -114,6 +112,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
 
         activity = requireActivity();
 
+        offlineMode = activity.getIntent().getBooleanExtra("offline", false);
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         fabGoUp.setOnClickListener(this::btnGoUpOnClick);
         scrollView.setOnScrollChangeListener(this::scrollViewOnScroll);
@@ -129,7 +128,24 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
     }
 
     @Override
-    public void loadOfflineDataAndViews() {}
+    public void loadOfflineDataAndViews() {
+        if (!hasLoadedAllPages && !isLoadingContent) {
+            isLoadingContent = true;
+            if (pbLoadingContent.getParent() == null)
+                viewsLayout.addView(pbLoadingContent);
+            GlobalVariables.gsThread.addTask(() -> {
+                allAlerts = new DBController(root.getContext()).readAlerts();
+                if (allAlerts.isEmpty()) {
+                    hasLoadedAllPages = true;
+                    activity.runOnUiThread(this::finishedLoading);
+                    activity.runOnUiThread(() -> tvNoElements.setVisibility(View.VISIBLE));
+                } else {
+                    activity.runOnUiThread(this::addViews);
+                    allAlertsToSave.addAll(allAlerts);
+                }
+            });
+        }
+    }
 
     /**
      * Riaggiorna i dati in modo asincrono e fa aggiungere le views con i dati raccolti
@@ -142,16 +158,9 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
                 viewsLayout.addView(pbLoadingContent);
             GlobalVariables.gsThread.addTask(() -> {
                 try {
-                    if (!offlineMode) {
-                        allAlerts = GlobalVariables.gS.getAlertsPage(false).getAllAlerts(currentPage);
-                        new DBController(root.getContext()).addAlerts(allAlerts); //sperimentale
-                    } else {
-                        hasLoadedAllPages = true;
-                        /*try {
-                            allAlerts = new JsonHelper().parseJsonForAlerts(AppData.getAlertsString(requireActivity()));
-                        } catch (Exception ignored) {
-                        }*/
-                    }
+                    allAlerts = GlobalVariables.gS.getAlertsPage(false).getAllAlerts(currentPage);
+                    if(currentPage == 1)
+                        new DBController(root.getContext()).addAlerts(allAlerts);
 
                     if (allAlerts.isEmpty() && currentPage == 1) {
                         hasLoadedAllPages = true;
@@ -224,6 +233,11 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
 
     //region Listeners
     private void alertViewOnClick(View view) {
+        if(offlineMode){
+            alertViewOfflineOnClick(view);
+            return;
+        }
+
         pbLoadingPage.setVisibility(View.VISIBLE);
 
         GlobalVariables.gsThread.addTask(() -> {
@@ -240,7 +254,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
                     ((TextView) root.findViewById(R.id.alert_creator_text_view)).setText(alert.creator);
                     ((TextView) root.findViewById(R.id.alert_type_text_view)).setText(alert.type);
 
-                    //Rende funzionale il tag <a> nel html
+                    //Parsing per url nel html
                     Linkify.addLinks(alertDetailsTextView, Linkify.WEB_URLS);
 
                     attachmentLayout.removeAllViews();
@@ -288,6 +302,49 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
         });
     }
 
+    private void alertViewOfflineOnClick(View view) {
+        Alert alert = ((AlertView) view).alert;
+
+        if(!alert.isDetailed){
+            setErrorMessage("Dettagli di questo avviso non scaricati!", root);
+            return;
+        }
+
+        pbLoadingPage.setVisibility(View.VISIBLE);
+
+        TextView alertDetailsTextView = root.findViewById(R.id.alert_details_text_view);
+
+        alertDetailsTextView.setText(Html.fromHtml(alert.details, 0));
+        ((TextView) root.findViewById(R.id.alert_creator_text_view)).setText(alert.creator);
+        ((TextView) root.findViewById(R.id.alert_type_text_view)).setText(alert.type);
+
+        //Parsing per url nel html
+        Linkify.addLinks(alertDetailsTextView, Linkify.WEB_URLS);
+
+        attachmentLayout.removeAllViews();
+        int urlsListLength = alert.attachmentUrls.size();
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(0, 20, 0, 0);
+        for (int i = 0; i < urlsListLength; i++) {
+            TextView tvUrl = new TextView(requireActivity());
+            tvUrl.setText("Allegato " + (i + 1));
+            tvUrl.setTypeface(tvNoElements.getTypeface(), Typeface.NORMAL);
+            tvUrl.setBackground(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.corner_radius_10dp, activity.getTheme()));
+            tvUrl.setBackgroundTintList(activity.getResources().getColorStateList(R.color.main_color, activity.getTheme()));
+            tvUrl.setPadding(20, 20, 20, 20);
+            tvUrl.setLayoutParams(params);
+            tvUrl.setTextColor(activity.getResources().getColorStateList(R.color.light_white_night_black, activity.getTheme()));
+            int finalI = i;
+            tvUrl.setOnClickListener((view2) -> downloadAndOpenFile(alert.attachmentUrls.get(finalI)));
+            attachmentLayout.addView(tvUrl);
+        }
+
+        detailsLayout.startAnimation(AnimationUtils.loadAnimation(requireActivity(), R.anim.visualizer_show_effect));
+        detailsLayout.setVisibility(View.VISIBLE);
+        obscureLayoutView.show();
+        pbLoadingPage.setVisibility(View.GONE);
+    }
+
     private void btnGoUpOnClick(View view) {
         scrollView.smoothScrollTo(0, 0);
     }
@@ -297,7 +354,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
      * Listener dello scorrimento della scroll view
      */
     private void scrollViewOnScroll(View view, int x, int y, int oldX, int oldY) {
-        if (!isLoadingContent && !hasLoadedAllPages && !scrollView.canScrollVertically(100) && y - oldY > 10) {
+        if (!offlineMode && !isLoadingContent && !hasLoadedAllPages && !scrollView.canScrollVertically(100) && y - oldY > 10) {
             loadDataAndViews();
         }
         if (scrollView.canScrollVertically(-100))
@@ -311,7 +368,10 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
         hasLoadedAllPages = false;
         isLoadingContent = false;
         viewsLayout.removeAllViews();
-        loadDataAndViews();
+        if(offlineMode)
+            loadOfflineDataAndViews();
+        else
+            loadDataAndViews();
     }
     //endregion
 
@@ -321,6 +381,10 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
      * Scarica e salva dall'url un file col nome "avviso" e lo apre chiamando openFile
      */
     private void downloadAndOpenFile(String url) {
+        if(offlineMode){
+            setErrorMessage("Non si possono scaricare allegati in modalità offline", root);
+            return;
+        }
         if (!isDownloading) {
             isDownloading = true;
             pbLoadingPage.setZ(10f);
@@ -383,7 +447,12 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onStart() {
-        loadDataAndViews();
+        if(offlineMode){
+            loadOfflineDataAndViews();
+        } else{
+            loadDataAndViews();
+        }
+
         super.onStart();
     }
 
@@ -402,9 +471,6 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onStop() {
-        //Cose per offline
-        /*if (!allAlertsToSave.isEmpty() && !offlineMode && !demoMode)
-            AppData.saveAlertsString(activity, new JsonHelper().saveAlertsToString(allAlertsToSave));*/
         super.onStop();
     }
     //endregion

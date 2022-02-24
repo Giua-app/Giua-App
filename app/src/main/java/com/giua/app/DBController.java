@@ -26,8 +26,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.giua.objects.Absence;
-import com.giua.objects.Alert;
 import com.giua.objects.Activity;
+import com.giua.objects.Alert;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,8 +37,12 @@ import java.util.Vector;
  * Controller per interagire con il database per la modalità offline
  */
 public class DBController extends SQLiteOpenHelper {
+
+    //!!!
+    //FIXME: USARE SQLiteDatabase.releaseMemory() DOVE L'APP VA IN BACKGROUND O ALTRO
+
     private static final String DB_NAME = "giuapp_offline_data";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
 
     private static final String ALERTS_TABLE = "alerts";
     private static final String ABSENCE_TABLE="absence";
@@ -68,7 +72,8 @@ public class DBController extends SQLiteOpenHelper {
                 + DBAlert.CREATOR_COL + " TEXT,"
                 + DBAlert.TYPE_COL + " TEXT,"
                 + DBAlert.ATTACHMENT_URLS_COL + " TEXT,"
-                + DBAlert.IS_DETAILED_COL + " BOOLEAN" + ")";
+                + DBAlert.IS_DETAILED_COL + " BOOLEAN,"
+                + DBAlert.ALERT_ID + " INTEGER"+")";
 
         db.execSQL(query);
 
@@ -110,16 +115,23 @@ public class DBController extends SQLiteOpenHelper {
         values.put(DBAlert.TYPE_COL, alert.type);
 
         //Non si può memorizzare una lista su sql
-        String attachmentUrls = "";
+        String attachmentUrls = null;
         if(alert.attachmentUrls != null){
             for(String url : alert.attachmentUrls){
                 attachmentUrls += url + ";";
             }
         }
         values.put(DBAlert.ATTACHMENT_URLS_COL, attachmentUrls);
-        values.put(DBAlert.IS_DETAILED_COL, alert.isDetailed ? 1 : 0);
+        values.put(DBAlert.IS_DETAILED_COL, alert.isDetailed ? 1 : 0); //false = 0, true = 1
 
-        return db.insert(ALERTS_TABLE, null, values);
+        String[] a = alert.detailsUrl.split("/");
+        int id = Integer.parseInt(a[a.length -1]);
+
+        values.put(DBAlert.ALERT_ID, id);
+
+        long b = db.insert(ALERTS_TABLE, null, values);
+
+        return b;
     }
 
     public void addAlerts(List<Alert> alerts){
@@ -134,25 +146,41 @@ public class DBController extends SQLiteOpenHelper {
 
     public List<Alert> readAlerts() {
         SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery("SELECT * FROM " + ALERTS_TABLE, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + ALERTS_TABLE + " ORDER BY " + DBAlert.ALERT_ID + " DESC", null);
 
         List<Alert> alerts = new Vector<>();
 
         if (cursor.moveToFirst()) {
-            List<String> newsletters = Arrays.asList(cursor.getString(6).split(";"));
-
             do {
-                alerts.add(new Alert(cursor.getString(0),
-                        cursor.getString(1),
-                        cursor.getString(2),
-                        cursor.getString(3),
-                        cursor.getString(4),
-                        cursor.getInt(5),
-                        newsletters,
-                        cursor.getString(7),
-                        cursor.getString(8),
-                        cursor.getString(9)));
+                boolean isDetailed = cursor.getInt(10) != 0; //0 = false, 1 = true
+
+                if(isDetailed){
+                    List<String> attachmentUrls = null;
+                    try{
+                        attachmentUrls = Arrays.asList(cursor.getString(6).split(";"));
+                    } catch(NullPointerException ignored){ }
+
+                    alerts.add(new Alert(cursor.getString(0),
+                            cursor.getString(1),
+                            cursor.getString(2),
+                            cursor.getString(3),
+                            cursor.getString(4),
+                            cursor.getInt(5),
+                            attachmentUrls,
+                            cursor.getString(7),
+                            cursor.getString(8),
+                            cursor.getString(9)));
+
+                } else {
+                    alerts.add(new Alert(cursor.getString(0),
+                            cursor.getString(1),
+                            cursor.getString(2),
+                            cursor.getString(3),
+                            cursor.getString(5),
+                            cursor.getInt(4)));
+                }
+
+
             } while (cursor.moveToNext());
             //muovi il cursore nella prossima riga
         }
@@ -173,6 +201,8 @@ public class DBController extends SQLiteOpenHelper {
         private static final String TYPE_COL = "type";
         private static final String ATTACHMENT_URLS_COL = "attachmentUrls";
         private static final String IS_DETAILED_COL = "isDetailed";
+
+        private static final String ALERT_ID = "id";
     }
     //endregion
 

@@ -98,7 +98,8 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                 loggerManager.e("Errore di connessione - " + e.getMessage());
                 loggerManager.e(Arrays.toString(e.getStackTrace()));
                 runOnUiThread(() -> btnLogout.setVisibility(View.VISIBLE));
-                runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));
+                if(SettingsData.getSettingBoolean(this, SettingKey.EXP_MODE))
+                    runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));
 
                 if (e.getClass() == GiuaScraperExceptions.YourConnectionProblems.class)
                     runOnUiThread(() -> setErrorMessage(getString(R.string.your_connection_error)));
