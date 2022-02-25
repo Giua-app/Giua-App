@@ -26,8 +26,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.giua.objects.Absence;
-import com.giua.objects.Activity;
 import com.giua.objects.Alert;
+import com.giua.objects.Activity;
+import com.giua.objects.Authorization;
+import com.giua.objects.DisciplinaryNotices;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,8 +47,10 @@ public class DBController extends SQLiteOpenHelper {
     private static final int DB_VERSION = 2;
 
     private static final String ALERTS_TABLE = "alerts";
-    private static final String ABSENCE_TABLE="absence";
-    private static final String ACTIVITY_TABLE="activity";
+    private static final String ABSENCES_TABLE ="absence";
+    private static final String ACTIVITIES_TABLE ="activity";
+    private static final String AUTHORIZATIONS_TABLE ="authorizations";
+    private static final String DISCIPLINARY_NOTICES_TABLE="disciplinaryNotices";
     private static final String NEWSLETTERS_TABLE = "newsletters";
 
 
@@ -78,7 +82,7 @@ public class DBController extends SQLiteOpenHelper {
         db.execSQL(query);
 
         //Crea tabella con nome absence con le colonne specificate
-        String query2 = "CREATE TABLE " + ABSENCE_TABLE + " ("
+        String query2 = "CREATE TABLE " + ABSENCES_TABLE + " ("
                 + DBAbsece.DATE_COL + " TEXT,"
                 + DBAbsece.TYPE_COL + " TEXT,"
                 + DBAbsece.NOTES_COL+" TEXT,"
@@ -88,12 +92,29 @@ public class DBController extends SQLiteOpenHelper {
         db.execSQL(query2);
 
         //Crea tabella con nome activity con le colonne specificate
-        String query3 = "CREATE TABLE " + ACTIVITY_TABLE + " ("
+        String query3 = "CREATE TABLE " + ACTIVITIES_TABLE + " ("
                 + DBActivity.DATE_COL + " TEXT,"
                 + DBActivity.CREATOR_COL + " TEXT,"
                 + DBActivity.DETAILS_COL + " TEXT,"
                 +DBActivity.EXISTS_COL+" BOOLEAN"+")";
         db.execSQL(query3);
+
+        //Crea tabella con nome authorization con le colonne specificate
+        String query4="CREATE TABLE "+ AUTHORIZATIONS_TABLE +" ("
+                + DBAuthorization.ENTRY_COL+" TEXT,"
+                +DBAuthorization.EXIT_COL+" TEXT"+")";
+        db.execSQL(query4);
+
+        //Crea tabella con nome disciplinaryNote con le colonne specificate
+        String query5="CREATE TABLE "+DISCIPLINARY_NOTICES_TABLE+" ("
+                +DBDisciplinaryNote.DATE_COL+" TEXT,"
+                +DBDisciplinaryNote.TYPE_COL+" TEXT,"
+                +DBDisciplinaryNote.DETAILS_COL+" TEXT,"
+                +DBDisciplinaryNote.COUNTERMEASURES_COL+" TEXT,"
+                +DBDisciplinaryNote.AUTHOR_OF_DETAILS_COL+" TEXT,"
+                +DBDisciplinaryNote.AUTHOR_OF_COUNTERMEASURES_COL+" TEXT,"
+                +DBDisciplinaryNote.QUARTERLY_COL+" TEXT"+")";
+        db.execSQL(query5);
 
 
     }
@@ -216,7 +237,7 @@ public class DBController extends SQLiteOpenHelper {
         values.put(DBAbsece.IS_JUSTIFIED_COL, absence.isModificable);
         values.put(DBAbsece.JUSTIFY_URL_COL, absence.justifyUrl);
 
-        return db.insert(ABSENCE_TABLE, null, values);
+        return db.insert(ABSENCES_TABLE, null, values);
     }
 
     public void addAbsences(List<Absence> absences){
@@ -232,7 +253,7 @@ public class DBController extends SQLiteOpenHelper {
     public List<Absence> readAbsences() {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM " + ABSENCE_TABLE, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + ABSENCES_TABLE, null);
 
         List<Absence> absences = new Vector<>();
 
@@ -274,7 +295,7 @@ public class DBController extends SQLiteOpenHelper {
         values.put(DBActivity.DETAILS_COL, activity.details);
         values.put(DBActivity.EXISTS_COL, activity.exists);
 
-        return db.insert(ACTIVITY_TABLE, null, values);
+        return db.insert(ACTIVITIES_TABLE, null, values);
     }
 
     public void addActivities(List<Activity> activities){
@@ -290,7 +311,7 @@ public class DBController extends SQLiteOpenHelper {
     public List<Activity> readActivity() {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM " + ABSENCE_TABLE, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + ACTIVITIES_TABLE, null);
 
         List<Activity> activities = new Vector<>();
 
@@ -320,6 +341,114 @@ public class DBController extends SQLiteOpenHelper {
         private static final String EXISTS_COL="_exists";
     }
     //endregion
+
+    //region DB Authorization
+
+    private long addAuthorization(Authorization authorization, SQLiteDatabase db){
+        ContentValues values = new ContentValues();
+        values.put(DBAuthorization.ENTRY_COL, authorization.entry);
+        values.put(DBAuthorization.EXIT_COL, authorization.exit);
+
+        return db.insert(AUTHORIZATIONS_TABLE, null, values);
+    }
+
+    public void addAuthorizations(List<Authorization> authorizations){
+        SQLiteDatabase db = getWritableDatabase();
+
+        for (Authorization authorization : authorizations) {
+            addAuthorization(authorization, db);
+        }
+
+        db.close();
+    }
+
+    public List<Authorization> readAuthorization() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + AUTHORIZATIONS_TABLE, null);
+
+        List<Authorization> authorizations = new Vector<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                authorizations.add(new Authorization(
+                        cursor.getString(0),
+                        cursor.getString(1)));
+            } while (cursor.moveToNext());
+            //muovi il cursore nella prossima riga
+        }
+        cursor.close();
+        return authorizations;
+    }
+
+    // identificativi delle colonne di Authorization
+    private static class DBAuthorization{
+        private static final String ENTRY_COL="entry";
+        private static final String EXIT_COL="exit";
+    }
+    //endregion
+
+    //region DBDisciplinaryNote
+
+    private long addDisciplinaryNote(DisciplinaryNotices disciplinaryNote, SQLiteDatabase db){
+        ContentValues values = new ContentValues();
+        values.put(DBDisciplinaryNote.DATE_COL, disciplinaryNote.date);
+        values.put(DBDisciplinaryNote.TYPE_COL, disciplinaryNote.type);
+        values.put(DBDisciplinaryNote.DETAILS_COL, disciplinaryNote.details);
+        values.put(DBDisciplinaryNote.COUNTERMEASURES_COL, disciplinaryNote.countermeasures);
+        values.put(DBDisciplinaryNote.AUTHOR_OF_DETAILS_COL, disciplinaryNote.authorOfDetails);
+        values.put(DBDisciplinaryNote.AUTHOR_OF_COUNTERMEASURES_COL, disciplinaryNote.authorOfCountermeasures);
+        values.put(DBDisciplinaryNote.QUARTERLY_COL, disciplinaryNote.quarterly);
+
+        return db.insert(DISCIPLINARY_NOTICES_TABLE, null, values);
+    }
+
+    public void addDisciplinaryNotices(List<DisciplinaryNotices> disciplinaryNotices){
+        SQLiteDatabase db = getWritableDatabase();
+
+        for (DisciplinaryNotices disciplinaryNote : disciplinaryNotices) {
+            addDisciplinaryNote(disciplinaryNote, db);
+        }
+
+        db.close();
+    }
+
+    public List<DisciplinaryNotices> readDisciplinaryNotices() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DISCIPLINARY_NOTICES_TABLE, null);
+
+        List<DisciplinaryNotices> disciplinaryNotices = new Vector<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                disciplinaryNotices.add(new DisciplinaryNotices(
+                        cursor.getString(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getString(4),
+                        cursor.getString(5),
+                        cursor.getString(6)));
+            } while (cursor.moveToNext());
+            //muovi il cursore nella prossima riga
+        }
+        cursor.close();
+        return disciplinaryNotices;
+    }
+
+    private static class DBDisciplinaryNote{
+        private static final String DATE_COL="date";
+        private static final String TYPE_COL="type";
+        private static final String DETAILS_COL="details";
+        private static final String COUNTERMEASURES_COL="countermeasures";
+        private static final String AUTHOR_OF_DETAILS_COL="authorOfDetails";
+        private static final String AUTHOR_OF_COUNTERMEASURES_COL="authorOfCountermeasures";
+        private static final String QUARTERLY_COL="quarterly";
+    }
+    //endregion
+
+
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
