@@ -21,6 +21,7 @@ package com.giua.app.ui.views;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -39,12 +40,15 @@ public class BottomView extends LinearLayout {
     private float yOffset = -1f;
     private final ImageView imageView;
     private final DisplayMetrics realMetrics;
+    private float startHeight;   //L'altezza del layout alla posizione iniziale
 
     public BottomView(Context context) {
         super(context);
 
         realMetrics = new DisplayMetrics();
         ((Activity) context).getWindowManager().getDefaultDisplay().getRealMetrics(realMetrics);
+
+        startHeight = realMetrics.heightPixels - (float) realMetrics.heightPixels / 3;
 
         imageView = new ImageView(context);
         LinearLayout.LayoutParams layoutParams = new LayoutParams(80, 15);
@@ -61,6 +65,18 @@ public class BottomView extends LinearLayout {
         realMetrics = new DisplayMetrics();
         ((Activity) context).getWindowManager().getDefaultDisplay().getRealMetrics(realMetrics);
 
+        TypedArray a = context.getTheme().obtainStyledAttributes(
+                attrs,
+                R.styleable.BottomView,
+                0, 0);
+
+        startHeight = a.getFloat(R.styleable.BottomView_startHeight, -1f);
+        if (startHeight == -1f)
+            startHeight = realMetrics.heightPixels - (float) realMetrics.heightPixels / 3;
+        else
+            //Converto startHeight nella y corrispondente all' altezza
+            startHeight = realMetrics.heightPixels - startHeight;
+
         imageView = new ImageView(context);
         LinearLayout.LayoutParams layoutParams = new LayoutParams(80, 15);
         layoutParams.gravity = Gravity.CENTER;
@@ -75,89 +91,222 @@ public class BottomView extends LinearLayout {
             return true;
         }
         if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
-            if (getTranslationY() >= 0) {
-                if (yOffset == -1f)
-                    yOffset = Math.abs(getTranslationY() - motionEvent.getRawY());
-                float newY = (float) Math.sqrt(getTranslationY()) + motionEvent.getRawY() - yOffset;
-                if (newY >= 0)
-                    setTranslationY(newY);
-                else
-                    setTranslationY(0);
-                return true;
-            }
+            if (getY() < 0) return false;
+
+            if (yOffset == -1f)
+                yOffset = Math.abs(getY() - motionEvent.getRawY());
+            float newY = (float) Math.sqrt(getY()) + motionEvent.getRawY() - yOffset;
+            if (newY >= 0)
+                setY(newY);
+            else
+                setY(0);
+            return true;
         }
         if (motionEvent.getAction() == MotionEvent.ACTION_CANCEL || motionEvent.getAction() == MotionEvent.ACTION_UP) {
             yOffset = -1f;
+            if (getY() < (float) realMetrics.heightPixels / 2 - 100)
+                showAllFromY();
+            else
+                moveToStart();
         }
+
         return false;
     }
 
     /**
-     * Fa vedere il layout poco sopra lo schermo.
-     * Più precisamente verrà visualizzato ad 1/3 dello schermo partendo dal basso.
+     * Fa vedere il layout portandolo a {@code startHeight} partendo dl basso
      */
     public void showStart() {
-        Animation translateAnimation = new TranslateAnimation(getX(), getX(), realMetrics.heightPixels, realMetrics.heightPixels - (float) realMetrics.heightPixels / 3);
+        TranslateAnimation translateAnimation = new TranslateAnimation(getX(), getX(), realMetrics.heightPixels - getY(), startHeight);
         translateAnimation.setDuration(300);
-        translateAnimation.setFillAfter(true);
+        translateAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                setY(startHeight);
+                animation.cancel();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
         startAnimation(translateAnimation);
-        setVisibility(VISIBLE);
     }
 
     /**
-     * Fa vedere il layout all'altezza specificata
+     * Fa vedere il layout all'altezza specificata partendo dal basso
      *
      * @param height l'altezza a cui deve arrivare il layout partendo dal basso
      */
     public void showStart(float height) {
-        Animation translateAnimation = new TranslateAnimation(getX(), getX(), realMetrics.heightPixels, realMetrics.heightPixels - height);
+        TranslateAnimation translateAnimation = new TranslateAnimation(getX(), getX(), realMetrics.heightPixels, realMetrics.heightPixels - height);
         translateAnimation.setDuration(300);
-        translateAnimation.setFillAfter(true);
+        translateAnimation.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                setY(realMetrics.heightPixels - height);
+                animation.cancel();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
         startAnimation(translateAnimation);
-        setVisibility(VISIBLE);
     }
 
     /**
-     * Nasconde il layout completamente dalla sua posizione
+     * Nasconde il layout completamente partendo dalla sua posizione
      */
     public void hideAllFromY() {
-        TranslateAnimation translateAnimation = new TranslateAnimation(getX(), getX(), getY(), realMetrics.heightPixels);
+        TranslateAnimation translateAnimation = new TranslateAnimation(getX(), getX(), 0, realMetrics.heightPixels - getY());
         translateAnimation.setDuration(300);
-        translateAnimation.setFillAfter(true);
+        translateAnimation.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                setY(realMetrics.heightPixels);
+                animation.cancel();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
         startAnimation(translateAnimation);
-        setVisibility(INVISIBLE);
     }
 
     /**
-     * Nasconde il layout completamente partendo dall'alto
+     * Porta il layout nella posizione iniziale partendo dalla sua posizione
      */
-    public void hideAllFromTop() {
-        TranslateAnimation translateAnimation = new TranslateAnimation(getX(), getX(), getY(), realMetrics.heightPixels);
+    public void moveToStart() {
+        TranslateAnimation translateAnimation = new TranslateAnimation(getX(), getX(), 0, startHeight - getY());
         translateAnimation.setDuration(300);
-        translateAnimation.setFillAfter(true);
+        translateAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                setY(startHeight);
+                animation.cancel();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
         startAnimation(translateAnimation);
-        setVisibility(INVISIBLE);
     }
 
     /**
      * Rende completamente visibile il layout partendo dalla sua posizione.
      */
     public void showAllFromY() {
-        TranslateAnimation translateAnimation = new TranslateAnimation(getX(), getX(), getY(), 0);
+        TranslateAnimation translateAnimation = new TranslateAnimation(getX(), getX(), 0, -getY());
         translateAnimation.setDuration(300);
-        translateAnimation.setFillAfter(true);
+        translateAnimation.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                setY(0);
+                animation.cancel();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
         startAnimation(translateAnimation);
-        setVisibility(VISIBLE);
     }
 
     /**
      * Rende completamente visibile il layout partendo dal basso dello schermo
      */
-    public void showAllFromStart() {
-        TranslateAnimation translateAnimation = new TranslateAnimation(getX(), getX(), realMetrics.heightPixels, 0);
-        translateAnimation.setDuration(300);
-        translateAnimation.setFillAfter(true);
+    public void showAllFromZero() {
+        TranslateAnimation translateAnimation = new TranslateAnimation(getX(), getX(), realMetrics.heightPixels - getY(), -getY());
+        translateAnimation.setDuration(1000);
+        translateAnimation.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                setY(0);
+                animation.cancel();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
         startAnimation(translateAnimation);
-        setVisibility(VISIBLE);
+    }
+
+    /**
+     * Rende completamente visibile il layout partendo da {@code startHeight}
+     */
+    public void showAllFromStart() {
+        TranslateAnimation translateAnimation = new TranslateAnimation(getX(), getX(), startHeight - getY(), -getY());
+        translateAnimation.setDuration(300);
+        translateAnimation.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                setY(0);
+                animation.cancel();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        startAnimation(translateAnimation);
+    }
+
+    /**
+     * Nasconde il layout con una animazione
+     */
+    public void hide() {
+        hideAllFromY();
+        setVisibility(GONE);
     }
 }
