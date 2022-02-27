@@ -205,7 +205,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
 
         if (allLessons.isEmpty())
             tvNoElements.setVisibility(View.VISIBLE);
-        else if (allLessons.size() == 1 && !allLessons.get(0).exists) {
+        else if (allLessons.size() == 1 && !allLessons.get(0)._exists) {
             if (allLessons.get(0).isError)
                 tvNoElements.setText(allLessons.get(0).arguments);
             tvNoElements.setVisibility(View.VISIBLE);
