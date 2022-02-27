@@ -34,6 +34,7 @@ import com.giua.objects.Test;
 
 import com.giua.objects.Authorization;
 import com.giua.objects.DisciplinaryNotices;
+import com.giua.objects.Vote;
 
 import java.util.Arrays;
 import java.util.List;
@@ -51,12 +52,13 @@ public class DBController extends SQLiteOpenHelper {
     private static final int DB_VERSION = 2;
 
     private static final String ALERTS_TABLE = "alerts";
-    private static final String ABSENCES_TABLE ="absence";
-    private static final String ACTIVITIES_TABLE ="activity";
+    private static final String ABSENCES_TABLE ="absences";
+    private static final String ACTIVITIES_TABLE ="activities";
     private static final String AUTHORIZATIONS_TABLE ="authorizations";
     private static final String DISCIPLINARY_NOTICES_TABLE="disciplinaryNotices";
     private static final String HOMEWORKS_TABLE="homeworks";
     private static final String TESTS_TABLE="tests";
+    private static final String VOTE_TABLE="votes";
     private static final String NEWSLETTERS_TABLE = "newsletters";
 
     /**
@@ -146,6 +148,19 @@ public class DBController extends SQLiteOpenHelper {
                 + DBTest.DETAILS_COL + " TEXT,"
                 +DBTest.EXISTS_COL+" BOOLEAN"+")";
         db.execSQL(query7);
+        //endregion
+
+        //region Crea tabella con nome vote con le colonne specificate
+        String query8 = "CREATE TABLE " + VOTE_TABLE + " ("
+                + DBVote.VALUE_COL + " TEXT,"
+                + DBVote.DATE_COL + " TEXT,"
+                + DBVote.TEST_TYPE_COL + " TEXT,"
+                + DBVote.ARGUMENTS_COL + " TEXT,"
+                + DBVote.JUDGEMENT_COL + " TEXT,"
+                + DBVote.QUARTERLY_COL + " TEXT,"
+                + DBVote.IS_ASTERISK_COL + " BOOLEAN,"
+                + DBVote.IS_RELEVANT_FOR_MEAN_COL + " BOOLEAN"+")";
+        db.execSQL(query8);
         //endregion
     }
 
@@ -599,6 +614,71 @@ public class DBController extends SQLiteOpenHelper {
     }
     //endregion
 
+    //region DBVote
+    private long addVote(Vote vote, SQLiteDatabase db){
+        ContentValues values = new ContentValues();
+        values.put(DBVote.VALUE_COL, vote.value);
+        values.put(DBVote.QUARTERLY_COL, vote.quarterly);
+        values.put(DBVote.IS_ASTERISK_COL ,vote.isAsterisk);
+        values.put(DBVote.DATE_COL ,vote.date);
+        values.put(DBVote.JUDGEMENT_COL ,vote.judgement);
+        values.put(DBVote.TEST_TYPE_COL ,vote.testType);
+        values.put(DBVote.ARGUMENTS_COL ,vote.arguments);
+        values.put(DBVote.IS_RELEVANT_FOR_MEAN_COL ,vote.isRelevantForMean);
+
+        return db.insert(VOTE_TABLE, null, values);
+    }
+
+    public void addVotes(List<Vote> votes){
+        SQLiteDatabase db = getWritableDatabase();
+
+        for (Vote vote : votes) {
+            addVote(vote, db);
+        }
+
+        db.close();
+    }
+
+    public List<Vote> readVotes() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + VOTE_TABLE, null);
+
+        List<Vote> votes = new Vector<>();
+
+        if (cursor.moveToFirst()) {
+            boolean isAsterisk=true;
+            if(cursor.getInt(2)==0)isAsterisk=false;
+            boolean isRelevantForMean=true;
+            if(cursor.getInt(7)==0)isRelevantForMean=false;
+            do {
+                votes.add(new Vote(
+                        cursor.getString(0),
+                        cursor.getString(1),
+                        cursor.getString(3),
+                        cursor.getString(4),
+                        cursor.getString(5),
+                        cursor.getString(6),
+                        isAsterisk,
+                        isRelevantForMean));
+            } while (cursor.moveToNext());
+            //muovi il cursore nella prossima riga
+        }
+        cursor.close();
+        return votes;
+    }
+
+    private static class DBVote{
+        private static final String VALUE_COL="value";
+        private static final String QUARTERLY_COL="quarterly";
+        private static final String IS_ASTERISK_COL="isAsterisk";
+        private static final String DATE_COL="date";
+        private static final String JUDGEMENT_COL="judgement";
+        private static final String TEST_TYPE_COL="testType";
+        private static final String ARGUMENTS_COL="arguments";
+        private static final String IS_RELEVANT_FOR_MEAN_COL="isRelevantForMean";
+    }
+    //endregion
 
 
 
