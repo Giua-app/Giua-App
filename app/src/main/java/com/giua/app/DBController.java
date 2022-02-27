@@ -27,7 +27,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.giua.objects.Absence;
 import com.giua.objects.Alert;
+//agenda objects
 import com.giua.objects.Activity;
+import com.giua.objects.Homework;
+import com.giua.objects.Test;
+
 import com.giua.objects.Authorization;
 import com.giua.objects.DisciplinaryNotices;
 
@@ -51,8 +55,9 @@ public class DBController extends SQLiteOpenHelper {
     private static final String ACTIVITIES_TABLE ="activity";
     private static final String AUTHORIZATIONS_TABLE ="authorizations";
     private static final String DISCIPLINARY_NOTICES_TABLE="disciplinaryNotices";
+    private static final String HOMEWORKS_TABLE="homeworks";
+    private static final String TESTS_TABLE="tests";
     private static final String NEWSLETTERS_TABLE = "newsletters";
-
 
     /**
      * Crea un istanza DbController. Se il database non esiste, ne crea uno nuovo
@@ -64,7 +69,9 @@ public class DBController extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        //Crea tabella con nome alert con le colonne specificate
+
+
+        //region Crea tabella con nome alert con le colonne specificate
         String query = "CREATE TABLE " + ALERTS_TABLE + " ("
                 + DBAlert.STATUS_COL + " TEXT, "
                 + DBAlert.DATE_COL + " TEXT,"
@@ -80,8 +87,9 @@ public class DBController extends SQLiteOpenHelper {
                 + DBAlert.ALERT_ID + " INTEGER"+")";
 
         db.execSQL(query);
+//endregion
 
-        //Crea tabella con nome absence con le colonne specificate
+        //region Crea tabella con nome absence con le colonne specificate
         String query2 = "CREATE TABLE " + ABSENCES_TABLE + " ("
                 + DBAbsece.DATE_COL + " TEXT,"
                 + DBAbsece.TYPE_COL + " TEXT,"
@@ -90,22 +98,25 @@ public class DBController extends SQLiteOpenHelper {
                 +DBAbsece.IS_MODIFICABLE_COL+" BOOLEAN,"
                 +DBAbsece.JUSTIFY_URL_COL+" TEXT"+")";
         db.execSQL(query2);
+//endregion
 
-        //Crea tabella con nome activity con le colonne specificate
+        //region Crea tabella con nome activity con le colonne specificate
         String query3 = "CREATE TABLE " + ACTIVITIES_TABLE + " ("
                 + DBActivity.DATE_COL + " TEXT,"
                 + DBActivity.CREATOR_COL + " TEXT,"
                 + DBActivity.DETAILS_COL + " TEXT,"
                 +DBActivity.EXISTS_COL+" BOOLEAN"+")";
         db.execSQL(query3);
+//endregion
 
-        //Crea tabella con nome authorization con le colonne specificate
+        //regionCrea tabella con nome authorization con le colonne specificate
         String query4="CREATE TABLE "+ AUTHORIZATIONS_TABLE +" ("
                 + DBAuthorization.ENTRY_COL+" TEXT,"
                 +DBAuthorization.EXIT_COL+" TEXT"+")";
         db.execSQL(query4);
+//endregion
 
-        //Crea tabella con nome disciplinaryNote con le colonne specificate
+        //region Crea tabella con nome disciplinaryNote con le colonne specificate
         String query5="CREATE TABLE "+DISCIPLINARY_NOTICES_TABLE+" ("
                 +DBDisciplinaryNote.DATE_COL+" TEXT,"
                 +DBDisciplinaryNote.TYPE_COL+" TEXT,"
@@ -115,8 +126,27 @@ public class DBController extends SQLiteOpenHelper {
                 +DBDisciplinaryNote.AUTHOR_OF_COUNTERMEASURES_COL+" TEXT,"
                 +DBDisciplinaryNote.QUARTERLY_COL+" TEXT"+")";
         db.execSQL(query5);
+        //endregion
 
+        //region Crea tabella con nome homework con le colonne specificate
+        String query6 = "CREATE TABLE " + HOMEWORKS_TABLE + " ("
+                + DBHomework.DATE_COL + " TEXT,"
+                + DBHomework.SUBJECT_COL+" TEXT,"
+                + DBHomework.CREATOR_COL + " TEXT,"
+                + DBHomework.DETAILS_COL + " TEXT,"
+                + DBHomework.EXISTS_COL+" BOOLEAN"+")";
+        db.execSQL(query6);
+        //endregion
 
+        //region Crea tabella con nome test con le colonne specificate
+        String query7 = "CREATE TABLE " + TESTS_TABLE + " ("
+                + DBTest.DATE_COL + " TEXT,"
+                + DBTest.SUBJECT_COL+" TEXT,"
+                + DBTest.CREATOR_COL + " TEXT,"
+                + DBTest.DETAILS_COL + " TEXT,"
+                +DBTest.EXISTS_COL+" BOOLEAN"+")";
+        db.execSQL(query7);
+        //endregion
     }
 
 
@@ -287,13 +317,15 @@ public class DBController extends SQLiteOpenHelper {
     }
     //endregion
 
+    //region Agenda Objects
+
     //region DB Activity
     private long addActivity(Activity activity, SQLiteDatabase db){
         ContentValues values = new ContentValues();
         values.put(DBActivity.DATE_COL, activity.date);
         values.put(DBActivity.CREATOR_COL, activity.creator);
         values.put(DBActivity.DETAILS_COL, activity.details);
-        values.put(DBActivity.EXISTS_COL, activity.exists);
+        values.put(DBActivity.EXISTS_COL, activity._exists);
 
         return db.insert(ACTIVITIES_TABLE, null, values);
     }
@@ -308,7 +340,7 @@ public class DBController extends SQLiteOpenHelper {
         db.close();
     }
 
-    public List<Activity> readActivity() {
+    public List<Activity> readActivities() {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery("SELECT * FROM " + ACTIVITIES_TABLE, null);
@@ -342,8 +374,128 @@ public class DBController extends SQLiteOpenHelper {
     }
     //endregion
 
-    //region DB Authorization
+    //region DBHomework
 
+    private long addHomework(Homework homework, SQLiteDatabase db){
+        ContentValues values = new ContentValues();
+        values.put(DBHomework.DATE_COL, homework.date);
+        values.put(DBHomework.SUBJECT_COL, homework.subject);
+        values.put(DBHomework.CREATOR_COL, homework.creator);
+        values.put(DBHomework.DETAILS_COL, homework.details);
+        values.put(DBHomework.EXISTS_COL, homework._exists);
+
+        return db.insert(HOMEWORKS_TABLE, null, values);
+    }
+
+    public void addHomeworks(List<Homework> homeworks){
+        SQLiteDatabase db = getWritableDatabase();
+
+        for (Homework homework : homeworks) {
+            addHomework(homework, db);
+        }
+
+        db.close();
+    }
+
+    public List<Homework> readHomeworks() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + HOMEWORKS_TABLE, null);
+
+        List<Homework> homeworks = new Vector<>();
+
+        if (cursor.moveToFirst()) {
+            boolean exists=true;
+            if(cursor.getInt(4)==0) exists=false;
+            do {
+                homeworks.add(new Homework(cursor.getString(0).split("-")[2],
+                        cursor.getString(0).split("-")[1],
+                        cursor.getString(0).split("-")[0],
+                        cursor.getString(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        exists));
+            } while (cursor.moveToNext());
+            //muovi il cursore nella prossima riga
+        }
+        cursor.close();
+        return homeworks;
+    }
+
+    private static class DBHomework{
+        private static final String SUBJECT_COL="subject";
+        private static final String CREATOR_COL="creator";
+        private static final String DETAILS_COL="details";
+        private static final String EXISTS_COL="_exists";
+        private static final String DATE_COL="date";
+    }
+
+    //endregion
+
+    //region DBTest
+
+    private long addTest(Test test, SQLiteDatabase db){
+        ContentValues values = new ContentValues();
+        values.put(DBTest.DATE_COL, test.date);
+        values.put(DBTest.SUBJECT_COL, test.subject);
+        values.put(DBTest.CREATOR_COL, test.creator);
+        values.put(DBTest.DETAILS_COL, test.details);
+        values.put(DBTest.EXISTS_COL, test._exists);
+
+        return db.insert(TESTS_TABLE, null, values);
+    }
+
+    public void addTests(List<Test> tests){
+        SQLiteDatabase db = getWritableDatabase();
+
+        for (Test test : tests) {
+            addTest(test, db);
+        }
+
+        db.close();
+    }
+
+    public List<Test> readTests() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TESTS_TABLE, null);
+
+        List<Test> tests = new Vector<>();
+
+        if (cursor.moveToFirst()) {
+            boolean exists=true;
+            if(cursor.getInt(4)==0) exists=false;
+            do {
+                tests.add(new Test(cursor.getString(0).split("-")[2],
+                        cursor.getString(0).split("-")[1],
+                        cursor.getString(0).split("-")[0],
+                        cursor.getString(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        exists));
+            } while (cursor.moveToNext());
+            //muovi il cursore nella prossima riga
+        }
+        cursor.close();
+        return tests;
+    }
+
+    private static class DBTest{
+        private static final String SUBJECT_COL="subject";
+        private static final String CREATOR_COL="creator";
+        private static final String DETAILS_COL="details";
+        private static final String EXISTS_COL="_exists";
+        private static final String DATE_COL="date";
+    }
+
+    //endre
+    //endregion
+
+    //endregion
+
+    //region DB Authorization
     private long addAuthorization(Authorization authorization, SQLiteDatabase db){
         ContentValues values = new ContentValues();
         values.put(DBAuthorization.ENTRY_COL, authorization.entry);
@@ -389,7 +541,6 @@ public class DBController extends SQLiteOpenHelper {
     //endregion
 
     //region DBDisciplinaryNote
-
     private long addDisciplinaryNote(DisciplinaryNotices disciplinaryNote, SQLiteDatabase db){
         ContentValues values = new ContentValues();
         values.put(DBDisciplinaryNote.DATE_COL, disciplinaryNote.date);
@@ -447,6 +598,7 @@ public class DBController extends SQLiteOpenHelper {
         private static final String QUARTERLY_COL="quarterly";
     }
     //endregion
+
 
 
 
