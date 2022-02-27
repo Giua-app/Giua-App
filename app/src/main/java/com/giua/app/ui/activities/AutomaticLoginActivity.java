@@ -29,11 +29,11 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.giua.app.AccountData;
 import com.giua.app.AppData;
 import com.giua.app.GiuaScraperThread;
 import com.giua.app.GlobalVariables;
 import com.giua.app.LoggerManager;
-import com.giua.app.LoginData;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
@@ -83,14 +83,14 @@ public class AutomaticLoginActivity extends AppCompatActivity {
             runOnUiThread(() -> pbLoadingScreen.setVisibility(View.VISIBLE));
             try {
                 String username = AppData.getActiveUsername(this);
-                String password = LoginData.getPassword(this, username);
-                String cookie = LoginData.getCookie(this, username);
-                String savedSiteUrl = LoginData.getSiteUrl(this, username);
+                String password = AccountData.getPassword(this, username);
+                String cookie = AccountData.getCookie(this, username);
+                String savedSiteUrl = AccountData.getSiteUrl(this, username);
                 if (!savedSiteUrl.equals("")) GiuaScraper.setSiteURL(savedSiteUrl);
                 GlobalVariables.gS = new GiuaScraper(username, password, cookie, true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
                 GlobalVariables.gS.login();
-                LoginData.setCredentials(this, username, password, GlobalVariables.gS.getCookie());
-                LoginData.setSiteUrl(this, username, GiuaScraper.getSiteURL());
+                AccountData.setCredentials(this, username, password, GlobalVariables.gS.getCookie());
+                AccountData.setSiteUrl(this, username, GiuaScraper.getSiteURL());
                 if (!AppData.getAllAccountUsernames(this).contains(GlobalVariables.gS.getUser()))
                     AppData.addAccountUsername(this, GlobalVariables.gS.getUser());
                 startDrawerActivity();

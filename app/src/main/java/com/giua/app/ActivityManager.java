@@ -210,7 +210,7 @@ public class ActivityManager extends AppCompatActivity {
 
         //0.6.3
         if (!lastVer.contains(appVer) && lastVer.contains("0.6.3")
-                && !LoginData.getSharedPreferencesForOldLogin(this).getString("user", "NOTFOUND").equals("NOTFOUND")) {
+                && !AccountData.getSharedPreferencesForOldLogin(this).getString("user", "NOTFOUND").equals("NOTFOUND")) {
             CompatibilityManager.checkFor063Update(this);
         }
     }

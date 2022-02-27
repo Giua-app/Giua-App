@@ -20,8 +20,8 @@
 package com.giua.app;
 
 import android.app.Activity;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -73,12 +73,15 @@ public class MyDrawerManager {
     }
 
     public Drawer setupMaterialDrawer() {
-        String actualUsername = AppData.getActiveUsername(activity);
-        Drawable d = ResourcesCompat.getDrawable(activity.getResources(), R.drawable.ic_account, activity.getTheme());
-        d.setColorFilter(activity.getResources().getColor(R.color.profile_background_color, activity.getTheme()), PorterDuff.Mode.SRC_OUT);
+        String activeUsername = AppData.getActiveUsername(activity);
 
-        activeProfile = new ProfileDrawerItem().withName(realUsername).withEmail(actualUsername)
-                .withIcon(d)
+        Drawable icAccountProfile = ResourcesCompat.getDrawable(activity.getResources(), R.drawable.ic_account_profile, activity.getTheme());
+
+        // Rappresenta l'oggetto nel Drawer del profilo attivo
+        activeProfile = new ProfileDrawerItem()
+                .withName(realUsername)
+                .withEmail(activeUsername)
+                .withIcon(getImageWithBackgroundColor(icAccountProfile, AccountData.getTheme(activity, activeUsername)))
                 .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme()));
 
         // Create the AccountHeader
@@ -90,52 +93,68 @@ public class MyDrawerManager {
                 .withOnAccountHeaderListener(onChangeAccountFromDrawer)
                 .withCurrentProfileHiddenInList(true)
                 .withOnlyMainProfileImageVisible(true)
-                .addProfiles(
-                        activeProfile
-                );
+                .addProfiles(activeProfile);
 
         //Aggiungi nel drawer gli account disponibili
-        Object[] allUsernames = AppData.getAllAccountUsernames(activity).toArray();
-        for (Object _username : allUsernames) {
-            String u = (String) _username;
-            if (u.equals(actualUsername)) continue;
+        addAccountsToDrawer(activeUsername, icAccountProfile, accountHeaderBuilder);
 
-            /*Drawable icon = ResourcesCompat.getDrawable(activity.getResources(), R.drawable.ic_account, activity.getTheme());
-            icon.setColorFilter(LoginData.getTheme(activity, u), PorterDuff.Mode.ADD);*/
-
-            if (u.equals("gsuite")) {
-                accountHeaderBuilder.addProfiles(
-                        new ProfileDrawerItem().withName(u).withEmail("Studente")
-                                .withIcon(d)
-                                .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme()))
-                );
-            } else {
-                accountHeaderBuilder.addProfiles(
-                        new ProfileDrawerItem().withName(u).withEmail(u)
-                                .withIcon(d)
-                                .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme()))
-                );
-            }
-        }
-
+        //Aggiungi il pulsante "Aggiungi account"
         accountHeaderBuilder.addProfiles(
                 new ProfileSettingDrawerItem().withName("Aggiungi account")
                         .withIcon(android.R.color.transparent)
-                        .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme()))
-        );
-
-        AccountHeader accountHeader = accountHeaderBuilder.build();
+                        .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme())));
 
         return new DrawerBuilder()
                 .withActivity(activity)
                 .withTranslucentStatusBar(false)
                 .withActionBarDrawerToggle(true)
                 .withToolbar(toolbar)
-                .withAccountHeader(accountHeader)
+                .withAccountHeader(accountHeaderBuilder.build())
                 .withSliderBackgroundColor(activity.getResources().getColor(R.color.general_view_color, activity.getTheme()))
-                .addDrawerItems(
-                        createAllDrawerItems()
-                ).build();
+                .addDrawerItems(createAllDrawerItems()).build();
+    }
+
+    private void addAccountsToDrawer(String activeUsername, Drawable icAccountProfile, AccountHeaderBuilder accountHeaderBuilder) {
+        Object[] allUsernames = AppData.getAllAccountUsernames(activity).toArray();
+
+        for (Object usernameObject : allUsernames) {
+            String usernameString = (String) usernameObject;
+
+            //Non aggiungere nella lista degli account quello che si sta utilizzando
+            if (usernameString.equals(activeUsername)) continue;
+
+            if (usernameString.equals("gsuite")) {
+                accountHeaderBuilder.addProfiles(
+                        new ProfileDrawerItem()
+                                .withName(usernameString)
+                                .withEmail("Studente")
+                                .withIcon(getImageWithBackgroundColor(icAccountProfile, AccountData.getTheme(activity, usernameString)))
+                                .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme()))
+                );
+            } else {
+                accountHeaderBuilder.addProfiles(
+                        new ProfileDrawerItem()
+                                .withName(usernameString).withEmail(usernameString)
+                                .withIcon(getImageWithBackgroundColor(icAccountProfile, AccountData.getTheme(activity, usernameString)))
+                                .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme()))
+                );
+            }
+        }
+    }
+
+    /**
+     * Serve ad impostare un colore di sfondo a {@code drawable} con il colore {@code color}
+     *
+     * @param drawable il Drawable a cui impostare il colore di sfondo
+     * @param color    il colore da mettere come sfondo
+     * @return il {@code drawable} passato come parametro con uno sfondo circolare di colore {@code color}
+     */
+    private Drawable getImageWithBackgroundColor(Drawable drawable, int color) {
+        Drawable icAccountBackground = ResourcesCompat.getDrawable(activity.getResources(), R.drawable.ic_account_background, activity.getTheme());
+        icAccountBackground.setTint(color);
+        LayerDrawable icLayers = new LayerDrawable(new Drawable[]{icAccountBackground, drawable});
+
+        return icLayers;
     }
 
     @NonNull

@@ -54,7 +54,7 @@ import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
 import com.giua.app.ui.activities.DrawerActivity;
-import com.giua.app.ui.fragments.ObscureLayoutView;
+import com.giua.app.ui.views.ObscureLayoutView;
 import com.giua.objects.Newsletter;
 import com.giua.webscraper.DownloadedFile;
 import com.giua.webscraper.GiuaScraperExceptions;
@@ -281,7 +281,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     //Qui viene gestito lo swipe della circolare
     private boolean newsletterViewOnTouchListener(View view, MotionEvent motionEvent) {
         NewsletterView v = (NewsletterView) view;
-        //Se ce' un animazione in corso o la circolare e' gia' stata letta allora non fare nulla
+        //Se ce' un animazione in corso allora non fare nulla
         if (v.upperView.getAnimation() != null) return false;
         DisplayMetrics realMetrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getRealMetrics(realMetrics);

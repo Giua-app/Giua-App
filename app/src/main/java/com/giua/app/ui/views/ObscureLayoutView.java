@@ -17,7 +17,7 @@
  *     along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 
-package com.giua.app.ui.fragments;
+package com.giua.app.ui.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;

@@ -32,13 +32,13 @@ import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.giua.app.AccountData;
 import com.giua.app.Analytics;
 import com.giua.app.AppData;
 import com.giua.app.GlobalVariables;
 import com.giua.app.LoggerManager;
-import com.giua.app.LoginData;
 import com.giua.app.R;
-import com.giua.app.ui.fragments.ObscureLayoutView;
+import com.giua.app.ui.views.ObscureLayoutView;
 import com.giua.webscraper.GiuaScraper;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -116,8 +116,8 @@ public class StudentLoginActivity extends AppCompatActivity {
 
         loggerManager.d("Creazione credenziali con cookie ottenuto da google");
         GlobalVariables.gS = new GiuaScraper("gsuite", "gsuite", cookie, true, new LoggerManager("GiuaScraper", this));
-        LoginData.setCredentials(this, "gsuite", "gsuite", cookie);
-        LoginData.setSiteUrl(this, "gsuite", GiuaScraper.getSiteURL());
+        AccountData.setCredentials(this, "gsuite", "gsuite", cookie);
+        AccountData.setSiteUrl(this, "gsuite", GiuaScraper.getSiteURL());
         obscureLayoutView.setVisibility(View.GONE);
         loggerManager.d("Avvio DrawerActivity");
         if (!AppData.getAllAccountUsernames(this).contains("gsuite")) {

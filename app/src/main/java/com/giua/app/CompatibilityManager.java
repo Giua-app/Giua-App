@@ -68,16 +68,16 @@ public class CompatibilityManager {
         LoggerManager lm = new LoggerManager("CompatManager", context);
 
         lm.w("Rilevato aggiornamento da 0.6.3");
-        lm.d("Sposto le credenziali da LoginData non sicuro a LoginData sicuro");
+        lm.d("Sposto le credenziali da AccountData non sicuro a AccountData sicuro");
 
-        SharedPreferences sharedPreferences = LoginData.getSharedPreferencesForOldLogin(context);
+        SharedPreferences sharedPreferences = AccountData.getSharedPreferencesForOldLogin(context);
         String username = sharedPreferences.getString("user", "");
         String password = sharedPreferences.getString("password", "");
 
         AppData.saveActiveUsername(context, username);
-        LoginData.setCredentials(context, username, password);
+        AccountData.setCredentials(context, username, password);
 
-        lm.d("Elimino LoginData vecchio");
+        lm.d("Elimino AccountData vecchio");
         sharedPreferences.edit().clear().apply();
 
     }

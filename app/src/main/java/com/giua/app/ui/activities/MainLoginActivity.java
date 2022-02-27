@@ -36,6 +36,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.giua.app.AccountData;
 import com.giua.app.Analytics;
 import com.giua.app.AppData;
 import com.giua.app.AppUpdateManager;
@@ -43,7 +44,6 @@ import com.giua.app.BuildConfig;
 import com.giua.app.GiuaScraperThread;
 import com.giua.app.GlobalVariables;
 import com.giua.app.LoggerManager;
-import com.giua.app.LoginData;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
@@ -204,8 +204,8 @@ public class MainLoginActivity extends AppCompatActivity {
 
                 if (GlobalVariables.gS.checkLogin()) {
                     if (chRememberCredentials.isChecked()) {
-                        LoginData.setCredentials(this, etUsername.getText().toString(), etPassword.getText().toString(), GlobalVariables.gS.getCookie());
-                        LoginData.setSiteUrl(this, etUsername.getText().toString(), GiuaScraper.getSiteURL());
+                        AccountData.setCredentials(this, etUsername.getText().toString(), etPassword.getText().toString(), GlobalVariables.gS.getCookie());
+                        AccountData.setSiteUrl(this, etUsername.getText().toString(), GiuaScraper.getSiteURL());
                         AppData.addAccountUsername(this, etUsername.getText().toString().toLowerCase());
                         AppData.saveActiveUsername(this, etUsername.getText().toString().toLowerCase());
                     }
@@ -352,7 +352,7 @@ public class MainLoginActivity extends AppCompatActivity {
         } else {
             GlobalVariables.gsThread.addTask(() -> {
                 String username = AppData.getActiveUsername(this);
-                GlobalVariables.gS = new GiuaScraper(username, LoginData.getPassword(this, username), LoginData.getCookie(this, username), true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
+                GlobalVariables.gS = new GiuaScraper(username, AccountData.getPassword(this, username), AccountData.getCookie(this, username), true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
                 GlobalVariables.gS.login();
                 runOnUiThread(this::startDrawerActivity);
             });

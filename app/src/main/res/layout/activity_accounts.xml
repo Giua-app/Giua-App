@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Giua App
+  ~ Android app to view data from the giua@school workbook
+  ~ Copyright (C) 2021 - 2022 Hiem, Franck1421 and contributors
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see https://www.gnu.org/licenses/.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <com.giua.app.ui.views.BottomView
+        android:id="@+id/accounts_bottom_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/normal_login_background"
+        android:backgroundTint="@color/general_view_color"
+        android:padding="10dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/htrheer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:hint="Username"
+            app:boxBackgroundColor="#00FF0202"
+            app:boxBackgroundMode="filled">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#00FFFFFF"
+                android:inputType="textEmailAddress" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/htehyethe"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:hint="Password"
+            app:boxBackgroundColor="#00FFFFFF"
+            app:passwordToggleEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#00FFFFFF"
+                android:inputType="textPassword" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </com.giua.app.ui.views.BottomView>
+</androidx.constraintlayout.widget.ConstraintLayout>

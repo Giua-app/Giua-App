@@ -81,7 +81,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/lezioni_swipe_refresh_layout" />
 
-    <com.giua.app.ui.fragments.ObscureLayoutView
+    <com.giua.app.ui.views.ObscureLayoutView
         android:id="@+id/lezioni_obscure_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -92,7 +92,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription">
 
-    </com.giua.app.ui.fragments.ObscureLayoutView>
+    </com.giua.app.ui.views.ObscureLayoutView>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/lezioni_bottom_card_view"

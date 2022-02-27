@@ -126,7 +126,7 @@
         </ScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <com.giua.app.ui.fragments.ObscureLayoutView
+    <com.giua.app.ui.views.ObscureLayoutView
         android:id="@+id/newsletter_obscure_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

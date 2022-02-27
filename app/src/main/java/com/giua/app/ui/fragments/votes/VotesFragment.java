@@ -43,7 +43,7 @@ import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
 import com.giua.app.ui.activities.DrawerActivity;
-import com.giua.app.ui.fragments.ObscureLayoutView;
+import com.giua.app.ui.views.ObscureLayoutView;
 import com.giua.objects.Vote;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;

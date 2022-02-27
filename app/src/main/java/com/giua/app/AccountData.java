@@ -20,7 +20,6 @@
 package com.giua.app;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -33,7 +32,7 @@ import androidx.security.crypto.MasterKey;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
-public class LoginData {
+public class AccountData {
 
     /**
      * Controlla la memorizzazione delle credenziali

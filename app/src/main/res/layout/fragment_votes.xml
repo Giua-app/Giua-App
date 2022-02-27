@@ -84,7 +84,7 @@
         </ScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <com.giua.app.ui.fragments.ObscureLayoutView
+    <com.giua.app.ui.views.ObscureLayoutView
         android:id="@+id/vote_obscure_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -152,6 +152,6 @@
                 android:textSize="15sp"
                 android:visibility="gone" />
         </LinearLayout>
-    </com.giua.app.ui.fragments.ObscureLayoutView>
+    </com.giua.app.ui.views.ObscureLayoutView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

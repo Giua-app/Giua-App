@@ -39,7 +39,7 @@ import com.giua.app.IGiuaAppFragment;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.giua.app.ui.activities.DrawerActivity;
-import com.giua.app.ui.fragments.ObscureLayoutView;
+import com.giua.app.ui.views.ObscureLayoutView;
 import com.giua.objects.Absence;
 import com.giua.pages.AbsencesPage;
 import com.giua.webscraper.GiuaScraperExceptions;
