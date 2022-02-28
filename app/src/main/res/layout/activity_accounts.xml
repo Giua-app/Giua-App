@@ -31,9 +31,22 @@
         android:backgroundTint="@color/general_view_color"
         android:orientation="vertical"
         android:padding="10dp"
+        app:startHeight="200dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <TextView
+            android:id="@+id/accounts_bottom_view_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/accounts_bottom_view_url"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:inputType="textUri|textShortMessage"
+            android:imeOptions="actionDone" />
 
     </com.giua.app.ui.views.BottomView>
 </androidx.constraintlayout.widget.ConstraintLayout>

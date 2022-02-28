@@ -67,7 +67,6 @@
         <activity
             android:name=".ActivityManager"
             android:exported="true"
-            android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.GiuaApp.NoActionBar"
             tools:ignore="LockedOrientationActivity">
@@ -79,7 +78,6 @@
         </activity>
         <activity
             android:name=".ui.activities.MainLoginActivity"
-            android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.GiuaApp.NoActionBar"
             tools:ignore="LockedOrientationActivity">
@@ -89,7 +87,6 @@
         </activity>
         <activity
             android:name=".ui.activities.AutomaticLoginActivity"
-            android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.GiuaApp.NoActionBar"
             tools:ignore="LockedOrientationActivity">
@@ -134,7 +131,7 @@
             android:label="Gestione account"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.GiuaApp.NoActionBar"
-            tools:ignore="LockedOrientationActivity"></activity>
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".ui.activities.AboutActivity"
             android:theme="@style/AppTheme.MaterialAboutActivity" />
