@@ -26,18 +26,18 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.giua.objects.Absence;
-import com.giua.objects.Alert;
-//agenda objects
 import com.giua.objects.Activity;
-import com.giua.objects.Homework;
-import com.giua.objects.Test;
-
+import com.giua.objects.Alert;
 import com.giua.objects.Authorization;
 import com.giua.objects.DisciplinaryNotices;
+import com.giua.objects.Homework;
+import com.giua.objects.Test;
 import com.giua.objects.Vote;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -45,11 +45,14 @@ import java.util.Vector;
  */
 public class DBController extends SQLiteOpenHelper {
 
+    private Context context;
+    private LoggerManager lm;
+
     //!!!
     //FIXME: USARE SQLiteDatabase.releaseMemory() DOVE L'APP VA IN BACKGROUND O ALTRO
 
     private static final String DB_NAME = "giuapp_offline_data";
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 3;
 
     private static final String ALERTS_TABLE = "alerts";
     private static final String ABSENCES_TABLE ="absences";
@@ -58,7 +61,7 @@ public class DBController extends SQLiteOpenHelper {
     private static final String DISCIPLINARY_NOTICES_TABLE="disciplinaryNotices";
     private static final String HOMEWORKS_TABLE="homeworks";
     private static final String TESTS_TABLE="tests";
-    private static final String VOTE_TABLE="votes";
+    private static final String VOTES_TABLE ="votes";
     private static final String NEWSLETTERS_TABLE = "newsletters";
 
     /**
@@ -67,11 +70,14 @@ public class DBController extends SQLiteOpenHelper {
      */
     public DBController(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
+        this.context = context.getApplicationContext();
+        lm = new LoggerManager("DBController", this.context);
+        lm.d("istanza");
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
+        lm.d("onCreate");
 
         //region Crea tabella con nome alert con le colonne specificate
         String query = "CREATE TABLE " + ALERTS_TABLE + " ("
@@ -89,7 +95,7 @@ public class DBController extends SQLiteOpenHelper {
                 + DBAlert.ALERT_ID + " INTEGER"+")";
 
         db.execSQL(query);
-//endregion
+        //endregion
 
         //region Crea tabella con nome absence con le colonne specificate
         String query2 = "CREATE TABLE " + ABSENCES_TABLE + " ("
@@ -100,7 +106,7 @@ public class DBController extends SQLiteOpenHelper {
                 +DBAbsece.IS_MODIFICABLE_COL+" BOOLEAN,"
                 +DBAbsece.JUSTIFY_URL_COL+" TEXT"+")";
         db.execSQL(query2);
-//endregion
+        //endregion
 
         //region Crea tabella con nome activity con le colonne specificate
         String query3 = "CREATE TABLE " + ACTIVITIES_TABLE + " ("
@@ -109,14 +115,14 @@ public class DBController extends SQLiteOpenHelper {
                 + DBActivity.DETAILS_COL + " TEXT,"
                 +DBActivity.EXISTS_COL+" BOOLEAN"+")";
         db.execSQL(query3);
-//endregion
+        //endregion
 
         //regionCrea tabella con nome authorization con le colonne specificate
         String query4="CREATE TABLE "+ AUTHORIZATIONS_TABLE +" ("
                 + DBAuthorization.ENTRY_COL+" TEXT,"
                 +DBAuthorization.EXIT_COL+" TEXT"+")";
         db.execSQL(query4);
-//endregion
+        //endregion
 
         //region Crea tabella con nome disciplinaryNote con le colonne specificate
         String query5="CREATE TABLE "+DISCIPLINARY_NOTICES_TABLE+" ("
@@ -151,7 +157,7 @@ public class DBController extends SQLiteOpenHelper {
         //endregion
 
         //region Crea tabella con nome vote con le colonne specificate
-        String query8 = "CREATE TABLE " + VOTE_TABLE + " ("
+        String query8 = "CREATE TABLE " + VOTES_TABLE + " ("
                 + DBVote.VALUE_COL + " TEXT,"
                 + DBVote.DATE_COL + " TEXT,"
                 + DBVote.TEST_TYPE_COL + " TEXT,"
@@ -159,7 +165,8 @@ public class DBController extends SQLiteOpenHelper {
                 + DBVote.JUDGEMENT_COL + " TEXT,"
                 + DBVote.QUARTERLY_COL + " TEXT,"
                 + DBVote.IS_ASTERISK_COL + " BOOLEAN,"
-                + DBVote.IS_RELEVANT_FOR_MEAN_COL + " BOOLEAN"+")";
+                + DBVote.IS_RELEVANT_FOR_MEAN_COL + " BOOLEAN,"
+                + DBVote.SUBJECT + " TEXT" + ")";
         db.execSQL(query8);
         //endregion
     }
@@ -615,52 +622,67 @@ public class DBController extends SQLiteOpenHelper {
     //endregion
 
     //region DBVote
-    private long addVote(Vote vote, SQLiteDatabase db){
-        ContentValues values = new ContentValues();
-        values.put(DBVote.VALUE_COL, vote.value);
-        values.put(DBVote.QUARTERLY_COL, vote.quarterly);
-        values.put(DBVote.IS_ASTERISK_COL ,vote.isAsterisk);
-        values.put(DBVote.DATE_COL ,vote.date);
-        values.put(DBVote.JUDGEMENT_COL ,vote.judgement);
-        values.put(DBVote.TEST_TYPE_COL ,vote.testType);
-        values.put(DBVote.ARGUMENTS_COL ,vote.arguments);
-        values.put(DBVote.IS_RELEVANT_FOR_MEAN_COL ,vote.isRelevantForMean);
+    private void addSubject(String subject, List<Vote> votes, SQLiteDatabase db){
+        for(Vote vote : votes) {
+            ContentValues values = new ContentValues();
 
-        return db.insert(VOTE_TABLE, null, values);
+            values.put(DBVote.VALUE_COL, vote.value);
+            values.put(DBVote.QUARTERLY_COL, vote.quarterly);
+            values.put(DBVote.IS_ASTERISK_COL, vote.isAsterisk);
+            values.put(DBVote.DATE_COL, vote.date);
+            values.put(DBVote.JUDGEMENT_COL, vote.judgement);
+            values.put(DBVote.TEST_TYPE_COL, vote.testType);
+            values.put(DBVote.ARGUMENTS_COL, vote.arguments);
+            values.put(DBVote.IS_RELEVANT_FOR_MEAN_COL, vote.isRelevantForMean);
+            values.put(DBVote.SUBJECT, subject);
+
+            db.insert(VOTES_TABLE, null, values);
+        }
     }
 
-    public void addVotes(List<Vote> votes){
+    public void addVotes(Map<String, List<Vote>> votes){
         SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("DELETE FROM " + VOTES_TABLE + ";");
 
-        for (Vote vote : votes) {
-            addVote(vote, db);
+        for (String m : votes.keySet()) {
+            addSubject(m, votes.get(m), db);
         }
 
         db.close();
     }
 
-    public List<Vote> readVotes() {
+    public Map<String, List<Vote>> readVotes() {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM " + VOTE_TABLE, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + VOTES_TABLE, null);
 
-        List<Vote> votes = new Vector<>();
+        Map<String, List<Vote>> votes = new HashMap<>();
 
         if (cursor.moveToFirst()) {
-            boolean isAsterisk=true;
-            if(cursor.getInt(2)==0)isAsterisk=false;
-            boolean isRelevantForMean=true;
-            if(cursor.getInt(7)==0)isRelevantForMean=false;
             do {
-                votes.add(new Vote(
+                boolean isAsterisk = cursor.getInt(6) != 0;
+                boolean isRelevantForMean = cursor.getInt(7) != 0;
+                String subject = cursor.getString(8);
+
+                List<Vote> voteList = votes.get(subject);
+
+                if(voteList == null){
+                    voteList = new Vector<>();
+                }
+
+                voteList.add(new Vote(
                         cursor.getString(0),
                         cursor.getString(1),
+                        cursor.getString(2),
                         cursor.getString(3),
                         cursor.getString(4),
                         cursor.getString(5),
-                        cursor.getString(6),
                         isAsterisk,
                         isRelevantForMean));
+
+
+                votes.put(subject, voteList);
+
             } while (cursor.moveToNext());
             //muovi il cursore nella prossima riga
         }
@@ -677,6 +699,8 @@ public class DBController extends SQLiteOpenHelper {
         private static final String TEST_TYPE_COL="testType";
         private static final String ARGUMENTS_COL="arguments";
         private static final String IS_RELEVANT_FOR_MEAN_COL="isRelevantForMean";
+
+        private static final String SUBJECT = "subject";
     }
     //endregion
 
@@ -686,6 +710,14 @@ public class DBController extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         //Se c'è stato un aggiornamento del database, crea uno nuovo
         db.execSQL("DROP TABLE IF EXISTS " + ALERTS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + ABSENCES_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + ACTIVITIES_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + AUTHORIZATIONS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + DISCIPLINARY_NOTICES_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + HOMEWORKS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + TESTS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + VOTES_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + NEWSLETTERS_TABLE);
         onCreate(db);
     }
 }
