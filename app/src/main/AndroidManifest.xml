@@ -77,7 +77,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activities.MainLoginActivity"
+            android:name=".ui.activities.LoginActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.GiuaApp.NoActionBar"
             tools:ignore="LockedOrientationActivity">

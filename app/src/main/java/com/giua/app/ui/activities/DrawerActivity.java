@@ -91,7 +91,7 @@ public class DrawerActivity extends AppCompatActivity {
         loggerManager = new LoggerManager("DrawerActivity", this);
         loggerManager.d("onCreate chiamato");
 
-        //startActivity(new Intent(this, AccountsActivity.class));
+        startActivity(new Intent(this, AccountsActivity.class));    //DEBUG
 
         offlineMode = getIntent().getBooleanExtra("offline", false);
         demoMode = SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE);
@@ -142,7 +142,7 @@ public class DrawerActivity extends AppCompatActivity {
             //Anche se siamo in offline mode, proviamo a scaricarle comunque (magari il registro è in manutenzione)
             loggerManager.d("Scarico le informazioni sulle funzionalità instabili");
             try {
-                unstableFeatures = GlobalVariables.gS.getExtPage("https://giua-app.github.io/unstable_features2.txt").text();
+                unstableFeatures = GiuaScraper.getExtPage("https://giua-app.github.io/unstable_features2.txt").text();
                 myFragmentManager.unstableFeatures = unstableFeatures;
             } catch (Exception ignored) {
             }
@@ -215,7 +215,7 @@ public class DrawerActivity extends AppCompatActivity {
         }
 
         if (iProfile.getName().getText().equals("Aggiungi account"))
-            startActivity(new Intent(this, MainLoginActivity.class).putExtra("addAccount", true));
+            startActivity(new Intent(this, LoginActivity.class).putExtra("addAccount", true));
         else {
             String selectedProfileUsername = iProfile.getName().toString();
             if (myDrawerManager.activeProfile.getName().toString().equals(selectedProfileUsername))
