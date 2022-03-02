@@ -91,7 +91,7 @@ public class DrawerActivity extends AppCompatActivity {
         loggerManager = new LoggerManager("DrawerActivity", this);
         loggerManager.d("onCreate chiamato");
 
-        startActivity(new Intent(this, AccountsActivity.class));    //DEBUG
+        //startActivity(new Intent(this, AccountsActivity.class));    //DEBUG
 
         offlineMode = getIntent().getBooleanExtra("offline", false);
         demoMode = SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE);

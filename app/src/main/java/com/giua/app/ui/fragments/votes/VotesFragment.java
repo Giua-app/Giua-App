@@ -37,6 +37,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.giua.app.DBController;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.R;
@@ -70,8 +71,6 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
     @SuppressLint("ClickableViewAccessibility")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if (getArguments() != null)
-            offlineMode = getArguments().getBoolean("offline");
         root = inflater.inflate(R.layout.fragment_votes, container, false);
 
         viewsLayout = root.findViewById(R.id.vote_fragment_linear_layout);
@@ -85,6 +84,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         obscureLayoutView.setOnClickListener(this::obscureButtonOnClick);
+        offlineMode = activity.getIntent().getBooleanExtra("offline", false);
 
         swipeRefreshLayout.setRefreshing(true);
 
@@ -94,15 +94,26 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
     }
 
     @Override
-    public void loadOfflineDataAndViews() {}
+    public void loadOfflineDataAndViews() {
+        new Thread(() -> {
+            try {
+                allVotes = new DBController(activity).readVotes();
+                refreshVotes = false;
+                if (isFragmentDestroyed)
+                    return;
+                activity.runOnUiThread(this::addViews);
+            } catch (IllegalStateException ignored) {
+                //Si verifica quando questa schermata è stata distrutta ma il thread cerca comunque di fare qualcosa
+            }
+        }).start();
+    }
 
     @Override
     public void loadDataAndViews() {
         GlobalVariables.gsThread.addTask(() -> {
             try {
                 allVotes = GlobalVariables.gS.getVotesPage(refreshVotes).getAllVotes();
-                /*else
-                    allVotes = new JsonHelper().parseJsonForVotes(AppData.getVotesString(requireActivity()));*/
+                new DBController(activity).addVotes(allVotes);
                 refreshVotes = false;
                 if (isFragmentDestroyed)
                     return;
@@ -132,6 +143,8 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
                 activity.runOnUiThread(() -> {
                     ((DrawerActivity) activity).startActivityManager();
                 });
+            } catch (IllegalStateException ignored) {
+                //Si verifica quando questa schermata è stata distrutta ma il thread cerca comunque di fare qualcosa
             }
         });
     }
@@ -164,7 +177,10 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
     private void onRefresh() {
         refreshVotes = true;
-        loadDataAndViews();
+        if (!offlineMode)
+            loadDataAndViews();
+        else
+            loadOfflineDataAndViews();
     }
 
     public void obscureButtonOnClick(View view) {
@@ -226,15 +242,15 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onStart() {
-        loadDataAndViews();
+        if (!offlineMode)
+            loadDataAndViews();
+        else
+            loadOfflineDataAndViews();
         super.onStart();
     }
 
     @Override
     public void onStop() {
-        //Cose per offline
-        /*if (allVotes != null && !allVotes.isEmpty())
-            AppData.saveVotesString(activity, new JsonHelper().saveVotesToString(allVotes));*/
         super.onStop();
     }
 
