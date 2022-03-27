@@ -29,6 +29,8 @@ import com.giua.objects.Absence;
 import com.giua.objects.Alert;
 //agenda objects
 import com.giua.objects.Activity;
+import com.giua.objects.Document;
+import com.giua.objects.Lesson;
 import com.giua.objects.Homework;
 import com.giua.objects.Test;
 
@@ -36,7 +38,10 @@ import com.giua.objects.Authorization;
 import com.giua.objects.DisciplinaryNotices;
 import com.giua.objects.Vote;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -59,6 +64,8 @@ public class DBController extends SQLiteOpenHelper {
     private static final String HOMEWORKS_TABLE="homeworks";
     private static final String TESTS_TABLE="tests";
     private static final String VOTE_TABLE="votes";
+    private static final String DOCUMENT_TABLE="document";
+    private static final String LESSON_TABLE="document";
     private static final String NEWSLETTERS_TABLE = "newsletters";
 
     /**
@@ -161,6 +168,29 @@ public class DBController extends SQLiteOpenHelper {
                 + DBVote.IS_ASTERISK_COL + " BOOLEAN,"
                 + DBVote.IS_RELEVANT_FOR_MEAN_COL + " BOOLEAN"+")";
         db.execSQL(query8);
+        //endregion
+
+        //region Crea tabella con nome document con le colonne specificate
+        String query9 = "CREATE TABLE " + DOCUMENT_TABLE + " ("
+                + DBDocument.STATUS_COL + " TEXT,"
+                + DBDocument.CLASSROOM_COL + " TEXT,"
+                + DBDocument.SUBJECT_COL + " TEXT,"
+                + DBDocument.INSTITUTE_COL + " TEXT,"
+                + DBDocument.DOWNLOAD_URL_COL + " TEXT"+")";
+        db.execSQL(query9);
+        //endregion
+
+        //region Crea tabella con nome lesson con le colonne specificate
+        String query10 = "CREATE TABLE " + LESSON_TABLE + " ("
+                + DBLesson.DATE_COL + " DATE,"
+                + DBLesson.TIME_COL + " TEXT,"
+                + DBLesson.SUBJECT_COL + " TEXT,"
+                + DBLesson.ARGUMENTS_COL + " TEXT,"
+                + DBLesson.ACTIVITIES_COL + " TEXT,"
+                + DBLesson.EXISTS_COL + " BOOLEAN,"
+                + DBLesson.IS_ERROR_COL + " BOOLEAN,"
+                + DBLesson.SUPPORT_COL + " TEXT"+")";
+        db.execSQL(query10);
         //endregion
     }
 
@@ -680,7 +710,129 @@ public class DBController extends SQLiteOpenHelper {
     }
     //endregion
 
+    //region DBDocuments
+    private long addDocument(Document document, SQLiteDatabase db){
+        ContentValues values = new ContentValues();
+        values.put(DBDocument.STATUS_COL, document.status);
+        values.put(DBDocument.CLASSROOM_COL, document.classroom);
+        values.put(DBDocument.SUBJECT_COL, document.subject);
+        values.put(DBDocument.INSTITUTE_COL, document.institute);
+        values.put(DBDocument.DOWNLOAD_URL_COL, document.downloadUrl);
 
+        return db.insert(DOCUMENT_TABLE, null, values);
+    }
+
+    public void addDocuments(List<Document> documents){
+        SQLiteDatabase db = getWritableDatabase();
+
+        for (Document document : documents) {
+            addDocument(document, db);
+        }
+
+        db.close();
+    }
+
+    public List<Document> readDocuments() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DOCUMENT_TABLE, null);
+
+        List<Document> documents = new Vector<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                documents.add(new Document(
+                        cursor.getString(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getString(4)));
+            } while (cursor.moveToNext());
+            //muovi il cursore nella prossima riga
+        }
+        cursor.close();
+        return documents;
+    }
+
+    private static class DBDocument{
+        private static final String STATUS_COL="status";
+        private static final String CLASSROOM_COL="classroom";
+        private static final String SUBJECT_COL="subject";
+        private static final String INSTITUTE_COL="institute";
+        private static final String DOWNLOAD_URL_COL="downloadUrl";
+    }
+    //endregion
+
+    //region DBLesson
+    private long addLesson(Lesson lesson, SQLiteDatabase db){
+        ContentValues values = new ContentValues();
+        values.put(DBLesson.DATE_COL, lesson.date.toString());
+        values.put(DBLesson.TIME_COL, lesson.time);
+        values.put(DBLesson.SUBJECT_COL, lesson.subject);
+        values.put(DBLesson.ARGUMENTS_COL, lesson.arguments);
+        values.put(DBLesson.ACTIVITIES_COL, lesson.activities);
+        values.put(DBLesson.EXISTS_COL, lesson._exists);
+        values.put(DBLesson.IS_ERROR_COL, lesson.isError);
+        values.put(DBLesson.SUPPORT_COL, lesson.support);
+
+        return db.insert(LESSON_TABLE, null, values);
+    }
+
+    public void addLessons(List<Lesson> lessons){
+        SQLiteDatabase db = getWritableDatabase();
+
+        for (Lesson lesson : lessons) {
+            addLesson(lesson, db);
+        }
+
+        db.close();
+    }
+
+    public List<Lesson> readLessons() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + LESSON_TABLE, null);
+
+        List<Lesson> lessons = new Vector<>();
+
+        if (cursor.moveToFirst()) {
+            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
+            Date date=null;
+            try{
+                date=simpleDateFormat.parse(cursor.getString(0));
+            }catch(ParseException e){}
+            boolean exists=true;
+            if(cursor.getInt(5)==0)exists=false;
+            boolean isError=true;
+            if(cursor.getInt(6)==0)exists=false;
+            do {
+                lessons.add(new Lesson(
+                        date,
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getString(4),
+                        cursor.getString(7),
+                        exists,
+                        isError));
+            } while (cursor.moveToNext());
+            //muovi il cursore nella prossima riga
+        }
+        cursor.close();
+        return lessons;
+    }
+
+    private static class DBLesson{
+        private static final String DATE_COL="date";
+        private static final String TIME_COL="time";
+        private static final String SUBJECT_COL="subject";
+        private static final String ARGUMENTS_COL="arguments";
+        private static final String ACTIVITIES_COL="activities";
+        private static final String EXISTS_COL="_exists";
+        private static final String IS_ERROR_COL="isError";
+        private static final String SUPPORT_COL="support";
+    }
+    //endregion
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
