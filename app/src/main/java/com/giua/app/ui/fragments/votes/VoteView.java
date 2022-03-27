@@ -34,7 +34,6 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 
-import com.giua.app.GlobalVariables;
 import com.giua.app.R;
 import com.giua.objects.Vote;
 import com.giua.pages.VotesPage;
@@ -50,7 +49,6 @@ public class VoteView extends ConstraintLayout {
     private final String subjectName;
     private List<LinearLayout> listVoteLayouts;
     private final List<Vote> allVotes;
-    private final VotesPage votesPage;
     private final OnClickListener onClick;
     private List<Integer> quarterlyCounter;
     private final boolean shouldShowCents;
@@ -62,7 +60,6 @@ public class VoteView extends ConstraintLayout {
         this.allVotes = allVotes;
         this.onClick = onClick;
         this.shouldShowCents = shouldShowCents;
-        votesPage = GlobalVariables.gS.getVotesPage(false);
         initializeComponent(context);
     }
 
@@ -89,7 +86,7 @@ public class VoteView extends ConstraintLayout {
         for (int quarter : quarterlyCounter) {
             TextView quarterlyTextView = createTextViewForQuarterly(context, GiuaScraperUtils.getQuarterNameWithNumbers(quarter), isFirst);
             HorizontalScrollView horizontalScrollView = createHorizontalScrollView(context);
-            TextView meanTextView = createTextViewForMeans(context, votesPage.getMeanOf(allVotes, quarter), isFirst);
+            TextView meanTextView = createTextViewForMeans(context, VotesPage.getMeanOf(allVotes, quarter), isFirst);
 
             ((LinearLayout) findViewById(R.id.list_vote_layout)).addView(quarterlyTextView);
             ((LinearLayout) findViewById(R.id.list_vote_layout)).addView(horizontalScrollView);

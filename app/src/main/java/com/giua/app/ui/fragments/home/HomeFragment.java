@@ -40,6 +40,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.giua.app.AppUpdateManager;
+import com.giua.app.DBController;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.LoggerManager;
@@ -53,7 +54,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -115,7 +115,14 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         offlineMode = activity.getIntent().getBooleanExtra("offline", false);
 
         GlobalVariables.gsThread.addTask(() -> {
-            //TODO: Mettere la cache for check updates (almeno tra activity manager e home fragemnt visto che in ogni caso viene chiamata due volte)
+
+            if(offlineMode){
+                activity.runOnUiThread(() -> txUserInfo.setText("Accesso eseguito in modalità Offline"));
+            } else{
+                activity.runOnUiThread(() -> txUserInfo.setText("Accesso eseguito nell'account " + GlobalVariables.gS.getUser() + " (" + GlobalVariables.gS.getUserTypeString() + ")"));
+            }
+
+            //TODO: Mettere la cache for check updates (almeno tra activity manager e home fragment visto che in ogni caso viene chiamata due volte)
             AppUpdateManager manager = new AppUpdateManager(activity);
             if (manager.checkForUpdates()) {
                 activity.runOnUiThread(() -> {
@@ -123,13 +130,6 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
                     root.findViewById(R.id.home_app_update_reminder).setVisibility(View.VISIBLE);
                     root.findViewById(R.id.home_app_update_reminder).setOnClickListener(this::updateReminderOnClick);
                 });
-            }
-
-            //String userType = GlobalVariables.gS.getUserTypeString();
-            if(offlineMode){
-                activity.runOnUiThread(() -> txUserInfo.setText("Accesso eseguito in modalità Offline"));
-            } else{
-                activity.runOnUiThread(() -> txUserInfo.setText("Accesso eseguito nell'account " + GlobalVariables.gS.getUser() + " (" + GlobalVariables.gS.getUserTypeString() + ")"));
             }
         });
 
@@ -140,7 +140,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     public void loadOfflineDataAndViews() {
         new Thread(() -> {
             try {
-                Map<String, List<Vote>> allVotes = new HashMap<>();
+                Map<String, List<Vote>> allVotes = new DBController(activity).readVotes();
                 int homeworks = 0;
                 int tests = 0;
 
@@ -169,6 +169,8 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
                 Map<String, List<Vote>> allVotes = GlobalVariables.gS.getVotesPage(forceRefresh).getAllVotes();
                 int homeworks = GlobalVariables.gS.getHomePage(forceRefresh).getNearHomeworks();
                 int tests = GlobalVariables.gS.getHomePage(false).getNearTests();
+
+                new DBController(activity).addVotes(allVotes);
 
                 if (forceRefresh)
                     forceRefresh = false;
@@ -230,7 +232,10 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
 
     private void onRefresh() {
         forceRefresh = true;
-        loadDataAndViews();
+        if (!offlineMode)
+            loadDataAndViews();
+        else
+            loadOfflineDataAndViews();
     }
 
     private void setupHomeworksTestsText(int homeworks, int tests) {

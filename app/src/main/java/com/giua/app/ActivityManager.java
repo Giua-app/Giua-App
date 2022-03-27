@@ -32,7 +32,7 @@ import com.giua.app.ui.activities.AppIntroActivity;
 import com.giua.app.ui.activities.AutomaticLoginActivity;
 import com.giua.app.ui.activities.CaocActivity;
 import com.giua.app.ui.activities.DrawerActivity;
-import com.giua.app.ui.activities.MainLoginActivity;
+import com.giua.app.ui.activities.LoginActivity;
 import com.giua.webscraper.GiuaScraper;
 
 import java.util.Calendar;
@@ -121,7 +121,7 @@ public class ActivityManager extends AppCompatActivity {
         checkForPreviousUpdate();
 
         if (AppData.getActiveUsername(this).equals(""))
-            startMainLoginActivity();
+            startLoginActivity();
         else
             startAutomaticLoginActivity();
     }
@@ -182,7 +182,7 @@ public class ActivityManager extends AppCompatActivity {
             AppData.saveLastUpdateReminderDate(this, Calendar.getInstance()); //Imposta last reminder
         }
 
-        //Non salviamo la stringa della versione per permettere a DrawerActivity e MainLoginActivity di fare le loro cose
+        //Non salviamo la stringa della versione per permettere a DrawerActivity e LoginActivity di fare le loro cose
         //SettingsData.saveSettingString(this, SettingKey.APP_VER, BuildConfig.VERSION_NAME);
     }
 
@@ -236,9 +236,9 @@ public class ActivityManager extends AppCompatActivity {
         SettingsData.saveSettingBoolean(this, SettingKey.TESTS_NOTIFICATION, true);
     }
 
-    private void startMainLoginActivity() {
+    private void startLoginActivity() {
         loggerManager.d("Avvio Main Login Activity");
-        startActivity(new Intent(ActivityManager.this, MainLoginActivity.class));
+        startActivity(new Intent(ActivityManager.this, LoginActivity.class));
         finish();
     }
 

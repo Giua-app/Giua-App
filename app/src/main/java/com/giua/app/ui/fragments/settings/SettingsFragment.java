@@ -47,7 +47,7 @@ import com.giua.app.ui.activities.AboutActivity;
 import com.giua.app.ui.activities.AppIntroActivity;
 import com.giua.app.ui.activities.BugReportActivity;
 import com.giua.app.ui.activities.LogdogViewerActivity;
-import com.giua.app.ui.activities.MainLoginActivity;
+import com.giua.app.ui.activities.LoginActivity;
 import com.giua.webscraper.GiuaScraper;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -396,7 +396,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             SettingsData.saveSettingString(requireActivity(), SettingKey.DEFAULT_URL, (String) o);
             if (!o.equals(defaultUrl)) {
                 AppData.saveActiveUsername(context, "");
-                startActivity(new Intent(requireActivity(), MainLoginActivity.class));
+                startActivity(new Intent(requireActivity(), LoginActivity.class));
                 requireActivity().finish();
             }
         } else {

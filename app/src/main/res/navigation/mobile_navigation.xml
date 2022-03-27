@@ -84,6 +84,6 @@
 
     <activity
         android:id="@+id/nav_logout"
-        android:name="com.giua.app.ui.activities.MainLoginActivity"
+        android:name="com.giua.app.ui.activities.LoginActivity"
         android:label="Impostazioni" />
 </navigation>

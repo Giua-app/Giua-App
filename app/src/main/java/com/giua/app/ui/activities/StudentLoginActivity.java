@@ -74,7 +74,7 @@ public class StudentLoginActivity extends AppCompatActivity {
                     String rawCookie = CookieManager.getInstance().getCookie(GiuaScraper.getSiteURL());
                     if (rawCookie != null) {
                         cookie = rawCookie.split("=")[1];
-                        onStoppedWebView(getIntent().getStringExtra("sender").equals("MainLogin")); //Aumenta il conteggio solo se StudentLogin viene chiamata dal MainLogin
+                        onStoppedWebView(getIntent().getStringExtra("sender").equals("LoginActivity")); //Aumenta il conteggio solo se StudentLogin viene chiamata dal LoginActivity
                         return true;
                     }
                     loggerManager.e("Errore, cookie ottenuto è null. Impossibile continuare");

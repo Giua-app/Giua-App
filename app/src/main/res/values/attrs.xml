@@ -22,6 +22,9 @@
         <attr name="hasCancelText" format="boolean" />
         <attr name="cancelText" format="string" />
     </declare-styleable>
+    <declare-styleable name="BottomView">
+        <attr name="startHeight" format="dimension" />
+    </declare-styleable>
 
     <style name="GiuaAppIntroDefaultText" parent="TextAppearance.AppCompat.Body1">
         <item name="android:textColor">@color/appintro_desc_color</item>
@@ -30,6 +33,7 @@
         <item name="autoSizeTextType">uniform</item>
         <item name="autoSizeStepGranularity">@dimen/appintro_text_granularity_size</item>
     </style>
+
     <style name="GiuaAppIntroDefaultHeading" parent="TextAppearance.AppCompat.Display1">
         <item name="android:textColor">@color/appintro_title_color</item>
         <item name="android:textStyle">bold</item>

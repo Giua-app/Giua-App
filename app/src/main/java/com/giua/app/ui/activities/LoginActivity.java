@@ -57,7 +57,7 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Objects;
 
-public class MainLoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
     EditText etUsername;
     EditText etPassword;
     TextInputLayout txtLayoutUsername;
@@ -79,7 +79,7 @@ public class MainLoginActivity extends AppCompatActivity {
             GlobalVariables.gsThread = new GiuaScraperThread();
 
         isAddingAccount = getIntent().getBooleanExtra("addAccount", false);
-        loggerManager = new LoggerManager("MainLoginActivity", this);
+        loggerManager = new LoggerManager("LoginActivity", this);
         loggerManager.d("onCreate chiamato");
 
         txtLayoutUsername = findViewById(R.id.login_txtlayout_user);
@@ -176,7 +176,7 @@ public class MainLoginActivity extends AppCompatActivity {
             new Analytics.Builder("App aggiornata")
                     .addCustomValue("new_ver", BuildConfig.VERSION_NAME)
                     .addCustomValue("old_ver", AppData.getAppVersion(this)).send();
-            AppUpdateManager upd = new AppUpdateManager(MainLoginActivity.this);
+            AppUpdateManager upd = new AppUpdateManager(LoginActivity.this);
             upd.deleteOldApk();
             new Thread(upd::showDialogReleaseChangelog).start();
         }
@@ -283,14 +283,14 @@ public class MainLoginActivity extends AppCompatActivity {
 
     private void startStudentLoginActivity() {
         loggerManager.d("Avvio StudenteLoginActivity");
-        startActivity(new Intent(MainLoginActivity.this, StudentLoginActivity.class).putExtra("sender", "MainLogin"));
+        startActivity(new Intent(LoginActivity.this, StudentLoginActivity.class).putExtra("sender", "LoginActivity"));
     }
 
     private void startDrawerActivity() {
         loggerManager.d("Avvio DrawerActivity");
         new Analytics.Builder("Logged in")
                 .addCustomValue("account_type", GlobalVariables.gS.getUserTypeString()).send();
-        Intent intent = new Intent(MainLoginActivity.this, DrawerActivity.class);
+        Intent intent = new Intent(LoginActivity.this, DrawerActivity.class);
         startActivity(intent);
     }
 

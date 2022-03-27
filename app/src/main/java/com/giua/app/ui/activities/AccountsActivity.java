@@ -20,15 +20,21 @@
 package com.giua.app.ui.activities;
 
 import android.os.Bundle;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.giua.app.AccountData;
+import com.giua.app.GlobalVariables;
 import com.giua.app.R;
 import com.giua.app.ui.views.BottomView;
 
 public class AccountsActivity extends AppCompatActivity {
 
     BottomView bottomView;
+    TextView tvBottomViewUsername;
+    EditText etBottomViewUrl;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,6 +42,11 @@ public class AccountsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_accounts);
 
         bottomView = findViewById(R.id.accounts_bottom_view);
+        tvBottomViewUsername = findViewById(R.id.accounts_bottom_view_username);
+        etBottomViewUrl = findViewById(R.id.accounts_bottom_view_url);
+
+        tvBottomViewUsername.setText(GlobalVariables.gS.getUser());
+        etBottomViewUrl.setText(AccountData.getSiteUrl(this, GlobalVariables.gS.getUser()));
         bottomView.showStart();
     }
 }

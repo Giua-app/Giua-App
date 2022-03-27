@@ -19,15 +19,15 @@
 
 package com.giua.app.ui.views;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -39,6 +39,7 @@ public class BottomView extends LinearLayout {
     private float yOffset = -1f;
     private final ImageView imageView;
     private final DisplayMetrics realMetrics;
+    private float startHeight;   //L'altezza del layout alla posizione iniziale
 
     public BottomView(Context context) {
         super(context);
@@ -46,13 +47,14 @@ public class BottomView extends LinearLayout {
         realMetrics = new DisplayMetrics();
         ((Activity) context).getWindowManager().getDefaultDisplay().getRealMetrics(realMetrics);
 
+        startHeight = realMetrics.heightPixels - (float) realMetrics.heightPixels / 3;
+
         imageView = new ImageView(context);
-        LinearLayout.LayoutParams layoutParams = new LayoutParams(80, 15);
+        LinearLayout.LayoutParams layoutParams = new LayoutParams(convertDpToPx(50), convertDpToPx(8));
         layoutParams.gravity = Gravity.CENTER;
         imageView.setLayoutParams(layoutParams);
         imageView.setImageResource(R.drawable.bottom_view_shape);
         addView(imageView);
-        setOnTouchListener(this::onTouchEvent);
     }
 
     public BottomView(Context context, @Nullable AttributeSet attrs) {
@@ -61,103 +63,131 @@ public class BottomView extends LinearLayout {
         realMetrics = new DisplayMetrics();
         ((Activity) context).getWindowManager().getDefaultDisplay().getRealMetrics(realMetrics);
 
+        TypedArray a = context.getTheme().obtainStyledAttributes(
+                attrs,
+                R.styleable.BottomView,
+                0, 0);
+
+        startHeight = a.getDimension(R.styleable.BottomView_startHeight, -1f);
+        if (startHeight == -1f)
+            startHeight = realMetrics.heightPixels - (float) realMetrics.heightPixels / 3;
+        else
+            //Converto startHeight nella y corrispondente all' altezza
+            startHeight = realMetrics.heightPixels - startHeight;
+
         imageView = new ImageView(context);
-        LinearLayout.LayoutParams layoutParams = new LayoutParams(80, 15);
+        LinearLayout.LayoutParams layoutParams = new LayoutParams(convertDpToPx(50), convertDpToPx(8));
         layoutParams.gravity = Gravity.CENTER;
         imageView.setLayoutParams(layoutParams);
         imageView.setImageResource(R.drawable.bottom_view_shape);
         addView(imageView);
-        setOnTouchListener(this::onTouchEvent);
     }
 
-    private boolean onTouchEvent(View view, MotionEvent motionEvent) {
+    @Override
+    public boolean onTouchEvent(MotionEvent motionEvent) {
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
             return true;
         }
         if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
-            if (getTranslationY() >= 0) {
-                if (yOffset == -1f)
-                    yOffset = Math.abs(getTranslationY() - motionEvent.getRawY());
-                float newY = (float) Math.sqrt(getTranslationY()) + motionEvent.getRawY() - yOffset;
-                if (newY >= 0)
-                    setTranslationY(newY);
-                else
-                    setTranslationY(0);
-                return true;
-            }
+            if (getY() < 0) return false;
+
+            if (yOffset == -1f)
+                yOffset = Math.abs(getY() - motionEvent.getRawY());
+            float newY = motionEvent.getRawY() - yOffset;
+            if (newY >= 0)
+                setY(newY);
+            else
+                setY(0);
+            return true;
         }
         if (motionEvent.getAction() == MotionEvent.ACTION_CANCEL || motionEvent.getAction() == MotionEvent.ACTION_UP) {
             yOffset = -1f;
+            if (getY() < (float) realMetrics.heightPixels / 2 - 100)
+                showAllFromY();
+            else
+                moveToStart();
         }
+
         return false;
     }
 
     /**
-     * Fa vedere il layout poco sopra lo schermo.
-     * Più precisamente verrà visualizzato ad 1/3 dello schermo partendo dal basso.
+     * Fa vedere il layout portandolo a {@code startHeight} partendo dl basso
      */
     public void showStart() {
-        Animation translateAnimation = new TranslateAnimation(getX(), getX(), realMetrics.heightPixels, realMetrics.heightPixels - (float) realMetrics.heightPixels / 3);
-        translateAnimation.setDuration(300);
-        translateAnimation.setFillAfter(true);
-        startAnimation(translateAnimation);
-        setVisibility(VISIBLE);
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", realMetrics.heightPixels, startHeight);
+        objectAnimator.setDuration(300);
+        objectAnimator.start();
     }
 
     /**
-     * Fa vedere il layout all'altezza specificata
+     * Fa vedere il layout all'altezza specificata partendo dal basso
      *
      * @param height l'altezza a cui deve arrivare il layout partendo dal basso
      */
     public void showStart(float height) {
-        Animation translateAnimation = new TranslateAnimation(getX(), getX(), realMetrics.heightPixels, realMetrics.heightPixels - height);
-        translateAnimation.setDuration(300);
-        translateAnimation.setFillAfter(true);
-        startAnimation(translateAnimation);
-        setVisibility(VISIBLE);
+        if (height > realMetrics.heightPixels || height < 0)
+            height = 0;
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", realMetrics.heightPixels, realMetrics.heightPixels - height);
+        objectAnimator.setDuration(300);
+        objectAnimator.start();
     }
 
     /**
-     * Nasconde il layout completamente dalla sua posizione
+     * Nasconde il layout completamente partendo dalla sua posizione
      */
     public void hideAllFromY() {
-        TranslateAnimation translateAnimation = new TranslateAnimation(getX(), getX(), getY(), realMetrics.heightPixels);
-        translateAnimation.setDuration(300);
-        translateAnimation.setFillAfter(true);
-        startAnimation(translateAnimation);
-        setVisibility(INVISIBLE);
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", getY(), realMetrics.heightPixels);
+        objectAnimator.setDuration(300);
+        objectAnimator.start();
     }
 
     /**
-     * Nasconde il layout completamente partendo dall'alto
+     * Porta il layout nella posizione iniziale partendo dalla sua posizione
      */
-    public void hideAllFromTop() {
-        TranslateAnimation translateAnimation = new TranslateAnimation(getX(), getX(), getY(), realMetrics.heightPixels);
-        translateAnimation.setDuration(300);
-        translateAnimation.setFillAfter(true);
-        startAnimation(translateAnimation);
-        setVisibility(INVISIBLE);
+    public void moveToStart() {
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", getY(), startHeight);
+        objectAnimator.setDuration(300);
+        objectAnimator.start();
     }
 
     /**
      * Rende completamente visibile il layout partendo dalla sua posizione.
      */
     public void showAllFromY() {
-        TranslateAnimation translateAnimation = new TranslateAnimation(getX(), getX(), getY(), 0);
-        translateAnimation.setDuration(300);
-        translateAnimation.setFillAfter(true);
-        startAnimation(translateAnimation);
-        setVisibility(VISIBLE);
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", getY(), 0);
+        objectAnimator.setDuration(300);
+        objectAnimator.start();
     }
 
     /**
      * Rende completamente visibile il layout partendo dal basso dello schermo
      */
+    public void showAllFromZero() {
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", realMetrics.heightPixels, 0);
+        objectAnimator.setDuration(300);
+        objectAnimator.start();
+    }
+
+    /**
+     * Rende completamente visibile il layout partendo da {@code startHeight}
+     */
     public void showAllFromStart() {
-        TranslateAnimation translateAnimation = new TranslateAnimation(getX(), getX(), realMetrics.heightPixels, 0);
-        translateAnimation.setDuration(300);
-        translateAnimation.setFillAfter(true);
-        startAnimation(translateAnimation);
-        setVisibility(VISIBLE);
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", startHeight, 0);
+        objectAnimator.setDuration(300);
+        objectAnimator.start();
+    }
+
+    /**
+     * Nasconde il layout con una animazione
+     */
+    public void hide() {
+        hideAllFromY();
+        setVisibility(GONE);
+    }
+
+    private int convertDpToPx(float dp) {
+        //https://stackoverflow.com/questions/4605527/converting-pixels-to-dp
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
     }
 }

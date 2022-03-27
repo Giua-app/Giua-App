@@ -121,7 +121,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                     loggerManager.w("Cookie gS dell'account studente scaduto, avvio StudentLoginActivity");
                     startStudentLoginActivity();
                 } else {
-                    loggerManager.w("Cookie gS scaduto, avvio MainLoginActivity");
+                    loggerManager.w("Cookie gS scaduto, avvio LoginActivity");
                     AppData.saveActiveUsername(this, "");
                     setErrorMessage("Le credenziali di accesso non sono più valide");
                     try {
@@ -129,7 +129,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    startActivity(new Intent(AutomaticLoginActivity.this, MainLoginActivity.class));
+                    startActivity(new Intent(AutomaticLoginActivity.this, LoginActivity.class));
                 }
             } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
                 loggerManager.e("Errore: sito in manutenzione");
@@ -150,9 +150,9 @@ public class AutomaticLoginActivity extends AppCompatActivity {
     }
 
     private void btnLogoutOnClick(View view) {
-        loggerManager.d("Logout richiesto dall'utente, avvio MainLoginActivity");
+        loggerManager.d("Logout richiesto dall'utente, avvio LoginActivity");
         AppData.saveActiveUsername(this, "");
-        startActivity(new Intent(AutomaticLoginActivity.this, MainLoginActivity.class));
+        startActivity(new Intent(AutomaticLoginActivity.this, LoginActivity.class));
         finish();
     }
 
