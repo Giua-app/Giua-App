@@ -137,18 +137,20 @@ public class CheckNewsReceiver extends BroadcastReceiver {
             loggerManager.d("Account non google rilevato, eseguo login");
             gS = new GiuaScraper(username, AccountData.getPassword(context, username), AccountData.getCookie(context, username), true, new LoggerManager("GiuaScraper", context));
             gS.login();
-            AccountData.setCredentials(context, username, AccountData.getPassword(context, username), gS.getCookie());
+            AccountData.setCredentials(context, username, AccountData.getPassword(context, username), gS.getCookie(), AccountData.getUserType(context, username));
         } else {    //Se l'account è di gsuite fai il login con gsuite
             try {
                 loggerManager.d("Account google rilevato, provo ad entrare con cookie precedente");
                 gS = new GiuaScraper(username, AccountData.getPassword(context, username), AccountData.getCookie(context, username), true, new LoggerManager("GiuaScraper", context));
                 gS.login();
-                AccountData.setCredentials(context, username, AccountData.getPassword(context, username), gS.getCookie());
+                AccountData.setCredentials(context, username, AccountData.getPassword(context, username), gS.getCookie(), AccountData.getUserType(context, username));
             } catch (GiuaScraperExceptions.SessionCookieEmpty e) {
                 loggerManager.d("Cookie precedente non valido");
-                gS = new GiuaScraper(username, AccountData.getPassword(context, username), makeGsuiteLogin(), true, new LoggerManager("GiuaScraper", context));
+                String cookie = getGsuiteCookie();
+                if (cookie.equals("")) return;
+                gS = new GiuaScraper(username, AccountData.getPassword(context, username), cookie, true, new LoggerManager("GiuaScraper", context));
                 gS.login();
-                AccountData.setCredentials(context, username, AccountData.getPassword(context, username), gS.getCookie());
+                AccountData.setCredentials(context, username, AccountData.getPassword(context, username), gS.getCookie(), AccountData.getUserType(context, username));
             }
         }
     }
@@ -371,7 +373,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
                 .build();
     }
 
-    private String makeGsuiteLogin() {
+    private String getGsuiteCookie() {
         Connection session = Jsoup.newSession()
                 .followRedirects(true)
                 .userAgent("Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.91 Mobile Safari/537.36");

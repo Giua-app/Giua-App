@@ -28,6 +28,7 @@
     <ProgressBar
         android:id="@+id/circolari_loading_page_bar"
         style="?android:attr/progressBarStyle"
+        android:visibility="gone"
         android:layout_width="67dp"
         android:layout_height="67dp"
         androd:layout_constraintBottom_toBottomOf="parent"

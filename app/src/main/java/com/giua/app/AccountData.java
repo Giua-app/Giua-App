@@ -19,7 +19,6 @@
 
 package com.giua.app;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -45,6 +44,7 @@ public class AccountData {
     private static final String cookieKey = "cookie";
     private static final String siteUrlKey = "siteUrl";
     private static final String themeKey = "theme";
+    private static final String userTypeKey = "userType";
     private static MasterKey masterKey = null;
     private static final String masterKeyAlias = "masterKeyAlias";
 
@@ -94,24 +94,14 @@ public class AccountData {
     }
 
     //add final String APIUrl to parameters
-    public static void setCredentials(final Context context, final String username, final String password, final String cookie) {
+    public static void setCredentials(final Context context, final String username, final String password, final String cookie, final String userType) {
 
         getSharedPreferences(context, username).edit()
                 //.putString(APIUrlKey, APIUrl)
                 .putString(passwordKey, password)
                 .putString(cookieKey, cookie)
+                .putString(userTypeKey, userType)
                 .apply();
-    }
-
-    //add final String APIUrl to parameters
-    @SuppressLint("ApplySharedPref")
-    public static void setCredentialsSynchronously(final Context context, final String username, final String password, String cookie) {
-
-        getSharedPreferences(context, username).edit()
-                //.putString(APIUrlKey, APIUrl)
-                .putString(passwordKey, password)
-                .putString(cookieKey, cookie)
-                .commit();
     }
 
     public static String getPassword(final Context context, final String username) {
@@ -120,6 +110,10 @@ public class AccountData {
 
     public static String getCookie(final Context context, final String username) {
         return getSharedPreferences(context, username).getString(cookieKey, "");
+    }
+
+    public static String getUserType(final Context context, final String username) {
+        return getSharedPreferences(context, username).getString(userTypeKey, "");
     }
 
     public static void setSiteUrl(final Context context, final String username, final String siteUrl) {
@@ -133,7 +127,7 @@ public class AccountData {
     }
 
     public static void clearAllForAccount(final Context context, final String username) {
-        setCredentials(context, username, "", "");
+        setCredentials(context, username, "", "", "");
     }
 
     public static void setTheme(final Context context, final String username, final int color) {

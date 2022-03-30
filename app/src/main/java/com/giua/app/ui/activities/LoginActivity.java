@@ -202,9 +202,9 @@ public class LoginActivity extends AppCompatActivity {
                 GlobalVariables.gS.login();
                 loggerManager.d("Devo ricordare le credenziali? " + chRememberCredentials.isChecked());
 
-                if (GlobalVariables.gS.checkLogin()) {
+                if (GlobalVariables.gS.isSessionValid(GlobalVariables.gS.getCookie())) {
                     if (chRememberCredentials.isChecked()) {
-                        AccountData.setCredentials(this, etUsername.getText().toString(), etPassword.getText().toString(), GlobalVariables.gS.getCookie());
+                        AccountData.setCredentials(this, etUsername.getText().toString(), etPassword.getText().toString(), GlobalVariables.gS.getCookie(), GlobalVariables.gS.getUserTypeString());
                         AccountData.setSiteUrl(this, etUsername.getText().toString(), GiuaScraper.getSiteURL());
                         AppData.addAccountUsername(this, etUsername.getText().toString().toLowerCase());
                         AppData.saveActiveUsername(this, etUsername.getText().toString().toLowerCase());
@@ -284,6 +284,7 @@ public class LoginActivity extends AppCompatActivity {
     private void startStudentLoginActivity() {
         loggerManager.d("Avvio StudenteLoginActivity");
         startActivity(new Intent(LoginActivity.this, StudentLoginActivity.class).putExtra("sender", "LoginActivity"));
+        finish();
     }
 
     private void startDrawerActivity() {
@@ -292,6 +293,7 @@ public class LoginActivity extends AppCompatActivity {
                 .addCustomValue("account_type", GlobalVariables.gS.getUserTypeString()).send();
         Intent intent = new Intent(LoginActivity.this, DrawerActivity.class);
         startActivity(intent);
+        finish();
     }
 
     /**

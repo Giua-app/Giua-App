@@ -30,17 +30,6 @@
 
     <!-- Qui verranno visualizzati i dettagli del voto cliccato-->
 
-    <ProgressBar
-        android:id="@+id/vote_loading_page_bar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="67dp"
-        android:layout_height="67dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.425" />
-
     <TextView
         android:id="@+id/vote_fragment_no_elements_view"
         android:layout_width="wrap_content"

@@ -153,13 +153,17 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void loadDataAndViews() {
         if (!hasLoadedAllPages && !isLoadingContent) {
+
             isLoadingContent = true;
+            if (currentPage == 1)
+                swipeRefreshLayout.setRefreshing(true);
             if (currentPage > 1 && pbLoadingContent.getParent() == null)
                 viewsLayout.addView(pbLoadingContent);
+
             GlobalVariables.gsThread.addTask(() -> {
                 try {
                     allAlerts = GlobalVariables.gS.getAlertsPage(false).getAllAlerts(currentPage);
-                    if(currentPage == 1)
+                    if (currentPage == 1)
                         new DBController(root.getContext()).addAlerts(allAlerts);
 
                     if (allAlerts.isEmpty() && currentPage == 1) {
@@ -310,7 +314,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
             return;
         }
 
-        pbLoadingPage.setVisibility(View.VISIBLE);
+        swipeRefreshLayout.setRefreshing(true);
 
         TextView alertDetailsTextView = root.findViewById(R.id.alert_details_text_view);
 
@@ -342,7 +346,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
         detailsLayout.startAnimation(AnimationUtils.loadAnimation(requireActivity(), R.anim.visualizer_show_effect));
         detailsLayout.setVisibility(View.VISIBLE);
         obscureLayoutView.show();
-        pbLoadingPage.setVisibility(View.GONE);
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     private void btnGoUpOnClick(View view) {
@@ -387,8 +391,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
         }
         if (!isDownloading) {
             isDownloading = true;
-            pbLoadingPage.setZ(10f);
-            pbLoadingPage.setVisibility(View.VISIBLE);
+            swipeRefreshLayout.setRefreshing(true);
             GlobalVariables.gsThread.addTask(() -> {
                 try {
                     DownloadedFile downloadedFile = GlobalVariables.gS.download(url);
@@ -408,7 +411,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
                     e.printStackTrace();
                 }
                 isDownloading = false;
-                activity.runOnUiThread(() -> pbLoadingPage.setVisibility(View.GONE));
+                activity.runOnUiThread(() -> swipeRefreshLayout.setRefreshing(false));
             });
         }
     }
@@ -431,7 +434,6 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
 
     private void finishedLoading() {
         isLoadingContent = false;
-        pbLoadingPage.setVisibility(View.GONE);
         viewsLayout.removeView(pbLoadingContent);
         swipeRefreshLayout.setRefreshing(false);
     }

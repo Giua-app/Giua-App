@@ -30,7 +30,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -54,7 +53,6 @@ import java.util.Map;
 
 public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
-    ProgressBar pbLoadingPage;
     VoteView voteView;
     TextView tvNoElements;
     LinearLayout viewsLayout;
@@ -76,7 +74,6 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
         viewsLayout = root.findViewById(R.id.vote_fragment_linear_layout);
         obscureLayoutView = root.findViewById(R.id.vote_obscure_view);
         voteVisualizer = root.findViewById(R.id.vote_attachment_layout);
-        pbLoadingPage = root.findViewById(R.id.vote_loading_page_bar);
         tvNoElements = root.findViewById(R.id.vote_fragment_no_elements_view);
         swipeRefreshLayout = root.findViewById(R.id.vote_swipe_refresh_layout);
 
@@ -121,21 +118,18 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                 activity.runOnUiThread(() -> {
                     setErrorMessage(activity.getString(R.string.your_connection_error), root);
-                    pbLoadingPage.setVisibility(View.GONE);
                     tvNoElements.setVisibility(View.VISIBLE);
                     swipeRefreshLayout.setRefreshing(false);
                 });
             } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                 activity.runOnUiThread(() -> {
                     setErrorMessage(activity.getString(R.string.site_connection_error), root);
-                    pbLoadingPage.setVisibility(View.GONE);
                     tvNoElements.setVisibility(View.VISIBLE);
                     swipeRefreshLayout.setRefreshing(false);
                 });
             } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
                 activity.runOnUiThread(() -> {
                     setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
-                    pbLoadingPage.setVisibility(View.GONE);
                     tvNoElements.setVisibility(View.VISIBLE);
                     swipeRefreshLayout.setRefreshing(false);
                 });
@@ -162,7 +156,6 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
         for (String subject : allVotes.keySet()) {     //Cicla ogni materia
             addVoteView(subject);
         }
-        pbLoadingPage.setVisibility(View.GONE);
         swipeRefreshLayout.setRefreshing(false);
     }
 

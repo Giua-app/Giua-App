@@ -152,6 +152,9 @@ dependencies {
     //--jsoup HTML parser library @ https://jsoup.org/
     implementation 'org.jsoup:jsoup:1.14.3'
 
+    //--Color picker
+    implementation 'com.github.duanhong169:colorpicker:1.1.6'
+
     //--Giua scraper
     implementation 'com.github.Giua-app:Giua-Webscraper:09963f6d'
     //implementation fileTree(dir: 'libs', include: ['*.jar'])     //DEBUG

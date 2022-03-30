@@ -136,14 +136,9 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
         scrollView.setOnScrollChangeListener(this::onScrollViewScrolled);
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
-        attachmentLayout.setOnClickListener((view) -> {
-        });
         root.findViewById(R.id.newsletter_filter_cardview).setOnClickListener(this::btnFilterOnClick);
-
         obscureLayoutView.setOnClickListener(this::obscureViewOnClick);
-
         root.findViewById(R.id.newsletter_fragment_btn_go_up).setOnClickListener((view -> scrollView.smoothScrollTo(0, 0)));
-
         root.findViewById(R.id.newsletter_filter_btn_confirm).setOnClickListener(this::btnFilterConfirmOnClick);
 
         activity.getSystemService(NotificationManager.class).cancel(10);
@@ -158,7 +153,9 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     public void loadDataAndViews() {
         loadingPage = true;
         hasCompletedLoading = false;
-        if (currentPage > 1 && pbLoadingNewsletters.getParent() == null)
+        if (currentPage == 1)
+            swipeRefreshLayout.setRefreshing(true);
+        else if (currentPage > 1 && pbLoadingNewsletters.getParent() == null)
             layout.addView(pbLoadingNewsletters);
 
         if (!loadedAllPages) {
@@ -197,8 +194,6 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                         setErrorMessage(activity.getString(R.string.your_connection_error), root);
                         if (currentPage == 1)
                             tvNoElements.setVisibility(View.VISIBLE);
-                        pbLoadingPage.setVisibility(View.GONE);
-                        swipeRefreshLayout.setRefreshing(false);
                     });
                     allNewsletter = new Vector<>();
 
@@ -207,8 +202,6 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                         setErrorMessage(activity.getString(R.string.site_connection_error), root);
                         if (currentPage == 1)
                             tvNoElements.setVisibility(View.VISIBLE);
-                        pbLoadingPage.setVisibility(View.GONE);
-                        swipeRefreshLayout.setRefreshing(false);
                     });
                     allNewsletter = new Vector<>();
                 } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
@@ -216,8 +209,6 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                         setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
                         if (currentPage == 1)
                             tvNoElements.setVisibility(View.VISIBLE);
-                        pbLoadingPage.setVisibility(View.GONE);
-                        swipeRefreshLayout.setRefreshing(false);
                     });
                     allNewsletter = new Vector<>();
                 } catch (GiuaScraperExceptions.NotLoggedIn e) {
@@ -225,13 +216,17 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                         ((DrawerActivity) activity).startActivityManager();
                     });
                 }
-                activity.runOnUiThread(() -> layout.removeView(pbLoadingNewsletters));
-                swipeRefreshLayout.setRefreshing(false);
+                activity.runOnUiThread(() -> {
+                    swipeRefreshLayout.setRefreshing(false);
+                    layout.removeView(pbLoadingNewsletters);
+                });
                 loadingPage = false;
             });
         } else {
-            layout.removeView(pbLoadingNewsletters);
-            swipeRefreshLayout.setRefreshing(false);
+            activity.runOnUiThread(() -> {
+                swipeRefreshLayout.setRefreshing(false);
+                layout.removeView(pbLoadingNewsletters);
+            });
             loadingPage = false;
         }
 
@@ -263,7 +258,6 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             layout.addView(newsletterView);
         }
 
-        pbLoadingPage.setVisibility(View.GONE);
         swipeRefreshLayout.setRefreshing(false);
     }
 

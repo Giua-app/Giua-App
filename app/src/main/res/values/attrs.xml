@@ -22,8 +22,9 @@
         <attr name="hasCancelText" format="boolean" />
         <attr name="cancelText" format="string" />
     </declare-styleable>
-    <declare-styleable name="BottomView">
+    <declare-styleable name="SwipeView">
         <attr name="startHeight" format="dimension" />
+        <attr name="maxExtension" format="dimension" />
     </declare-styleable>
 
     <style name="GiuaAppIntroDefaultText" parent="TextAppearance.AppCompat.Body1">

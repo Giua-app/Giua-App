@@ -20,6 +20,7 @@
 package com.giua.app.ui.views;
 
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -35,19 +36,23 @@ import androidx.annotation.Nullable;
 
 import com.giua.app.R;
 
-public class BottomView extends LinearLayout {
+public class SwipeView extends LinearLayout {
     private float yOffset = -1f;
-    private final ImageView imageView;
-    private final DisplayMetrics realMetrics;
-    private float startHeight;   //L'altezza del layout alla posizione iniziale
+    public final ImageView imageView;
+    public final DisplayMetrics realMetrics;
+    public final float maxHeightAsY;
+    public final float startHeight;   //L'altezza del layout alla posizione iniziale
+    private OnTouchReleased onTouchRelease = (swipeView) -> {
+    };
 
-    public BottomView(Context context) {
+    public SwipeView(Context context) {
         super(context);
 
         realMetrics = new DisplayMetrics();
         ((Activity) context).getWindowManager().getDefaultDisplay().getRealMetrics(realMetrics);
 
         startHeight = realMetrics.heightPixels - (float) realMetrics.heightPixels / 3;
+        maxHeightAsY = 0;
 
         imageView = new ImageView(context);
         LinearLayout.LayoutParams layoutParams = new LayoutParams(convertDpToPx(50), convertDpToPx(8));
@@ -57,7 +62,7 @@ public class BottomView extends LinearLayout {
         addView(imageView);
     }
 
-    public BottomView(Context context, @Nullable AttributeSet attrs) {
+    public SwipeView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
         realMetrics = new DisplayMetrics();
@@ -65,16 +70,24 @@ public class BottomView extends LinearLayout {
 
         TypedArray a = context.getTheme().obtainStyledAttributes(
                 attrs,
-                R.styleable.BottomView,
+                R.styleable.SwipeView,
                 0, 0);
 
-        startHeight = a.getDimension(R.styleable.BottomView_startHeight, -1f);
-        if (startHeight == -1f)
+        float startHeightRaw = a.getDimension(R.styleable.SwipeView_startHeight, -1f);
+        float maxHeight = a.getDimension(R.styleable.SwipeView_maxExtension, -1f);
+
+        if (startHeightRaw < 0)
             startHeight = realMetrics.heightPixels - (float) realMetrics.heightPixels / 3;
         else
             //Converto startHeight nella y corrispondente all' altezza
-            startHeight = realMetrics.heightPixels - startHeight;
+            startHeight = realMetrics.heightPixels - startHeightRaw;
 
+        if (maxHeight < 0)
+            maxHeightAsY = 0;
+        else
+            maxHeightAsY = realMetrics.heightPixels - maxHeight;
+
+        //Creazione del rettangolo in alto
         imageView = new ImageView(context);
         LinearLayout.LayoutParams layoutParams = new LayoutParams(convertDpToPx(50), convertDpToPx(8));
         layoutParams.gravity = Gravity.CENTER;
@@ -83,6 +96,7 @@ public class BottomView extends LinearLayout {
         addView(imageView);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
@@ -94,21 +108,19 @@ public class BottomView extends LinearLayout {
             if (yOffset == -1f)
                 yOffset = Math.abs(getY() - motionEvent.getRawY());
             float newY = motionEvent.getRawY() - yOffset;
-            if (newY >= 0)
-                setY(newY);
-            else
-                setY(0);
+            setY(Math.max(newY, maxHeightAsY));
             return true;
         }
         if (motionEvent.getAction() == MotionEvent.ACTION_CANCEL || motionEvent.getAction() == MotionEvent.ACTION_UP) {
             yOffset = -1f;
-            if (getY() < (float) realMetrics.heightPixels / 2 - 100)
-                showAllFromY();
-            else
-                moveToStart();
+            onTouchRelease.onRelease(this);
         }
 
         return false;
+    }
+
+    public void setOnTouchRelease(OnTouchReleased onTouchRelease) {
+        this.onTouchRelease = onTouchRelease;
     }
 
     /**
@@ -126,7 +138,7 @@ public class BottomView extends LinearLayout {
      * @param height l'altezza a cui deve arrivare il layout partendo dal basso
      */
     public void showStart(float height) {
-        if (height > realMetrics.heightPixels || height < 0)
+        if (height > maxHeightAsY || height < 0)
             height = 0;
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", realMetrics.heightPixels, realMetrics.heightPixels - height);
         objectAnimator.setDuration(300);
@@ -155,7 +167,7 @@ public class BottomView extends LinearLayout {
      * Rende completamente visibile il layout partendo dalla sua posizione.
      */
     public void showAllFromY() {
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", getY(), 0);
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", getY(), maxHeightAsY);
         objectAnimator.setDuration(300);
         objectAnimator.start();
     }
@@ -164,7 +176,7 @@ public class BottomView extends LinearLayout {
      * Rende completamente visibile il layout partendo dal basso dello schermo
      */
     public void showAllFromZero() {
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", realMetrics.heightPixels, 0);
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", realMetrics.heightPixels, maxHeightAsY);
         objectAnimator.setDuration(300);
         objectAnimator.start();
     }
@@ -173,7 +185,7 @@ public class BottomView extends LinearLayout {
      * Rende completamente visibile il layout partendo da {@code startHeight}
      */
     public void showAllFromStart() {
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", startHeight, 0);
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", startHeight, maxHeightAsY);
         objectAnimator.setDuration(300);
         objectAnimator.start();
     }
@@ -183,11 +195,23 @@ public class BottomView extends LinearLayout {
      */
     public void hide() {
         hideAllFromY();
-        setVisibility(GONE);
+        setVisibility(INVISIBLE);
+    }
+
+    /**
+     * Nasconde il layout con una animazione
+     */
+    public void show() {
+        showStart();
+        setVisibility(VISIBLE);
     }
 
     private int convertDpToPx(float dp) {
         //https://stackoverflow.com/questions/4605527/converting-pixels-to-dp
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
+    }
+
+    public interface OnTouchReleased {
+        void onRelease(SwipeView view);
     }
 }

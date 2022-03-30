@@ -31,7 +31,6 @@ import android.widget.CalendarView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -65,7 +64,6 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
     TextView tvVisualizerActivities;
     TextView tvVisualizerSupport;
     ImageView ivCalendarImage;
-    ProgressBar pbLoadingContent;
     FrameLayout frameLayout;
     Button btnConfirmDate;
     CalendarView calendarView;
@@ -97,7 +95,6 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         obscureLayoutView = root.findViewById(R.id.lezioni_obscure_view);
         frameLayout = root.findViewById(R.id.lezioni_frame_layout);
         tvNoElements = root.findViewById(R.id.lezioni_no_elements_view);
-        pbLoadingContent = root.findViewById(R.id.lezioni_loading_content);
         visualizerLayout = root.findViewById(R.id.lezioni_visualizer_layout);
         tvVisualizerArguments = root.findViewById(R.id.lezioni_visualizer_arguments);
         tvVisualizerActivities = root.findViewById(R.id.lezioni_visualizer_activities);
@@ -138,9 +135,9 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void loadDataAndViews() {
         tvNoElements.setVisibility(View.GONE);
-        pbLoadingContent.setVisibility(View.VISIBLE);
         viewsLayout.removeAllViews();
         hasCompletedLoading = false;
+        swipeRefreshLayout.setRefreshing(true);
 
         if (!isSpammingClick && System.nanoTime() - lastCallTime > 500_000_000) {     //Anti click spam
             GlobalVariables.gsThread.addTask(() -> {
@@ -156,7 +153,6 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
                     //Errore di connessione
                     activity.runOnUiThread(() -> {
                         setErrorMessage(activity.getString(R.string.your_connection_error), root);
-                        pbLoadingContent.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
                     });
@@ -164,7 +160,6 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
                     //Errore di connessione al registro
                     activity.runOnUiThread(() -> {
                         setErrorMessage(activity.getString(R.string.site_connection_error), root);
-                        pbLoadingContent.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
                     });
@@ -172,7 +167,6 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
                     //Errore di connessione al registro
                     activity.runOnUiThread(() -> {
                         setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
-                        pbLoadingContent.setVisibility(View.GONE);
                         tvNoElements.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
                     });
@@ -186,7 +180,6 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
             //l'utente sta spammando
             isSpammingClick = true;
             btnConfirmDate.setVisibility(View.VISIBLE);
-            pbLoadingContent.setVisibility(View.GONE);
             tvNoElements.setVisibility(View.VISIBLE);
             swipeRefreshLayout.setRefreshing(false);
         }
@@ -220,7 +213,6 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
             }
         }
 
-        pbLoadingContent.setVisibility(View.GONE);
         swipeRefreshLayout.setRefreshing(false);
     }
 

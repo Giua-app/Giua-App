@@ -84,6 +84,7 @@ public class LogdogViewerActivity extends AppCompatActivity {
             linearLayout.removeAllViews();
 
             for (LoggerManager.Log log : logs) {
+                if (i == 1000) break;
                 int finalI = i; //Non so perchè ma dobbiamo fare questa cosa per passare variabili al thread
                 runOnUiThread(() -> pbText.setText(finalI + "/" + logs.size()));
                 // --@ = Avvio dell'app

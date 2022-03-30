@@ -127,7 +127,7 @@
                 android:value=".ActivityManager" />
         </activity>
         <activity
-            android:name=".ui.activities.AccountsActivity"
+            android:name=".ui.activities.AccountsActivity.AccountsActivity"
             android:label="Gestione account"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.GiuaApp.NoActionBar"

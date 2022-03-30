@@ -51,6 +51,7 @@ import com.giua.app.MyFragmentManager;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
+import com.giua.app.ui.activities.AccountsActivity.AccountsActivity;
 import com.giua.objects.Vote;
 import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
@@ -215,7 +216,7 @@ public class DrawerActivity extends AppCompatActivity {
         }
 
         if (iProfile.getName().getText().equals("Aggiungi account"))
-            startActivity(new Intent(this, LoginActivity.class).putExtra("addAccount", true));
+            startActivity(new Intent(this, AccountsActivity.class).putExtra("addAccount", true));
         else {
             String selectedProfileUsername = iProfile.getName().toString();
             if (myDrawerManager.activeProfile.getName().toString().equals(selectedProfileUsername))
@@ -230,9 +231,9 @@ public class DrawerActivity extends AppCompatActivity {
             AppData.saveActiveUsername(this, (String) allUsernames[indexOfSelectedUsername]);
             GlobalVariables.gS = null;
             startActivity(new Intent(this, ActivityManager.class));
+            finish();
         }
         isStartingAnotherActivity = true;
-        finish();
         return true;    //Non chiudere il drawer
     }
 

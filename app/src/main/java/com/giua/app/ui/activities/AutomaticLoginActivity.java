@@ -89,7 +89,8 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                 if (!savedSiteUrl.equals("")) GiuaScraper.setSiteURL(savedSiteUrl);
                 GlobalVariables.gS = new GiuaScraper(username, password, cookie, true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
                 GlobalVariables.gS.login();
-                AccountData.setCredentials(this, username, password, GlobalVariables.gS.getCookie());
+                //GlobalVariables.gS.getUserTypeString();
+                AccountData.setCredentials(this, username, password, GlobalVariables.gS.getCookie(), GlobalVariables.gS.getUserTypeString());
                 AccountData.setSiteUrl(this, username, GiuaScraper.getSiteURL());
                 if (!AppData.getAllAccountUsernames(this).contains(GlobalVariables.gS.getUser()))
                     AppData.addAccountUsername(this, GlobalVariables.gS.getUser());
