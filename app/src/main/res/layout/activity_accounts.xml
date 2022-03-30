@@ -21,6 +21,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/background">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -38,25 +39,21 @@
             android:background="@color/relative_main_color"
             app:menu="@menu/menu_drawer_toolbar"
             app:popupTheme="@style/Theme.GiuaApp.PopupOverlay"
-            app:title="Gestione account"
+            tools:title="Gestione account"
             app:titleTextAppearance="@style/ToolbarTextStyle" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <GridLayout
-        android:id="@+id/activity_accounts_grid"
+    <TableLayout
+        android:id="@+id/activity_accounts_table"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
         android:layout_marginTop="10dp"
-        android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/activity_accounts_appBarLayout">
-
-
-    </GridLayout>
+        app:layout_constraintTop_toBottomOf="@+id/activity_accounts_appBarLayout" />
 
     <com.giua.app.ui.views.SwipeView
         android:id="@+id/accounts_swipe_view"
@@ -70,14 +67,34 @@
         app:maxExtension="500dp"
         android:visibility="invisible">
 
-        <TextView
-            android:id="@+id/accounts_swipe_view_username"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="20dp"
-            android:fontFamily="@font/varelaroundregular"
-            android:textSize="16sp" />
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/accounts_swipe_view_username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/varelaroundregular"
+                android:layout_weight="1"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/accounts_swipe_view_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_delete_forever_24"
+                android:background="@drawable/corner_radius_10dp"
+                android:backgroundTint="#EF5350"
+                android:foreground="@drawable/ripple_effect"
+                android:layout_weight="0.1"
+                android:layout_marginEnd="10dp"
+                android:padding="5dp"
+                android:contentDescription="Rimuovi account" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/accounts_swipe_view_color_layout"
@@ -108,7 +125,7 @@
 
         <EditText
             android:id="@+id/accounts_swipe_view_url"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"

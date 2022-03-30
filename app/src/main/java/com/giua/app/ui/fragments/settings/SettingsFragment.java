@@ -343,7 +343,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private boolean siteUrlOnClick(Preference preference) {
-        if (!Pattern.matches("https?://([a-zA-Z0-9]+[.])+([a-zA-Z0-9]+)(:[0-9]+)?", ((EditTextPreference) preference).getText())) {
+        if (!Pattern.matches("https?://([a-zA-Z0-9]+[.])+([a-zA-Z0-9]+)(:[0-9]+)?((/[a-zA-Z0-9-_]+)+)?", ((EditTextPreference) preference).getText())) {
             String defaultUrl = SettingsData.getSettingString(requireActivity(), SettingKey.DEFAULT_URL);
             if (!defaultUrl.equals(""))
                 ((EditTextPreference) preference).setText(defaultUrl);

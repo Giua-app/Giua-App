@@ -37,6 +37,7 @@ import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
+import com.giua.app.ui.activities.AccountsActivity.AccountsActivity;
 import com.giua.objects.Maintenance;
 import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
@@ -89,7 +90,6 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                 if (!savedSiteUrl.equals("")) GiuaScraper.setSiteURL(savedSiteUrl);
                 GlobalVariables.gS = new GiuaScraper(username, password, cookie, true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
                 GlobalVariables.gS.login();
-                //GlobalVariables.gS.getUserTypeString();
                 AccountData.setCredentials(this, username, password, GlobalVariables.gS.getCookie(), GlobalVariables.gS.getUserTypeString());
                 AccountData.setSiteUrl(this, username, GiuaScraper.getSiteURL());
                 if (!AppData.getAllAccountUsernames(this).contains(GlobalVariables.gS.getUser()))
@@ -123,6 +123,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                     startStudentLoginActivity();
                 } else {
                     loggerManager.w("Cookie gS scaduto, avvio LoginActivity");
+                    AppData.removeAccountUsername(this, AppData.getActiveUsername(this));
                     AppData.saveActiveUsername(this, "");
                     setErrorMessage("Le credenziali di accesso non sono più valide");
                     try {
@@ -153,7 +154,10 @@ public class AutomaticLoginActivity extends AppCompatActivity {
     private void btnLogoutOnClick(View view) {
         loggerManager.d("Logout richiesto dall'utente, avvio LoginActivity");
         AppData.saveActiveUsername(this, "");
-        startActivity(new Intent(AutomaticLoginActivity.this, LoginActivity.class));
+        if (AppData.getAllAccountUsernames(this).size() > 1)
+            startActivity(new Intent(AutomaticLoginActivity.this, AccountsActivity.class).putExtra("account_chooser_mode", true));
+        else
+            startActivity(new Intent(AutomaticLoginActivity.this, LoginActivity.class));
         finish();
     }
 

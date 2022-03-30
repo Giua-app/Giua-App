@@ -28,6 +28,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.giua.app.ui.activities.AccountsActivity.AccountsActivity;
 import com.giua.app.ui.activities.AppIntroActivity;
 import com.giua.app.ui.activities.AutomaticLoginActivity;
 import com.giua.app.ui.activities.CaocActivity;
@@ -112,7 +113,7 @@ public class ActivityManager extends AppCompatActivity {
 
             loggerManager.d("Avvio App Intro Activity");
             Intent intent = new Intent(this, AppIntroActivity.class);
-            intent.putExtra("welcomeBack", introStatus==-2);
+            intent.putExtra("welcomeBack", introStatus == -2);
             startActivity(intent);
             return;
         }
@@ -120,9 +121,14 @@ public class ActivityManager extends AppCompatActivity {
         checkForUpdates();
         checkForPreviousUpdate();
 
-        if (AppData.getActiveUsername(this).equals(""))
-            startLoginActivity();
-        else
+        if (AppData.getActiveUsername(this).equals("")) {
+            if (AppData.getAllAccountUsernames(this).size() > 1)
+                startAccountsActivity();
+            else if (AppData.getAllAccountUsernames(this).size() == 1)
+                startAutomaticLoginActivity();
+            else
+                startLoginActivity();
+        } else
             startAutomaticLoginActivity();
     }
 
@@ -234,6 +240,17 @@ public class ActivityManager extends AppCompatActivity {
         SettingsData.saveSettingBoolean(this, SettingKey.VOTES_NOTIFICATION, true);
         SettingsData.saveSettingBoolean(this, SettingKey.HOMEWORKS_NOTIFICATION, true);
         SettingsData.saveSettingBoolean(this, SettingKey.TESTS_NOTIFICATION, true);
+    }
+
+    private void startAccountsActivity() {
+        loggerManager.d("Avvio AccountsActivity Activity");
+        String goTo = getIntent().getStringExtra("goTo");
+        if (goTo == null)
+            goTo = "";
+        startActivity(new Intent(ActivityManager.this, AccountsActivity.class)
+                .putExtra("account_chooser_mode", true)
+                .putExtra("goTo", goTo));
+        finish();
     }
 
     private void startLoginActivity() {

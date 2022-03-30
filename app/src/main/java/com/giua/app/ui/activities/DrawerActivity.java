@@ -215,7 +215,7 @@ public class DrawerActivity extends AppCompatActivity {
             return false; //Chiudi drawer
         }
 
-        if (iProfile.getName().getText().equals("Aggiungi account"))
+        if (iProfile.getName().getText().equals("Gestione account"))
             startActivity(new Intent(this, AccountsActivity.class).putExtra("addAccount", true));
         else {
             String selectedProfileUsername = iProfile.getName().toString();

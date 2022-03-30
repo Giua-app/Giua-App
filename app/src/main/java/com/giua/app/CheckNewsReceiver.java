@@ -99,12 +99,7 @@ public class CheckNewsReceiver extends BroadcastReceiver {
                     loggerManager.e("Username utilizzato: " + gS.getUser());
                 int nErrors = AppData.getNumberNotificationErrors(context);
                 if (nErrors < 3 && e.getClass() != GiuaScraperExceptions.SiteConnectionProblems.class) {
-                    AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-                    Intent iCheckNewsReceiver = new Intent(context, CheckNewsReceiver.class);
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, PendingIntent.FLAG_IMMUTABLE);
-                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME,
-                            SystemClock.elapsedRealtime() + 900_000,   //Intervallo di 15 minuti
-                            pendingIntent);
+                    resetAlarm(900_000);
                     AppData.saveNumberNotificationErrors(context, ++nErrors);
                     return;
                 }
@@ -113,15 +108,19 @@ public class CheckNewsReceiver extends BroadcastReceiver {
             //Risetta l'allarme con un nuovo intervallo random
             Random r = new Random(SystemClock.elapsedRealtime());
             long interval = AlarmManager.INTERVAL_HOUR + r.nextInt(3_600_000);
-            Intent iCheckNewsReceiver = new Intent(context, CheckNewsReceiver.class);
-            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, PendingIntent.FLAG_IMMUTABLE);
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME,
-                    SystemClock.elapsedRealtime() + interval,   //Intervallo di 1 ora più numero random tra 0 e 60 minuti
-                    pendingIntent);
+            resetAlarm(interval);
             loggerManager.d("Risetto l'allarme con un nuovo intervallo random (" + (interval / 60_000) + " minuti)");
             //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()+60000, 60000, pendingIntent);    //DEBUG
         }).start();
+    }
+
+    private void resetAlarm(long interval) {
+        Intent iCheckNewsReceiver = new Intent(context, CheckNewsReceiver.class);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, PendingIntent.FLAG_IMMUTABLE);
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME,
+                SystemClock.elapsedRealtime() + interval,
+                pendingIntent);
     }
 
     private void checkAndMakeLogin() {
@@ -130,29 +129,35 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         String defaultUrl = SettingsData.getSettingString(context, SettingKey.DEFAULT_URL);
         if (accountUrl.equals("") && !defaultUrl.equals(""))
             GiuaScraper.setSiteURL(defaultUrl);
-        else if(!accountUrl.equals(""))
+        else if (!accountUrl.equals(""))
             GiuaScraper.setSiteURL(accountUrl);
         loggerManager.d("Username letto: " + username);
         if (!username.equals("gsuite")) {  //Se l'account non è di gsuite fai il login normale
             loggerManager.d("Account non google rilevato, eseguo login");
-            gS = new GiuaScraper(username, AccountData.getPassword(context, username), AccountData.getCookie(context, username), true, new LoggerManager("GiuaScraper", context));
-            gS.login();
-            AccountData.setCredentials(context, username, AccountData.getPassword(context, username), gS.getCookie(), AccountData.getUserType(context, username));
+            createGsAndLogin(username);
         } else {    //Se l'account è di gsuite fai il login con gsuite
             try {
                 loggerManager.d("Account google rilevato, provo ad entrare con cookie precedente");
-                gS = new GiuaScraper(username, AccountData.getPassword(context, username), AccountData.getCookie(context, username), true, new LoggerManager("GiuaScraper", context));
-                gS.login();
-                AccountData.setCredentials(context, username, AccountData.getPassword(context, username), gS.getCookie(), AccountData.getUserType(context, username));
+                createGsAndLogin(username);
             } catch (GiuaScraperExceptions.SessionCookieEmpty e) {
                 loggerManager.d("Cookie precedente non valido");
                 String cookie = getGsuiteCookie();
                 if (cookie.equals("")) return;
-                gS = new GiuaScraper(username, AccountData.getPassword(context, username), cookie, true, new LoggerManager("GiuaScraper", context));
-                gS.login();
-                AccountData.setCredentials(context, username, AccountData.getPassword(context, username), gS.getCookie(), AccountData.getUserType(context, username));
+                createGsAndLogin(username, cookie);
             }
         }
+    }
+
+    private void createGsAndLogin(String username) {
+        gS = new GiuaScraper(username, AccountData.getPassword(context, username), AccountData.getCookie(context, username), true, new LoggerManager("GiuaScraper", context));
+        gS.login();
+        AccountData.setCredentials(context, username, AccountData.getPassword(context, username), gS.getCookie(), AccountData.getUserType(context, username));
+    }
+
+    private void createGsAndLogin(String username, String cookie) {
+        gS = new GiuaScraper(username, AccountData.getPassword(context, username), cookie, true, new LoggerManager("GiuaScraper", context));
+        gS.login();
+        AccountData.setCredentials(context, username, AccountData.getPassword(context, username), gS.getCookie(), AccountData.getUserType(context, username));
     }
 
     private void checkNewsAndSendNotifications() throws IOException {
@@ -296,11 +301,10 @@ public class CheckNewsReceiver extends BroadcastReceiver {
 
         if (canSendHomeworkNotification && homeworkCounter > 0) {
             String contentText;
+            contentText = "Clicca per andare all' agenda";
             if (homeworkCounter == 1) {
-                contentText = "Clicca per andare all' agenda";
                 homeworkNotificationText = new StringBuilder("È stato programmato un nuovo compito di " + homeworkSubjects.get(0) + " per il giorno " + homeworkDates.get(0));
             } else {
-                contentText = "Clicca per andare all' agenda";
                 homeworkNotificationText = new StringBuilder("Sono stati programmati nuovi compiti:\n");
                 for (int i = 0; i < homeworkCounter; i++) {
                     homeworkNotificationText.append(homeworkSubjects.get(i));
@@ -314,11 +318,10 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         }
         if (canSendTestNotification && testCounter > 0) {
             String contentText;
+            contentText = "Clicca per andare all' agenda";
             if (testCounter == 1) {
-                contentText = "Clicca per andare all' agenda";
                 testNotificationText = new StringBuilder("È stata programmata una nuova verifica di " + testSubjects.get(0) + " per il giorno " + testDates.get(0));
             } else {
-                contentText = "Clicca per andare all' agenda";
                 testNotificationText = new StringBuilder("Sono state programmate nuove verifiche:\n");
                 for (int i = 0; i < testCounter; i++) {
                     testNotificationText.append(testSubjects.get(i));

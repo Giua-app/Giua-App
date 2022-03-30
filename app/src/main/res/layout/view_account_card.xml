@@ -18,13 +18,14 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="180dp"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:background="@drawable/corner_radius_10dp"
     android:foreground="@drawable/ripple_effect"
     android:padding="10dp"
+    android:minWidth="140dp"
     android:id="@+id/view_account_card_layout">
 
     <ImageView

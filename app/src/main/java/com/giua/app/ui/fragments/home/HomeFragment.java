@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -285,43 +286,60 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     private LineData generateLineData(Map<String, List<Vote>> allVotes) {
         List<Entry> entriesFirstQuarter = new ArrayList<>();
         List<Entry> entriesSecondQuarter = new ArrayList<>();
+        List<Entry> entriesThirdQuarter = new ArrayList<>();
+        List<Entry> entriesFourthQuarter = new ArrayList<>();
+        List<Entry> entriesFifthQuarter = new ArrayList<>();
+
         int voteCounter = 0;
 
         List<Vote> allVotesSorted = sortVotes(allVotes);
         for (Vote vote : allVotesSorted) {
-            if (vote.quarterlyToInt() == 1) //FIXME: Da rifare per supportare più quadrimestri/trimestri. Prima era "if(vote.isQuarterly)"
-                entriesFirstQuarter.add(new Entry(voteCounter, vote.toFloat()));
-            else
-                entriesSecondQuarter.add(new Entry(voteCounter, vote.toFloat()));
+            switch (vote.quarterlyToInt()) {
+                case 1:
+                    entriesFirstQuarter.add(new Entry(voteCounter, vote.toFloat()));
+                    break;
+                case 2:
+                    entriesSecondQuarter.add(new Entry(voteCounter, vote.toFloat()));
+                    break;
+                case 3:
+                    entriesThirdQuarter.add(new Entry(voteCounter, vote.toFloat()));
+                    break;
+                case 4:
+                    entriesFourthQuarter.add(new Entry(voteCounter, vote.toFloat()));
+                    break;
+                case 5:
+                    entriesFifthQuarter.add(new Entry(voteCounter, vote.toFloat()));
+                    break;
+            }
+
             voteCounter++;
         }
 
         if (voteCounter == 1)    //Se si ha solamente un voto allora duplicalo nel grafico per far visualizzare almeno una riga
             entriesFirstQuarter.add(new Entry(voteCounter, allVotesSorted.get(0).toFloat()));
 
-        LineDataSet lineDataSetFirstQuarter = new LineDataSet(entriesFirstQuarter, "Primo quadrimestre");
-        lineDataSetFirstQuarter.setDrawCircles(false);
-        lineDataSetFirstQuarter.setDrawCircleHole(false);
-        lineDataSetFirstQuarter.setDrawValues(false);
-        lineDataSetFirstQuarter.setLineWidth(3);
-        lineDataSetFirstQuarter.setDrawFilled(true);
-        lineDataSetFirstQuarter.setColor(Color.argb(255, 5, 157, 192));
-        lineDataSetFirstQuarter.setFillColor(Color.argb(255, 5, 157, 192));
-        lineDataSetFirstQuarter.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        lineDataSetFirstQuarter.setAxisDependency(YAxis.AxisDependency.RIGHT);
+        LineDataSet lineDataSetFirstQuarter = getLineForChart(entriesFirstQuarter, "Primo quadrimestre", Color.argb(255, 5, 157, 192));
+        LineDataSet lineDataSetSecondQuarter = getLineForChart(entriesSecondQuarter, "Secondo quadrimestre", Color.argb(255, 0, 88, 189));
+        LineDataSet lineDataSetThirdQuarter = getLineForChart(entriesThirdQuarter, "Terzo quadrimestre", Color.argb(255, 0, 189, 75));
+        LineDataSet lineDataSetFourthQuarter = getLineForChart(entriesFourthQuarter, "Quarto quadrimestre", Color.argb(255, 230, 213, 0));
+        LineDataSet lineDataSetFifthQuarter = getLineForChart(entriesFifthQuarter, "Quinto quadrimestre", Color.argb(255, 230, 74, 0));
 
-        LineDataSet lineDataSetSecondQuarter = new LineDataSet(entriesSecondQuarter, "Secondo quadrimestre");
-        lineDataSetSecondQuarter.setDrawCircles(false);
-        lineDataSetSecondQuarter.setDrawCircleHole(false);
-        lineDataSetSecondQuarter.setDrawValues(false);
-        lineDataSetSecondQuarter.setLineWidth(3);
-        lineDataSetSecondQuarter.setDrawFilled(true);
-        lineDataSetSecondQuarter.setColor(Color.argb(255, 0, 88, 189));
-        lineDataSetSecondQuarter.setFillColor(Color.argb(255, 0, 88, 189));
-        lineDataSetSecondQuarter.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        lineDataSetSecondQuarter.setAxisDependency(YAxis.AxisDependency.RIGHT);
+        return new LineData(lineDataSetFirstQuarter, lineDataSetSecondQuarter, lineDataSetThirdQuarter, lineDataSetFourthQuarter, lineDataSetFifthQuarter);
+    }
 
-        return new LineData(lineDataSetFirstQuarter, lineDataSetSecondQuarter);
+    private LineDataSet getLineForChart(List<Entry> entries, String text, @ColorInt int color) {
+        LineDataSet lineDataSet = new LineDataSet(entries, "Secondo quadrimestre");
+        lineDataSet.setDrawCircles(false);
+        lineDataSet.setDrawCircleHole(false);
+        lineDataSet.setDrawValues(false);
+        lineDataSet.setLineWidth(3);
+        lineDataSet.setDrawFilled(true);
+        lineDataSet.setColor(color);
+        lineDataSet.setFillColor(color);
+        lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        lineDataSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
+
+        return lineDataSet;
     }
 
     /**

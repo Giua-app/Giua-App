@@ -114,7 +114,6 @@ public class MyFragmentManager {
 
         fragment = fragmentManager.findFragmentByTag(tag);
 
-        //FIXME: Troppi if, lo switch non si può usare perchè R.id.x in futuro non sarà final
         if (id == R.id.nav_home) {
             if (fragment == null)
                 fragment = new HomeFragment();

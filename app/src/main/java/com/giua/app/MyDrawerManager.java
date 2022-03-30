@@ -98,9 +98,9 @@ public class MyDrawerManager {
         //Aggiungi nel drawer gli account disponibili
         addAccountsToDrawer(activeUsername, icAccountProfile, accountHeaderBuilder);
 
-        //Aggiungi il pulsante "Aggiungi account"
+        //Aggiungi il pulsante "Gestione account"
         accountHeaderBuilder.addProfiles(
-                new ProfileSettingDrawerItem().withName("Aggiungi account")
+                new ProfileSettingDrawerItem().withName("Gestione account")
                         .withIcon(android.R.color.transparent)
                         .withTextColor(activity.getResources().getColor(R.color.adaptive_color_text, activity.getTheme())));
 
