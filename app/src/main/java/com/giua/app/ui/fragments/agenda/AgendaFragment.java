@@ -80,6 +80,7 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     boolean isLoadingData = false;
     boolean firstStart = true;
     boolean isFragmentDestroyed = false;
+    boolean offlineMode = false;
     LoggerManager loggerManager;
 
     @SuppressLint("SetTextI18n")
@@ -99,6 +100,8 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
         allAgendaObjects = new Vector<>();
         dateFormatForMonth = new SimpleDateFormat("MM", Locale.ITALIAN);
         dateFormatForYear = new SimpleDateFormat("yyyy", Locale.ITALIAN);
+
+        offlineMode = activity.getIntent().getBooleanExtra("offline", false);
 
         if (SettingsData.getSettingBoolean(requireActivity(), SettingKey.DEMO_MODE)) {
             calendar = Calendar.getInstance();
@@ -141,7 +144,55 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     }
 
     @Override
-    public void loadOfflineDataAndViews() {}
+    public void loadOfflineDataAndViews() {
+        if (!isLoadingData && System.nanoTime() - lastRequestTime > 500_000_000) {  //Anti click spam
+            lastRequestTime = System.nanoTime();
+            swipeRefreshLayout.setRefreshing(true);
+            new Thread(() -> {
+                isLoadingData = true;
+                try {
+                    allAgendaObjects = GlobalVariables.gS.getAgendaPage(false)
+                            .getAllAgendaObjectsWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())));
+
+                    if (allAgendaObjects.isEmpty()) {
+                        activity.runOnUiThread(() -> {
+                            viewsLayout.removeViews(1, viewsLayout.getChildCount() - 1);
+                            tvNoElements.setText("Non ci sono compiti per questo mese");
+                            tvNoElements.setVisibility(View.VISIBLE);
+                        });
+                    } else {
+                        activity.runOnUiThread(() -> {
+                            viewsLayout.removeViews(1, viewsLayout.getChildCount() - 1);
+                            try {
+                                refreshCalendarEvents();
+                            } catch (ParseException ignored) {
+                            }
+                        });
+                    }
+                } catch (GiuaScraperExceptions.YourConnectionProblems e) {
+                    activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.your_connection_error), root));
+                } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
+                    activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.site_connection_error), root));
+                } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
+                    activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root));
+                } catch (GiuaScraperExceptions.NotLoggedIn e) {
+                    activity.runOnUiThread(() -> {
+                        ((DrawerActivity) activity).startActivityManager();
+                    });
+                } finally {
+                    activity.runOnUiThread(() -> {
+                        swipeRefreshLayout.setRefreshing(false);
+                        isLoadingData = false;
+                    });
+                    if (firstStart) {
+                        showDateActivities(Calendar.getInstance());
+                        firstStart = false;
+                    }
+                }
+
+            }).start();
+        }
+    }
 
     @Override
     public void loadDataAndViews() {
@@ -353,10 +404,6 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
 
     }
-
-    private void onRefresh() {
-        loadDataAndViews();
-    }
     //endregion
 
     //region Metodi
@@ -458,8 +505,18 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onStart() {
-        loadDataAndViews();
+        if (!offlineMode)
+            loadDataAndViews();
+        else
+            loadOfflineDataAndViews();
         super.onStart();
+    }
+
+    private void onRefresh() {
+        if (!offlineMode)
+            loadDataAndViews();
+        else
+            loadOfflineDataAndViews();
     }
 
     @Override
