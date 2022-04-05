@@ -39,7 +39,7 @@ import com.giua.app.R;
 public class SwipeView extends LinearLayout {
     private float yOffset = -1f;
     public final ImageView imageView;
-    public final DisplayMetrics realMetrics;
+    private final DisplayMetrics realMetrics;
     public final float maxHeightAsY;
     public final float startHeight;   //L'altezza del layout alla posizione iniziale
     private OnTouchReleased onTouchRelease = (swipeView) -> {
@@ -204,6 +204,10 @@ public class SwipeView extends LinearLayout {
     public void show() {
         showStart();
         setVisibility(VISIBLE);
+    }
+
+    public boolean isHidden() {
+        return getY() >= realMetrics.heightPixels;
     }
 
     private int convertDpToPx(float dp) {

@@ -22,6 +22,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_accounts_main"
     android:background="@color/background">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -44,16 +45,19 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <TableLayout
+    <GridLayout
         android:id="@+id/activity_accounts_table"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:orientation="vertical"
         android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/activity_accounts_appBarLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/activity_accounts_appBarLayout"
+        app:layout_constraintVertical_bias="1.0" />
 
     <com.giua.app.ui.views.SwipeView
         android:id="@+id/accounts_swipe_view"
@@ -63,77 +67,162 @@
         android:backgroundTint="@color/general_view_color"
         android:orientation="vertical"
         android:padding="10dp"
-        app:startHeight="200dp"
-        app:maxExtension="500dp"
-        android:visibility="invisible">
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/activity_accounts_table"
+        app:maxExtension="430dp"
+        app:startHeight="230dp">
 
+        <!--LinearLayout per gestire gli account-->
         <LinearLayout
+            android:id="@+id/accounts_manage_account_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/accounts_swipe_view_username"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/accounts_manage_account_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/varelaroundregular"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/accounts_manage_account_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="0.1"
+                    android:background="@drawable/corner_radius_10dp"
+                    android:backgroundTint="#EF5350"
+                    android:contentDescription="Rimuovi account"
+                    android:foreground="@drawable/ripple_effect"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_baseline_delete_forever_24" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/accounts_swipe_view_color_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/accounts_swipe_view_text_color"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/varelaroundregular"
+                    android:text="Imposta il colore del profilo"
+                    android:textSize="16sp" />
+
+                <View
+                    android:id="@+id/accounts_manage_account_dot_colored"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/corner_radius_20dp" />
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/accounts_manage_account_url"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
+                android:autofillHints=""
                 android:fontFamily="@font/varelaroundregular"
-                android:layout_weight="1"
-                android:textSize="16sp" />
+                android:hint="URL del sito"
+                android:imeOptions="actionDone"
+                android:inputType="textUri" />
 
-            <ImageView
-                android:id="@+id/accounts_swipe_view_delete"
+        </LinearLayout>
+
+
+        <!--LinearLayout per aggiungere gli account-->
+        <LinearLayout
+            android:id="@+id/accounts_add_account_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/accounts_add_account_save_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_baseline_delete_forever_24"
+                android:layout_gravity="end"
                 android:background="@drawable/corner_radius_10dp"
-                android:backgroundTint="#EF5350"
+                android:backgroundTint="@color/main_color"
+                android:drawableEnd="@drawable/ic_baseline_done_24"
+                android:fontFamily="@font/varelaroundregular"
                 android:foreground="@drawable/ripple_effect"
-                android:layout_weight="0.1"
-                android:layout_marginEnd="10dp"
-                android:padding="5dp"
-                android:contentDescription="Rimuovi account" />
-        </LinearLayout>
+                android:gravity="center_vertical"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="5dp"
+                android:text="Conferma" />
 
-        <LinearLayout
-            android:id="@+id/accounts_swipe_view_color_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/accounts_swipe_view_text_color"
-                android:layout_width="0dp"
+            <EditText
+                android:id="@+id/accounts_add_account_username"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="20dp"
-                android:layout_weight="1"
+                android:layout_marginTop="10dp"
+                android:autofillHints=""
                 android:fontFamily="@font/varelaroundregular"
-                android:text="Imposta il colore del profilo"
-                android:textSize="16sp" />
+                android:hint="Nome utente"
+                android:imeOptions="actionDone"
+                android:inputType="textEmailAddress" />
 
-            <View
-                android:id="@+id/accounts_swipe_view_color"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/corner_radius_20dp" />
+            <EditText
+                android:id="@+id/accounts_add_account_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:autofillHints=""
+                android:fontFamily="@font/varelaroundregular"
+                android:hint="Password"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword" />
+
+            <EditText
+                android:id="@+id/accounts_add_account_url"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:autofillHints=""
+                android:fontFamily="@font/varelaroundregular"
+                android:hint="URL del sito"
+                android:imeOptions="actionDone"
+                android:inputType="textUri" />
 
         </LinearLayout>
-
-        <EditText
-            android:id="@+id/accounts_swipe_view_url"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:autofillHints=""
-            android:hint="URL del sito"
-            android:fontFamily="@font/varelaroundregular"
-            android:imeOptions="actionDone"
-            android:inputType="textUri|textShortMessage" />
 
     </com.giua.app.ui.views.SwipeView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/accounts_add_account_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:contentDescription="Aggiungi account"
+        android:src="@drawable/ic_baseline_add_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

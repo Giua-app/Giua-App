@@ -126,10 +126,6 @@ public class AccountData {
         return getSharedPreferences(context, username).getString(siteUrlKey, "");
     }
 
-    public static void clearAllForAccount(final Context context, final String username) {
-        setCredentials(context, username, "", "", "");
-    }
-
     public static void setTheme(final Context context, final String username, final int color) {
         getSharedPreferences(context, username).edit()
                 .putInt(themeKey, color)
@@ -138,6 +134,12 @@ public class AccountData {
 
     public static int getTheme(final Context context, final String username) {
         return getSharedPreferences(context, username).getInt(themeKey, Color.rgb(0, 123, 255));
+    }
+
+    public static void removeAccount(final Context context, final String username) {
+        getSharedPreferences(context, username).edit()
+                .clear()
+                .commit();
     }
 
 }
