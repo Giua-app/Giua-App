@@ -175,41 +175,44 @@
                 android:paddingVertical="5dp"
                 android:text="Conferma" />
 
-            <EditText
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/accounts_add_account_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:autofillHints=""
-                android:fontFamily="@font/varelaroundregular"
-                android:hint="Nome utente"
-                android:imeOptions="actionDone"
-                android:inputType="textEmailAddress" />
+                android:hint="Nome utente">
 
-            <EditText
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00FFFFFF"
+                    android:inputType="textEmailAddress" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/accounts_add_account_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:autofillHints=""
-                android:fontFamily="@font/varelaroundregular"
-                android:hint="Password"
-                android:imeOptions="actionDone"
-                android:inputType="textPassword" />
+                android:hint="Password">
 
-            <EditText
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00FFFFFF"
+                    android:inputType="textPassword" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/accounts_add_account_url"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:autofillHints=""
-                android:fontFamily="@font/varelaroundregular"
-                android:hint="URL del sito"
-                android:imeOptions="actionDone"
-                android:inputType="textUri" />
+                android:hint="Url del sito">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00FFFFFF"
+                    android:inputType="textUri" />
+            </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
 

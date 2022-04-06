@@ -37,13 +37,20 @@ import androidx.annotation.Nullable;
 import com.giua.app.R;
 
 public class SwipeView extends LinearLayout {
-    private float yOffset = -1f;
+    public final float startHeight;   //L' altezza del layout alla posizione iniziale
+
     public final ImageView imageView;
-    private final DisplayMetrics realMetrics;
     public final float maxHeightAsY;
-    public final float startHeight;   //L'altezza del layout alla posizione iniziale
-    private OnTouchReleased onTouchRelease = (swipeView) -> {
+    private final DisplayMetrics realMetrics;
+    private float yOffset = -1f;
+    private OnTouchRelease onTouchRelease = (swipeView) -> {
     };
+    private OnMove onMove = (swipeView, operation) -> {
+    };
+
+    public void setOnTouchRelease(OnTouchRelease onTouchRelease) {
+        this.onTouchRelease = onTouchRelease;
+    }
 
     public SwipeView(Context context) {
         super(context);
@@ -119,17 +126,18 @@ public class SwipeView extends LinearLayout {
         return false;
     }
 
-    public void setOnTouchRelease(OnTouchReleased onTouchRelease) {
-        this.onTouchRelease = onTouchRelease;
+    public void setOnMove(OnMove onMove) {
+        this.onMove = onMove;
     }
 
     /**
-     * Fa vedere il layout portandolo a {@code startHeight} partendo dl basso
+     * Fa vedere il layout portandolo a {@code startHeight} partendo dal basso
      */
     public void showStart() {
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", realMetrics.heightPixels, startHeight);
         objectAnimator.setDuration(300);
         objectAnimator.start();
+        onMove.onMoving(this, Operation.SHOW_START_FROM_BOTTOM);
     }
 
     /**
@@ -143,15 +151,7 @@ public class SwipeView extends LinearLayout {
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", realMetrics.heightPixels, realMetrics.heightPixels - height);
         objectAnimator.setDuration(300);
         objectAnimator.start();
-    }
-
-    /**
-     * Nasconde il layout completamente partendo dalla sua posizione
-     */
-    public void hideAllFromY() {
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", getY(), realMetrics.heightPixels);
-        objectAnimator.setDuration(300);
-        objectAnimator.start();
+        onMove.onMoving(this, Operation.SHOW_START_FROM_HEIGHT);
     }
 
     /**
@@ -161,6 +161,7 @@ public class SwipeView extends LinearLayout {
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", getY(), startHeight);
         objectAnimator.setDuration(300);
         objectAnimator.start();
+        onMove.onMoving(this, Operation.MOVE_TO_START);
     }
 
     /**
@@ -170,6 +171,7 @@ public class SwipeView extends LinearLayout {
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", getY(), maxHeightAsY);
         objectAnimator.setDuration(300);
         objectAnimator.start();
+        onMove.onMoving(this, Operation.SHOW_ALL_FROM_Y);
     }
 
     /**
@@ -179,6 +181,7 @@ public class SwipeView extends LinearLayout {
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", realMetrics.heightPixels, maxHeightAsY);
         objectAnimator.setDuration(300);
         objectAnimator.start();
+        onMove.onMoving(this, Operation.SHOW_ALL_FROM_ZERO);
     }
 
     /**
@@ -188,14 +191,7 @@ public class SwipeView extends LinearLayout {
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", startHeight, maxHeightAsY);
         objectAnimator.setDuration(300);
         objectAnimator.start();
-    }
-
-    /**
-     * Nasconde il layout con una animazione
-     */
-    public void hide() {
-        hideAllFromY();
-        setVisibility(INVISIBLE);
+        onMove.onMoving(this, Operation.SHOW_ALL_FROM_START);
     }
 
     /**
@@ -204,6 +200,29 @@ public class SwipeView extends LinearLayout {
     public void show() {
         showStart();
         setVisibility(VISIBLE);
+        onMove.onMoving(this, Operation.SHOW);
+    }
+
+    /**
+     * Nasconde il layout completamente partendo dalla sua posizione
+     */
+    public void hideAllFromY() {
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", getY(), realMetrics.heightPixels);
+        objectAnimator.setDuration(300);
+        objectAnimator.start();
+        onMove.onMoving(this, Operation.HIDE_ALL_FROM_Y);
+
+    }
+
+    public enum Operation {
+        SHOW_START_FROM_BOTTOM,
+        SHOW_START_FROM_HEIGHT,
+        SHOW_ALL_FROM_Y,
+        SHOW_ALL_FROM_ZERO,
+        SHOW_ALL_FROM_START,
+        SHOW,
+        HIDE_ALL_FROM_Y,
+        MOVE_TO_START
     }
 
     public boolean isHidden() {
@@ -215,7 +234,11 @@ public class SwipeView extends LinearLayout {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
     }
 
-    public interface OnTouchReleased {
+    public interface OnTouchRelease {
         void onRelease(SwipeView view);
+    }
+
+    public interface OnMove {
+        void onMoving(SwipeView view, Operation operation);
     }
 }

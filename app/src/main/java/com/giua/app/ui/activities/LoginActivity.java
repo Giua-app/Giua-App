@@ -73,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_normal_login);
+        setContentView(R.layout.activity_login);
 
         if (GlobalVariables.gsThread == null || GlobalVariables.gsThread.isInterrupted())
             GlobalVariables.gsThread = new GiuaScraperThread();

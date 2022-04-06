@@ -83,6 +83,8 @@ public class ActivityManager extends AppCompatActivity {
         final String defaultUrl = SettingsData.getSettingString(this, SettingKey.DEFAULT_URL);
         if (!defaultUrl.equals(""))
             GiuaScraper.setSiteURL(defaultUrl);
+        else
+            SettingsData.saveSettingString(this, SettingKey.DEFAULT_URL, GiuaScraper.getSiteURL());
 
         setupNotificationManager();
 

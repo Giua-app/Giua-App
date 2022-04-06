@@ -22,8 +22,9 @@ package com.giua.app.ui.activities.AccountsActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Rect;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,6 +50,7 @@ import com.giua.app.ui.views.SwipeView;
 import com.giua.webscraper.GiuaScraper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -71,6 +73,9 @@ public class AccountsActivity extends AppCompatActivity {
     View dotColorPreview;
 
     TextView tvAddAccountSave;
+    TextInputLayout tilAddAccountUsername;
+    TextInputLayout tilAddAccountPassword;
+    TextInputLayout tilAddAccountUrl;
     EditText etAddAccountUsername;
     EditText etAddAccountPassword;
     EditText etAddAccountUrl;
@@ -78,14 +83,15 @@ public class AccountsActivity extends AppCompatActivity {
     View mainLayout;
 
     String goTo = "";
-    boolean accountChooserMode = false; //La chooser mode indica che l'utente sta scegeliendo un account con cui fare il login
+    boolean isChooserMode = false; //La chooser mode indica che l'utente sta scegeliendo un account con cui fare il login
+    boolean isChangedSomething = false; //Indica se è stato modificato qualcosa
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accounts);
 
-        accountChooserMode = getIntent().getBooleanExtra("account_chooser_mode", false);
+        isChooserMode = getIntent().getBooleanExtra("account_chooser_mode", false);
         goTo = getIntent().getStringExtra("goTo");
         if (goTo == null)
             goTo = "";
@@ -103,9 +109,12 @@ public class AccountsActivity extends AppCompatActivity {
         layoutAddAccount = findViewById(R.id.accounts_add_account_layout);
         btnAddAccount = findViewById(R.id.accounts_add_account_button);
         tvAddAccountSave = findViewById(R.id.accounts_add_account_save_text);
-        etAddAccountUsername = findViewById(R.id.accounts_add_account_username);
-        etAddAccountPassword = findViewById(R.id.accounts_add_account_password);
-        etAddAccountUrl = findViewById(R.id.accounts_add_account_url);
+        tilAddAccountUsername = findViewById(R.id.accounts_add_account_username);
+        tilAddAccountPassword = findViewById(R.id.accounts_add_account_password);
+        tilAddAccountUrl = findViewById(R.id.accounts_add_account_url);
+        etAddAccountUsername = tilAddAccountUsername.getEditText();
+        etAddAccountPassword = tilAddAccountPassword.getEditText();
+        etAddAccountUrl = tilAddAccountUrl.getEditText();
 
         mainLayout = findViewById(R.id.activity_accounts_main);
 
@@ -118,32 +127,107 @@ public class AccountsActivity extends AppCompatActivity {
         etAddAccountPassword.setOnFocusChangeListener(this::adaptSwipeViewSizeOnFocusChange);
         etAddAccountUrl.setOnFocusChangeListener(this::adaptSwipeViewSizeOnFocusChange);
         swipeView.setOnTouchRelease(this::onSwipeViewTouchRelease);
+        swipeView.setOnMove(this::onSwipeViewMove);
         ivManageAccountDelete.setOnClickListener(this::ivSwipeViewDeleteOnClick);
         btnAddAccount.setOnClickListener(this::btnAddAccountOnClick);
         swipeViewColorLayout.setOnClickListener(this::swipeViewColorLayoutOnClick);
         tvAddAccountSave.setOnClickListener(this::btnAddAccountSaveOnClick);
+        etAddAccountUsername.addTextChangedListener(onEditTextChanged(tilAddAccountUsername));
+        etAddAccountPassword.addTextChangedListener(onEditTextChanged(tilAddAccountPassword));
 
         addAccountCardsToLayout(allUsernames);
+    }
+
+    private void addAccountCardsToLayout(Set<String> allUsernames) {
+        gridLayout.removeAllViews();
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        params.leftMargin = convertDpToPx(10);
+
+        boolean isFirstElementInRow = true;
+        TableRow tableRow = new TableRow(this);
+        for (String username : allUsernames) {
+            String type = AccountData.getUserType(this, username);
+            int color = AccountData.getTheme(this, username);
+
+            if (isFirstElementInRow)
+                tableRow = new TableRow(this);
+
+            AccountCard accountCard = new AccountCard(this, username, type, color);
+
+            if (isChooserMode)
+                accountCard.setOnClickListener(this::onAccountCardClickWhileChoosing);
+            else
+                accountCard.setOnClickListener(this::onAccountCardClick);
+
+            tableRow.addView(accountCard);
+
+            if (!isFirstElementInRow)
+                gridLayout.addView(tableRow);
+
+            isFirstElementInRow = !isFirstElementInRow;
+        }
+
+        if (!isFirstElementInRow)
+            gridLayout.addView(tableRow);
+    }
+
+    private void onSwipeViewMove(SwipeView swipeView, SwipeView.Operation operation) {
+        if (operation == SwipeView.Operation.SHOW_START_FROM_BOTTOM)
+            btnAddAccount.setVisibility(View.INVISIBLE);
+        if (operation == SwipeView.Operation.HIDE_ALL_FROM_Y)
+            btnAddAccount.setVisibility(View.VISIBLE);
+    }
+
+    private TextWatcher onEditTextChanged(final TextInputLayout view) {
+        return new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                //Elimina gli errori mentre si sta scrivendo nella view
+                if (view.getId() == tilAddAccountUsername.getId()) {
+                    tilAddAccountUsername.setError(null);
+                    tilAddAccountUsername.setErrorEnabled(false);
+                } else if (view.getId() == tilAddAccountPassword.getId()) {
+                    tilAddAccountPassword.setError(null);
+                    tilAddAccountPassword.setErrorEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        };
     }
 
     private void btnAddAccountSaveOnClick(View view) {
         String username = etAddAccountUsername.getText().toString();
         String password = etAddAccountPassword.getText().toString();
 
-        if (username.equals("") || password.equals("")) return;  //TODO: Segnala errore
+
+        if (username.equals(""))
+            tilAddAccountUsername.setError("Il nome utente non può essere vuoto");
+        if (password.equals("")) tilAddAccountPassword.setError("La password non può essere vuota");
+        if (username.equals("") || password.equals("")) return;
 
         AccountData.setCredentials(this, username, password);
         AccountData.setSiteUrl(this, username, etAddAccountUrl.getText().toString());
         AppData.addAccountUsername(this, username);
         swipeView.hideAllFromY();
         addAccountCardsToLayout(AppData.getAllAccountUsernames(this));
+        isChangedSomething = true;
     }
 
     private void setupToolBar() {
         Toolbar toolbar = findViewById(R.id.activity_accounts_toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle(accountChooserMode ? "Selezione account" : "Gestione account");
-        if (!accountChooserMode) {
+        toolbar.setTitle(isChooserMode ? "Selezione account" : "Gestione account");
+        if (!isChooserMode) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(false);
         }
@@ -169,6 +253,7 @@ public class AccountsActivity extends AppCompatActivity {
                     AccountData.removeAccount(this, lastClickedAccountCard.username);
                     addAccountCardsToLayout(AppData.getAllAccountUsernames(this));
                     swipeView.hideAllFromY();
+                    isChangedSomething = true;
                 })
                 .setNeutralButton("Annulla", null)
                 .show();
@@ -179,40 +264,6 @@ public class AccountsActivity extends AppCompatActivity {
             swipeView.showAllFromY();
         else if (swipeView.isHidden())
             swipeView.showStart();
-    }
-
-    private void addAccountCardsToLayout(Set<String> allUsernames) {
-        gridLayout.removeAllViews();
-
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        params.leftMargin = convertDpToPx(10);
-
-        boolean isFirstElementInRow = true;
-        TableRow tableRow = new TableRow(this);
-        for (String username : allUsernames) {
-            String type = AccountData.getUserType(this, username);
-            int color = AccountData.getTheme(this, username);
-
-            if (isFirstElementInRow)
-                tableRow = new TableRow(this);
-
-            AccountCard accountCard = new AccountCard(this, username, type, color);
-
-            if (accountChooserMode)
-                accountCard.setOnClickListener(this::onAccountCardClickWhileChoosing);
-            else
-                accountCard.setOnClickListener(this::onAccountCardClick);
-
-            tableRow.addView(accountCard);
-
-            if (!isFirstElementInRow)
-                gridLayout.addView(tableRow);
-
-            isFirstElementInRow = !isFirstElementInRow;
-        }
-
-        if (!isFirstElementInRow)
-            gridLayout.addView(tableRow);
     }
 
     private void onSwipeViewTouchRelease(SwipeView swipeView) {
@@ -231,7 +282,7 @@ public class AccountsActivity extends AppCompatActivity {
             //Controllo se l'URL è valido
             if (Pattern.matches("https?://([a-zA-Z0-9]+[.])+([a-zA-Z0-9]+)(:[0-9]+)?((/[a-zA-Z0-9-_]+)+)?", etManageAccountUrl.getText())) {
                 AccountData.setSiteUrl(this, lastClickedAccountCard.username, etManageAccountUrl.getText().toString());
-
+                isChangedSomething = true;
             } else {
                 etManageAccountUrl.setText(AccountData.getSiteUrl(this, lastClickedAccountCard.username));
                 setErrorMessage("Sito non valido", swipeView);
@@ -257,16 +308,31 @@ public class AccountsActivity extends AppCompatActivity {
         startAutomaticLogin();
     }
 
+    private void swipeViewColorLayoutOnClick(View view) {
+        Context context = this;
+
+        new ColorPickerPopup.Builder(this).initialColor(AccountData.getTheme(this, lastClickedAccountCard.username))
+                .enableAlpha(false)
+                .enableBrightness(false)
+                .okTitle("Conferma")
+                .cancelTitle("Annulla")
+                .showIndicator(true)
+                .showValue(false)
+                .build()
+                .show(view, new ColorPickerPopup.ColorPickerObserver() {
+                    @Override
+                    public void onColorPicked(int color) {
+                        dotColorPreview.setBackgroundTintList(ColorStateList.valueOf(color));
+                        AccountData.setTheme(view.getContext(), lastClickedAccountCard.username, color);
+                        isChangedSomething = true;
+                        addAccountCardsToLayout(AppData.getAllAccountUsernames(context));
+                    }
+                });
+    }
+
     private void startAutomaticLogin() {
         startActivity(new Intent(AccountsActivity.this, AutomaticLoginActivity.class).putExtra("goTo", goTo));
         finish();
-    }
-
-    private int getKeyboardHeight() {
-        Rect r = new Rect();
-        mainLayout.getWindowVisibleDisplayFrame(r);
-        int screenHeight = mainLayout.getRootView().getHeight();
-        return screenHeight - (r.bottom);
     }
 
     private void setErrorMessage(String message, View root) {
@@ -282,32 +348,12 @@ public class AccountsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() != android.R.id.home) return super.onOptionsItemSelected(item);
 
-        //TODO: Questo bisogna farlo solo se si ha cambiato qualcosa altrimenti fare onBackPressed();
-        startActivity(new Intent(this, DrawerActivity.class));
-        finish();
+        if (isChangedSomething) {
+            startActivity(new Intent(this, DrawerActivity.class));
+            finish();
+        } else
+            onBackPressed();
         return true;
 
-    }
-
-    private void swipeViewColorLayoutOnClick(View view) {
-        Context context = this;
-
-        new ColorPickerPopup.Builder(this).initialColor(AccountData.getTheme(this, lastClickedAccountCard.username))
-                .enableAlpha(false)
-                .enableBrightness(false)
-                .okTitle("Conferma")
-                .cancelTitle("Annulla")
-                .showIndicator(true)
-                .showValue(false)
-                .build()
-                .show(view, new ColorPickerPopup.ColorPickerObserver() {
-                    @Override
-                    public void
-                    onColorPicked(int color) {
-                        dotColorPreview.setBackgroundTintList(ColorStateList.valueOf(color));
-                        AccountData.setTheme(view.getContext(), lastClickedAccountCard.username, color);
-                        addAccountCardsToLayout(AppData.getAllAccountUsernames(context));
-                    }
-                });
     }
 }
