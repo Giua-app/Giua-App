@@ -226,7 +226,7 @@ public class SwipeView extends LinearLayout {
     }
 
     public boolean isHidden() {
-        return getY() >= realMetrics.heightPixels;
+        return getY() >= realMetrics.heightPixels || getVisibility() == INVISIBLE || getVisibility() == GONE;
     }
 
     private int convertDpToPx(float dp) {

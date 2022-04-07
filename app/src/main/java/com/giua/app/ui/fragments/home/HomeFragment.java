@@ -71,9 +71,11 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     SwipeRefreshLayout swipeRefreshLayout;
     View root;
     LoggerManager loggerManager;
+
     boolean forceRefresh = false;
     boolean isFragmentDestroyed = false;
     boolean offlineMode = false;
+    boolean addVoteNotRelevantForMean = false;
 
     @Nullable
     @Override
@@ -114,6 +116,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         swipeRefreshLayout.setRefreshing(true);
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         offlineMode = activity.getIntent().getBooleanExtra("offline", false);
+        addVoteNotRelevantForMean = SettingsData.getSettingBoolean(activity, SettingKey.VOTE_NRFM_ON_CHART);
 
         GlobalVariables.gsThread.addTask(() -> {
 
@@ -294,6 +297,8 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
 
         List<Vote> allVotesSorted = sortVotes(allVotes);
         for (Vote vote : allVotesSorted) {
+            if (vote.isAsterisk || !(vote.isRelevantForMean || addVoteNotRelevantForMean)) break;
+
             switch (vote.quarterlyToInt()) {
                 case 1:
                     entriesFirstQuarter.add(new Entry(voteCounter, vote.toFloat()));
@@ -328,7 +333,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private LineDataSet getLineForChart(List<Entry> entries, String text, @ColorInt int color) {
-        LineDataSet lineDataSet = new LineDataSet(entries, "Secondo quadrimestre");
+        LineDataSet lineDataSet = new LineDataSet(entries, text);
         lineDataSet.setDrawCircles(false);
         lineDataSet.setDrawCircleHole(false);
         lineDataSet.setDrawValues(false);

@@ -39,6 +39,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.github.dhaval2404.colorpicker.ColorPickerDialog;
+import com.github.dhaval2404.colorpicker.model.ColorShape;
 import com.giua.app.AccountData;
 import com.giua.app.AppData;
 import com.giua.app.R;
@@ -54,8 +56,6 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Set;
 import java.util.regex.Pattern;
-
-import top.defaults.colorpicker.ColorPickerPopup;
 
 public class AccountsActivity extends AppCompatActivity {
 
@@ -311,23 +311,16 @@ public class AccountsActivity extends AppCompatActivity {
     private void swipeViewColorLayoutOnClick(View view) {
         Context context = this;
 
-        new ColorPickerPopup.Builder(this).initialColor(AccountData.getTheme(this, lastClickedAccountCard.username))
-                .enableAlpha(false)
-                .enableBrightness(false)
-                .okTitle("Conferma")
-                .cancelTitle("Annulla")
-                .showIndicator(true)
-                .showValue(false)
-                .build()
-                .show(view, new ColorPickerPopup.ColorPickerObserver() {
-                    @Override
-                    public void onColorPicked(int color) {
-                        dotColorPreview.setBackgroundTintList(ColorStateList.valueOf(color));
-                        AccountData.setTheme(view.getContext(), lastClickedAccountCard.username, color);
-                        isChangedSomething = true;
-                        addAccountCardsToLayout(AppData.getAllAccountUsernames(context));
-                    }
-                });
+        new ColorPickerDialog.Builder(this).setDefaultColor(AccountData.getTheme(this, lastClickedAccountCard.username))
+                .setTitle("Scegli un colore")
+                .setColorShape(ColorShape.CIRCLE)
+                .setNegativeButton("Annulla")
+                .setColorListener((color, colorHex) -> {
+                    dotColorPreview.setBackgroundTintList(ColorStateList.valueOf(color));
+                    AccountData.setTheme(view.getContext(), lastClickedAccountCard.username, color);
+                    isChangedSomething = true;
+                    addAccountCardsToLayout(AppData.getAllAccountUsernames(context));
+                }).show();
     }
 
     private void startAutomaticLogin() {
@@ -351,9 +344,18 @@ public class AccountsActivity extends AppCompatActivity {
         if (isChangedSomething) {
             startActivity(new Intent(this, DrawerActivity.class));
             finish();
-        } else
+        } else {
+            swipeView.setVisibility(View.INVISIBLE);
             onBackPressed();
+        }
         return true;
+    }
 
+    @Override
+    public void onBackPressed() {
+        if (swipeView.isHidden())
+            super.onBackPressed();
+        else
+            swipeView.hideAllFromY();
     }
 }

@@ -45,7 +45,7 @@ public class NewsletterView extends ConstraintLayout {
     private boolean isMoved = false;
     public float offset = 0f; //Usato per fare lo scorrimento
     public View upperView;
-    private Context context;
+    private final Context context;
 
     public NewsletterView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, Newsletter newsletter) {
         super(context, attrs);
@@ -131,10 +131,7 @@ public class NewsletterView extends ConstraintLayout {
     }
 
     private boolean docsAttachmentsOnTouch(View view, MotionEvent motionEvent) {
-        if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
-            setClickable(false);
-        } else
-            setClickable(true);
+        setClickable(motionEvent.getAction() != MotionEvent.ACTION_MOVE);
         return false;
     }
 

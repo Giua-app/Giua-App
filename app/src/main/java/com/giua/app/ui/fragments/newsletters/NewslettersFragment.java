@@ -68,33 +68,37 @@ import java.util.Vector;
 
 public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
-    LinearLayout layout;
     Context context;
+    FragmentActivity activity;
+    View root;
+
     List<Newsletter> allNewsletter = new Vector<>();
-    List<Newsletter> allNewsletterOld = new Vector<>();
     List<Newsletter> allNewsletterToSave = new Vector<>();
-    ProgressBar pbLoadingPage;
+
+    LinearLayout layout;
+    SwipeRefreshLayout swipeRefreshLayout;
     ScrollView scrollView;
-    LinearLayout attachmentLayout;
-    ObscureLayoutView obscureLayoutView;
-    LinearLayout filterLayout;
+    ProgressBar pbDownloading;
     ProgressBar pbLoadingNewsletters;
     TextView tvNoElements;
-    FragmentActivity activity;
-    SwipeRefreshLayout swipeRefreshLayout;
-    View root;
-    boolean isDownloading = false;
+
+    ObscureLayoutView obscureLayoutView;
+    LinearLayout attachmentLayout;
+    LinearLayout filterLayout;
+
+    String filterDate = "";
+    String filterText = "";
+
     int currentPage = 1;
+
+    boolean isDownloading = false;
     boolean loadedAllPages = false;
     boolean loadingPage = false;
-    boolean hasCompletedLoading = false;
     boolean isFilterApplied = false;
     boolean onlyNotRead = false;
     boolean canSendErrorMessage = true;
     boolean offlineMode = false;
     boolean isFragmentDestroyed = false;
-    String filterDate = "";
-    String filterText = "";
     boolean demoMode = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -104,13 +108,11 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         root = inflater.inflate(R.layout.fragment_newsletters, container, false);
 
         allNewsletter = new Vector<>();
-        allNewsletterOld = new Vector<>();
         allNewsletterToSave = new Vector<>();
         isDownloading = false;
         currentPage = 1;
         loadedAllPages = false;
         loadingPage = false;
-        hasCompletedLoading = false;
         isFilterApplied = false;
         onlyNotRead = false;
         canSendErrorMessage = true;
@@ -121,7 +123,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         context = getContext();
         activity = getActivity();
         layout = root.findViewById(R.id.newsletter_linear_layout);
-        pbLoadingPage = root.findViewById(R.id.circolari_loading_page_bar);
+        pbDownloading = root.findViewById(R.id.circolari_loading_page_bar);
         scrollView = root.findViewById(R.id.newsletter_scroll_view);
         attachmentLayout = root.findViewById(R.id.attachment_layout);
         obscureLayoutView = root.findViewById(R.id.newsletter_obscure_layout);
@@ -152,83 +154,76 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void loadDataAndViews() {
         loadingPage = true;
-        hasCompletedLoading = false;
         if (currentPage == 1)
             swipeRefreshLayout.setRefreshing(true);
         else if (currentPage > 1 && pbLoadingNewsletters.getParent() == null)
             layout.addView(pbLoadingNewsletters);
 
-        if (!loadedAllPages) {
-            GlobalVariables.gsThread.addTask(() -> {
-                try {
-                    if (!offlineMode) {
-                        if (!isFilterApplied) {
-                            if (!allNewsletter.isEmpty())
-                                allNewsletterOld = allNewsletter;
-                            allNewsletter = GlobalVariables.gS.getNewslettersPage(false).getAllNewslettersWithFilter(onlyNotRead, filterDate, filterText);
-                            isFilterApplied = true;
-                        } else
-                            allNewsletter = GlobalVariables.gS.getNewslettersPage(false).getAllNewsletters(currentPage);
-                    } else {
-                        loadedAllPages = true;
-                        /*try {
-                            allNewsletter = new JsonHelper().parseJsonForNewsletters(AppData.getNewslettersString(requireActivity()));
-                        } catch (Exception ignored) {
-                        }*/
-                    }
-
-                    if (allNewsletter != null) {
-                        activity.runOnUiThread(() -> tvNoElements.setVisibility(View.GONE));
-                        hasCompletedLoading = true;
-                        if (currentPage == 1)
-                            allNewsletterToSave = allNewsletter;
-                        if (allNewsletter.isEmpty() && currentPage == 1)
-                            activity.runOnUiThread(() -> tvNoElements.setVisibility(View.VISIBLE));
-                        else if (allNewsletter.isEmpty())
-                            loadedAllPages = true;
-                        activity.runOnUiThread(this::addViews);
-                        currentPage++;
-                    }
-                } catch (GiuaScraperExceptions.YourConnectionProblems e) {
-                    activity.runOnUiThread(() -> {
-                        setErrorMessage(activity.getString(R.string.your_connection_error), root);
-                        if (currentPage == 1)
-                            tvNoElements.setVisibility(View.VISIBLE);
-                    });
-                    allNewsletter = new Vector<>();
-
-                } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
-                    activity.runOnUiThread(() -> {
-                        setErrorMessage(activity.getString(R.string.site_connection_error), root);
-                        if (currentPage == 1)
-                            tvNoElements.setVisibility(View.VISIBLE);
-                    });
-                    allNewsletter = new Vector<>();
-                } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
-                    activity.runOnUiThread(() -> {
-                        setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
-                        if (currentPage == 1)
-                            tvNoElements.setVisibility(View.VISIBLE);
-                    });
-                    allNewsletter = new Vector<>();
-                } catch (GiuaScraperExceptions.NotLoggedIn e) {
-                    activity.runOnUiThread(() -> {
-                        ((DrawerActivity) activity).startActivityManager();
-                    });
-                }
-                activity.runOnUiThread(() -> {
-                    swipeRefreshLayout.setRefreshing(false);
-                    layout.removeView(pbLoadingNewsletters);
-                });
-                loadingPage = false;
-            });
-        } else {
+        if (loadedAllPages) {
             activity.runOnUiThread(() -> {
                 swipeRefreshLayout.setRefreshing(false);
                 layout.removeView(pbLoadingNewsletters);
             });
             loadingPage = false;
+            return;
         }
+
+        GlobalVariables.gsThread.addTask(() -> {
+            try {
+                if (offlineMode) loadedAllPages = true;
+                else {
+                    if (isFilterApplied)
+                        allNewsletter = GlobalVariables.gS.getNewslettersPage(false).getAllNewsletters(currentPage);
+                    else {
+                        allNewsletter = GlobalVariables.gS.getNewslettersPage(false).getAllNewslettersWithFilter(onlyNotRead, filterDate, filterText);
+                        isFilterApplied = true;
+                    }
+                }
+
+                if (allNewsletter == null) return;
+
+                activity.runOnUiThread(() -> tvNoElements.setVisibility(View.GONE));
+                if (currentPage == 1)
+                    allNewsletterToSave = allNewsletter;
+                if (allNewsletter.isEmpty() && currentPage == 1)
+                    activity.runOnUiThread(() -> tvNoElements.setVisibility(View.VISIBLE));
+                else if (allNewsletter.isEmpty())
+                    loadedAllPages = true;
+                activity.runOnUiThread(this::addViews);
+                currentPage++;
+            } catch (GiuaScraperExceptions.YourConnectionProblems e) {
+                activity.runOnUiThread(() -> {
+                    setErrorMessage(activity.getString(R.string.your_connection_error), root);
+                    if (currentPage == 1)
+                        tvNoElements.setVisibility(View.VISIBLE);
+                });
+                allNewsletter = new Vector<>();
+
+            } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
+                activity.runOnUiThread(() -> {
+                    setErrorMessage(activity.getString(R.string.site_connection_error), root);
+                    if (currentPage == 1)
+                        tvNoElements.setVisibility(View.VISIBLE);
+                });
+                allNewsletter = new Vector<>();
+            } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
+                activity.runOnUiThread(() -> {
+                    setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
+                    if (currentPage == 1)
+                        tvNoElements.setVisibility(View.VISIBLE);
+                });
+                allNewsletter = new Vector<>();
+            } catch (GiuaScraperExceptions.NotLoggedIn e) {
+                activity.runOnUiThread(() -> {
+                    ((DrawerActivity) activity).startActivityManager();
+                });
+            }
+            activity.runOnUiThread(() -> {
+                swipeRefreshLayout.setRefreshing(false);
+                layout.removeView(pbLoadingNewsletters);
+            });
+            loadingPage = false;
+        });
 
     }
 
@@ -506,8 +501,8 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
      */
     private void downloadAndOpenFile(String url) {
         isDownloading = true;
-        pbLoadingPage.setZ(10f);
-        pbLoadingPage.setVisibility(View.VISIBLE);
+        pbDownloading.setZ(10f);
+        pbDownloading.setVisibility(View.VISIBLE);
         GlobalVariables.gsThread.addTask(() -> {
             try {
                 DownloadedFile downloadedFile = GlobalVariables.gS.download(url);
@@ -529,7 +524,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                 e.printStackTrace();
             }
             isDownloading = false;
-            activity.runOnUiThread(() -> pbLoadingPage.setVisibility(View.GONE));
+            activity.runOnUiThread(() -> pbDownloading.setVisibility(View.GONE));
         });
     }
 

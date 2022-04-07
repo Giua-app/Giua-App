@@ -30,6 +30,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.giua.app.AccountData;
+import com.giua.app.ActivityManager;
 import com.giua.app.AppData;
 import com.giua.app.GiuaScraperThread;
 import com.giua.app.GlobalVariables;
@@ -122,7 +123,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                     loggerManager.w("Cookie gS dell'account studente scaduto, avvio StudentLoginActivity");
                     startStudentLoginActivity();
                 } else {
-                    loggerManager.w("Cookie gS scaduto, avvio LoginActivity");
+                    loggerManager.w("Cookie gS scaduto, avvio ActivityManager");
                     AppData.removeAccountUsername(this, AppData.getActiveUsername(this));
                     AppData.saveActiveUsername(this, "");
                     setErrorMessage("Le credenziali di accesso non sono più valide");
@@ -131,7 +132,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    startActivity(new Intent(AutomaticLoginActivity.this, LoginActivity.class));
+                    startActivity(new Intent(AutomaticLoginActivity.this, ActivityManager.class));
                 }
             } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
                 loggerManager.e("Errore: sito in manutenzione");

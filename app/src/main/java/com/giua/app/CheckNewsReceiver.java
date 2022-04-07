@@ -49,7 +49,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Vector;
@@ -302,6 +306,22 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         if (canSendHomeworkNotification && homeworkCounter > 0) {
             String contentText;
             contentText = "Clicca per andare all' agenda";
+
+            Date today = new Date();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALY);
+
+            for (String date : homeworkDates) {
+                Date homeworkDate;
+                try {
+                    homeworkDate = simpleDateFormat.parse(date);
+                    if (today.after(homeworkDate)) {
+                        homeworkDates.remove(date);
+                        homeworkCounter--;
+                    }
+                } catch (ParseException ignored) {
+                }
+            }
+
             if (homeworkCounter == 1) {
                 homeworkNotificationText = new StringBuilder("È stato programmato un nuovo compito di " + homeworkSubjects.get(0) + " per il giorno " + homeworkDates.get(0));
             } else {
@@ -319,6 +339,21 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         if (canSendTestNotification && testCounter > 0) {
             String contentText;
             contentText = "Clicca per andare all' agenda";
+            Date today = new Date();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALY);
+
+            for (String date : testDates) {
+                Date testDate;
+                try {
+                    testDate = simpleDateFormat.parse(date);
+                    if (today.after(testDate)) {
+                        testDates.remove(date);
+                        testCounter--;
+                    }
+                } catch (ParseException ignored) {
+                }
+            }
+
             if (testCounter == 1) {
                 testNotificationText = new StringBuilder("È stata programmata una nuova verifica di " + testSubjects.get(0) + " per il giorno " + testDates.get(0));
             } else {
