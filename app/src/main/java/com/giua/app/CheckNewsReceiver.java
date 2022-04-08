@@ -303,24 +303,36 @@ public class CheckNewsReceiver extends BroadcastReceiver {
         Notification homeworkNotification = null;
         Notification testNotification = null;
 
+        Date today = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALY);
+
+        for (String date : homeworkDates) {
+            Date homeworkDate;
+            try {
+                homeworkDate = simpleDateFormat.parse(date);
+                if (today.after(homeworkDate)) {
+                    homeworkDates.remove(date);
+                    homeworkCounter--;
+                }
+            } catch (ParseException ignored) {
+            }
+        }
+
+        for (String date : testDates) {
+            Date testDate;
+            try {
+                testDate = simpleDateFormat.parse(date);
+                if (today.after(testDate)) {
+                    testDates.remove(date);
+                    testCounter--;
+                }
+            } catch (ParseException ignored) {
+            }
+        }
+
         if (canSendHomeworkNotification && homeworkCounter > 0) {
             String contentText;
             contentText = "Clicca per andare all' agenda";
-
-            Date today = new Date();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALY);
-
-            for (String date : homeworkDates) {
-                Date homeworkDate;
-                try {
-                    homeworkDate = simpleDateFormat.parse(date);
-                    if (today.after(homeworkDate)) {
-                        homeworkDates.remove(date);
-                        homeworkCounter--;
-                    }
-                } catch (ParseException ignored) {
-                }
-            }
 
             if (homeworkCounter == 1) {
                 homeworkNotificationText = new StringBuilder("È stato programmato un nuovo compito di " + homeworkSubjects.get(0) + " per il giorno " + homeworkDates.get(0));
@@ -336,23 +348,10 @@ public class CheckNewsReceiver extends BroadcastReceiver {
             }
             homeworkNotification = createNotificationForAgenda("Nuovi compiti", contentText, homeworkNotificationText.toString());
         }
+
         if (canSendTestNotification && testCounter > 0) {
             String contentText;
             contentText = "Clicca per andare all' agenda";
-            Date today = new Date();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALY);
-
-            for (String date : testDates) {
-                Date testDate;
-                try {
-                    testDate = simpleDateFormat.parse(date);
-                    if (today.after(testDate)) {
-                        testDates.remove(date);
-                        testCounter--;
-                    }
-                } catch (ParseException ignored) {
-                }
-            }
 
             if (testCounter == 1) {
                 testNotificationText = new StringBuilder("È stata programmata una nuova verifica di " + testSubjects.get(0) + " per il giorno " + testDates.get(0));
