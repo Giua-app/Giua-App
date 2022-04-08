@@ -22,7 +22,6 @@ package com.giua.app;
 import android.os.Build;
 
 import com.giua.utils.GiuaScraperUtils;
-import com.giua.utils.JsonBuilder;
 import com.giua.webscraper.GiuaScraper;
 
 import org.jsoup.Jsoup;
@@ -34,14 +33,23 @@ public class Analytics {
     private final static String API_ENDPOINT = "https://app.posthog.com/capture/";
     private final static String API_KEY = BuildConfig.SUPER_SECRET_KEY + new Secrets().getjFsBBWqO("com.giua.app");
 
+    public final static String FIRST_START = "Primo avvio";
+    public final static String FIRST_DAILY_START = "Avvio giornaliero";
+    public final static String HERE_TAKE_SOME_CAKE = ";)";
+    public final static String LOG_OUT = "Log out";
+    public final static String LOG_IN = "Logged in";
+    public final static String WEBVIEW_ERROR = "WebView cookie error";
+    public final static String CRASH = "Crash";
+    public final static String APP_UPDATED = "App aggiornata";
+
     public static void sendDefaultRequest(String eventName){
         String body = "{" +
                 "\"api_key\": \"" + API_KEY + "\"," +
                 "\"event\": \"" + eventName + "\"," +
                 "\"properties\": {" +
                 "\"distinct_id\": \"0\"," +
-                "\"scraper_url\": \"" + JsonBuilder.escape(GiuaScraper.getSiteURL()) + "\"," +
-                "\"app_ver\": \"" + JsonBuilder.escape(BuildConfig.VERSION_NAME) + "\"," +
+                "\"scraper_url\": \"" + GiuaScraperUtils.escapeString(GiuaScraper.getSiteURL()) + "\"," +
+                "\"app_ver\": \"" + GiuaScraperUtils.escapeString(BuildConfig.VERSION_NAME) + "\"," +
                 "\"os\": \"Android " + Build.VERSION.RELEASE + " (SDK " + Build.VERSION.SDK_INT + ")\"" +
                 "}}";
 
@@ -75,7 +83,7 @@ public class Analytics {
                     .header("Content-Type", "application/json")
                     .requestBody(body).post();
         } catch (IOException e){
-            e.printStackTrace();
+            e.printStackTrace(); //ignora errore
             return null;
         }
         System.out.println(doc.text());

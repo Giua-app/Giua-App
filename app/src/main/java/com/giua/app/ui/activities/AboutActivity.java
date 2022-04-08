@@ -308,7 +308,7 @@ public class AboutActivity extends MaterialAboutActivity {
         switch(importantInteger){
             case 3:
                 Snackbar.make(findViewById(android.R.id.content), ";)", Snackbar.LENGTH_SHORT).show();
-                Analytics.sendDefaultRequest(";)");
+                Analytics.sendDefaultRequest(Analytics.HERE_TAKE_SOME_CAKE);
                 loggerManager.d(";)");
                 break;
             case 6:

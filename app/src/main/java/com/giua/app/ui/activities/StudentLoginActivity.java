@@ -78,7 +78,7 @@ public class StudentLoginActivity extends AppCompatActivity {
                         return true;
                     }
                     loggerManager.e("Errore, cookie ottenuto è null. Impossibile continuare");
-                    Analytics.sendDefaultRequest("WebView cookie error");
+                    Analytics.sendDefaultRequest(Analytics.WEBVIEW_ERROR);
                     Snackbar.make(findViewById(android.R.id.content), "Login studente non disponibile, contatta gli sviluppatori", Snackbar.LENGTH_LONG).show();
                 }
                 return false;
@@ -110,7 +110,7 @@ public class StudentLoginActivity extends AppCompatActivity {
     private void onStoppedWebView(boolean increaseVisitCount) {
         loggerManager.d("onStoppedWebView chiamato");
         if (increaseVisitCount)
-            new Analytics.Builder("Logged in").addCustomValue("account_type", "Studente (Google)").send();
+            new Analytics.Builder(Analytics.LOG_IN).addCustomValue("account_type", "Studente (Google)").send();
         webView.setVisibility(View.INVISIBLE);
         obscureLayoutView.setVisibility(View.VISIBLE);
 

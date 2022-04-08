@@ -92,7 +92,7 @@ public class ActivityManager extends AppCompatActivity {
 
         if (getIntent().getBooleanExtra("fromCAOC", false)) {
             loggerManager.d("Individuato crash precedente, invio segnalazione");
-            new Analytics.Builder("Crash")
+            new Analytics.Builder(Analytics.CRASH)
                     .addCustomValue("crash_stacktrace", getIntent().getStringExtra("stacktrace"))
                     .send();
         }
@@ -111,7 +111,7 @@ public class ActivityManager extends AppCompatActivity {
         loggerManager.d("introStatus è " + introStatus);
         if (introStatus < 1) {
             if(introStatus != -2) //non è una prima installazione se è -2
-                Analytics.sendDefaultRequest("Primo avvio");
+                Analytics.sendDefaultRequest(Analytics.FIRST_START);
 
             loggerManager.d("Avvio App Intro Activity");
             Intent intent = new Intent(this, AppIntroActivity.class);
@@ -136,10 +136,9 @@ public class ActivityManager extends AppCompatActivity {
 
     private void executeDailyStartupActions(){
         //Analytics.sendDefaultRequest("Avvio"); //Debug
-
         if(checkLastStartupDate()){
             //Analytics
-            Analytics.sendDefaultRequest("Avvio giornaliero");
+            Analytics.sendDefaultRequest(Analytics.FIRST_DAILY_START);
             //Pulizia log
             loggerManager.cleanupLogs();
 

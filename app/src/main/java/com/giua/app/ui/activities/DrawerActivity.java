@@ -179,7 +179,7 @@ public class DrawerActivity extends AppCompatActivity {
 
             loggerManager.w("Aggiornamento installato rilevato");
             loggerManager.d("Cancello apk dell'aggiornamento e mostro changelog");
-            new Analytics.Builder("App aggiornata")
+            new Analytics.Builder(Analytics.APP_UPDATED)
                     .addCustomValue("new_ver", BuildConfig.VERSION_NAME)
                     .addCustomValue("old_ver", AppData.getAppVersion(this)).send();
 
@@ -192,7 +192,7 @@ public class DrawerActivity extends AppCompatActivity {
 
     private boolean logoutItemOnClick(View view, int i, IDrawerItem item) {
         loggerManager.d("Logout richiesto dall'utente");
-        Analytics.sendDefaultRequest("Log out");
+        Analytics.sendDefaultRequest(Analytics.LOG_OUT);
         AppData.removeAccountUsername(this, AppData.getActiveUsername(this));
         if (GlobalVariables.gS.getUser().equals("gsuite"))
             CookieManager.getInstance().removeAllCookies(null); //Cancello il cookie della webview

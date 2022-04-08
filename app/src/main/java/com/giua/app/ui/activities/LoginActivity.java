@@ -173,7 +173,7 @@ public class LoginActivity extends AppCompatActivity {
 
             loggerManager.w("Aggiornamento installato rilevato");
             loggerManager.d("Cancello apk dell'aggiornamento e mostro changelog");
-            new Analytics.Builder("App aggiornata")
+            new Analytics.Builder(Analytics.APP_UPDATED)
                     .addCustomValue("new_ver", BuildConfig.VERSION_NAME)
                     .addCustomValue("old_ver", AppData.getAppVersion(this)).send();
             AppUpdateManager upd = new AppUpdateManager(LoginActivity.this);
@@ -289,7 +289,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void startDrawerActivity() {
         loggerManager.d("Avvio DrawerActivity");
-        new Analytics.Builder("Logged in")
+        new Analytics.Builder(Analytics.LOG_IN)
                 .addCustomValue("account_type", GlobalVariables.gS.getUserTypeString()).send();
         Intent intent = new Intent(LoginActivity.this, DrawerActivity.class);
         startActivity(intent);
