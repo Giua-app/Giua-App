@@ -19,12 +19,11 @@
 
 package com.giua.app.ui.fragments.newsletters;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -58,6 +57,7 @@ import com.giua.app.ui.views.ObscureLayoutView;
 import com.giua.objects.Newsletter;
 import com.giua.webscraper.DownloadedFile;
 import com.giua.webscraper.GiuaScraperExceptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
@@ -68,19 +68,19 @@ import java.util.Vector;
 
 public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
-    Context context;
     FragmentActivity activity;
     View root;
 
-    List<Newsletter> allNewsletter = new Vector<>();
+    List<Newsletter> allNewsletters = new Vector<>();
     List<Newsletter> allNewsletterToSave = new Vector<>();
 
-    LinearLayout layout;
+    LinearLayout newslettersLayout;
     SwipeRefreshLayout swipeRefreshLayout;
     ScrollView scrollView;
     ProgressBar pbDownloading;
     ProgressBar pbLoadingNewsletters;
     TextView tvNoElements;
+    FloatingActionButton buttonGoUp;
 
     ObscureLayoutView obscureLayoutView;
     LinearLayout attachmentLayout;
@@ -107,22 +107,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             offlineMode = getArguments().getBoolean("offline");
         root = inflater.inflate(R.layout.fragment_newsletters, container, false);
 
-        allNewsletter = new Vector<>();
-        allNewsletterToSave = new Vector<>();
-        isDownloading = false;
-        currentPage = 1;
-        loadedAllPages = false;
-        loadingPage = false;
-        isFilterApplied = false;
-        onlyNotRead = false;
-        canSendErrorMessage = true;
-        offlineMode = false;
-        filterDate = "";
-        filterText = "";
-
-        context = getContext();
-        activity = getActivity();
-        layout = root.findViewById(R.id.newsletter_linear_layout);
+        newslettersLayout = root.findViewById(R.id.newsletter_linear_layout);
         pbDownloading = root.findViewById(R.id.circolari_loading_page_bar);
         scrollView = root.findViewById(R.id.newsletter_scroll_view);
         attachmentLayout = root.findViewById(R.id.attachment_layout);
@@ -130,18 +115,19 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         tvNoElements = root.findViewById(R.id.newsletter_fragment_no_elements_view);
         filterLayout = root.findViewById(R.id.newsletter_filter_layout);
         swipeRefreshLayout = root.findViewById(R.id.newsletter_swipe_refresh_layout);
+        View filterCardView = root.findViewById(R.id.newsletter_filter_cardview);
+        buttonGoUp = root.findViewById(R.id.newsletter_fragment_btn_go_up);
+        View buttonFilterConfirm = root.findViewById(R.id.newsletter_filter_btn_confirm);
 
         activity = requireActivity();
-
         pbLoadingNewsletters = new ProgressBar(getContext());
-        pbLoadingNewsletters.setId(View.generateViewId());
 
         scrollView.setOnScrollChangeListener(this::onScrollViewScrolled);
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
-        root.findViewById(R.id.newsletter_filter_cardview).setOnClickListener(this::btnFilterOnClick);
         obscureLayoutView.setOnClickListener(this::obscureViewOnClick);
-        root.findViewById(R.id.newsletter_fragment_btn_go_up).setOnClickListener((view -> scrollView.smoothScrollTo(0, 0)));
-        root.findViewById(R.id.newsletter_filter_btn_confirm).setOnClickListener(this::btnFilterConfirmOnClick);
+        filterCardView.setOnClickListener(this::btnFilterOnClick);
+        buttonGoUp.setOnClickListener((view -> scrollView.smoothScrollTo(0, 0)));
+        buttonFilterConfirm.setOnClickListener(this::btnFilterConfirmOnClick);
 
         activity.getSystemService(NotificationManager.class).cancel(10);
 
@@ -157,12 +143,12 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         if (currentPage == 1)
             swipeRefreshLayout.setRefreshing(true);
         else if (currentPage > 1 && pbLoadingNewsletters.getParent() == null)
-            layout.addView(pbLoadingNewsletters);
+            newslettersLayout.addView(pbLoadingNewsletters);
 
         if (loadedAllPages) {
             activity.runOnUiThread(() -> {
                 swipeRefreshLayout.setRefreshing(false);
-                layout.removeView(pbLoadingNewsletters);
+                newslettersLayout.removeView(pbLoadingNewsletters);
             });
             loadingPage = false;
             return;
@@ -173,21 +159,21 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                 if (offlineMode) loadedAllPages = true;
                 else {
                     if (isFilterApplied)
-                        allNewsletter = GlobalVariables.gS.getNewslettersPage(false).getAllNewsletters(currentPage);
+                        allNewsletters = GlobalVariables.gS.getNewslettersPage(false).getAllNewsletters(currentPage);
                     else {
-                        allNewsletter = GlobalVariables.gS.getNewslettersPage(false).getAllNewslettersWithFilter(onlyNotRead, filterDate, filterText);
+                        allNewsletters = GlobalVariables.gS.getNewslettersPage(false).getAllNewslettersWithFilter(onlyNotRead, filterDate, filterText);
                         isFilterApplied = true;
                     }
                 }
 
-                if (allNewsletter == null) return;
+                if (allNewsletters == null) return;
 
                 activity.runOnUiThread(() -> tvNoElements.setVisibility(View.GONE));
-                if (currentPage == 1)
-                    allNewsletterToSave = allNewsletter;
-                if (allNewsletter.isEmpty() && currentPage == 1)
+                if (currentPage == 1)   //Salviamo solo la prima pagina per l'offline
+                    allNewsletterToSave = allNewsletters;
+                if (allNewsletters.isEmpty() && currentPage == 1)
                     activity.runOnUiThread(() -> tvNoElements.setVisibility(View.VISIBLE));
-                else if (allNewsletter.isEmpty())
+                else if (allNewsletters.isEmpty())
                     loadedAllPages = true;
                 activity.runOnUiThread(this::addViews);
                 currentPage++;
@@ -197,7 +183,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                     if (currentPage == 1)
                         tvNoElements.setVisibility(View.VISIBLE);
                 });
-                allNewsletter = new Vector<>();
+                allNewsletters = new Vector<>();
 
             } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                 activity.runOnUiThread(() -> {
@@ -205,14 +191,14 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                     if (currentPage == 1)
                         tvNoElements.setVisibility(View.VISIBLE);
                 });
-                allNewsletter = new Vector<>();
+                allNewsletters = new Vector<>();
             } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
                 activity.runOnUiThread(() -> {
                     setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
                     if (currentPage == 1)
                         tvNoElements.setVisibility(View.VISIBLE);
                 });
-                allNewsletter = new Vector<>();
+                allNewsletters = new Vector<>();
             } catch (GiuaScraperExceptions.NotLoggedIn e) {
                 activity.runOnUiThread(() -> {
                     ((DrawerActivity) activity).startActivityManager();
@@ -220,37 +206,40 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             }
             activity.runOnUiThread(() -> {
                 swipeRefreshLayout.setRefreshing(false);
-                layout.removeView(pbLoadingNewsletters);
+                newslettersLayout.removeView(pbLoadingNewsletters);
             });
             loadingPage = false;
         });
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void addViews() {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.setMargins(0, 40, 0, 0);
 
-        for (Newsletter newsletter : allNewsletter) {
-            NewsletterView newsletterView = new NewsletterView(context, null, newsletter);
+        for (Newsletter newsletter : allNewsletters) {
+            NewsletterView newsletterView = new NewsletterView(activity, null, newsletter);
+            View btnNewsletterDocument = newsletterView.findViewById(R.id.newsletter_view_btn_document);
+            View btnNewsletterAttachment = newsletterView.findViewById(R.id.newsletter_view_btn_attachment);
+
             newsletterView.setOnTouchListener(this::newsletterViewOnTouchListener);
-            newsletterView.findViewById(R.id.newsletter_view_btn_document).setOnClickListener((view) -> {
+            btnNewsletterDocument.setOnClickListener((view) -> {
                 onClickDocument(newsletter);
                 newsletterView.markAsRead();
             });
 
             if (newsletter.attachmentsUrl != null && !newsletter.attachmentsUrl.isEmpty()) {
-                newsletterView.findViewById(R.id.newsletter_view_btn_attachment).setOnClickListener((view) -> onClickAttachmentImage(newsletter));
+                btnNewsletterAttachment.setOnClickListener((view) -> onClickAttachmentImage(newsletter));
             } else {
-                View btnAttachment = newsletterView.findViewById(R.id.newsletter_view_btn_attachment);
-                btnAttachment.setForeground(null);
-                btnAttachment.setAlpha(0.3f);
+                btnNewsletterAttachment.setForeground(null);
+                btnNewsletterAttachment.setAlpha(0.3f);
             }
 
             newsletterView.setLayoutParams(params);
 
-            layout.addView(newsletterView);
+            newslettersLayout.addView(newsletterView);
         }
 
         swipeRefreshLayout.setRefreshing(false);
@@ -269,44 +258,45 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
     //Qui viene gestito lo swipe della circolare
     private boolean newsletterViewOnTouchListener(View view, MotionEvent motionEvent) {
-        NewsletterView v = (NewsletterView) view;
+        NewsletterView newsletterView = (NewsletterView) view;
+
         //Se ce' un animazione in corso allora non fare nulla
-        if (v.upperView.getAnimation() != null) return false;
+        if (newsletterView.upperView.getAnimation() != null) return false;
+
         DisplayMetrics realMetrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getRealMetrics(realMetrics);
+        float adaptiveHalfWidth = (float) realMetrics.widthPixels * 240 / 1080;
+
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 return true;
             case MotionEvent.ACTION_MOVE:
                 int historyLength = motionEvent.getHistorySize();
-                if (historyLength > 1 && v.upperView.getTranslationX() >= v.getNormalTranslationX()) {
-                    if (v.upperView.getTranslationX() > 20) {
+                if (historyLength > 1 && newsletterView.upperView.getTranslationX() >= newsletterView.getNormalTranslationX()) {
+                    if (newsletterView.upperView.getTranslationX() > 20) {
                         scrollView.requestDisallowInterceptTouchEvent(true);
                         swipeRefreshLayout.setEnabled(false);
                     }
-                    if (v.offset == 0)
-                        v.offset = motionEvent.getRawX() - v.upperView.getTranslationX();
-                    v.moveTo((float) Math.sqrt(v.upperView.getTranslationX()) + motionEvent.getRawX() - v.offset);
-                    LinearLayout leftLayout = v.findViewById(R.id.newsletter_left_layout);
-                    float alpha = v.upperView.getTranslationX() / ((float) realMetrics.widthPixels * 240 / 1080);
+
+                    newsletterView.moveTo(motionEvent.getRawX());
+
+                    LinearLayout leftLayout = newsletterView.findViewById(R.id.newsletter_left_layout);
+                    float alpha = newsletterView.upperView.getTranslationX() / adaptiveHalfWidth;
                     leftLayout.setAlpha(alpha);
                 }
                 return true;
             case MotionEvent.ACTION_UP:
-                if (!v.newsletter.isRead() && v.upperView.getTranslationX() >= (float) realMetrics.widthPixels * 240 / 1080) {
-                    makeMarkAsReadAnimation(v, realMetrics);
-                    GlobalVariables.gsThread.addTask(() -> {
-                        GlobalVariables.gS.getNewslettersPage(false).markNewsletterAsRead(v.newsletter);
-                    });
+                if (!newsletterView.newsletter.isRead() && newsletterView.upperView.getTranslationX() >= adaptiveHalfWidth) {
+                    newsletterView.markAsRead();
+                    GlobalVariables.gsThread.addTask(() -> GlobalVariables.gS.getNewslettersPage(false).markNewsletterAsRead(newsletterView.newsletter));
                 } else
-                    makeComeBackAnimation(v, v.upperView.getTranslationX(), true);
-                v.resetPosition();
+                    newsletterView.makeComeBackAnimation();
+
                 scrollView.requestDisallowInterceptTouchEvent(false);
                 swipeRefreshLayout.setEnabled(true);
                 return true;
             case MotionEvent.ACTION_CANCEL:
-                makeComeBackAnimation(v, v.upperView.getTranslationX(), true);
-                v.resetPosition();
+                newsletterView.makeComeBackAnimation();
                 scrollView.requestDisallowInterceptTouchEvent(false);
                 swipeRefreshLayout.setEnabled(true);
                 return true;
@@ -330,12 +320,12 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             tvAttachment.setText("Allegato " + (counter + 1));
             tvAttachment.setOnClickListener((view) -> onClickSingleAttachment(attachment));
             tvAttachment.setId(View.generateViewId());
-            tvAttachment.setBackground(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.corner_radius_10dp, context.getTheme()));
-            tvAttachment.setBackgroundTintList(activity.getResources().getColorStateList(R.color.general_view_color, context.getTheme()));
+            tvAttachment.setBackground(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.corner_radius_10dp, activity.getTheme()));
+            tvAttachment.setBackgroundTintList(activity.getResources().getColorStateList(R.color.general_view_color, activity.getTheme()));
             tvAttachment.setTypeface(ResourcesCompat.getFont(requireActivity(), R.font.varelaroundregular));
             tvAttachment.setGravity(Gravity.CENTER);
             tvAttachment.setTextSize(16f);
-            tvAttachment.setForeground(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.ripple_effect, context.getTheme()));
+            tvAttachment.setForeground(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.ripple_effect, activity.getTheme()));
 
             tvAttachment.setLayoutParams(params);
 
@@ -350,23 +340,23 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void onClickDocument(Newsletter newsletter) {
-        if (!isDownloading) {
+        if (!isDownloading)
             downloadAndOpenFile(newsletter.detailsUrl);
-        }
     }
 
     private void onScrollViewScrolled(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-        if (!loadedAllPages && !loadingPage && !view.canScrollVertically(100) && scrollY - oldScrollY > 10) {
+
+
+        if (!loadedAllPages && !loadingPage && !view.canScrollVertically(100) && scrollY - oldScrollY > 10)
             loadDataAndViews();
-        }
         if (scrollY - oldScrollY > 0)
-            root.findViewById(R.id.newsletter_fragment_btn_go_up).setVisibility(View.VISIBLE);
+            buttonGoUp.setVisibility(View.VISIBLE);
         if (!view.canScrollVertically(-500))
-            root.findViewById(R.id.newsletter_fragment_btn_go_up).setVisibility(View.GONE);
+            buttonGoUp.setVisibility(View.GONE);
     }
 
     private void onRefresh() {
-        layout.removeViews(1, layout.getChildCount() - 1);
+        newslettersLayout.removeViews(1, newslettersLayout.getChildCount() - 1);
         loadedAllPages = false;
         currentPage = 1;
         isFilterApplied = false;
@@ -390,7 +380,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             onlyNotRead = onlyNotReadTemp;
             filterDate = filterDateTemp;
             filterText = filterTextTemp;
-            layout.removeViews(1, layout.getChildCount() - 1);
+            newslettersLayout.removeViews(1, newslettersLayout.getChildCount() - 1);
             filterLayout.startAnimation(AnimationUtils.loadAnimation(requireActivity(), R.anim.visualizer_hide_effect));
             filterLayout.setVisibility(View.GONE);
             obscureLayoutView.hide();
@@ -424,8 +414,8 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         if (attachmentLayout.getVisibility() == View.VISIBLE) {
             attachmentLayout.startAnimation(AnimationUtils.loadAnimation(requireActivity(), R.anim.visualizer_hide_effect));
             attachmentLayout.setVisibility(View.GONE);
+            attachmentLayout.removeAllViews();
         }
-        attachmentLayout.removeAllViews();
         ((CheckBox) root.findViewById(R.id.newsletter_filter_checkbox)).setChecked(onlyNotRead);
         ((EditText) root.findViewById(R.id.newsletter_filter_date)).setText(filterDate);
         ((EditText) root.findViewById(R.id.newsletter_filter_text)).setText(filterText);
@@ -437,8 +427,8 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
     private void makeComeBackAnimation(NewsletterView v, float fromX, boolean isOnlyClosing) {
         TranslateAnimation comeBackAnimation = new TranslateAnimation(fromX, v.getNormalTranslationX(), v.upperView.getTranslationY(), v.upperView.getTranslationY());
-        comeBackAnimation.setDuration(100);
         AlphaAnimation alphaAnimation = new AlphaAnimation(1, 0);
+        comeBackAnimation.setDuration(100);
         alphaAnimation.setDuration(100);
         comeBackAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -481,19 +471,6 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             }
         });
         v.upperView.startAnimation(goAnimation);
-    }
-
-    private boolean compareNewsletterLists(List<Newsletter> l1, List<Newsletter> l2) {
-        int l1length = l1.size();
-
-        if (l1length != l2.size())
-            return false;
-
-        for (int i = 0; i < l1length; i++)
-            if (l1.get(i).number != l2.get(i).number)
-                return false;
-
-        return true;
     }
 
     /**
@@ -541,11 +518,6 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         } catch (Exception e) {
             setErrorMessage("Non è stata trovata alcuna app compatibile con il tipo di file " + fileExtension.toUpperCase(), root);
         }
-    }
-
-    private int convertDpToPx(float dp) {
-        //https://stackoverflow.com/questions/4605527/converting-pixels-to-dp
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, activity.getResources().getDisplayMetrics());
     }
 
     public void setErrorMessage(String message, View root) {

@@ -25,7 +25,6 @@ import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -43,6 +42,7 @@ import com.github.dhaval2404.colorpicker.ColorPickerDialog;
 import com.github.dhaval2404.colorpicker.model.ColorShape;
 import com.giua.app.AccountData;
 import com.giua.app.AppData;
+import com.giua.app.AppUtils;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
@@ -142,7 +142,7 @@ public class AccountsActivity extends AppCompatActivity {
         gridLayout.removeAllViews();
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        params.leftMargin = convertDpToPx(10);
+        params.leftMargin = AppUtils.convertDpToPx(10, this);
 
         boolean isFirstElementInRow = true;
         TableRow tableRow = new TableRow(this);
@@ -267,7 +267,7 @@ public class AccountsActivity extends AppCompatActivity {
     }
 
     private void onSwipeViewTouchRelease(SwipeView swipeView) {
-        if (swipeView.getY() < swipeView.startHeight - convertDpToPx(50))
+        if (swipeView.getY() < swipeView.startHeight - AppUtils.convertDpToPx(50, this))
             swipeView.showAllFromY();
         else {
             swipeView.hideAllFromY();
@@ -330,11 +330,6 @@ public class AccountsActivity extends AppCompatActivity {
 
     private void setErrorMessage(String message, View root) {
         Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
-    }
-
-    private int convertDpToPx(float dp) {
-        //https://stackoverflow.com/questions/4605527/converting-pixels-to-dp
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
     }
 
     @Override

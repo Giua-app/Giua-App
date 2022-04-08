@@ -22,7 +22,6 @@ package com.giua.app.ui.fragments.votes;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
@@ -34,6 +33,7 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 
+import com.giua.app.AppUtils;
 import com.giua.app.R;
 import com.giua.objects.Vote;
 import com.giua.pages.VotesPage;
@@ -102,7 +102,7 @@ public class VoteView extends ConstraintLayout {
     private TextView createTextViewForQuarterly(Context context, String text, boolean isFirst) {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         if (!isFirst)
-            layoutParams.setMargins(0, convertDpToPx(16), 0, 0);
+            layoutParams.setMargins(0, AppUtils.convertDpToPx(16, context), 0, 0);
         TextView textView = new TextView(context);
         textView.setText(text);
         textView.setTypeface(ResourcesCompat.getFont(getContext(), R.font.varelaroundregular));
@@ -117,16 +117,16 @@ public class VoteView extends ConstraintLayout {
         LinearLayout.LayoutParams layoutParams;
         if (shouldShowCents) {
             df = new DecimalFormat("0.00");
-            layoutParams = new LinearLayout.LayoutParams(convertDpToPx(60f), ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams = new LinearLayout.LayoutParams(AppUtils.convertDpToPx(60f, context), ViewGroup.LayoutParams.WRAP_CONTENT);
         } else {
             df = new DecimalFormat("0.0");
-            layoutParams = new LinearLayout.LayoutParams(convertDpToPx(50f), ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams = new LinearLayout.LayoutParams(AppUtils.convertDpToPx(50f, context), ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
         if (isFirst)
-            layoutParams.setMargins(0, convertDpToPx(14), 0, 0);
+            layoutParams.setMargins(0, AppUtils.convertDpToPx(14, context), 0, 0);
         else
-            layoutParams.setMargins(0, convertDpToPx(42), 0, 0);
+            layoutParams.setMargins(0, AppUtils.convertDpToPx(42, context), 0, 0);
         TextView textView = new TextView(context);
         if (mean != -1f)
             textView.setText(df.format((mean)));
@@ -135,7 +135,7 @@ public class VoteView extends ConstraintLayout {
         textView.setTypeface(ResourcesCompat.getFont(getContext(), R.font.varelaroundregular));
         textView.setTextSize(17);
         textView.setTextAlignment(TEXT_ALIGNMENT_CENTER);
-        int dp = convertDpToPx(5);
+        int dp = AppUtils.convertDpToPx(5, context);
         textView.setPadding(dp, dp, dp, dp);
         textView.setBackgroundTintList(getColorFromVote(mean));
         textView.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.corner_radius_10dp, context.getTheme()));
@@ -146,7 +146,7 @@ public class VoteView extends ConstraintLayout {
 
     private HorizontalScrollView createHorizontalScrollView(Context context) {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(0, convertDpToPx(12), 0, 0);
+        layoutParams.setMargins(0, AppUtils.convertDpToPx(12, context), 0, 0);
         HorizontalScrollView horizontalScrollView = new HorizontalScrollView(context);
         horizontalScrollView.setOverScrollMode(HorizontalScrollView.OVER_SCROLL_NEVER);
         horizontalScrollView.setScrollBarSize(0);
@@ -209,10 +209,5 @@ public class VoteView extends ConstraintLayout {
             return getResources().getColorStateList(R.color.bad_vote, getContext().getTheme());
         }
         return getResources().getColorStateList(R.color.non_vote, getContext().getTheme()); //Non si dovrebbe mai verificare
-    }
-
-    private int convertDpToPx(float dp) {
-        //https://stackoverflow.com/questions/4605527/converting-pixels-to-dp
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
     }
 }

@@ -26,7 +26,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.widget.ImageView;
@@ -34,6 +33,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 
+import com.giua.app.AppUtils;
 import com.giua.app.R;
 
 public class SwipeView extends LinearLayout {
@@ -62,7 +62,7 @@ public class SwipeView extends LinearLayout {
         maxHeightAsY = 0;
 
         imageView = new ImageView(context);
-        LinearLayout.LayoutParams layoutParams = new LayoutParams(convertDpToPx(50), convertDpToPx(8));
+        LinearLayout.LayoutParams layoutParams = new LayoutParams(AppUtils.convertDpToPx(50, context), AppUtils.convertDpToPx(8, context));
         layoutParams.gravity = Gravity.CENTER;
         imageView.setLayoutParams(layoutParams);
         imageView.setImageResource(R.drawable.bottom_view_shape);
@@ -96,7 +96,7 @@ public class SwipeView extends LinearLayout {
 
         //Creazione del rettangolo in alto
         imageView = new ImageView(context);
-        LinearLayout.LayoutParams layoutParams = new LayoutParams(convertDpToPx(50), convertDpToPx(8));
+        LinearLayout.LayoutParams layoutParams = new LayoutParams(AppUtils.convertDpToPx(50, context), AppUtils.convertDpToPx(8, context));
         layoutParams.gravity = Gravity.CENTER;
         imageView.setLayoutParams(layoutParams);
         imageView.setImageResource(R.drawable.bottom_view_shape);
@@ -227,11 +227,6 @@ public class SwipeView extends LinearLayout {
 
     public boolean isHidden() {
         return getY() >= realMetrics.heightPixels || getVisibility() == INVISIBLE || getVisibility() == GONE;
-    }
-
-    private int convertDpToPx(float dp) {
-        //https://stackoverflow.com/questions/4605527/converting-pixels-to-dp
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
     }
 
     public interface OnTouchRelease {
