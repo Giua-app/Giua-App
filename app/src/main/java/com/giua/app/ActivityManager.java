@@ -88,7 +88,7 @@ public class ActivityManager extends AppCompatActivity {
 
         setupNotificationManager();
 
-        sendStartupAnalyticsRequest();
+        executeDailyStartupActions();
 
         if (getIntent().getBooleanExtra("fromCAOC", false)) {
             loggerManager.d("Individuato crash precedente, invio segnalazione");
@@ -134,11 +134,15 @@ public class ActivityManager extends AppCompatActivity {
             startAutomaticLoginActivity();
     }
 
-    private void sendStartupAnalyticsRequest(){
+    private void executeDailyStartupActions(){
         //Analytics.sendDefaultRequest("Avvio"); //Debug
 
         if(checkLastStartupDate()){
+            //Analytics
             Analytics.sendDefaultRequest("Avvio giornaliero");
+            //Pulizia log
+            loggerManager.cleanupLogs();
+
             AppData.saveLastStartupDate(this, Calendar.getInstance());
         }
     }

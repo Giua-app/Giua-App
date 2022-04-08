@@ -78,7 +78,7 @@ public class DBController extends SQLiteOpenHelper {
         super(context, DB_NAME, null, DB_VERSION);
         this.context = context.getApplicationContext();
         lm = new LoggerManager("DBController", this.context);
-        lm.d("istanza");
+        //lm.d("istanza");
     }
 
     @Override
