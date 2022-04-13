@@ -21,6 +21,8 @@ package com.giua.app;
 
 import android.content.Context;
 import android.util.TypedValue;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 public class AppUtils {
 
@@ -36,4 +38,8 @@ public class AppUtils {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
     }
 
+    public static void hideKeyboard(Context context, View view) {
+        InputMethodManager imm = context.getSystemService(InputMethodManager.class);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 }

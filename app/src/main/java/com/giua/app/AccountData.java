@@ -50,16 +50,16 @@ public class AccountData {
 
     private static void createMasterKeyValueForEncryption(Context context) throws GeneralSecurityException, IOException {
         if (masterKey == null) {
-            KeyGenParameterSpec spec = new KeyGenParameterSpec.Builder(
-              masterKeyAlias,
+            new KeyGenParameterSpec.Builder(
+                    masterKeyAlias,
                     KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
                     .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
                     .setKeySize(256)
                     .build();
             masterKey = new MasterKey.Builder(context)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build();
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build();
         }
     }
 
@@ -78,7 +78,8 @@ public class AccountData {
                     EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                     EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM);
         } catch (GeneralSecurityException | IOException e) {
-            e.printStackTrace();
+            LoggerManager loggerManager = new LoggerManager("AccountData", context);
+            loggerManager.e("Errore critico recuperando le EncryptedSharedPreferences. " + e + "\n" + e.getMessage());
             return null;
         }
 

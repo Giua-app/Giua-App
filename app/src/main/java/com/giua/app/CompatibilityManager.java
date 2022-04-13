@@ -41,7 +41,7 @@ public class CompatibilityManager {
         lm.d("Imposto notifiche ai valori di default");
         SettingsData.saveSettingBoolean(context, SettingKey.NOTIFICATION, true);
 
-        SettingsData.saveSettingBoolean(context, SettingKey.NEWSLETTER_NOTIFICATION, true);
+        SettingsData.saveSettingBoolean(context, SettingKey.NEWSLETTERS_NOTIFICATION, true);
         SettingsData.saveSettingBoolean(context, SettingKey.ALERTS_NOTIFICATION, true);
         SettingsData.saveSettingBoolean(context, SettingKey.UPDATES_NOTIFICATION, true);
         SettingsData.saveSettingBoolean(context, SettingKey.VOTES_NOTIFICATION, true);

@@ -45,19 +45,25 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <GridLayout
-        android:id="@+id/activity_accounts_table"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:padding="10dp"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/activity_accounts_appBarLayout"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.0">
+
+        <GridLayout
+            android:id="@+id/activity_accounts_table"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:padding="10dp" />
+
+    </ScrollView>
 
     <com.giua.app.ui.views.SwipeView
         android:id="@+id/accounts_swipe_view"

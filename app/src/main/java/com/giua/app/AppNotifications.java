@@ -26,7 +26,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
-import android.webkit.CookieManager;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -58,24 +57,122 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Vector;
 
-public class CheckNewsReceiver extends BroadcastReceiver {
+//FIXME ?: Non supporta url diversi da quello del Giua per il login con Gsuite
+public class AppNotifications extends BroadcastReceiver {
     private Context context;
     private NotificationManagerCompat notificationManager;
+    private LoggerManager loggerManager;
     private GiuaScraper gS;
-    LoggerManager loggerManager;
+
+    private String activeUsername = "";
+
+    private boolean isDebugMode = false;
+    private boolean canSendNotifications = false;
+    private boolean canSendNotificationsVotes = false;
+    private boolean canSendNotificationsHomeworks = false;
+    private boolean canSendNotificationsTests = false;
+    private boolean canSendNotificationsAlerts = false;
+    private boolean canSendNotificationsNewsletters = false;
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        this.context = context;
+
         loggerManager = new LoggerManager("CheckNewsReceiver", context);
-        loggerManager.d("onReceive chiamato");
-        if (!AppData.getActiveUsername(context).equals("") && SettingsData.getSettingBoolean(context, SettingKey.NOTIFICATION)) {
-            loggerManager.d("Broadcast di background STARTATO");
-            this.context = context;
-            notificationManager = NotificationManagerCompat.from(context);
-            checkNews();
+        activeUsername = AppData.getActiveUsername(context);
+        canSendNotifications = SettingsData.getSettingBoolean(context, SettingKey.NOTIFICATION);
+
+        if (activeUsername.equals("") || !canSendNotifications) return;
+
+        canSendNotificationsVotes = SettingsData.getSettingBoolean(context, SettingKey.VOTES_NOTIFICATION);
+        canSendNotificationsHomeworks = SettingsData.getSettingBoolean(context, SettingKey.HOMEWORKS_NOTIFICATION);
+        canSendNotificationsTests = SettingsData.getSettingBoolean(context, SettingKey.TESTS_NOTIFICATION);
+        canSendNotificationsAlerts = SettingsData.getSettingBoolean(context, SettingKey.ALERTS_NOTIFICATION);
+        canSendNotificationsNewsletters = SettingsData.getSettingBoolean(context, SettingKey.NEWSLETTERS_NOTIFICATION);
+        isDebugMode = SettingsData.getSettingBoolean(context, SettingKey.DEBUG_MODE);
+
+        notificationManager = NotificationManagerCompat.from(context);
+
+        new Thread(this::checkAndSendNotifications).start();
+    }
+
+    /**
+     * Controlla e invia le notifiche in base ai dati che riceve
+     * NON è Thread-Safe
+     */
+    private void checkAndSendNotifications() {
+        if (activeUsername.equals("gsuite")) makeGsuiteLogin();
+        else makeLogin();
+
+
+    }
+
+    private void makeLogin() {
+        loggerManager.d("Faccio il login");
+
+        String password = AccountData.getPassword(context, activeUsername);
+        String cookie = AccountData.getCookie(context, activeUsername);
+        String siteUrl = AccountData.getSiteUrl(context, activeUsername);
+        String defaultUrl = SettingsData.getSettingString(context, SettingKey.DEFAULT_URL);
+
+        if (siteUrl.equals(""))
+            GiuaScraper.setSiteURL(defaultUrl);  //siteUrl non impostato quindi usa defaultUrl
+        else GiuaScraper.setSiteURL(siteUrl);
+
+        gS = new GiuaScraper(activeUsername, password, cookie, true, loggerManager);
+
+        try {
+            gS.login();
+        } catch (Exception e) {
+            logErrorInLoggerManager(e);
+            sendErrorNotification(e.toString());
         }
     }
 
+    private void sendErrorNotification(String error) {
+        if (!isDebugMode) return;
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
+                .setSmallIcon(R.drawable.ic_giuaschool_black)
+                .setContentTitle("Si è verificato un errore")
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(error))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        notificationManager.notify(12, builder.build());
+    }
+
+    private void makeGsuiteLogin() {
+
+    }
+
+    private String getGsuiteCookie() {
+        loggerManager.d("Eseguo login con cookie di google");
+
+        Connection session = Jsoup.newSession()
+                .followRedirects(true)
+                .userAgent("Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.91 Mobile Safari/537.36");
+
+        try {
+            session.newRequest().url("https://registro.giua.edu.it/login/gsuite").get();
+            //String gsuiteCookie = session.cookieStore().get(new URI("https://registro.giua.edu.it"));
+
+            return session.cookieStore().get(new URI("https://registro.giua.edu.it")).toString().split("=")[1].replace("]", "");
+        } catch (IOException | URISyntaxException e) {
+            loggerManager.e("Cookie google e cookie giua non più validi, impossibile continuare");
+            return "";
+        } catch (Exception e) {
+            logErrorInLoggerManager(e);
+            sendErrorNotification(e.toString());
+        }
+
+        return ""; //DELETEME
+    }
+
+    private void logErrorInLoggerManager(Exception e) {
+        loggerManager.e("Messaggio: " + e.getMessage() + " Errore: " + e);
+    }
+
+    ///////////////////////VECCHIO
     private void checkNews() {
         new Thread(() -> {
             loggerManager.d("Servizio di background: controllo nuove cose");
@@ -410,24 +507,5 @@ public class CheckNewsReceiver extends BroadcastReceiver {
                 .build();
     }
 
-    private String getGsuiteCookie() {
-        Connection session = Jsoup.newSession()
-                .followRedirects(true)
-                .userAgent("Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.91 Mobile Safari/537.36");
-
-        String[] allCookiesRaw = CookieManager.getInstance().getCookie("https://accounts.google.com").split("; ");
-        for (String cookie : allCookiesRaw) {
-            session.cookie(cookie.split("=")[0], cookie.split("=")[1]);
-        }
-
-        try {
-            loggerManager.d("Eseguo login con cookie di google");
-            session.newRequest().url("https://registro.giua.edu.it/login/gsuite").get();
-            return session.cookieStore().get(new URI("https://registro.giua.edu.it")).toString().split("=")[1].replace("]", "");
-        } catch (IOException | URISyntaxException e) {
-            loggerManager.e("Errore, cookie google e cookie giua non più validi, impossibile continuare");
-            return "";
-        }
-    }
 
 }

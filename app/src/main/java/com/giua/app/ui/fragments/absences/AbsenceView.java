@@ -23,7 +23,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -35,6 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 
+import com.giua.app.AppUtils;
 import com.giua.app.GlobalVariables;
 import com.giua.app.R;
 import com.giua.objects.Absence;
@@ -141,7 +141,7 @@ public class AbsenceView extends ConstraintLayout {
 
     private void viewOnClick(View view) {
         findViewById(R.id.absence_view_justify_text).clearFocus();
-        hideKeyboard();
+        AppUtils.hideKeyboard(context, view);
     }
 
 
@@ -151,12 +151,7 @@ public class AbsenceView extends ConstraintLayout {
 
     private void onJustify(View view) {
         justifyText = ((EditText) findViewById(R.id.absence_view_justify_text)).getText().toString();
-        hideKeyboard();
+        AppUtils.hideKeyboard(context, view);
         onJustifyClick.onClick(this);
-    }
-
-    private void hideKeyboard() {
-        InputMethodManager imm = context.getSystemService(InputMethodManager.class);
-        imm.hideSoftInputFromWindow(this.getWindowToken(), 0);
     }
 }

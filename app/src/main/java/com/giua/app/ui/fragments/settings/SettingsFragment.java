@@ -207,7 +207,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private boolean setupNotificationManagerOnClick(Preference preference) {
         Set<String> l = new HashSet<>();
-        if (SettingsData.getSettingBoolean(requireActivity(), SettingKey.NEWSLETTER_NOTIFICATION))
+        if (SettingsData.getSettingBoolean(requireActivity(), SettingKey.NEWSLETTERS_NOTIFICATION))
             l.add("0");
         if (SettingsData.getSettingBoolean(requireActivity(), SettingKey.ALERTS_NOTIFICATION))
             l.add("1");
@@ -224,7 +224,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private boolean setupNotificationManagerChangeListener(Preference preference, Object o) {
-        SettingsData.saveSettingBoolean(requireActivity(), SettingKey.NEWSLETTER_NOTIFICATION, ((HashSet) o).contains("0"));
+        SettingsData.saveSettingBoolean(requireActivity(), SettingKey.NEWSLETTERS_NOTIFICATION, ((HashSet) o).contains("0"));
         SettingsData.saveSettingBoolean(requireActivity(), SettingKey.ALERTS_NOTIFICATION, ((HashSet) o).contains("1"));
         SettingsData.saveSettingBoolean(requireActivity(), SettingKey.UPDATES_NOTIFICATION, ((HashSet) o).contains("2"));
         SettingsData.saveSettingBoolean(requireActivity(), SettingKey.VOTES_NOTIFICATION, ((HashSet) o).contains("3"));

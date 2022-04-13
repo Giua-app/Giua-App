@@ -26,7 +26,6 @@ import android.text.Html;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -40,6 +39,7 @@ import com.giua.app.AccountData;
 import com.giua.app.Analytics;
 import com.giua.app.AppData;
 import com.giua.app.AppUpdateManager;
+import com.giua.app.AppUtils;
 import com.giua.app.BuildConfig;
 import com.giua.app.GiuaScraperThread;
 import com.giua.app.GlobalVariables;
@@ -321,7 +321,7 @@ public class LoginActivity extends AppCompatActivity {
         if (etPassword.getText().length() > 0 && etUsername.getText().length() > 0) {
             pgProgressBar.setVisibility(View.VISIBLE);
             btnLogin.setVisibility(View.INVISIBLE);
-            hideKeyboard();
+            AppUtils.hideKeyboard(this, view);
             login();
         }
     }
@@ -329,11 +329,6 @@ public class LoginActivity extends AppCompatActivity {
     private void btnLoginAsStudentOnClick(View view) {
         loggerManager.d("Login Studente richiesto dall'utente");
         startStudentLoginActivity();
-    }
-
-    private void hideKeyboard() {
-        InputMethodManager imm = this.getSystemService(InputMethodManager.class);
-        imm.hideSoftInputFromWindow(this.btnLogin.getWindowToken(), 0);
     }
 
     private void setErrorMessage(String message) {

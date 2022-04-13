@@ -43,7 +43,7 @@ public abstract class SettingKey {
     /**
      * Indica se la notifica per le circolari è abilitata
      */
-    public static final String NEWSLETTER_NOTIFICATION = "newsletter_notification";
+    public static final String NEWSLETTERS_NOTIFICATION = "newsletter_notification";
 
     /**
      * Indica se la notifica per gli avvisi è abilitata

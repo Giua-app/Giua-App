@@ -123,12 +123,15 @@ public class ActivityManager extends AppCompatActivity {
         checkForUpdates();
         checkForPreviousUpdate();
 
+        Object[] allAccountUsernames = AppData.getAllAccountUsernames(this).toArray();
+
         if (AppData.getActiveUsername(this).equals("")) {
-            if (AppData.getAllAccountUsernames(this).size() > 1)
+            if (allAccountUsernames.length > 1)
                 startAccountsActivity();
-            else if (AppData.getAllAccountUsernames(this).size() == 1)
+            else if (allAccountUsernames.length == 1) {
+                AppData.saveActiveUsername(this, allAccountUsernames[0].toString());
                 startAutomaticLoginActivity();
-            else
+            } else
                 startLoginActivity();
         } else
             startAutomaticLoginActivity();
@@ -239,7 +242,7 @@ public class ActivityManager extends AppCompatActivity {
     private void firstStart() {
         SettingsData.saveSettingBoolean(this, SettingKey.NOTIFICATION, true);
         SettingsData.saveSettingBoolean(this, SettingKey.NOT_FIRST_START, true);
-        SettingsData.saveSettingBoolean(this, SettingKey.NEWSLETTER_NOTIFICATION, true);
+        SettingsData.saveSettingBoolean(this, SettingKey.NEWSLETTERS_NOTIFICATION, true);
         SettingsData.saveSettingBoolean(this, SettingKey.ALERTS_NOTIFICATION, true);
         SettingsData.saveSettingBoolean(this, SettingKey.UPDATES_NOTIFICATION, true);
         SettingsData.saveSettingBoolean(this, SettingKey.VOTES_NOTIFICATION, true);

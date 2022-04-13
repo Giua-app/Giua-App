@@ -34,6 +34,7 @@ import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -43,6 +44,7 @@ import com.github.dhaval2404.colorpicker.model.ColorShape;
 import com.giua.app.AccountData;
 import com.giua.app.AppData;
 import com.giua.app.AppUtils;
+import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
@@ -82,9 +84,15 @@ public class AccountsActivity extends AppCompatActivity {
 
     View mainLayout;
 
+    TableRow.LayoutParams params = new TableRow.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+    TableRow lastTableRow; //L' ultima TableRow aggiunta all grid view
+    boolean isFirstElementInRow = true; //Viene utilizzato per disporre correttamente le card nella grid view
+
+    LoggerManager loggerManager;
     String goTo = "";
     boolean isChooserMode = false; //La chooser mode indica che l'utente sta scegeliendo un account con cui fare il login
     boolean isChangedSomething = false; //Indica se è stato modificato qualcosa
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -96,6 +104,7 @@ public class AccountsActivity extends AppCompatActivity {
         if (goTo == null)
             goTo = "";
 
+        mainLayout = findViewById(R.id.activity_accounts_main);
         gridLayout = findViewById(R.id.activity_accounts_table);
         swipeView = findViewById(R.id.accounts_swipe_view);
 
@@ -116,9 +125,13 @@ public class AccountsActivity extends AppCompatActivity {
         etAddAccountPassword = tilAddAccountPassword.getEditText();
         etAddAccountUrl = tilAddAccountUrl.getEditText();
 
-        mainLayout = findViewById(R.id.activity_accounts_main);
-
         Set<String> allUsernames = AppData.getAllAccountUsernames(this);
+
+        if (isChooserMode) btnAddAccount.setVisibility(View.GONE);
+
+        params.leftMargin = AppUtils.convertDpToPx(10, this);
+
+        loggerManager = new LoggerManager("AccountsActivity", this);
 
         setupToolBar();
 
@@ -141,35 +154,66 @@ public class AccountsActivity extends AppCompatActivity {
     private void addAccountCardsToLayout(Set<String> allUsernames) {
         gridLayout.removeAllViews();
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        params.leftMargin = AppUtils.convertDpToPx(10, this);
-
-        boolean isFirstElementInRow = true;
-        TableRow tableRow = new TableRow(this);
         for (String username : allUsernames) {
             String type = AccountData.getUserType(this, username);
             int color = AccountData.getTheme(this, username);
-
-            if (isFirstElementInRow)
-                tableRow = new TableRow(this);
-
             AccountCard accountCard = new AccountCard(this, username, type, color);
 
-            if (isChooserMode)
-                accountCard.setOnClickListener(this::onAccountCardClickWhileChoosing);
-            else
-                accountCard.setOnClickListener(this::onAccountCardClick);
-
-            tableRow.addView(accountCard);
-
-            if (!isFirstElementInRow)
-                gridLayout.addView(tableRow);
-
-            isFirstElementInRow = !isFirstElementInRow;
+            addCardToGridView(accountCard);
         }
 
         if (!isFirstElementInRow)
-            gridLayout.addView(tableRow);
+            gridLayout.addView(lastTableRow);
+    }
+
+    private void addCardToGridView(AccountCard accountCard) {
+        if (isFirstElementInRow) lastTableRow = new TableRow(this);
+        if (!isFirstElementInRow) accountCard.setLayoutParams(params);
+
+        if (isChooserMode)
+            accountCard.setOnClickListener(this::onAccountCardClickWhileChoosing);
+        else
+            accountCard.setOnClickListener(this::onAccountCardClick);
+
+        lastTableRow.addView(accountCard);
+
+        if (!isFirstElementInRow)
+            gridLayout.addView(lastTableRow);
+
+        isFirstElementInRow = !isFirstElementInRow;
+    }
+
+    private void addNewAccountToGridView(String username, String password, @ColorInt int color) {
+        AccountCard accountCard = new AccountCard(this, username, "", color);
+        View pbAccountCard = accountCard.findViewById(R.id.view_account_card_pb);
+        pbAccountCard.setVisibility(View.VISIBLE);
+        accountCard.setLayoutParams(params);
+
+        if (!isFirstElementInRow) {
+            lastTableRow.addView(accountCard);
+            gridLayout.removeView(lastTableRow);
+        } else {
+            lastTableRow = new TableRow(this);
+            lastTableRow.addView(accountCard);
+        }
+
+        gridLayout.addView(lastTableRow);
+        isFirstElementInRow = !isFirstElementInRow;
+
+        new Thread(() -> {
+            GiuaScraper gS = new GiuaScraper(username, password, loggerManager);
+            try {
+                gS.login();
+                runOnUiThread(() -> {
+                    pbAccountCard.setVisibility(View.INVISIBLE);
+                    AccountData.setCredentials(this, username, password);
+                    AccountData.setSiteUrl(this, username, etAddAccountUrl.getText().toString());
+                    AppData.addAccountUsername(this, username);
+                });
+            } catch (Exception e) {
+                runOnUiThread(() -> lastTableRow.removeView(accountCard));
+            }
+        }).start();
     }
 
     private void onSwipeViewMove(SwipeView swipeView, SwipeView.Operation operation) {
@@ -209,24 +253,21 @@ public class AccountsActivity extends AppCompatActivity {
         String username = etAddAccountUsername.getText().toString();
         String password = etAddAccountPassword.getText().toString();
 
-
         if (username.equals(""))
             tilAddAccountUsername.setError("Il nome utente non può essere vuoto");
         if (password.equals("")) tilAddAccountPassword.setError("La password non può essere vuota");
         if (username.equals("") || password.equals("")) return;
 
-        AccountData.setCredentials(this, username, password);
-        AccountData.setSiteUrl(this, username, etAddAccountUrl.getText().toString());
-        AppData.addAccountUsername(this, username);
+        addNewAccountToGridView(username, password, AccountData.getTheme(this, username));
         swipeView.hideAllFromY();
-        addAccountCardsToLayout(AppData.getAllAccountUsernames(this));
+        AppUtils.hideKeyboard(this, view);
         isChangedSomething = true;
     }
 
     private void setupToolBar() {
         Toolbar toolbar = findViewById(R.id.activity_accounts_toolbar);
-        setSupportActionBar(toolbar);
         toolbar.setTitle(isChooserMode ? "Selezione account" : "Gestione account");
+        setSupportActionBar(toolbar);
         if (!isChooserMode) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(false);

@@ -114,5 +114,6 @@
     <string name="authorizations_exit">Autorizzazione in deroga all\'orario di uscita:</string>
     <string name="authorizations_entry">Autorizzazione in deroga all\'orario di entrata:</string>
     <string name="agenda_view_type_activities">Attività</string>
+    <string name="home_chart_title">Andamento generale</string>
 
 </resources>

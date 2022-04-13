@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.giua.app.R;
@@ -47,7 +48,7 @@ public class AccountCard extends LinearLayout {
         setVisibility(GONE);
     }
 
-    public AccountCard(Context context, String username, String type, int color) {
+    public AccountCard(Context context, String username, String type, @ColorInt int color) {
         super(context);
 
         this.username = username;
