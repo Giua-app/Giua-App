@@ -41,9 +41,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.giua.app.DBController;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
+import com.giua.app.OfflineDBController;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
@@ -134,7 +134,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
             if (pbLoadingContent.getParent() == null)
                 viewsLayout.addView(pbLoadingContent);
             GlobalVariables.gsThread.addTask(() -> {
-                allAlerts = new DBController(root.getContext()).readAlerts();
+                allAlerts = new OfflineDBController(root.getContext()).readAlerts();
                 if (allAlerts.isEmpty()) {
                     hasLoadedAllPages = true;
                     activity.runOnUiThread(this::finishedLoading);
@@ -164,7 +164,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
                 try {
                     allAlerts = GlobalVariables.gS.getAlertsPage(false).getAllAlerts(currentPage);
                     if (currentPage == 1)
-                        new DBController(root.getContext()).addAlerts(allAlerts);
+                        new OfflineDBController(root.getContext()).addAlerts(allAlerts);
 
                     if (allAlerts.isEmpty() && currentPage == 1) {
                         hasLoadedAllPages = true;

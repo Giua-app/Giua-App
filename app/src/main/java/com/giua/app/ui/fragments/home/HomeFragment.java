@@ -41,10 +41,10 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.giua.app.AppUpdateManager;
-import com.giua.app.DBController;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.LoggerManager;
+import com.giua.app.OfflineDBController;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
@@ -144,7 +144,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     public void loadOfflineDataAndViews() {
         new Thread(() -> {
             try {
-                Map<String, List<Vote>> allVotes = new DBController(activity).readVotes();
+                Map<String, List<Vote>> allVotes = new OfflineDBController(activity).readVotes();
                 int homeworks = 0;
                 int tests = 0;
 
@@ -174,7 +174,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
                 int homeworks = GlobalVariables.gS.getHomePage(forceRefresh).getNearHomeworks();
                 int tests = GlobalVariables.gS.getHomePage(false).getNearTests();
 
-                new DBController(activity).addVotes(allVotes);
+                new OfflineDBController(activity).addVotes(allVotes);
 
                 if (forceRefresh)
                     forceRefresh = false;

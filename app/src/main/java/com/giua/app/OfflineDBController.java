@@ -47,7 +47,7 @@ import java.util.Vector;
 /**
  * Controller per interagire con il database per la modalità offline
  */
-public class DBController extends SQLiteOpenHelper {
+public class OfflineDBController extends SQLiteOpenHelper {
 
     private Context context;
     private LoggerManager lm;
@@ -74,106 +74,31 @@ public class DBController extends SQLiteOpenHelper {
      * Crea un istanza DbController. Se il database non esiste, ne crea uno nuovo
      * @param context
      */
-    public DBController(Context context) {
+    public OfflineDBController(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         this.context = context.getApplicationContext();
-        lm = new LoggerManager("DBController", this.context);
+        lm = new LoggerManager("OfflineDBController", this.context);
         //lm.d("istanza");
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        lm.d("onCreate");
-        //region Crea tabella con nome alert con le colonne specificate
-        String query = "CREATE TABLE " + ALERTS_TABLE + " ("
-                + DBAlert.STATUS_COL + " TEXT, "
-                + DBAlert.DATE_COL + " TEXT,"
-                + DBAlert.RECEIVERS_COL + " TEXT,"
-                + DBAlert.OBJECT_COL + " TEXT,"
-                + DBAlert.PAGE_COL + " INTEGER,"
-                + DBAlert.DETAILS_URL_COL + " TEXT,"
-                + DBAlert.DETAILS_COL + " TEXT,"
-                + DBAlert.CREATOR_COL + " TEXT,"
-                + DBAlert.TYPE_COL + " TEXT,"
-                + DBAlert.ATTACHMENT_URLS_COL + " TEXT,"
-                + DBAlert.IS_DETAILED_COL + " BOOLEAN,"
-                + DBAlert.ALERT_ID + " INTEGER"+")";
+        lm.d("Creazione database in corso...");
+        AlertsTable.createTable(db);
 
-        db.execSQL(query);
-        //endregion
+        AbsencesTable.createTable(db);
 
-        //region Crea tabella con nome absence con le colonne specificate
-        String query2 = "CREATE TABLE " + ABSENCES_TABLE + " ("
-                + DBAbsence.DATE_COL.name + " TEXT,"
-                + DBAbsence.TYPE_COL.name + " TEXT,"
-                + DBAbsence.NOTES_COL.name+" TEXT,"
-                + DBAbsence.IS_JUSTIFIED_COL.name+" BOOLEAN,"
-                + DBAbsence.IS_MODIFICABLE_COL.name+" BOOLEAN,"
-                + DBAbsence.JUSTIFY_URL_COL.name+" TEXT"+")";
-        db.execSQL(query2);
-        //endregion
+        ActivitiesTable.createTable(db);
 
-        //region Crea tabella con nome activity con le colonne specificate
-        String query3 = "CREATE TABLE " + ACTIVITIES_TABLE + " ("
-                + DBActivity.DATE_COL.name + " TEXT,"
-                + DBActivity.CREATOR_COL.name + " TEXT,"
-                + DBActivity.DETAILS_COL.name + " TEXT,"
-                +DBActivity.EXISTS_COL.name+" BOOLEAN"+")";
-        db.execSQL(query3);
-        //endregion
+        AuthorizationsTable.createTable(db);
 
-        //regionCrea tabella con nome authorization con le colonne specificate
-        String query4="CREATE TABLE "+ AUTHORIZATIONS_TABLE +" ("
-                + DBAuthorization.ENTRY_COL.name+" TEXT,"
-                +DBAuthorization.EXIT_COL.name+" TEXT"+")";
-        db.execSQL(query4);
-        //endregion
+        DisciplinaryNoticesTable.createTable(db);
 
-        //region Crea tabella con nome disciplinaryNote con le colonne specificate
-        String query5="CREATE TABLE "+DISCIPLINARY_NOTICES_TABLE+" ("
-                +DBDisciplinaryNote.DATE_COL.name+" TEXT,"
-                +DBDisciplinaryNote.TYPE_COL.name+" TEXT,"
-                +DBDisciplinaryNote.DETAILS_COL.name+" TEXT,"
-                +DBDisciplinaryNote.COUNTERMEASURES_COL.name+" TEXT,"
-                +DBDisciplinaryNote.AUTHOR_OF_DETAILS_COL.name+" TEXT,"
-                +DBDisciplinaryNote.AUTHOR_OF_COUNTERMEASURES_COL.name+" TEXT,"
-                +DBDisciplinaryNote.QUARTERLY_COL.name+" TEXT"+")";
-        db.execSQL(query5);
-        //endregion
+        HomeworksTable.createTable(db);
 
-        //region Crea tabella con nome homework con le colonne specificate
-        String query6 = "CREATE TABLE " + HOMEWORKS_TABLE + " ("
-                + DBHomework.DATE_COL.name + " TEXT,"
-                + DBHomework.SUBJECT_COL.name+" TEXT,"
-                + DBHomework.CREATOR_COL.name + " TEXT,"
-                + DBHomework.DETAILS_COL.name + " TEXT,"
-                + DBHomework.EXISTS_COL.name+" BOOLEAN"+")";
-        db.execSQL(query6);
-        //endregion
+        TestsTable.createTable(db);
 
-        //region Crea tabella con nome test con le colonne specificate
-        String query7 = "CREATE TABLE " + TESTS_TABLE + " ("
-                + DBTest.DATE_COL.name + " TEXT,"
-                + DBTest.SUBJECT_COL.name+" TEXT,"
-                + DBTest.CREATOR_COL.name + " TEXT,"
-                + DBTest.DETAILS_COL.name + " TEXT,"
-                +DBTest.EXISTS_COL.name+" BOOLEAN"+")";
-        db.execSQL(query7);
-        //endregion
-
-        //region Crea tabella con nome vote con le colonne specificate
-        String query8 = "CREATE TABLE " + VOTES_TABLE + " ("
-                + DBVote.VALUE_COL.name + " TEXT,"
-                + DBVote.DATE_COL.name + " TEXT,"
-                + DBVote.TEST_TYPE_COL.name + " TEXT,"
-                + DBVote.ARGUMENTS_COL.name + " TEXT,"
-                + DBVote.JUDGEMENT_COL.name + " TEXT,"
-                + DBVote.QUARTERLY_COL.name + " TEXT,"
-                + DBVote.IS_ASTERISK_COL.name + " BOOLEAN,"
-                + DBVote.IS_RELEVANT_FOR_MEAN_COL.name + " BOOLEAN,"
-                + DBVote.SUBJECT.name + " TEXT" + ")";
-        db.execSQL(query8);
-        //endregion
+        VotesTable.createTable(db);
 
         /*region Crea tabella con nome document con le colonne specificate
         String query9 = "CREATE TABLE " + DOCUMENT_TABLE + " ("
@@ -185,18 +110,7 @@ public class DBController extends SQLiteOpenHelper {
         db.execSQL(query9);
         //endregion */
 
-        //region Crea tabella con nome lesson con le colonne specificate
-        String query10 = "CREATE TABLE " + LESSON_TABLE + " ("
-                + DBLesson.DATE_COL + " DATE,"
-                + DBLesson.TIME_COL + " TEXT,"
-                + DBLesson.SUBJECT_COL + " TEXT,"
-                + DBLesson.ARGUMENTS_COL + " TEXT,"
-                + DBLesson.ACTIVITIES_COL + " TEXT,"
-                + DBLesson.EXISTS_COL + " BOOLEAN,"
-                + DBLesson.IS_ERROR_COL + " BOOLEAN,"
-                + DBLesson.SUPPORT_COL + " TEXT"+")";
-        db.execSQL(query10);
-        //endregion
+        LessonsTable.createTable(db);
     }
 
 
@@ -911,9 +825,136 @@ public class DBController extends SQLiteOpenHelper {
     }
     //endregion
 
+
+    public static class AlertsTable {
+        public static void createTable(SQLiteDatabase db) {
+            String query = "CREATE TABLE " + ALERTS_TABLE + " ("
+                    + DBAlert.STATUS_COL + " TEXT, "
+                    + DBAlert.DATE_COL + " TEXT,"
+                    + DBAlert.RECEIVERS_COL + " TEXT,"
+                    + DBAlert.OBJECT_COL + " TEXT,"
+                    + DBAlert.PAGE_COL + " INTEGER,"
+                    + DBAlert.DETAILS_URL_COL + " TEXT,"
+                    + DBAlert.DETAILS_COL + " TEXT,"
+                    + DBAlert.CREATOR_COL + " TEXT,"
+                    + DBAlert.TYPE_COL + " TEXT,"
+                    + DBAlert.ATTACHMENT_URLS_COL + " TEXT,"
+                    + DBAlert.IS_DETAILED_COL + " BOOLEAN,"
+                    + DBAlert.ALERT_ID + " INTEGER"+")";
+
+            db.execSQL(query);
+        }
+    }
+
+    public static class AbsencesTable {
+        public static void createTable(SQLiteDatabase db) {
+            String query2 = "CREATE TABLE " + ABSENCES_TABLE + " ("
+                    + DBAbsence.DATE_COL.name + " TEXT,"
+                    + DBAbsence.TYPE_COL.name + " TEXT,"
+                    + DBAbsence.NOTES_COL.name+" TEXT,"
+                    + DBAbsence.IS_JUSTIFIED_COL.name+" BOOLEAN,"
+                    + DBAbsence.IS_MODIFICABLE_COL.name+" BOOLEAN,"
+                    + DBAbsence.JUSTIFY_URL_COL.name+" TEXT"+")";
+            db.execSQL(query2);
+        }
+    }
+
+    public static class ActivitiesTable {
+        public static void createTable(SQLiteDatabase db) {
+            String query3 = "CREATE TABLE " + ACTIVITIES_TABLE + " ("
+                    + DBActivity.DATE_COL.name + " TEXT,"
+                    + DBActivity.CREATOR_COL.name + " TEXT,"
+                    + DBActivity.DETAILS_COL.name + " TEXT,"
+                    +DBActivity.EXISTS_COL.name+" BOOLEAN"+")";
+            db.execSQL(query3);
+        }
+    }
+
+    public static class AuthorizationsTable {
+        public static void createTable(SQLiteDatabase db) {
+            String query4="CREATE TABLE "+ AUTHORIZATIONS_TABLE +" ("
+                    + DBAuthorization.ENTRY_COL.name+" TEXT,"
+                    +DBAuthorization.EXIT_COL.name+" TEXT"+")";
+            db.execSQL(query4);
+        }
+    }
+
+    public static class DisciplinaryNoticesTable {
+        public static void createTable(SQLiteDatabase db) {
+            String query5="CREATE TABLE "+DISCIPLINARY_NOTICES_TABLE+" ("
+                    +DBDisciplinaryNote.DATE_COL.name+" TEXT,"
+                    +DBDisciplinaryNote.TYPE_COL.name+" TEXT,"
+                    +DBDisciplinaryNote.DETAILS_COL.name+" TEXT,"
+                    +DBDisciplinaryNote.COUNTERMEASURES_COL.name+" TEXT,"
+                    +DBDisciplinaryNote.AUTHOR_OF_DETAILS_COL.name+" TEXT,"
+                    +DBDisciplinaryNote.AUTHOR_OF_COUNTERMEASURES_COL.name+" TEXT,"
+                    +DBDisciplinaryNote.QUARTERLY_COL.name+" TEXT"+")";
+            db.execSQL(query5);
+        }
+    }
+
+    public static class HomeworksTable {
+        public static void createTable(SQLiteDatabase db) {
+            String query6 = "CREATE TABLE " + HOMEWORKS_TABLE + " ("
+                    + DBHomework.DATE_COL.name + " TEXT,"
+                    + DBHomework.SUBJECT_COL.name+" TEXT,"
+                    + DBHomework.CREATOR_COL.name + " TEXT,"
+                    + DBHomework.DETAILS_COL.name + " TEXT,"
+                    + DBHomework.EXISTS_COL.name+" BOOLEAN"+")";
+            db.execSQL(query6);
+        }
+    }
+
+    public static class TestsTable {
+        public static void createTable(SQLiteDatabase db) {
+            String query7 = "CREATE TABLE " + TESTS_TABLE + " ("
+                    + DBTest.DATE_COL.name + " TEXT,"
+                    + DBTest.SUBJECT_COL.name+" TEXT,"
+                    + DBTest.CREATOR_COL.name + " TEXT,"
+                    + DBTest.DETAILS_COL.name + " TEXT,"
+                    +DBTest.EXISTS_COL.name+" BOOLEAN"+")";
+            db.execSQL(query7);
+        }
+    }
+
+    public static class VotesTable {
+        public static void createTable(SQLiteDatabase db) {
+            String query8 = "CREATE TABLE " + VOTES_TABLE + " ("
+                    + DBVote.VALUE_COL.name + " TEXT,"
+                    + DBVote.DATE_COL.name + " TEXT,"
+                    + DBVote.TEST_TYPE_COL.name + " TEXT,"
+                    + DBVote.ARGUMENTS_COL.name + " TEXT,"
+                    + DBVote.JUDGEMENT_COL.name + " TEXT,"
+                    + DBVote.QUARTERLY_COL.name + " TEXT,"
+                    + DBVote.IS_ASTERISK_COL.name + " BOOLEAN,"
+                    + DBVote.IS_RELEVANT_FOR_MEAN_COL.name + " BOOLEAN,"
+                    + DBVote.SUBJECT.name + " TEXT" + ")";
+            db.execSQL(query8);
+        }
+    }
+
+    public static class LessonsTable {
+        public static void createTable(SQLiteDatabase db) {
+            String query10 = "CREATE TABLE " + LESSON_TABLE + " ("
+                    + DBLesson.DATE_COL + " DATE,"
+                    + DBLesson.TIME_COL + " TEXT,"
+                    + DBLesson.SUBJECT_COL + " TEXT,"
+                    + DBLesson.ARGUMENTS_COL + " TEXT,"
+                    + DBLesson.ACTIVITIES_COL + " TEXT,"
+                    + DBLesson.EXISTS_COL + " BOOLEAN,"
+                    + DBLesson.IS_ERROR_COL + " BOOLEAN,"
+                    + DBLesson.SUPPORT_COL + " TEXT"+")";
+            db.execSQL(query10);
+        }
+    }
+
+
+
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         //Se c'è stato un aggiornamento del database, crea uno nuovo
+        lm.w("E' stato rilevato un aggiornamento, pulisco database...");
         db.execSQL("DROP TABLE IF EXISTS " + ALERTS_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + ABSENCES_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + ACTIVITIES_TABLE);

@@ -36,9 +36,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.giua.app.DBController;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
+import com.giua.app.OfflineDBController;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
@@ -94,7 +94,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
     public void loadOfflineDataAndViews() {
         new Thread(() -> {
             try {
-                allVotes = new DBController(activity).readVotes();
+                allVotes = new OfflineDBController(activity).readVotes();
                 refreshVotes = false;
                 if (isFragmentDestroyed)
                     return;
@@ -110,7 +110,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
         GlobalVariables.gsThread.addTask(() -> {
             try {
                 allVotes = GlobalVariables.gS.getVotesPage(refreshVotes).getAllVotes();
-                new DBController(activity).addVotes(allVotes);
+                new OfflineDBController(activity).addVotes(allVotes);
                 refreshVotes = false;
                 if (isFragmentDestroyed)
                     return;
