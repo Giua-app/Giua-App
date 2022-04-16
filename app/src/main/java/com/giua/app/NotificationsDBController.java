@@ -25,20 +25,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.giua.objects.Absence;
-import com.giua.objects.Activity;
 import com.giua.objects.Alert;
-import com.giua.objects.Authorization;
-import com.giua.objects.DisciplinaryNotices;
 import com.giua.objects.Homework;
-import com.giua.objects.Lesson;
+import com.giua.objects.Newsletter;
 import com.giua.objects.Test;
 import com.giua.objects.Vote;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,19 +48,13 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     //!!!
     //FIXME: USARE SQLiteDatabase.releaseMemory() DOVE L'APP VA IN BACKGROUND O ALTRO
 
-    private static final String DB_NAME = "giuapp_checknews_data";
-    private static final int DB_VERSION = 3;
+    private static final String DB_NAME = "giuapp_notification_data";
+    private static final int DB_VERSION = 1;
 
     private static final String ALERTS_TABLE = "alerts";
-    private static final String ABSENCES_TABLE = "absences";
-    private static final String ACTIVITIES_TABLE = "activities";
-    private static final String AUTHORIZATIONS_TABLE ="authorizations";
-    private static final String DISCIPLINARY_NOTICES_TABLE="disciplinaryNotices";
     private static final String HOMEWORKS_TABLE="homeworks";
     private static final String TESTS_TABLE="tests";
     private static final String VOTES_TABLE ="votes";
-    private static final String DOCUMENT_TABLE="document";
-    private static final String LESSON_TABLE="document";
     private static final String NEWSLETTERS_TABLE = "newsletters";
 
     /**
@@ -86,31 +73,13 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         lm.d("Creazione database in corso...");
         AlertsTable.createTable(db);
 
-        AbsencesTable.createTable(db);
-
-        ActivitiesTable.createTable(db);
-
-        AuthorizationsTable.createTable(db);
-
-        DisciplinaryNoticesTable.createTable(db);
-
         HomeworksTable.createTable(db);
 
         TestsTable.createTable(db);
 
         VotesTable.createTable(db);
 
-        /*region Crea tabella con nome document con le colonne specificate
-        String query9 = "CREATE TABLE " + DOCUMENT_TABLE + " ("
-                + DBDocument.STATUS_COL + " TEXT,"
-                + DBDocument.CLASSROOM_COL + " TEXT,"
-                + DBDocument.SUBJECT_COL + " TEXT,"
-                + DBDocument.INSTITUTE_COL + " TEXT,"
-                + DBDocument.DOWNLOAD_URL_COL + " TEXT"+")";
-        db.execSQL(query9);
-        //endregion */
-
-        LessonsTable.createTable(db);
+        NewslettersTable.createTable(db);
     }
 
 
@@ -227,132 +196,17 @@ public class NotificationsDBController extends SQLiteOpenHelper {
 
     //endregion
 
-    //region DB Absence
-    private long addAbsence(Absence absence, SQLiteDatabase db){
-        ContentValues values = new ContentValues();
-        values.put(DBAbsence.DATE_COL.name, absence.date);
-        values.put(DBAbsence.TYPE_COL.name, absence.type);
-        values.put(DBAbsence.NOTES_COL.name, absence.notes);
-        values.put(DBAbsence.IS_JUSTIFIED_COL.name, absence.isJustified);
-        values.put(DBAbsence.IS_JUSTIFIED_COL.name, absence.isModificable);
-        values.put(DBAbsence.JUSTIFY_URL_COL.name, absence.justifyUrl);
-
-        return db.insert(ABSENCES_TABLE, null, values);
-    }
-
-    public void addAbsences(List<Absence> absences){
-        SQLiteDatabase db = getWritableDatabase();
-
-        for (Absence absence : absences) {
-            addAbsence(absence, db);
-        }
-
-        db.close();
-    }
-
-    public List<Absence> readAbsences() {
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery("SELECT * FROM " + ABSENCES_TABLE, null);
-
-        List<Absence> absences = new Vector<>();
-
-        if (cursor.moveToFirst()) {
-            boolean isJustify= cursor.getInt(DBAbsence.IS_JUSTIFIED_COL.ordinal()) != 0;
-            boolean isModificable= cursor.getInt(DBAbsence.IS_MODIFICABLE_COL.ordinal()) != 0;
-
-            do {
-                absences.add(new Absence(cursor.getString(DBAbsence.DATE_COL.ordinal()),
-                        cursor.getString(DBAbsence.TYPE_COL.ordinal()),
-                        cursor.getString(DBAbsence.NOTES_COL.ordinal()),
-                        isJustify,
-                        isModificable,
-                        cursor.getString(DBAbsence.JUSTIFY_URL_COL.ordinal())));
-            } while (cursor.moveToNext());
-            //muovi il cursore nella prossima riga
-        }
-        cursor.close();
-        return absences;
-    }
-
-    private enum DBAbsence{
-        DATE_COL("date"),
-        TYPE_COL("type"),
-        NOTES_COL("notes"),
-        IS_JUSTIFIED_COL("isJustified"),
-        IS_MODIFICABLE_COL("isModificable"),
-        JUSTIFY_URL_COL("justifyUrl");
-
-        private final String name;
-
-        DBAbsence(String name) {
-            this.name = name;
-        }
-    }
-    //endregion
-
     //region Agenda Objects
 
-    //region DB Activity
-    private long addActivity(Activity activity, SQLiteDatabase db){
-        ContentValues values = new ContentValues();
-        values.put(DBActivity.DATE_COL.name, activity.date);
-        values.put(DBActivity.CREATOR_COL.name, activity.creator);
-        values.put(DBActivity.DETAILS_COL.name, activity.details);
-        values.put(DBActivity.EXISTS_COL.name, activity._exists);
+    //region DBHomework
 
-        return db.insert(ACTIVITIES_TABLE, null, values);
-    }
-
-    public void addActivities(List<Activity> activities){
+    public void deleteHomeworks(){
         SQLiteDatabase db = getWritableDatabase();
 
-        for (Activity activity : activities) {
-            addActivity(activity, db);
-        }
+        db.execSQL("DELETE FROM " + HOMEWORKS_TABLE + ";");
 
         db.close();
     }
-
-    public List<Activity> readActivities() {
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery("SELECT * FROM " + ACTIVITIES_TABLE, null);
-
-        List<Activity> activities = new Vector<>();
-
-        if (cursor.moveToFirst()) {
-            boolean exists= cursor.getInt(DBActivity.EXISTS_COL.ordinal()) != 0;
-            do {
-                activities.add(new Activity(cursor.getString(DBActivity.DATE_COL.ordinal()).split("-")[2],
-                        cursor.getString(DBActivity.DATE_COL.ordinal()).split("-")[1],
-                        cursor.getString(DBActivity.DATE_COL.ordinal()).split("-")[0],
-                        cursor.getString(DBActivity.DATE_COL.ordinal()),
-                        cursor.getString(DBActivity.CREATOR_COL.ordinal()),
-                        cursor.getString(DBActivity.DETAILS_COL.ordinal()),
-                        exists));
-            } while (cursor.moveToNext());
-            //muovi il cursore nella prossima riga
-        }
-        cursor.close();
-        return activities;
-    }
-
-    private enum DBActivity{
-        DATE_COL("date"),
-        CREATOR_COL("creator"),
-        DETAILS_COL("details"),
-        EXISTS_COL("_exists");
-
-        private final String name;
-
-        DBActivity(String name) {
-            this.name = name;
-        }
-    }
-    //endregion
-
-    //region DBHomework
 
     private long addHomework(Homework homework, SQLiteDatabase db){
         ContentValues values = new ContentValues();
@@ -419,6 +273,14 @@ public class NotificationsDBController extends SQLiteOpenHelper {
 
     //region DBTest
 
+    public void deleteTests(){
+        SQLiteDatabase db = getWritableDatabase();
+
+        db.execSQL("DELETE FROM " + TESTS_TABLE + ";");
+
+        db.close();
+    }
+
     private long addTest(Test test, SQLiteDatabase db){
         ContentValues values = new ContentValues();
         values.put(DBTest.DATE_COL.name, test.date);
@@ -483,123 +345,15 @@ public class NotificationsDBController extends SQLiteOpenHelper {
 
     //endregion
 
-    //region DB Authorization
-    private long addAuthorization(Authorization authorization, SQLiteDatabase db){
-        ContentValues values = new ContentValues();
-        values.put(DBAuthorization.ENTRY_COL.name, authorization.entry);
-        values.put(DBAuthorization.EXIT_COL.name, authorization.exit);
-
-        return db.insert(AUTHORIZATIONS_TABLE, null, values);
-    }
-
-    public void addAuthorizations(List<Authorization> authorizations){
-        SQLiteDatabase db = getWritableDatabase();
-
-        for (Authorization authorization : authorizations) {
-            addAuthorization(authorization, db);
-        }
-
-        db.close();
-    }
-
-    public List<Authorization> readAuthorization() {
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery("SELECT * FROM " + AUTHORIZATIONS_TABLE, null);
-
-        List<Authorization> authorizations = new Vector<>();
-
-        if (cursor.moveToFirst()) {
-            do {
-                authorizations.add(new Authorization(
-                        cursor.getString(DBAuthorization.ENTRY_COL.ordinal()),
-                        cursor.getString(DBAuthorization.EXIT_COL.ordinal())));
-            } while (cursor.moveToNext());
-            //muovi il cursore nella prossima riga
-        }
-        cursor.close();
-        return authorizations;
-    }
-
-    private enum DBAuthorization{
-        ENTRY_COL("entry"),
-        EXIT_COL("exit");
-
-        private final String name;
-
-        DBAuthorization(String name) {
-            this.name = name;
-        }
-    }
-    //endregion
-
-    //region DBDisciplinaryNote
-    private long addDisciplinaryNote(DisciplinaryNotices disciplinaryNote, SQLiteDatabase db){
-        ContentValues values = new ContentValues();
-        values.put(DBDisciplinaryNote.DATE_COL.name, disciplinaryNote.date);
-        values.put(DBDisciplinaryNote.TYPE_COL.name, disciplinaryNote.type);
-        values.put(DBDisciplinaryNote.DETAILS_COL.name, disciplinaryNote.details);
-        values.put(DBDisciplinaryNote.COUNTERMEASURES_COL.name, disciplinaryNote.countermeasures);
-        values.put(DBDisciplinaryNote.AUTHOR_OF_DETAILS_COL.name, disciplinaryNote.authorOfDetails);
-        values.put(DBDisciplinaryNote.AUTHOR_OF_COUNTERMEASURES_COL.name, disciplinaryNote.authorOfCountermeasures);
-        values.put(DBDisciplinaryNote.QUARTERLY_COL.name, disciplinaryNote.quarterly);
-
-        return db.insert(DISCIPLINARY_NOTICES_TABLE, null, values);
-    }
-
-    public void addDisciplinaryNotices(List<DisciplinaryNotices> disciplinaryNotices){
-        SQLiteDatabase db = getWritableDatabase();
-
-        for (DisciplinaryNotices disciplinaryNote : disciplinaryNotices) {
-            addDisciplinaryNote(disciplinaryNote, db);
-        }
-
-        db.close();
-    }
-
-    public List<DisciplinaryNotices> readDisciplinaryNotices() {
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery("SELECT * FROM " + DISCIPLINARY_NOTICES_TABLE, null);
-
-        List<DisciplinaryNotices> disciplinaryNotices = new Vector<>();
-
-        if (cursor.moveToFirst()) {
-            do {
-                disciplinaryNotices.add(new DisciplinaryNotices(
-                        cursor.getString(DBDisciplinaryNote.DATE_COL.ordinal()),
-                        cursor.getString(DBDisciplinaryNote.TYPE_COL.ordinal()),
-                        cursor.getString(DBDisciplinaryNote.DETAILS_COL.ordinal()),
-                        cursor.getString(DBDisciplinaryNote.COUNTERMEASURES_COL.ordinal()),
-                        cursor.getString(DBDisciplinaryNote.AUTHOR_OF_DETAILS_COL.ordinal()),
-                        cursor.getString(DBDisciplinaryNote.AUTHOR_OF_COUNTERMEASURES_COL.ordinal()),
-                        cursor.getString(DBDisciplinaryNote.QUARTERLY_COL.ordinal())));
-            } while (cursor.moveToNext());
-            //muovi il cursore nella prossima riga
-        }
-        cursor.close();
-        return disciplinaryNotices;
-    }
-
-    private enum DBDisciplinaryNote{
-        DATE_COL("date"),
-        TYPE_COL("type"),
-        DETAILS_COL("details"),
-        COUNTERMEASURES_COL("countermeasures"),
-        AUTHOR_OF_DETAILS_COL("authorOfDetails"),
-        AUTHOR_OF_COUNTERMEASURES_COL("authorOfCountermeasures"),
-        QUARTERLY_COL("quarterly");
-
-        private final String name;
-
-        DBDisciplinaryNote(String name) {
-            this.name = name;
-        }
-    }
-
-    //endregion
-
     //region DBVote
+    public void deleteVotes(){
+        SQLiteDatabase db = getWritableDatabase();
+
+        db.execSQL("DELETE FROM " + VOTES_TABLE + ";");
+
+        db.close();
+    }
+
     private void addSubject(String subject, List<Vote> votes, SQLiteDatabase db){
         for(Vote vote : votes) {
             ContentValues values = new ContentValues();
@@ -620,7 +374,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
 
     public void addVotes(Map<String, List<Vote>> votes){
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("DELETE FROM " + VOTES_TABLE + ";");
+        //db.execSQL("DELETE FROM " + VOTES_TABLE + ";");
 
         for (String m : votes.keySet()) {
             addSubject(m, votes.get(m), db);
@@ -687,139 +441,91 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
     //endregion
 
-/* Inutile visto che non abbiamo una schermata per i Documents
-    //region DBDocuments
-    private long addDocument(Document document, SQLiteDatabase db){
-        ContentValues values = new ContentValues();
-        values.put(DBDocument.STATUS_COL.name, document.status);
-        values.put(DBDocument.CLASSROOM_COL.name, document.classroom);
-        values.put(DBDocument.SUBJECT_COL.name, document.subject);
-        values.put(DBDocument.INSTITUTE_COL.name, document.institute);
-        values.put(DBDocument.DOWNLOAD_URL_COL.name, document.downloadUrl);
-
-        return db.insert(DOCUMENT_TABLE, null, values);
-    }
-
-    public void addDocuments(List<Document> documents){
+    //region DBNewsletter
+    public void deleteNewsletters(){
         SQLiteDatabase db = getWritableDatabase();
 
-        for (Document document : documents) {
-            addDocument(document, db);
-        }
+        db.execSQL("DELETE FROM " + NEWSLETTERS_TABLE + ";");
 
         db.close();
     }
 
-    public List<Document> readDocuments() {
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery("SELECT * FROM " + DOCUMENT_TABLE, null);
-
-        List<Document> documents = new Vector<>();
-
-        if (cursor.moveToFirst()) {
-            do {
-                documents.add(new Document(
-                        cursor.getString(DBDocument.STATUS_COL.ordinal()),
-                        cursor.getString(DBDocument.CLASSROOM_COL.ordinal()),
-                        cursor.getString(DBDocument.SUBJECT_COL.ordinal()),
-                        cursor.getString(DBDocument.INSTITUTE_COL.ordinal()),
-                        cursor.getString(DBDocument.DOWNLOAD_URL_COL.ordinal())));
-            } while (cursor.moveToNext());
-            //muovi il cursore nella prossima riga
-        }
-        cursor.close();
-        return documents;
-    }
-
-    private enum DBDocument{
-        STATUS_COL("status"),
-        CLASSROOM_COL("classroom"),
-        SUBJECT_COL("subject"),
-        INSTITUTE_COL("institute"),
-        DOWNLOAD_URL_COL("downloadUrl");
-
-        private final String name;
-
-        DBDocument(String name) {
-            this.name = name;
-        }
-    }
-    //endregion */
-
-    //region DBLesson
-    private long addLesson(Lesson lesson, SQLiteDatabase db){
+    private void addNewsletter(Newsletter newsletter, SQLiteDatabase db){
         ContentValues values = new ContentValues();
-        values.put(DBLesson.DATE_COL.name, lesson.date.toString());
-        values.put(DBLesson.TIME_COL.name, lesson.time);
-        values.put(DBLesson.SUBJECT_COL.name, lesson.subject);
-        values.put(DBLesson.ARGUMENTS_COL.name, lesson.arguments);
-        values.put(DBLesson.ACTIVITIES_COL.name, lesson.activities);
-        values.put(DBLesson.EXISTS_COL.name, lesson._exists);
-        values.put(DBLesson.IS_ERROR_COL.name, lesson.isError);
-        values.put(DBLesson.SUPPORT_COL.name, lesson.support);
 
-        return db.insert(LESSON_TABLE, null, values);
-    }
+        values.put(DBNewsletter.STATUS_COL.name, newsletter.getStatus());
+        values.put(DBNewsletter.NUMBER_COL.name, newsletter.date);
+        values.put(DBNewsletter.DATE_COL.name, newsletter.object);
+        values.put(DBNewsletter.OBJECT_COL.name, newsletter.detailsUrl);
+        values.put(DBNewsletter.DETAILS_URL_COL.name, newsletter.number);
 
-    public void addLessons(List<Lesson> lessons){
-        SQLiteDatabase db = getWritableDatabase();
-
-        for (Lesson lesson : lessons) {
-            addLesson(lesson, db);
-        }
-
-        db.close();
-    }
-
-    public List<Lesson> readLessons() {
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery("SELECT * FROM " + LESSON_TABLE, null);
-
-        List<Lesson> lessons = new Vector<>();
-
-        if (cursor.moveToFirst()) {
-            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
-            Date date=null;
-            try{
-                date = simpleDateFormat.parse(cursor.getString(DBLesson.DATE_COL.ordinal()));
-            }catch(ParseException e){
-                date = new Date(0);
+        //Non si può memorizzare una lista su sql
+        String attachmentUrls = null;
+        if(newsletter.attachmentsUrl != null){
+            for(String url : newsletter.attachmentsUrl){
+                attachmentUrls += url + ";";
             }
+        }
+        values.put(DBNewsletter.ATTACHMENTS_URL_COL.name, attachmentUrls);
 
-            boolean exists=cursor.getInt(DBLesson.EXISTS_COL.ordinal())==0;
-            boolean isError=cursor.getInt(DBLesson.IS_ERROR_COL.ordinal())==0;
+        values.put(DBNewsletter.PAGE_COL.name, newsletter.page);
+
+        db.insert(VOTES_TABLE, null, values);
+    }
+
+    public void addNewsletters(List<Newsletter> newsletters){
+        SQLiteDatabase db = getWritableDatabase();
+
+        for (Newsletter n : newsletters) {
+            addNewsletter(n, db);
+        }
+
+        db.close();
+    }
+
+    public List<Newsletter> readNewsletters() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + NEWSLETTERS_TABLE, null);
+
+        List<Newsletter> newsletters = new Vector<>();
+
+        if (cursor.moveToFirst()) {
             do {
-                lessons.add(new Lesson(
-                        date,
-                        cursor.getString(DBLesson.TIME_COL.ordinal()),
-                        cursor.getString(DBLesson.SUBJECT_COL.ordinal()),
-                        cursor.getString(DBLesson.ARGUMENTS_COL.ordinal()),
-                        cursor.getString(DBLesson.ACTIVITIES_COL.ordinal()),
-                        cursor.getString(DBLesson.SUPPORT_COL.ordinal()),
-                        exists,
-                        isError));
+                List<String> attachmentUrls = null;
+                try{
+                    attachmentUrls = Arrays.asList(cursor.getString(DBNewsletter.ATTACHMENTS_URL_COL.ordinal()).split(";"));
+                } catch(NullPointerException ignored){ }
+
+                newsletters.add(new Newsletter(cursor.getString(DBNewsletter.STATUS_COL.ordinal()),
+                        cursor.getInt(DBNewsletter.NUMBER_COL.ordinal()),
+                        cursor.getString(DBNewsletter.DATE_COL.ordinal()),
+                        cursor.getString(DBNewsletter.OBJECT_COL.ordinal()),
+                        cursor.getString(DBNewsletter.DETAILS_URL_COL.ordinal()),
+                        attachmentUrls,
+                        cursor.getInt(DBNewsletter.PAGE_COL.ordinal())));
+
+
+
             } while (cursor.moveToNext());
             //muovi il cursore nella prossima riga
         }
         cursor.close();
-        return lessons;
+        return newsletters;
     }
 
-    private enum DBLesson{
+    private enum DBNewsletter{
+        STATUS_COL("status"),
+        NUMBER_COL("number"),
         DATE_COL("date"),
-        TIME_COL("time"),
-        SUBJECT_COL("subject"),
-        ARGUMENTS_COL("arguments"),
-        ACTIVITIES_COL("activities"),
-        EXISTS_COL("_exists"),
-        IS_ERROR_COL("isError"),
-        SUPPORT_COL("support");
+        OBJECT_COL("object"),
+        DETAILS_URL_COL("detailsUrl"),
+        ATTACHMENTS_URL_COL("attachmentsUrl"),
+        PAGE_COL("page");
 
         private final String name;
 
-        DBLesson(String name) {
+        DBNewsletter(String name) {
             this.name = name;
         }
     }
@@ -843,53 +549,6 @@ public class NotificationsDBController extends SQLiteOpenHelper {
                     + DBAlert.ALERT_ID + " INTEGER"+")";
 
             db.execSQL(query);
-        }
-    }
-
-    public static class AbsencesTable {
-        public static void createTable(SQLiteDatabase db) {
-            String query2 = "CREATE TABLE " + ABSENCES_TABLE + " ("
-                    + DBAbsence.DATE_COL.name + " TEXT,"
-                    + DBAbsence.TYPE_COL.name + " TEXT,"
-                    + DBAbsence.NOTES_COL.name+" TEXT,"
-                    + DBAbsence.IS_JUSTIFIED_COL.name+" BOOLEAN,"
-                    + DBAbsence.IS_MODIFICABLE_COL.name+" BOOLEAN,"
-                    + DBAbsence.JUSTIFY_URL_COL.name+" TEXT"+")";
-            db.execSQL(query2);
-        }
-    }
-
-    public static class ActivitiesTable {
-        public static void createTable(SQLiteDatabase db) {
-            String query3 = "CREATE TABLE " + ACTIVITIES_TABLE + " ("
-                    + DBActivity.DATE_COL.name + " TEXT,"
-                    + DBActivity.CREATOR_COL.name + " TEXT,"
-                    + DBActivity.DETAILS_COL.name + " TEXT,"
-                    +DBActivity.EXISTS_COL.name+" BOOLEAN"+")";
-            db.execSQL(query3);
-        }
-    }
-
-    public static class AuthorizationsTable {
-        public static void createTable(SQLiteDatabase db) {
-            String query4="CREATE TABLE "+ AUTHORIZATIONS_TABLE +" ("
-                    + DBAuthorization.ENTRY_COL.name+" TEXT,"
-                    +DBAuthorization.EXIT_COL.name+" TEXT"+")";
-            db.execSQL(query4);
-        }
-    }
-
-    public static class DisciplinaryNoticesTable {
-        public static void createTable(SQLiteDatabase db) {
-            String query5="CREATE TABLE "+DISCIPLINARY_NOTICES_TABLE+" ("
-                    +DBDisciplinaryNote.DATE_COL.name+" TEXT,"
-                    +DBDisciplinaryNote.TYPE_COL.name+" TEXT,"
-                    +DBDisciplinaryNote.DETAILS_COL.name+" TEXT,"
-                    +DBDisciplinaryNote.COUNTERMEASURES_COL.name+" TEXT,"
-                    +DBDisciplinaryNote.AUTHOR_OF_DETAILS_COL.name+" TEXT,"
-                    +DBDisciplinaryNote.AUTHOR_OF_COUNTERMEASURES_COL.name+" TEXT,"
-                    +DBDisciplinaryNote.QUARTERLY_COL.name+" TEXT"+")";
-            db.execSQL(query5);
         }
     }
 
@@ -933,33 +592,25 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         }
     }
 
-    public static class LessonsTable {
+    public static class NewslettersTable {
         public static void createTable(SQLiteDatabase db) {
-            String query10 = "CREATE TABLE " + LESSON_TABLE + " ("
-                    + DBLesson.DATE_COL + " DATE,"
-                    + DBLesson.TIME_COL + " TEXT,"
-                    + DBLesson.SUBJECT_COL + " TEXT,"
-                    + DBLesson.ARGUMENTS_COL + " TEXT,"
-                    + DBLesson.ACTIVITIES_COL + " TEXT,"
-                    + DBLesson.EXISTS_COL + " BOOLEAN,"
-                    + DBLesson.IS_ERROR_COL + " BOOLEAN,"
-                    + DBLesson.SUPPORT_COL + " TEXT"+")";
-            db.execSQL(query10);
+            String query = "CREATE TABLE " + NEWSLETTERS_TABLE + " ("
+                    + DBNewsletter.STATUS_COL.name + " TEXT,"
+                    + DBNewsletter.NUMBER_COL.name + " INTEGER,"
+                    + DBNewsletter.DATE_COL.name + " DATE,"
+                    + DBNewsletter.OBJECT_COL.name + " TEXT,"
+                    + DBNewsletter.DETAILS_URL_COL.name + " TEXT,"
+                    + DBNewsletter.ATTACHMENTS_URL_COL.name + " BOOLEAN,"
+                    + DBNewsletter.PAGE_COL.name + " INTEGER"+")";
+            db.execSQL(query);
         }
     }
 
-
-
-
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        //Se c'è stato un aggiornamento del database, crea uno nuovo
-        lm.w("E' stato rilevato un aggiornamento, pulisco database...");
+        lm.w("Aggiornamento database rilevato (" + oldVersion + " -> " + newVersion + "). " +
+                "Impossibile convertire database, cancello e ne ricreo uno nuovo");
         db.execSQL("DROP TABLE IF EXISTS " + ALERTS_TABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + ABSENCES_TABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + ACTIVITIES_TABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + AUTHORIZATIONS_TABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + DISCIPLINARY_NOTICES_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + HOMEWORKS_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + TESTS_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + VOTES_TABLE);
