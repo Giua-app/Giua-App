@@ -47,10 +47,10 @@ import java.util.Vector;
 /**
  * Controller per interagire con il database per la modalità offline
  */
-public class CheckNewsDBController extends SQLiteOpenHelper {
+public class NotificationsDBController extends SQLiteOpenHelper {
 
-    private Context context;
-    private LoggerManager lm;
+    private final Context context;
+    private final LoggerManager lm;
 
     //!!!
     //FIXME: USARE SQLiteDatabase.releaseMemory() DOVE L'APP VA IN BACKGROUND O ALTRO
@@ -59,8 +59,8 @@ public class CheckNewsDBController extends SQLiteOpenHelper {
     private static final int DB_VERSION = 3;
 
     private static final String ALERTS_TABLE = "alerts";
-    private static final String ABSENCES_TABLE ="absences";
-    private static final String ACTIVITIES_TABLE ="activities";
+    private static final String ABSENCES_TABLE = "absences";
+    private static final String ACTIVITIES_TABLE = "activities";
     private static final String AUTHORIZATIONS_TABLE ="authorizations";
     private static final String DISCIPLINARY_NOTICES_TABLE="disciplinaryNotices";
     private static final String HOMEWORKS_TABLE="homeworks";
@@ -72,12 +72,13 @@ public class CheckNewsDBController extends SQLiteOpenHelper {
 
     /**
      * Crea un istanza DbController. Se il database non esiste, ne crea uno nuovo
+     *
      * @param context
      */
-    public CheckNewsDBController(Context context) {
+    public NotificationsDBController(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         this.context = context.getApplicationContext();
-        lm = new LoggerManager("CheckNewsDBController", this.context);
+        lm = new LoggerManager("NotificationsDBController", this.context);
     }
 
     @Override

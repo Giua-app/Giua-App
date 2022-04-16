@@ -19,42 +19,29 @@
 
 package com.giua.app;
 
-import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.SystemClock;
+import android.webkit.CookieManager;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.giua.objects.Alert;
+import com.giua.objects.Newsletter;
 import com.giua.objects.Vote;
-import com.giua.pages.AlertsPage;
-import com.giua.utils.JsonBuilder;
-import com.giua.utils.JsonParser;
 import com.giua.webscraper.GiuaScraper;
-import com.giua.webscraper.GiuaScraperExceptions;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 import java.util.Vector;
 
 //FIXME ?: Non supporta url diversi da quello del Giua per il login con Gsuite
@@ -63,6 +50,7 @@ public class AppNotifications extends BroadcastReceiver {
     private NotificationManagerCompat notificationManager;
     private LoggerManager loggerManager;
     private GiuaScraper gS;
+    private OfflineDBController offlineDB;
 
     private String activeUsername = "";
 
@@ -92,6 +80,7 @@ public class AppNotifications extends BroadcastReceiver {
         isDebugMode = SettingsData.getSettingBoolean(context, SettingKey.DEBUG_MODE);
 
         notificationManager = NotificationManagerCompat.from(context);
+        offlineDB = new OfflineDBController(context);
 
         new Thread(this::checkAndSendNotifications).start();
     }
@@ -104,7 +93,207 @@ public class AppNotifications extends BroadcastReceiver {
         if (activeUsername.equals("gsuite")) makeGsuiteLogin();
         else makeLogin();
 
+        if (!gS.isSessionValid(gS.getCookie())) {
+            loggerManager.e("Il login non ha funzionato");
+            return;
+        }
 
+        //#region Controllo notifiche
+
+        if (canSendNotificationsVotes) checkNewsForVotes();
+        if (canSendNotificationsAlerts) checkNewsForAlerts();
+        if (canSendNotificationsHomeworks) checkNewsForHomeworks();
+        if (canSendNotificationsTests) checkNewsForTests();
+        if (canSendNotificationsNewsletters) checkNewsForNewsletters();
+
+        //#endregion
+
+        offlineDB.close();
+    }
+
+    private void checkNewsForTests() {
+
+    }
+
+
+    private void checkNewsForHomeworks() {
+
+    }
+
+    //#region Newsletters
+
+    private void checkNewsForNewsletters() {
+        List<Newsletter> allNewNewsletters;
+
+        try {
+            allNewNewsletters = gS.getNewslettersPage(false).getAllNewsletters(1);
+        } catch (Exception e) {
+            loggerManager.w("Controllo degli AVVISI in background non riuscito: " + e + " " + e.getMessage());
+            return;
+        }
+
+        List<Alert> allOldNewsletters = new Vector<>();//offlineDB.readNewsletters(); FIXME
+        //offlineDB.addNewsletters(allNewAlerts);
+
+        allNewNewsletters.removeAll(allOldNewsletters);   //Rimuovo gli avvisi vecchi da quelli nuovi
+
+        if (allNewNewsletters.size() == 0) return;
+
+        notificationManager.notify(AppNotificationsParams.NEWSLETTERS_NOTIFICATION_ID, createNewslettersNotification(allNewNewsletters));
+    }
+
+    private Notification createNewslettersNotification(List<Newsletter> allNewNewsletters) {
+        String notificationTitle = "";
+
+        int nNewslettersToNotify = allNewNewsletters.size();
+
+        if (nNewslettersToNotify > 1)
+            notificationTitle = nNewslettersToNotify + " nuove circolari";
+        else
+            notificationTitle = "Nuova circolare";
+
+        return createNotification(notificationTitle, AppNotificationsParams.NEWSLETTERS_NOTIFICATION_GOTO, AppNotificationsParams.NEWSLETTERS_NOTIFICATION_REQUEST_CODE);
+    }
+
+    //#endregion
+    //#region Alerts
+
+    private void checkNewsForAlerts() {
+        List<Alert> allNewAlerts;
+
+        try {
+            allNewAlerts = gS.getAlertsPage(false).getAllAlerts(1);
+        } catch (Exception e) {
+            loggerManager.w("Controllo degli AVVISI in background non riuscito: " + e + " " + e.getMessage());
+            return;
+        }
+
+        List<Alert> allOldAlerts = offlineDB.readAlerts();
+        offlineDB.addAlerts(allNewAlerts);
+
+        allNewAlerts.removeAll(allOldAlerts);   //Rimuovo gli avvisi vecchi da quelli nuovi
+
+        if (allNewAlerts.size() == 0) return;
+
+        notificationManager.notify(AppNotificationsParams.ALERTS_NOTIFICATION_ID, createAlertsNotification(allNewAlerts));
+    }
+
+    private Notification createAlertsNotification(List<Alert> alertsToNotify) {
+        String notificationTitle = "";
+
+        int nAlertsToNotify = alertsToNotify.size();
+
+        if (nAlertsToNotify > 1)
+            notificationTitle = nAlertsToNotify + " nuovi avvisi";
+        else
+            notificationTitle = "Nuovo avviso";
+
+        return createNotification(notificationTitle, AppNotificationsParams.ALERTS_NOTIFICATION_GOTO, AppNotificationsParams.ALERTS_NOTIFICATION_REQUEST_CODE);
+    }
+
+    //#endregion
+    //#region Votes
+
+    private void checkNewsForVotes() {
+        Map<String, List<Vote>> allNewVotes;
+
+        List<String> notifiedSubjects = new Vector<>(10);
+        int notifiedVotesCounter = 0;
+
+        try {
+            allNewVotes = gS.getVotesPage(false).getAllVotes();
+        } catch (Exception e) {
+            loggerManager.w("Controllo dei VOTI in background non riuscito: " + e + " " + e.getMessage());
+            return;
+        }
+
+        Map<String, List<Vote>> allOldVotes = offlineDB.readVotes();
+
+        offlineDB.addVotes(allNewVotes);
+
+        for (String subject : allNewVotes.keySet()) {
+            if (allOldVotes.get(subject) == null) continue;
+
+            List<Vote> _newVotes = allNewVotes.get(subject);
+
+            if (_newVotes == null) continue;
+
+            //Rimuovo tutti i voti vecchi da quelli nuovi cosi che rimangano solo quelli nuovi se ce ne sono.
+            _newVotes.removeAll(allOldVotes.get(subject));
+
+            if (_newVotes.size() == 0) continue;
+
+            notifiedVotesCounter += _newVotes.size();
+            notifiedSubjects.add(subject);
+        }
+
+        if (notifiedVotesCounter == 0 || notifiedSubjects.size() == 0) return;
+
+        Notification notification = createVotesNotification(notifiedSubjects, notifiedVotesCounter);
+        notificationManager.notify(AppNotificationsParams.VOTES_NOTIFICATION_ID, notification);
+    }
+
+    private Notification createVotesNotification(List<String> notifiedSubjects, int notifiedVotesCounter) {
+        String notificationTitle;
+        String notificationText = "";
+        int notifiedSubjectsLength = notifiedSubjects.size();
+
+        if (notifiedVotesCounter > 1)
+            notificationTitle = "Sono stati pubblicati nuovi voti";
+        else
+            notificationTitle = "È stato pubblicato un nuovo voto in " + notifiedSubjects.get(0);
+
+        if (notifiedSubjectsLength == 1)
+            notificationText = "Materia: " + notifiedSubjects.get(0);
+        else if (notifiedSubjectsLength > 1) {
+            notificationText = "Materie: ";
+
+            for (int i = 0; i < notifiedSubjectsLength; i++) {
+                notificationText += notifiedSubjects.get(i);
+
+                if (i != notifiedSubjectsLength - 1)
+                    notificationText += ", ";
+            }
+        }
+
+        return createNotification(notificationTitle, notificationText, AppNotificationsParams.VOTES_NOTIFICATION_GOTO, AppNotificationsParams.VOTES_NOTIFICATION_REQUEST_CODE);
+    }
+
+    //#endregion
+
+    private Notification createNotification(String title, String goTo, int requestCode) {
+        Intent intent = new Intent(context, ActivityManager.class).putExtra("goTo", goTo).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        return new NotificationCompat.Builder(context, "0")
+                .setContentIntent(PendingIntent.getActivity(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE))
+                .setSmallIcon(R.drawable.ic_giuaschool_black)
+                .setContentTitle(title)
+                .setContentText("Clicca per avere più informazioni")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .build();
+    }
+
+    private Notification createNotification(String title, String content, String goTo, int requestCode) {
+        Intent intent = new Intent(context, ActivityManager.class).putExtra("goTo", goTo).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        return new NotificationCompat.Builder(context, "0")
+                .setContentIntent(PendingIntent.getActivity(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE))
+                .setSmallIcon(R.drawable.ic_giuaschool_black)
+                .setContentTitle(title)
+                .setContentText(content)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .build();
+    }
+
+    private Notification createNotificationWithBigText(String title, String contentText, String bigText, String goTo) {
+        Intent intent = new Intent(context, ActivityManager.class).putExtra("goTo", goTo).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        return new NotificationCompat.Builder(context, "0")
+                .setContentIntent(PendingIntent.getActivity(context, 5, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE))
+                .setSmallIcon(R.drawable.ic_giuaschool_black)
+                .setContentTitle(title)
+                .setContentText(contentText)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(bigText))
+                .build();
     }
 
     private void makeLogin() {
@@ -142,370 +331,41 @@ public class AppNotifications extends BroadcastReceiver {
     }
 
     private void makeGsuiteLogin() {
+        String cookie = getCookieForGsuiteLogin();
 
+        if (cookie.equals("")) return;   //Cè stato un errore e dovrebbe già essere stato segnalato
+
+        gS = new GiuaScraper("gsuite", "gsuite", cookie, true, loggerManager);
     }
 
-    private String getGsuiteCookie() {
+    private String getCookieForGsuiteLogin() {
         loggerManager.d("Eseguo login con cookie di google");
 
         Connection session = Jsoup.newSession()
                 .followRedirects(true)
                 .userAgent("Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.91 Mobile Safari/537.36");
 
+        //Inserisco tutti i cookie di Google presenti nella webview in session
+        String[] allCookiesRaw = CookieManager.getInstance().getCookie("https://accounts.google.com").split("; ");
+        for (String cookie : allCookiesRaw) {
+            session.cookie(cookie.split("=")[0], cookie.split("=")[1]);
+        }
+
         try {
             session.newRequest().url("https://registro.giua.edu.it/login/gsuite").get();
-            //String gsuiteCookie = session.cookieStore().get(new URI("https://registro.giua.edu.it"));
 
             return session.cookieStore().get(new URI("https://registro.giua.edu.it")).toString().split("=")[1].replace("]", "");
         } catch (IOException | URISyntaxException e) {
             loggerManager.e("Cookie google e cookie giua non più validi, impossibile continuare");
-            return "";
         } catch (Exception e) {
             logErrorInLoggerManager(e);
             sendErrorNotification(e.toString());
         }
 
-        return ""; //DELETEME
+        return "";
     }
 
     private void logErrorInLoggerManager(Exception e) {
         loggerManager.e("Messaggio: " + e.getMessage() + " Errore: " + e);
     }
-
-    ///////////////////////VECCHIO
-    private void checkNews() {
-        new Thread(() -> {
-            loggerManager.d("Servizio di background: controllo nuove cose");
-
-            try {
-
-                checkAndMakeLogin();
-                checkNewsAndSendNotifications();
-                AppData.saveNumberNotificationErrors(context, 0);
-
-            } catch (Exception e) {
-                loggerManager.e("Errore sconosciuto - " + e.getMessage());
-                for (int i = 0; i < e.getStackTrace().length; i++)
-                    loggerManager.e(e.getStackTrace()[i].toString());
-                if (SettingsData.getSettingBoolean(context, SettingKey.DEBUG_MODE)) {
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                            .setSmallIcon(R.drawable.ic_giuaschool_black)
-                            .setContentTitle("Si è verificato un errore")
-                            .setStyle(new NotificationCompat.BigTextStyle().bigText(e.toString()))
-                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-                    notificationManager.notify(12, builder.build());
-                }
-                if (e.getClass() == GiuaScraperExceptions.SessionCookieEmpty.class)
-                    loggerManager.e("Username utilizzato: " + gS.getUser());
-                int nErrors = AppData.getNumberNotificationErrors(context);
-                if (nErrors < 3 && e.getClass() != GiuaScraperExceptions.SiteConnectionProblems.class) {
-                    resetAlarm(900_000);
-                    AppData.saveNumberNotificationErrors(context, ++nErrors);
-                    return;
-                }
-            }
-
-            //Risetta l'allarme con un nuovo intervallo random
-            Random r = new Random(SystemClock.elapsedRealtime());
-            long interval = AlarmManager.INTERVAL_HOUR + r.nextInt(3_600_000);
-            resetAlarm(interval);
-            loggerManager.d("Risetto l'allarme con un nuovo intervallo random (" + (interval / 60_000) + " minuti)");
-            //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()+60000, 60000, pendingIntent);    //DEBUG
-        }).start();
-    }
-
-    private void resetAlarm(long interval) {
-        Intent iCheckNewsReceiver = new Intent(context, CheckNewsReceiver.class);
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, PendingIntent.FLAG_IMMUTABLE);
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME,
-                SystemClock.elapsedRealtime() + interval,
-                pendingIntent);
-    }
-
-    private void checkAndMakeLogin() {
-        String username = AppData.getActiveUsername(context);
-        String accountUrl = AccountData.getSiteUrl(context, username);
-        String defaultUrl = SettingsData.getSettingString(context, SettingKey.DEFAULT_URL);
-        if (accountUrl.equals("") && !defaultUrl.equals(""))
-            GiuaScraper.setSiteURL(defaultUrl);
-        else if (!accountUrl.equals(""))
-            GiuaScraper.setSiteURL(accountUrl);
-        loggerManager.d("Username letto: " + username);
-        if (!username.equals("gsuite")) {  //Se l'account non è di gsuite fai il login normale
-            loggerManager.d("Account non google rilevato, eseguo login");
-            createGsAndLogin(username);
-        } else {    //Se l'account è di gsuite fai il login con gsuite
-            try {
-                loggerManager.d("Account google rilevato, provo ad entrare con cookie precedente");
-                createGsAndLogin(username);
-            } catch (GiuaScraperExceptions.SessionCookieEmpty e) {
-                loggerManager.d("Cookie precedente non valido");
-                String cookie = getGsuiteCookie();
-                if (cookie.equals("")) return;
-                createGsAndLogin(username, cookie);
-            }
-        }
-    }
-
-    private void createGsAndLogin(String username) {
-        gS = new GiuaScraper(username, AccountData.getPassword(context, username), AccountData.getCookie(context, username), true, new LoggerManager("GiuaScraper", context));
-        gS.login();
-        AccountData.setCredentials(context, username, AccountData.getPassword(context, username), gS.getCookie(), AccountData.getUserType(context, username));
-    }
-
-    private void createGsAndLogin(String username, String cookie) {
-        gS = new GiuaScraper(username, AccountData.getPassword(context, username), cookie, true, new LoggerManager("GiuaScraper", context));
-        gS.login();
-        AccountData.setCredentials(context, username, AccountData.getPassword(context, username), gS.getCookie(), AccountData.getUserType(context, username));
-    }
-
-    private void checkNewsAndSendNotifications() throws IOException {
-        loggerManager.d("Controllo pagina home per le news");
-
-        int numberNewslettersOld = -1;
-        int numberNewsletters = -1;
-        int numberAlertsOld = -1;
-        int numberAlerts = -1;
-        int numberVotesOld = -1;
-        int numberVotes = -1;
-        int sumHomeworkTestsNotificated = 0;
-
-        //Se la notifica non può essere mandata non faccio nemmeno controllare i check
-        if (SettingsData.getSettingBoolean(context, SettingKey.NEWSLETTERS_NOTIFICATION)) {
-            numberNewslettersOld = AppData.getNumberNewslettersInt(context);
-            numberNewsletters = gS.getHomePage(false).getNumberNewsletters();
-            AppData.saveNumberNewslettersInt(context, numberNewsletters);
-        }
-        if (SettingsData.getSettingBoolean(context, SettingKey.ALERTS_NOTIFICATION)) {
-            numberAlertsOld = AppData.getNumberAlertsInt(context);
-            numberAlerts = gS.getHomePage(false).getNumberAlerts();
-            AppData.saveNumberAlertsInt(context, numberAlerts);
-        }
-        if (SettingsData.getSettingBoolean(context, SettingKey.VOTES_NOTIFICATION)) {
-            numberVotesOld = AppData.getNumberVotesInt(context);
-            Map<String, List<Vote>> votes = gS.getVotesPage(false).getAllVotes();
-            //Conto i voti
-            numberVotes = 0;
-            for (String subject : votes.keySet()) {
-                numberVotes += votes.get(subject).size();
-            }
-            AppData.saveNumberVotesInt(context, numberVotes);
-        }
-        if (SettingsData.getSettingBoolean(context, SettingKey.HOMEWORKS_NOTIFICATION) || SettingsData.getSettingBoolean(context, SettingKey.TESTS_NOTIFICATION)) {
-            sumHomeworkTestsNotificated = checkAndSendNotificationForAgenda();
-        }
-
-        if (numberNewslettersOld != -1 && numberNewsletters - numberNewslettersOld > 0) {
-            loggerManager.d("Trovate nuove circolari: " + (numberNewsletters - numberNewslettersOld));
-            Notification notification;
-            if (numberNewsletters - numberNewslettersOld == 1)
-                notification = createNotification("Nuova circolare", "Newsletters", 2);
-            else
-                notification = createNotification(numberNewsletters - numberNewslettersOld + " nuove circolari", "Newsletters", 2);
-
-            notificationManager.notify(10, notification);
-        }
-        if (numberAlertsOld != -1 && numberAlerts - numberAlertsOld - sumHomeworkTestsNotificated > 0) {
-            loggerManager.d("Trovati nuovi avvisi: " + (numberAlerts - numberAlertsOld));
-            Notification notification;
-            if (numberAlerts - numberAlertsOld - sumHomeworkTestsNotificated == 1)
-                notification = createNotification("Nuovo avviso", "Alerts", 3);
-            else
-                notification = createNotification(numberAlerts - numberAlertsOld + " nuovi avvisi", "Alerts", 3);
-
-            notificationManager.notify(11, notification);
-        }
-        if (numberVotesOld != -1 && numberVotes - numberVotesOld > 0) {
-            loggerManager.d("Trovati nuovi voti: " + (numberVotes - numberVotesOld));
-            Notification notification;
-            if (numberVotes - numberVotesOld == 1)
-                notification = createNotification("\u00c8 stato pubblicato un nuovo voto", "Votes", 4);
-            else
-                notification = createNotification("Sono stati pubblicati " + (numberVotes - numberVotesOld) + " nuovi voti", "Votes", 4);
-
-            notificationManager.notify(12, notification);
-        }
-    }
-
-    /**
-     * Controlla e invia le notifiche riguardanti compiti e verifiche.
-     *
-     * @return La somma dei compiti e delle verifiche notificate. Serve a non far notificare anche gli avvisi.
-     */
-    private int checkAndSendNotificationForAgenda() throws IOException {
-        loggerManager.d("Inizio a controllare gli avvisi per le notifiche di compiti e verifiche");
-        com.giua.utils.JsonParser jsonParser = new JsonParser();
-        boolean canSendHomeworkNotification = SettingsData.getSettingBoolean(context, SettingKey.HOMEWORKS_NOTIFICATION);
-        boolean canSendTestNotification = SettingsData.getSettingBoolean(context, SettingKey.TESTS_NOTIFICATION);
-        if (!canSendTestNotification && !canSendHomeworkNotification)
-            return 0;    //Se non puo inviare nessuna notifica lo blocco
-        loggerManager.d("Leggo il json per vedere gli avvisi dei compiti e delle verifiche già notificati");
-        AlertsPage alertsPage = gS.getAlertsPage(false);
-        File f = new File(context.getCacheDir() + "/alertsToNotify.json");
-        if (!f.exists()) {
-            createJsonNotificationFile(f, alertsPage);
-            return 0; //Return perchè andrebbe a notificare tutti i vecchi compiti
-        }
-        BufferedReader file = new BufferedReader(new FileReader(context.getCacheDir() + "/alertsToNotify.json"));
-        StringBuilder oldAlertsString = new StringBuilder();
-        String read = file.readLine();
-        if (read == null) {
-            createJsonNotificationFile(f, alertsPage);
-            return 0;
-        }
-        while (read != null) {
-            oldAlertsString.append(read);
-            read = file.readLine();
-        }
-        file.close();
-
-        loggerManager.d("Faccio il parsing del json");
-        //Lista con gli avvisi già notificati
-        List<Alert> oldAlerts;
-        if (oldAlertsString.toString().equals("")) {
-            loggerManager.w("oldAlertsString è vuoto");
-            oldAlerts = new Vector<>();
-        } else
-            oldAlerts = jsonParser.parseJsonForAlerts(oldAlertsString.toString());
-        //Lista degli avvisi da notificare
-        List<Alert> alertsToNotify = alertsPage.getAlertsToNotify(oldAlerts);
-        //Salva gli avvisi (compresi i nuovi) nel json
-        JsonBuilder jsonBuilder = new JsonBuilder(context.getCacheDir() + "/alertsToNotify.json", gS);
-        jsonBuilder.writeAlerts(alertsPage.getAllAlertsWithFilters(false, "per la materia"));
-        jsonBuilder.saveJson();
-
-        loggerManager.d("Conto i compiti e le verifiche da notificare");
-        int homeworkCounter = 0;    //Conta i compiti da notificare
-        int testCounter = 0;    //Conta le verifiche da notificare
-        List<String> homeworkDates = new Vector<>(40);  //Lista in cui ci sono tutte le date dei compiti da notificare
-        List<String> testDates = new Vector<>(40);   //Lista in cui ci sono tutte le date delle verifiche da notificare
-        List<String> homeworkSubjects = new Vector<>(40);    //Lista in cui ci sono tutte le materie dei compiti da notificare
-        List<String> testSubjects = new Vector<>(40);    //Lista in cui ci sono tutte le materie delle verifiche da notificare
-        for (Alert alert : alertsToNotify) {
-            if (alert.object.startsWith("C")) {
-                homeworkDates.add(alert.date);
-                homeworkSubjects.add(alert.object.split(" per la materia ")[1]);
-                homeworkCounter++;
-            } else if (alert.object.startsWith("V")) {
-                testDates.add(alert.date);
-                testSubjects.add(alert.object.split(" per la materia ")[1]);
-                testCounter++;
-            }
-        }
-        loggerManager.d("Preparo le notifiche");
-        StringBuilder homeworkNotificationText;
-        StringBuilder testNotificationText;
-        Notification homeworkNotification = null;
-        Notification testNotification = null;
-
-        Date today = new Date();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALY);
-
-        for (String date : homeworkDates) {
-            Date homeworkDate;
-            try {
-                homeworkDate = simpleDateFormat.parse(date);
-                if (today.after(homeworkDate)) {
-                    homeworkDates.remove(date);
-                    homeworkCounter--;
-                }
-            } catch (ParseException ignored) {
-            }
-        }
-
-        for (String date : testDates) {
-            Date testDate;
-            try {
-                testDate = simpleDateFormat.parse(date);
-                if (today.after(testDate)) {
-                    testDates.remove(date);
-                    testCounter--;
-                }
-            } catch (ParseException ignored) {
-            }
-        }
-
-        if (canSendHomeworkNotification && homeworkCounter > 0) {
-            String contentText;
-            contentText = "Clicca per andare all' agenda";
-
-            if (homeworkCounter == 1) {
-                homeworkNotificationText = new StringBuilder("È stato programmato un nuovo compito di " + homeworkSubjects.get(0) + " per il giorno " + homeworkDates.get(0));
-            } else {
-                homeworkNotificationText = new StringBuilder("Sono stati programmati nuovi compiti:\n");
-                for (int i = 0; i < homeworkCounter; i++) {
-                    homeworkNotificationText.append(homeworkSubjects.get(i));
-                    homeworkNotificationText.append(" - ");
-                    homeworkNotificationText.append(homeworkDates.get(i));
-                    if (i != homeworkCounter - 1)
-                        homeworkNotificationText.append("\n");
-                }
-            }
-            homeworkNotification = createNotificationForAgenda("Nuovi compiti", contentText, homeworkNotificationText.toString());
-        }
-
-        if (canSendTestNotification && testCounter > 0) {
-            String contentText;
-            contentText = "Clicca per andare all' agenda";
-
-            if (testCounter == 1) {
-                testNotificationText = new StringBuilder("È stata programmata una nuova verifica di " + testSubjects.get(0) + " per il giorno " + testDates.get(0));
-            } else {
-                testNotificationText = new StringBuilder("Sono state programmate nuove verifiche:\n");
-                for (int i = 0; i < testCounter; i++) {
-                    testNotificationText.append(testSubjects.get(i));
-                    testNotificationText.append(" - ");
-                    testNotificationText.append(testDates.get(i));
-                    if (i != testCounter - 1)
-                        testNotificationText.append("\n");
-                }
-            }
-            testNotification = createNotificationForAgenda("Nuove verifiche", contentText, testNotificationText.toString());
-        }
-
-        loggerManager.d("Invio le notifiche");
-        if (canSendHomeworkNotification && homeworkNotification != null)
-            notificationManager.notify(13, homeworkNotification);
-        if (canSendTestNotification && testNotification != null)
-            notificationManager.notify(14, testNotification);
-
-        return testCounter + homeworkCounter;
-    }
-
-    private void createJsonNotificationFile(File f, AlertsPage alertsPage) throws IOException {
-        FileWriter fileWriter = new FileWriter(f);
-        fileWriter.write("");
-        fileWriter.close();
-        JsonBuilder jsonBuilder = new JsonBuilder(context.getCacheDir() + "/alertsToNotify.json", gS);
-        jsonBuilder.writeAlerts(alertsPage.getAllAlertsWithFilters(false, "per la materia"));
-        jsonBuilder.saveJson();
-    }
-
-    private Notification createNotificationForAgenda(String title, String contentText, String bigText) {
-        Intent intent = new Intent(context, ActivityManager.class).putExtra("goTo", "Agenda").setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        return new NotificationCompat.Builder(context, "0")
-                .setContentIntent(PendingIntent.getActivity(context, 5, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE))
-                .setSmallIcon(R.drawable.ic_giuaschool_black)
-                .setContentTitle(title)
-                .setContentText(contentText)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText(bigText))
-                .build();
-    }
-
-    private Notification createNotification(String title, String goTo, int requestCode) {
-        Intent intent = new Intent(context, ActivityManager.class).putExtra("goTo", goTo).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        return new NotificationCompat.Builder(context, "0")
-                .setContentIntent(PendingIntent.getActivity(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE))
-                .setSmallIcon(R.drawable.ic_giuaschool_black)
-                .setContentTitle(title)
-                .setContentText("Clicca per avere più informazioni")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .build();
-    }
-
-
 }

@@ -39,6 +39,7 @@ import androidx.fragment.app.Fragment;
 import com.giua.app.ActivityManager;
 import com.giua.app.Analytics;
 import com.giua.app.AppData;
+import com.giua.app.AppNotificationsParams;
 import com.giua.app.AppUpdateManager;
 import com.giua.app.BuildConfig;
 import com.giua.app.CheckNewsReceiver;
@@ -124,13 +125,13 @@ public class DrawerActivity extends AppCompatActivity {
 
         if (goTo == null || goTo.equals(""))
             myFragmentManager.changeFragment(R.id.nav_home);
-        else if (goTo.equals("Newsletters"))
+        else if (goTo.equals(AppNotificationsParams.NEWSLETTERS_NOTIFICATION_GOTO))
             myFragmentManager.changeFragment(R.id.nav_newsletters);
-        else if (goTo.equals("Alerts"))
+        else if (goTo.equals(AppNotificationsParams.ALERTS_NOTIFICATION_GOTO))
             myFragmentManager.changeFragment(R.id.nav_alerts);
-        else if (goTo.equals("Votes"))
+        else if (goTo.equals(AppNotificationsParams.VOTES_NOTIFICATION_GOTO))
             myFragmentManager.changeFragment(R.id.nav_votes);
-        else if (goTo.equals("Agenda"))
+        else if (goTo.equals(AppNotificationsParams.AGENDA_NOTIFICATION_GOTO))
             myFragmentManager.changeFragment(R.id.nav_agenda);
         else
             myFragmentManager.changeFragment(R.id.nav_home);
