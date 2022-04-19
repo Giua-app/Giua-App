@@ -38,7 +38,7 @@ import androidx.preference.SwitchPreference;
 
 import com.giua.app.ActivityManager;
 import com.giua.app.AppData;
-import com.giua.app.CheckNewsReceiver;
+import com.giua.app.AppNotifications;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
@@ -266,9 +266,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private boolean swNotificationChangeListener(Preference preference, Object o) {
         SettingsData.saveSettingBoolean(requireActivity(), SettingKey.NOTIFICATION, (boolean) o);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent iCheckNewsReceiver = new Intent(context, CheckNewsReceiver.class);
-        boolean alarmUp = (PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE) != null);  //Controlla se l'allarme è già settato
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iCheckNewsReceiver, PendingIntent.FLAG_IMMUTABLE);
+        Intent iAppNotifications = new Intent(context, AppNotifications.class);
+        boolean alarmUp = (PendingIntent.getBroadcast(context, 0, iAppNotifications, PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE) != null);  //Controlla se l'allarme è già settato
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iAppNotifications, PendingIntent.FLAG_IMMUTABLE);
         loggerManager.d("L'allarme è già settato?: " + alarmUp);
 
         if ((boolean) o) {

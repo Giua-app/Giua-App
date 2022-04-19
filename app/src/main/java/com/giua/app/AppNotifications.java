@@ -19,11 +19,13 @@
 
 package com.giua.app;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.SystemClock;
 import android.webkit.CookieManager;
 
 import androidx.core.app.NotificationCompat;
@@ -40,8 +42,13 @@ import org.jsoup.Jsoup;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.Vector;
 
 //FIXME ?: Non supporta url diversi da quello del Giua per il login con Gsuite
@@ -66,7 +73,7 @@ public class AppNotifications extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         this.context = context;
 
-        loggerManager = new LoggerManager("CheckNewsReceiver", context);
+        loggerManager = new LoggerManager("AppNotifications", context);
         activeUsername = AppData.getActiveUsername(context);
         canSendNotifications = SettingsData.getSettingBoolean(context, SettingKey.NOTIFICATION);
 
@@ -86,7 +93,7 @@ public class AppNotifications extends BroadcastReceiver {
     }
 
     /**
-     * Controlla e invia le notifiche in base ai dati che riceve
+     * Controlla e invia le notifiche in base ai dati che riceve.<br>
      * NON è Thread-Safe
      */
     private void checkAndSendNotifications() {
@@ -98,29 +105,135 @@ public class AppNotifications extends BroadcastReceiver {
             return;
         }
 
-        //#region Controllo notifiche
+        //region Controllo notifiche
 
         if (canSendNotificationsVotes) checkNewsForVotes();
         if (canSendNotificationsAlerts) checkNewsForAlerts();
-        if (canSendNotificationsHomeworks) checkNewsForHomeworks();
-        if (canSendNotificationsTests) checkNewsForTests();
         if (canSendNotificationsNewsletters) checkNewsForNewsletters();
+        if (canSendNotificationsHomeworks | canSendNotificationsTests) checkNewsForAgenda();
 
-        //#endregion
+        //endregion
 
         offlineDB.close();
+
+        Random r = new Random(SystemClock.elapsedRealtime());
+        long interval = AlarmManager.INTERVAL_HOUR + r.nextInt(3_600_000);
+        resetAlarm(interval);
     }
 
-    private void checkNewsForTests() {
+    private void checkNewsForAgenda() {
+        List<Alert> allNewTestsHomeworks;   //Ci sono sia gli avvisi dei compiti sia delle verifiche
 
+        try {
+            allNewTestsHomeworks = gS.getAlertsPage(false).getAllAlertsWithFilters(false, "per la materia");
+        } catch (Exception e) {
+            loggerManager.w("Controllo delle VERIFICHE e dei COMPITI in background non riuscito: " + e + " " + e.getMessage());
+            return;
+        }
+
+        NotificationsDBController notificationsDBController = new NotificationsDBController(context);
+
+        List<Alert> allNewTests = new Vector<>(allNewTestsHomeworks.size());
+        List<Alert> allNewHomeworks = new Vector<>(allNewTestsHomeworks.size());
+
+        List<Alert> allOldTests = notificationsDBController.readAlertsTests();
+        List<Alert> allOldHomeworks = notificationsDBController.readAlertsHomeworks();
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALY);
+        Date today = new Date();
+
+        for (Alert alert : allNewTestsHomeworks) {
+            try {
+                //Se il compito o la verifica era per un giorno prima di oggi non notificarla
+                if (today.after(simpleDateFormat.parse(alert.date))) continue;
+            } catch (ParseException e) {
+                loggerManager.w("Controllando gli avvisi per i compiti e le verifiche ho trovato una data che non capisco: " + alert);
+                continue;
+            }
+
+            if (alert.object.startsWith("C"))
+                allNewHomeworks.add(alert);
+            else if (alert.object.startsWith("V")) {
+                allNewTests.add(alert);
+            } else
+                loggerManager.w("Durante il controllo dei nuovi avvisi per i compiti e le verifiche ho trovato un avviso che non è nessuno dei due: " + alert);
+        }
+
+        notificationsDBController.addAlertsTests(allNewTests);
+        notificationsDBController.addAlertsHomeworks(allNewHomeworks);
+
+        //region Compiti
+
+        if (canSendNotificationsHomeworks) {
+            allNewHomeworks.removeAll(allOldHomeworks);
+
+            if (allNewHomeworks.size() > 0)
+                notificationManager.notify(AppNotificationsParams.HOMEWORKS_NOTIFICATION_ID, createHomeworkNotification(allNewHomeworks));
+        }
+
+        //endregion
+
+        //region Verifiche
+
+        if (canSendNotificationsTests) {
+            allNewTests.removeAll(allOldTests);
+
+            if (allNewTests.size() > 0)
+                notificationManager.notify(AppNotificationsParams.TESTS_NOTIFICATION_ID, createTestsNotification(allNewTests));
+        }
+
+        //endregion
     }
 
+    private Notification createTestsNotification(List<Alert> allNewTests) {
+        String title;
+        String text = "Clicca per andare all'agenda";
+        String bigText = "";
+        int nNewTests = allNewTests.size();
 
-    private void checkNewsForHomeworks() {
+        for (Alert alert : allNewTests) {
+            String[] rawSubject = alert.object.split(" per la materia ");
 
+            if (rawSubject.length > 1) {
+                String subject = rawSubject[1];
+                bigText += subject + " - " + alert.date;
+            } else
+                loggerManager.w("Non ho trovato la materia nell'avviso delle verifiche: " + alert);
+        }
+
+        if (nNewTests > 1)
+            title = "Nuova verifica";
+        else
+            title = nNewTests + " nuove verifiche";
+
+        return createNotificationWithBigText(title, text, bigText, AppNotificationsParams.AGENDA_NOTIFICATION_GOTO);
     }
 
-    //#region Newsletters
+    private Notification createHomeworkNotification(List<Alert> allNewHomeworks) {
+        String title;
+        String text = "Clicca per andare all'agenda";
+        String bigText = "";
+        int nNewHomeworks = allNewHomeworks.size();
+
+        for (Alert alert : allNewHomeworks) {
+            String[] rawSubject = alert.object.split(" per la materia ");
+
+            if (rawSubject.length > 1) {
+                String subject = rawSubject[1];
+                bigText += subject + " - " + alert.date;
+            } else
+                loggerManager.w("Non o trovato la materia nell'avviso dei compiti: " + alert);
+        }
+
+        if (nNewHomeworks > 1)
+            title = "Nuovo compito";
+        else
+            title = nNewHomeworks + " nuovi compiti";
+
+        return createNotificationWithBigText(title, text, bigText, AppNotificationsParams.AGENDA_NOTIFICATION_GOTO);
+    }
+
+    //region Newsletters
 
     private void checkNewsForNewsletters() {
         List<Newsletter> allNewNewsletters;
@@ -128,7 +241,7 @@ public class AppNotifications extends BroadcastReceiver {
         try {
             allNewNewsletters = gS.getNewslettersPage(false).getAllNewsletters(1);
         } catch (Exception e) {
-            loggerManager.w("Controllo degli AVVISI in background non riuscito: " + e + " " + e.getMessage());
+            loggerManager.w("Controllo delle CIRCOLARI in background non riuscito: " + e + " " + e.getMessage());
             return;
         }
 
@@ -155,8 +268,8 @@ public class AppNotifications extends BroadcastReceiver {
         return createNotification(notificationTitle, AppNotificationsParams.NEWSLETTERS_NOTIFICATION_GOTO, AppNotificationsParams.NEWSLETTERS_NOTIFICATION_REQUEST_CODE);
     }
 
-    //#endregion
-    //#region Alerts
+    //endregion
+    //region Alerts
 
     private void checkNewsForAlerts() {
         List<Alert> allNewAlerts;
@@ -191,8 +304,8 @@ public class AppNotifications extends BroadcastReceiver {
         return createNotification(notificationTitle, AppNotificationsParams.ALERTS_NOTIFICATION_GOTO, AppNotificationsParams.ALERTS_NOTIFICATION_REQUEST_CODE);
     }
 
-    //#endregion
-    //#region Votes
+    //endregion
+    //region Votes
 
     private void checkNewsForVotes() {
         Map<String, List<Vote>> allNewVotes;
@@ -259,7 +372,7 @@ public class AppNotifications extends BroadcastReceiver {
         return createNotification(notificationTitle, notificationText, AppNotificationsParams.VOTES_NOTIFICATION_GOTO, AppNotificationsParams.VOTES_NOTIFICATION_REQUEST_CODE);
     }
 
-    //#endregion
+    //endregion
 
     private Notification createNotification(String title, String goTo, int requestCode) {
         Intent intent = new Intent(context, ActivityManager.class).putExtra("goTo", goTo).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -304,8 +417,7 @@ public class AppNotifications extends BroadcastReceiver {
         String siteUrl = AccountData.getSiteUrl(context, activeUsername);
         String defaultUrl = SettingsData.getSettingString(context, SettingKey.DEFAULT_URL);
 
-        if (siteUrl.equals(""))
-            GiuaScraper.setSiteURL(defaultUrl);  //siteUrl non impostato quindi usa defaultUrl
+        if (siteUrl.equals("")) GiuaScraper.setSiteURL(defaultUrl);  //siteUrl non impostato quindi usa defaultUrl
         else GiuaScraper.setSiteURL(siteUrl);
 
         gS = new GiuaScraper(activeUsername, password, cookie, true, loggerManager);
@@ -363,6 +475,15 @@ public class AppNotifications extends BroadcastReceiver {
         }
 
         return "";
+    }
+
+    private void resetAlarm(long interval) {
+        Intent iAppNotifications = new Intent(context, AppNotifications.class);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, iAppNotifications, PendingIntent.FLAG_IMMUTABLE);
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME,
+                SystemClock.elapsedRealtime() + interval,
+                pendingIntent);
     }
 
     private void logErrorInLoggerManager(Exception e) {

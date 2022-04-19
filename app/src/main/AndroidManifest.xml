@@ -147,7 +147,7 @@
             android:theme="@style/Theme.GiuaApp.NoActionBar" />
 
         <receiver
-            android:name=".CheckNewsReceiver"
+            android:name=".AppNotifications"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

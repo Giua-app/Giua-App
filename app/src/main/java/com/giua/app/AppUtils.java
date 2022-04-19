@@ -26,13 +26,6 @@ import android.view.inputmethod.InputMethodManager;
 
 public class AppUtils {
 
-    public static void ignoreException(Runnable runnable) {
-        try {
-            runnable.run();
-        } catch (Exception ignore) {
-        }
-    }
-
     public static int convertDpToPx(float dp, Context context) {
         //https://stackoverflow.com/questions/4605527/converting-pixels-to-dp
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());

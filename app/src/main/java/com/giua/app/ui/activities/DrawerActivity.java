@@ -39,10 +39,10 @@ import androidx.fragment.app.Fragment;
 import com.giua.app.ActivityManager;
 import com.giua.app.Analytics;
 import com.giua.app.AppData;
+import com.giua.app.AppNotifications;
 import com.giua.app.AppNotificationsParams;
 import com.giua.app.AppUpdateManager;
 import com.giua.app.BuildConfig;
-import com.giua.app.CheckNewsReceiver;
 import com.giua.app.GiuaScraperThread;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
@@ -136,7 +136,7 @@ public class DrawerActivity extends AppCompatActivity {
         else
             myFragmentManager.changeFragment(R.id.nav_home);
 
-        setupCheckNewsReceiver();
+        setupAppNotifications();
 
         getAndSetupUsernameUsertype();
 
@@ -154,11 +154,11 @@ public class DrawerActivity extends AppCompatActivity {
         checkForUpdateChangelog();
     }
 
-    private void setupCheckNewsReceiver() {
+    private void setupAppNotifications() {
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        Intent iCheckNewsReceiver = new Intent(this, CheckNewsReceiver.class);
-        boolean alarmUp = (PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE) != null);  //Controlla se l'allarme è già settato
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, iCheckNewsReceiver, PendingIntent.FLAG_IMMUTABLE);
+        Intent iAppNotifications = new Intent(this, AppNotifications.class);
+        boolean alarmUp = (PendingIntent.getBroadcast(this, 0, iAppNotifications, PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE) != null);  //Controlla se l'allarme è già settato
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, iAppNotifications, PendingIntent.FLAG_IMMUTABLE);
         loggerManager.d("L'allarme è già settato?: " + alarmUp);
         //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000, pendingIntent);    //DEBUG
         if (!alarmUp && !AppData.getActiveUsername(this).equals("") && SettingsData.getSettingBoolean(this, SettingKey.NOTIFICATION)) {
