@@ -58,6 +58,7 @@ public class AppNotifications extends BroadcastReceiver {
     private LoggerManager loggerManager;
     private GiuaScraper gS;
     private OfflineDBController offlineDB;
+    private NotificationsDBController notificationsDBController;
 
     private String activeUsername = "";
 
@@ -88,6 +89,7 @@ public class AppNotifications extends BroadcastReceiver {
 
         notificationManager = NotificationManagerCompat.from(context);
         offlineDB = new OfflineDBController(context);
+        notificationsDBController = new NotificationsDBController(context);
 
         new Thread(this::checkAndSendNotifications).start();
     }
@@ -115,9 +117,11 @@ public class AppNotifications extends BroadcastReceiver {
         //endregion
 
         offlineDB.close();
+        notificationsDBController.close();
 
         Random r = new Random(SystemClock.elapsedRealtime());
         long interval = AlarmManager.INTERVAL_HOUR + r.nextInt(3_600_000);
+        //long interval = 60_000; //DEBUG
         resetAlarm(interval);
     }
 
@@ -159,12 +163,12 @@ public class AppNotifications extends BroadcastReceiver {
                 loggerManager.w("Durante il controllo dei nuovi avvisi per i compiti e le verifiche ho trovato un avviso che non è nessuno dei due: " + alert);
         }
 
-        notificationsDBController.addAlertsTests(allNewTests);
-        notificationsDBController.addAlertsHomeworks(allNewHomeworks);
+        notificationsDBController.replaceAlertsTests(allNewTests);
+        notificationsDBController.replaceAlertsHomeworks(allNewHomeworks);
 
         //region Compiti
 
-        if (canSendNotificationsHomeworks) {
+        if (canSendNotificationsHomeworks && allOldHomeworks.size() != 0) {
             allNewHomeworks.removeAll(allOldHomeworks);
 
             if (allNewHomeworks.size() > 0)
@@ -175,7 +179,7 @@ public class AppNotifications extends BroadcastReceiver {
 
         //region Verifiche
 
-        if (canSendNotificationsTests) {
+        if (canSendNotificationsTests && allOldTests.size() == 0) {
             allNewTests.removeAll(allOldTests);
 
             if (allNewTests.size() > 0)
@@ -245,12 +249,12 @@ public class AppNotifications extends BroadcastReceiver {
             return;
         }
 
-        List<Alert> allOldNewsletters = new Vector<>();//offlineDB.readNewsletters(); FIXME
-        //offlineDB.addNewsletters(allNewAlerts);
+        List<Newsletter> allOldNewsletters = notificationsDBController.readNewsletters();
+        notificationsDBController.replaceNewsletters(allNewNewsletters);
 
         allNewNewsletters.removeAll(allOldNewsletters);   //Rimuovo gli avvisi vecchi da quelli nuovi
 
-        if (allNewNewsletters.size() == 0) return;
+        if (allNewNewsletters.size() == 0 || allOldNewsletters.size() == 0) return;
 
         notificationManager.notify(AppNotificationsParams.NEWSLETTERS_NOTIFICATION_ID, createNewslettersNotification(allNewNewsletters));
     }
@@ -281,12 +285,12 @@ public class AppNotifications extends BroadcastReceiver {
             return;
         }
 
-        List<Alert> allOldAlerts = offlineDB.readAlerts();
-        offlineDB.addAlerts(allNewAlerts);
+        List<Alert> allOldAlerts = notificationsDBController.readAlerts();
+        notificationsDBController.replaceAlerts(allNewAlerts);
 
         allNewAlerts.removeAll(allOldAlerts);   //Rimuovo gli avvisi vecchi da quelli nuovi
 
-        if (allNewAlerts.size() == 0) return;
+        if (allNewAlerts.size() == 0 || allOldAlerts.size() == 0) return;
 
         notificationManager.notify(AppNotificationsParams.ALERTS_NOTIFICATION_ID, createAlertsNotification(allNewAlerts));
     }
@@ -320,9 +324,9 @@ public class AppNotifications extends BroadcastReceiver {
             return;
         }
 
-        Map<String, List<Vote>> allOldVotes = offlineDB.readVotes();
+        Map<String, List<Vote>> allOldVotes = notificationsDBController.readVotes();
 
-        offlineDB.addVotes(allNewVotes);
+        notificationsDBController.replaceVotes(allNewVotes);
 
         for (String subject : allNewVotes.keySet()) {
             if (allOldVotes.get(subject) == null) continue;
@@ -340,7 +344,7 @@ public class AppNotifications extends BroadcastReceiver {
             notifiedSubjects.add(subject);
         }
 
-        if (notifiedVotesCounter == 0 || notifiedSubjects.size() == 0) return;
+        if (notifiedVotesCounter == 0 || notifiedSubjects.size() == 0 || allOldVotes.size() == 0) return;
 
         Notification notification = createVotesNotification(notifiedSubjects, notifiedVotesCounter);
         notificationManager.notify(AppNotificationsParams.VOTES_NOTIFICATION_ID, notification);
