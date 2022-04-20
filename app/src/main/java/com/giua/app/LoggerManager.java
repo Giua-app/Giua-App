@@ -22,6 +22,9 @@ package com.giua.app;
 import android.annotation.SuppressLint;
 import android.content.Context;
 
+import java.util.Calendar;
+import java.util.Date;
+
 public class LoggerManager extends com.giua.utils.LoggerManager {
     Context context;
 
@@ -45,20 +48,24 @@ public class LoggerManager extends com.giua.utils.LoggerManager {
     public void cleanupLogs(){
         String old = AppData.getLogsString(context);
         parseLogsFrom(old);
-        d("Pulizia di " + logs.size() + " log in corso... ");
+
         int total = logs.size();
 
         if(logs.size() > 6_000)
-            logs = logs.subList(0, 6_000);
+            logs = logs.subList(0, 6_000); //sottrai 6000 elementi
 
-        d("Pulizia completata. Ho cancellato " + (total-logs.size()) + " logs! " +
-                "Totale corrente: " + logs.size());
+        Date now = Calendar.getInstance().getTime();
+        Log log = new Log(tag, "WARNING", now, "Pulizia completata. Ho cancellato " +
+                (total-logs.size()) + " logs! " + "Totale corrente: " + logs.size());
 
-        String logsString = "";
-        for (Log log : logs) { //conversione log per il salvataggio
-            logsString += log.toString();
+
+        StringBuilder logsString = new StringBuilder();
+        logsString.append(log); //inserisci log della pulizia
+
+        for (Log log2 : logs) { //conversione log per il salvataggio
+            logsString.append(log2.toString());
         }
 
-        AppData.saveLogsString(context, logsString);
+        AppData.saveLogsString(context, logsString.toString());
     }
 }
