@@ -42,7 +42,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
 
     private final Context context;
     private final LoggerManager lm;
-    private finale SQLiteDatabase db;
+    private final SQLiteDatabase db;
 
     //!!!
     //FIXME: USARE SQLiteDatabase.releaseMemory() DOVE L'APP VA IN BACKGROUND O ALTRO
