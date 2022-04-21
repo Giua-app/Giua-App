@@ -127,7 +127,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
 
     public void addAlerts(List<Alert> alerts) {
         for (Alert alert : alerts) {
-            addAlert(alert, db);
+            addAlert(alert);
         }
 
     }
@@ -324,7 +324,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
 
     public void addAlertsTests(List<Alert> alerts) {
         for (Alert alert : alerts) {
-            addAlertTest(alert, db);
+            addAlertTest(alert);
         }
 
     }
@@ -454,7 +454,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
 
     public void addVotes(Map<String, List<Vote>> votes){
         for (String m : votes.keySet()) {
-            addSubject(m, votes.get(m), db);
+            addSubject(m, votes.get(m));
         }
     }
 
@@ -617,7 +617,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     //endregion
 
     public static class AlertsTable {
-        public static void createTable(SQLiteDatabase dB) {
+        public static void createTable(SQLiteDatabase db) {
             String query = "CREATE TABLE " + ALERTS_TABLE + " ("
                     + DBAlert.STATUS_COL + " TEXT, "
                     + DBAlert.DATE_COL + " TEXT,"
@@ -637,7 +637,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
 
     public static class AlertsHomeworksTable {
-        public static void createTable(SQLiteDatabase dB) {
+        public static void createTable(SQLiteDatabase db) {
             String query = "CREATE TABLE " + ALERTS_HOMEWORKS_TABLE + " ("
                     + DBAlertHomeworks.STATUS_COL + " TEXT, "
                     + DBAlertHomeworks.DATE_COL + " TEXT,"
@@ -657,7 +657,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
 
     public static class VotesTable {
-        public static void createTable(SQLiteDatabase dB) {
+        public static void createTable(SQLiteDatabase db) {
             String query8 = "CREATE TABLE " + VOTES_TABLE + " ("
                     + DBVote.VALUE_COL.name + " TEXT,"
                     + DBVote.DATE_COL.name + " TEXT,"
@@ -673,7 +673,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
 
     public static class NewslettersTable {
-        public static void createTable(SQLiteDatabase dB) {
+        public static void createTable(SQLiteDatabase db) {
             String query = "CREATE TABLE " + NEWSLETTERS_TABLE + " ("
                     + DBNewsletter.STATUS_COL.name + " TEXT,"
                     + DBNewsletter.NUMBER_COL.name + " INTEGER,"
@@ -687,7 +687,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
 
     public static class AlertsTestsTable {
-        public static void createTable(SQLiteDatabase dB) {
+        public static void createTable(SQLiteDatabase db) {
             String query = "CREATE TABLE " + ALERTS_TESTS_TABLE + " ("
                     + DBAlertTests.STATUS_COL + " TEXT, "
                     + DBAlertTests.DATE_COL + " TEXT,"
