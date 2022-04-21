@@ -73,11 +73,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         lm.d("Creazione database in corso...");
 
-        AlertsTestsTable.createTable(db);
-        AlertsHomeworksTable.createTable(db);
-        VotesTable.createTable(db);
-        NewslettersTable.createTable(db);
-        AlertsTable.createTable(db);
+        createTables(db);
     }
 
     @Override
@@ -89,12 +85,41 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + VOTES_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + NEWSLETTERS_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + ALERTS_TABLE);
-        onCreate(db);
+
+        createTables(db);
+    }
+
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        lm.w("Aggiornamento database rilevato (" + oldVersion + " -> " + newVersion + "). " +
+                "Impossibile convertire database, cancello e ne ricreo uno nuovo");
+        db.execSQL("DROP TABLE IF EXISTS " + ALERTS_TESTS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + ALERTS_HOMEWORKS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + VOTES_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + NEWSLETTERS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + ALERTS_TABLE);
+
+        createTables(db);
+    }
+
+    private void createTables(SQLiteDatabase db) {
+        AlertsTestsTable.createTable(db);
+        AlertsHomeworksTable.createTable(db);
+        VotesTable.createTable(db);
+        NewslettersTable.createTable(db);
+        AlertsTable.createTable(db);
     }
 
 
-    //region DB Alert
-    private void addAlert(Alert alert) {
+    //region DBAlerts
+
+    public void addAlerts(List<Alert> alerts) {
+        for (Alert alert : alerts) {
+            addAlert(alert);
+        }
+    }
+
+    private long addAlert(Alert alert) {
         ContentValues values = new ContentValues();
 
         values.put(DBAlert.STATUS_COL.name, alert.status);
@@ -117,19 +142,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         values.put(DBAlert.ATTACHMENT_URLS_COL.name, attachmentUrls);
         values.put(DBAlert.IS_DETAILED_COL.name, alert.isDetailed ? 1 : 0); //false = 0, true = 1
 
-        String[] a = alert.detailsUrl.split("/");
-        int id = Integer.parseInt(a[a.length - 1]);
-
-        values.put(DBAlert.ALERT_ID.name, id);
-
-        db.insert(ALERTS_TABLE, null, values);
-    }
-
-    public void addAlerts(List<Alert> alerts) {
-        for (Alert alert : alerts) {
-            addAlert(alert);
-        }
-
+        return db.insertOrThrow(ALERTS_TABLE, null, values);
     }
 
     public void replaceAlerts(List<Alert> alerts) {
@@ -142,7 +155,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
 
     public List<Alert> readAlerts() {
-        Cursor cursor = db.rawQuery("SELECT * FROM " + ALERTS_TABLE + " ORDER BY " + DBAlert.ALERT_ID + " DESC", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + ALERTS_TABLE, null);
 
         List<Alert> alerts = new Vector<>();
 
@@ -185,7 +198,20 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         return alerts;
     }
 
-    //region DB Alerts Homeworks
+    public void addAlertsHomeworks(List<Alert> alerts) {
+        for (Alert alert : alerts) {
+            addAlertHomework(alert);
+        }
+    }
+
+    //endregion
+
+    //region DBAlertsHomeworks
+
+    public void deleteAlertsHomeworks() {
+        db.execSQL("DELETE FROM " + ALERTS_HOMEWORKS_TABLE + ";");
+    }
+
     private long addAlertHomework(Alert alert) {
         ContentValues values = new ContentValues();
 
@@ -209,24 +235,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         values.put(DBAlertHomeworks.ATTACHMENT_URLS_COL.name, attachmentUrls);
         values.put(DBAlertHomeworks.IS_DETAILED_COL.name, alert.isDetailed ? 1 : 0); //false = 0, true = 1
 
-        String[] a = alert.detailsUrl.split("/");
-        int id = Integer.parseInt(a[a.length - 1]);
-
-        values.put(DBAlertHomeworks.ALERT_ID.name, id);
-
         return db.insert(ALERTS_HOMEWORKS_TABLE, null, values);
-    }
-
-    //endregion
-
-    public void deleteAlertsHomeworks() {
-        db.execSQL("DELETE FROM " + ALERTS_HOMEWORKS_TABLE + ";");
-    }
-
-    public void addAlertsHomeworks(List<Alert> alerts) {        
-        for (Alert alert : alerts) {
-            addAlertHomework(alert);
-        }
     }
 
     public void replaceAlertsHomeworks(List<Alert> alerts) {
@@ -234,39 +243,8 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         addAlertsHomeworks(alerts);
     }
 
-    private long addAlertTest(Alert alert) {
-        ContentValues values = new ContentValues();
-
-        values.put(DBAlertTests.STATUS_COL.name, alert.status);
-        values.put(DBAlertTests.DATE_COL.name, alert.date);
-        values.put(DBAlertTests.RECEIVERS_COL.name, alert.receivers);
-        values.put(DBAlertTests.OBJECT_COL.name, alert.object);
-        values.put(DBAlertTests.PAGE_COL.name, alert.page);
-        values.put(DBAlertTests.DETAILS_URL_COL.name, alert.detailsUrl);
-        values.put(DBAlertTests.DETAILS_COL.name, alert.details);
-        values.put(DBAlertTests.CREATOR_COL.name, alert.creator);
-        values.put(DBAlertTests.TYPE_COL.name, alert.type);
-
-        //Non si può memorizzare una lista su sql
-        String attachmentUrls = null;
-        if (alert.attachmentUrls != null) {
-            for (String url : alert.attachmentUrls) {
-                attachmentUrls += url + ";";
-            }
-        }
-        values.put(DBAlertTests.ATTACHMENT_URLS_COL.name, attachmentUrls);
-        values.put(DBAlertTests.IS_DETAILED_COL.name, alert.isDetailed ? 1 : 0); //false = 0, true = 1
-
-        String[] a = alert.detailsUrl.split("/");
-        int id = Integer.parseInt(a[a.length - 1]);
-
-        values.put(DBAlertTests.ALERT_ID.name, id);
-
-        return db.insert(ALERTS_TESTS_TABLE, null, values);
-    }
-
     public List<Alert> readAlertsHomeworks() {
-        Cursor cursor = db.rawQuery("SELECT * FROM " + ALERTS_HOMEWORKS_TABLE + " ORDER BY " + DBAlertHomeworks.ALERT_ID + " DESC", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + ALERTS_HOMEWORKS_TABLE, null);
 
         List<Alert> alerts = new Vector<>();
 
@@ -309,38 +287,53 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         return alerts;
     }
 
-    public void deleteAlertsTests() {
-        db.execSQL("DELETE FROM " + ALERTS_TESTS_TABLE + ";");
+    public void addAlertsTests(List<Alert> alerts) {
+        for (Alert alert : alerts) {
+            addAlertTest(alert);
+        }
+    }
+
+    private long addAlertTest(Alert alert) {
+        ContentValues values = new ContentValues();
+
+        values.put(DBAlertTests.STATUS_COL.name, alert.status);
+        values.put(DBAlertTests.DATE_COL.name, alert.date);
+        values.put(DBAlertTests.RECEIVERS_COL.name, alert.receivers);
+        values.put(DBAlertTests.OBJECT_COL.name, alert.object);
+        values.put(DBAlertTests.PAGE_COL.name, alert.page);
+        values.put(DBAlertTests.DETAILS_URL_COL.name, alert.detailsUrl);
+        values.put(DBAlertTests.DETAILS_COL.name, alert.details);
+        values.put(DBAlertTests.CREATOR_COL.name, alert.creator);
+        values.put(DBAlertTests.TYPE_COL.name, alert.type);
+
+        //Non si può memorizzare una lista su sql
+        String attachmentUrls = null;
+        if (alert.attachmentUrls != null) {
+            for (String url : alert.attachmentUrls) {
+                attachmentUrls += url + ";";
+            }
+        }
+        values.put(DBAlertTests.ATTACHMENT_URLS_COL.name, attachmentUrls);
+        values.put(DBAlertTests.IS_DETAILED_COL.name, alert.isDetailed ? 1 : 0); //false = 0, true = 1
+
+        return db.insert(ALERTS_TESTS_TABLE, null, values);
     }
 
     //endregion
 
-    //region DB Alerts Tests
+    //region DBAlertsTests
 
     public void replaceAlertsTests(List<Alert> alerts) {
         deleteAlertsTests();
         addAlertsTests(alerts);
     }
 
-    public void addAlertsTests(List<Alert> alerts) {
-        for (Alert alert : alerts) {
-            addAlertTest(alert);
-        }
-
-    }
-
-    public void replaceVotes(Map<String, List<Vote>> votes) {
-        deleteVotes();
-        addVotes(votes);
-    }
-
-    public void replaceNewsletters(List<Newsletter> newsletters) {
-        deleteNewsletters();
-        addNewsletters(newsletters);
+    public void deleteAlertsTests() {
+        db.execSQL("DELETE FROM " + ALERTS_TESTS_TABLE + ";");
     }
 
     public List<Alert> readAlertsTests() {
-        Cursor cursor = db.rawQuery("SELECT * FROM " + ALERTS_TESTS_TABLE + " ORDER BY " + DBAlertTests.ALERT_ID + " DESC", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + ALERTS_TESTS_TABLE, null);
 
         List<Alert> alerts = new Vector<>();
 
@@ -383,14 +376,32 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         return alerts;
     }
 
+    public void addVotes(Map<String, List<Vote>> votes) {
+        for (String m : votes.keySet()) {
+            addSubject(m, votes.get(m));
+        }
+    }
+
+    public void replaceVotes(Map<String, List<Vote>> votes) {
+        deleteVotes();
+        addVotes(votes);
+    }
+
+    public void deleteVotes() {
+        db.execSQL("DELETE FROM " + VOTES_TABLE + ";");
+    }
+    //endregion
+
+    //region DBVotes
+
     private long addNewsletter(Newsletter newsletter) {
         ContentValues values = new ContentValues();
 
         values.put(DBNewsletter.STATUS_COL.name, newsletter.getStatus());
-        values.put(DBNewsletter.NUMBER_COL.name, newsletter.date);
-        values.put(DBNewsletter.DATE_COL.name, newsletter.object);
-        values.put(DBNewsletter.OBJECT_COL.name, newsletter.detailsUrl);
-        values.put(DBNewsletter.DETAILS_URL_COL.name, newsletter.number);
+        values.put(DBNewsletter.NUMBER_COL.name, newsletter.number);
+        values.put(DBNewsletter.DATE_COL.name, newsletter.date);
+        values.put(DBNewsletter.OBJECT_COL.name, newsletter.object);
+        values.put(DBNewsletter.DETAILS_URL_COL.name, newsletter.detailsUrl);
 
         //Non si può memorizzare una lista su sql
         String attachmentUrls = null;
@@ -399,39 +410,11 @@ public class NotificationsDBController extends SQLiteOpenHelper {
                 attachmentUrls += url + ";";
             }
         }
-        values.put(DBNewsletter.ATTACHMENTS_URL_COL.name, attachmentUrls);
 
+        values.put(DBNewsletter.ATTACHMENTS_URL_COL.name, attachmentUrls);
         values.put(DBNewsletter.PAGE_COL.name, newsletter.page);
 
-        return db.insert(VOTES_TABLE, null, values);
-    }
-    //endregion
-
-    //region DBVote
-
-    public void deleteVotes() {
-        db.execSQL("DELETE FROM " + VOTES_TABLE + ";");
-    }
-
-    private enum DBAlert {
-        STATUS_COL("status"),
-        DATE_COL("date"),
-        RECEIVERS_COL("receivers"),
-        OBJECT_COL("object"),
-        PAGE_COL("page"),
-        DETAILS_URL_COL("detailsUrl"),
-        DETAILS_COL("details"),
-        CREATOR_COL("creator"),
-        TYPE_COL("type"),
-        ATTACHMENT_URLS_COL("attachmentUrls"),
-        IS_DETAILED_COL("isDetailed"),
-        ALERT_ID("id");
-
-        private final String name;
-
-        DBAlert(String name) {
-            this.name = name;
-        }
+        return db.insert(NEWSLETTERS_TABLE, null, values);
     }
 
     private void addSubject(String subject, List<Vote> votes){
@@ -452,10 +435,13 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         }
     }
 
-    public void addVotes(Map<String, List<Vote>> votes){
-        for (String m : votes.keySet()) {
-            addSubject(m, votes.get(m));
-        }
+    public void replaceNewsletters(List<Newsletter> newsletters) {
+        deleteNewsletters();
+        addNewsletters(newsletters);
+    }
+
+    public void deleteNewsletters() {
+        db.execSQL("DELETE FROM " + NEWSLETTERS_TABLE + ";");
     }
 
     public Map<String, List<Vote>> readVotes() {
@@ -515,9 +501,32 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
     //endregion
 
-    //region DBNewsletter
-    public void deleteNewsletters() {
-        db.execSQL("DELETE FROM " + NEWSLETTERS_TABLE + ";");
+    //region DBNewsletters
+
+    public void addNewsletters(List<Newsletter> newsletters) {
+        for (Newsletter n : newsletters) {
+            addNewsletter(n);
+        }
+    }
+
+    private enum DBAlert {
+        STATUS_COL("status"),
+        DATE_COL("date"),
+        RECEIVERS_COL("receivers"),
+        OBJECT_COL("object"),
+        PAGE_COL("page"),
+        DETAILS_URL_COL("detailsUrl"),
+        DETAILS_COL("details"),
+        CREATOR_COL("creator"),
+        TYPE_COL("type"),
+        ATTACHMENT_URLS_COL("attachmentUrls"),
+        IS_DETAILED_COL("isDetailed");
+
+        private final String name;
+
+        DBAlert(String name) {
+            this.name = name;
+        }
     }
 
     private enum DBAlertHomeworks {
@@ -531,8 +540,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         CREATOR_COL("creator"),
         TYPE_COL("type"),
         ATTACHMENT_URLS_COL("attachmentUrls"),
-        IS_DETAILED_COL("isDetailed"),
-        ALERT_ID("id");
+        IS_DETAILED_COL("isDetailed");
 
         private final String name;
 
@@ -552,8 +560,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         CREATOR_COL("creator"),
         TYPE_COL("type"),
         ATTACHMENT_URLS_COL("attachmentUrls"),
-        IS_DETAILED_COL("isDetailed"),
-        ALERT_ID("id");
+        IS_DETAILED_COL("isDetailed");
 
         private final String name;
 
@@ -562,14 +569,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         }
     }
 
-    public void addNewsletters(List<Newsletter> newsletters) {
-        for (Newsletter n : newsletters) {
-            addNewsletter(n);
-        }
-    }
-
     public List<Newsletter> readNewsletters() {
-
         Cursor cursor = db.rawQuery("SELECT * FROM " + NEWSLETTERS_TABLE, null);
 
         List<Newsletter> newsletters = new Vector<>();
@@ -619,18 +619,17 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     public static class AlertsTable {
         public static void createTable(SQLiteDatabase db) {
             String query = "CREATE TABLE " + ALERTS_TABLE + " ("
-                    + DBAlert.STATUS_COL + " TEXT, "
-                    + DBAlert.DATE_COL + " TEXT,"
-                    + DBAlert.RECEIVERS_COL + " TEXT,"
-                    + DBAlert.OBJECT_COL + " TEXT,"
-                    + DBAlert.PAGE_COL + " INTEGER,"
-                    + DBAlert.DETAILS_URL_COL + " TEXT,"
-                    + DBAlert.DETAILS_COL + " TEXT,"
-                    + DBAlert.CREATOR_COL + " TEXT,"
-                    + DBAlert.TYPE_COL + " TEXT,"
-                    + DBAlert.ATTACHMENT_URLS_COL + " TEXT,"
-                    + DBAlert.IS_DETAILED_COL + " BOOLEAN,"
-                    + DBAlert.ALERT_ID + " INTEGER" + ")";
+                    + DBAlert.STATUS_COL.name + " TEXT,"
+                    + DBAlert.DATE_COL.name + " TEXT,"
+                    + DBAlert.RECEIVERS_COL.name + " TEXT,"
+                    + DBAlert.OBJECT_COL.name + " TEXT,"
+                    + DBAlert.PAGE_COL.name + " INTEGER,"
+                    + DBAlert.DETAILS_URL_COL.name + " TEXT,"
+                    + DBAlert.DETAILS_COL.name + " TEXT,"
+                    + DBAlert.CREATOR_COL.name + " TEXT,"
+                    + DBAlert.TYPE_COL.name + " TEXT,"
+                    + DBAlert.ATTACHMENT_URLS_COL.name + " TEXT,"
+                    + DBAlert.IS_DETAILED_COL.name + " BOOLEAN" + ")";
 
             db.execSQL(query);
         }
@@ -639,18 +638,17 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     public static class AlertsHomeworksTable {
         public static void createTable(SQLiteDatabase db) {
             String query = "CREATE TABLE " + ALERTS_HOMEWORKS_TABLE + " ("
-                    + DBAlertHomeworks.STATUS_COL + " TEXT, "
-                    + DBAlertHomeworks.DATE_COL + " TEXT,"
-                    + DBAlertHomeworks.RECEIVERS_COL + " TEXT,"
-                    + DBAlertHomeworks.OBJECT_COL + " TEXT,"
-                    + DBAlertHomeworks.PAGE_COL + " INTEGER,"
-                    + DBAlertHomeworks.DETAILS_URL_COL + " TEXT,"
-                    + DBAlertHomeworks.DETAILS_COL + " TEXT,"
-                    + DBAlertHomeworks.CREATOR_COL + " TEXT,"
-                    + DBAlertHomeworks.TYPE_COL + " TEXT,"
-                    + DBAlertHomeworks.ATTACHMENT_URLS_COL + " TEXT,"
-                    + DBAlertHomeworks.IS_DETAILED_COL + " BOOLEAN,"
-                    + DBAlertHomeworks.ALERT_ID + " INTEGER" + ")";
+                    + DBAlertHomeworks.STATUS_COL.name + " TEXT,"
+                    + DBAlertHomeworks.DATE_COL.name + " TEXT,"
+                    + DBAlertHomeworks.RECEIVERS_COL.name + " TEXT,"
+                    + DBAlertHomeworks.OBJECT_COL.name + " TEXT,"
+                    + DBAlertHomeworks.PAGE_COL.name + " INTEGER,"
+                    + DBAlertHomeworks.DETAILS_URL_COL.name + " TEXT,"
+                    + DBAlertHomeworks.DETAILS_COL.name + " TEXT,"
+                    + DBAlertHomeworks.CREATOR_COL.name + " TEXT,"
+                    + DBAlertHomeworks.TYPE_COL.name + " TEXT,"
+                    + DBAlertHomeworks.ATTACHMENT_URLS_COL.name + " TEXT,"
+                    + DBAlertHomeworks.IS_DETAILED_COL.name + " BOOLEAN" + ")";
 
             db.execSQL(query);
         }
@@ -658,7 +656,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
 
     public static class VotesTable {
         public static void createTable(SQLiteDatabase db) {
-            String query8 = "CREATE TABLE " + VOTES_TABLE + " ("
+            String query = "CREATE TABLE " + VOTES_TABLE + " ("
                     + DBVote.VALUE_COL.name + " TEXT,"
                     + DBVote.DATE_COL.name + " TEXT,"
                     + DBVote.TEST_TYPE_COL.name + " TEXT,"
@@ -668,7 +666,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
                     + DBVote.IS_ASTERISK_COL.name + " BOOLEAN,"
                     + DBVote.IS_RELEVANT_FOR_MEAN_COL.name + " BOOLEAN,"
                     + DBVote.SUBJECT.name + " TEXT" + ")";
-            db.execSQL(query8);
+            db.execSQL(query);
         }
     }
 
@@ -689,18 +687,17 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     public static class AlertsTestsTable {
         public static void createTable(SQLiteDatabase db) {
             String query = "CREATE TABLE " + ALERTS_TESTS_TABLE + " ("
-                    + DBAlertTests.STATUS_COL + " TEXT, "
-                    + DBAlertTests.DATE_COL + " TEXT,"
-                    + DBAlertTests.RECEIVERS_COL + " TEXT,"
-                    + DBAlertTests.OBJECT_COL + " TEXT,"
-                    + DBAlertTests.PAGE_COL + " INTEGER,"
-                    + DBAlertTests.DETAILS_URL_COL + " TEXT,"
-                    + DBAlertTests.DETAILS_COL + " TEXT,"
-                    + DBAlertTests.CREATOR_COL + " TEXT,"
-                    + DBAlertTests.TYPE_COL + " TEXT,"
-                    + DBAlertTests.ATTACHMENT_URLS_COL + " TEXT,"
-                    + DBAlertTests.IS_DETAILED_COL + " BOOLEAN,"
-                    + DBAlertTests.ALERT_ID + " INTEGER" + ")";
+                    + DBAlertTests.STATUS_COL.name + " TEXT,"
+                    + DBAlertTests.DATE_COL.name + " TEXT,"
+                    + DBAlertTests.RECEIVERS_COL.name + " TEXT,"
+                    + DBAlertTests.OBJECT_COL.name + " TEXT,"
+                    + DBAlertTests.PAGE_COL.name + " INTEGER,"
+                    + DBAlertTests.DETAILS_URL_COL.name + " TEXT,"
+                    + DBAlertTests.DETAILS_COL.name + " TEXT,"
+                    + DBAlertTests.CREATOR_COL.name + " TEXT,"
+                    + DBAlertTests.TYPE_COL.name + " TEXT,"
+                    + DBAlertTests.ATTACHMENT_URLS_COL.name + " TEXT,"
+                    + DBAlertTests.IS_DETAILED_COL.name + " BOOLEAN" + ")";
 
             db.execSQL(query);
         }

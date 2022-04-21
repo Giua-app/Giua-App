@@ -43,10 +43,13 @@ public class AppNotificationsParams {
     public static final String VOTES_NOTIFICATION_GOTO = "Votes";
 
     public static final int TESTS_NOTIFICATION_ID = 13;
+    public static final int TESTS_NOTIFICATION_REQUEST_CODE = 4;
 
     public static final int HOMEWORKS_NOTIFICATION_ID = 14;
+    public static final int HOMEWORKS_NOTIFICATION_REQUEST_CODE = 4;
 
-    public static final int AGENDA_NOTIFICATION_REQUEST_CODE = 4;
     public static final String AGENDA_NOTIFICATION_GOTO = "Agenda";
+
+    public static final int DEBUG_NOTIFICATION_ID = 15;
 
 }

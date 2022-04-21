@@ -52,6 +52,7 @@ import java.util.Random;
 import java.util.Vector;
 
 //FIXME ?: Non supporta url diversi da quello del Giua per il login con Gsuite
+//FIXME: tutti i controlli allOld*.size() == 0 bisogna sostituirli con qualcos'altro altrimenti le prime circolari, avvisi, ecc non verranno mai notificati
 public class AppNotifications extends BroadcastReceiver {
     private Context context;
     private NotificationManagerCompat notificationManager;
@@ -99,6 +100,8 @@ public class AppNotifications extends BroadcastReceiver {
      * NON è Thread-Safe
      */
     private void checkAndSendNotifications() {
+        loggerManager.d("Inizio a controllare le novità per le notifiche");
+
         if (activeUsername.equals("gsuite")) makeGsuiteLogin();
         else makeLogin();
 
@@ -107,23 +110,28 @@ public class AppNotifications extends BroadcastReceiver {
             return;
         }
 
-        //region Controllo notifiche
+        try {
 
-        if (canSendNotificationsVotes) checkNewsForVotes();
-        if (canSendNotificationsAlerts) checkNewsForAlerts();
-        if (canSendNotificationsNewsletters) checkNewsForNewsletters();
-        if (canSendNotificationsHomeworks | canSendNotificationsTests) checkNewsForAgenda();
+            if (canSendNotificationsVotes) checkNewsForVotes();
+            if (canSendNotificationsAlerts) checkNewsForAlerts();
+            if (canSendNotificationsNewsletters) checkNewsForNewsletters();
+            if (canSendNotificationsHomeworks | canSendNotificationsTests) checkNewsForAgenda();
 
-        //endregion
+            offlineDB.close();
+            notificationsDBController.close();
 
-        offlineDB.close();
-        notificationsDBController.close();
+        } catch (Exception e) {
+            logErrorInLoggerManager(e);
+            sendErrorNotification(e.toString());
+        }
 
         Random r = new Random(SystemClock.elapsedRealtime());
         long interval = AlarmManager.INTERVAL_HOUR + r.nextInt(3_600_000);
         //long interval = 60_000; //DEBUG
         resetAlarm(interval);
     }
+
+    //region Agenda
 
     private void checkNewsForAgenda() {
         List<Alert> allNewTestsHomeworks;   //Ci sono sia gli avvisi dei compiti sia delle verifiche
@@ -157,9 +165,9 @@ public class AppNotifications extends BroadcastReceiver {
 
             if (alert.object.startsWith("C"))
                 allNewHomeworks.add(alert);
-            else if (alert.object.startsWith("V")) {
+            else if (alert.object.startsWith("V"))
                 allNewTests.add(alert);
-            } else
+            else
                 loggerManager.w("Durante il controllo dei nuovi avvisi per i compiti e le verifiche ho trovato un avviso che non è nessuno dei due: " + alert);
         }
 
@@ -169,21 +177,27 @@ public class AppNotifications extends BroadcastReceiver {
         //region Compiti
 
         if (canSendNotificationsHomeworks && allOldHomeworks.size() != 0) {
-            allNewHomeworks.removeAll(allOldHomeworks);
+            for (Alert alert : allOldHomeworks)
+                allNewHomeworks.remove(alert);
 
-            if (allNewHomeworks.size() > 0)
+            if (allNewHomeworks.size() > 0) {
+                notificationManager.cancel(AppNotificationsParams.HOMEWORKS_NOTIFICATION_ID);
                 notificationManager.notify(AppNotificationsParams.HOMEWORKS_NOTIFICATION_ID, createHomeworkNotification(allNewHomeworks));
+            }
         }
 
         //endregion
 
         //region Verifiche
 
-        if (canSendNotificationsTests && allOldTests.size() == 0) {
-            allNewTests.removeAll(allOldTests);
+        if (canSendNotificationsTests && allOldTests.size() != 0) {
+            for (Alert alert : allOldTests)
+                allNewTests.remove(alert);
 
-            if (allNewTests.size() > 0)
+            if (allNewTests.size() > 0) {
+                notificationManager.cancel(AppNotificationsParams.TESTS_NOTIFICATION_ID);
                 notificationManager.notify(AppNotificationsParams.TESTS_NOTIFICATION_ID, createTestsNotification(allNewTests));
+            }
         }
 
         //endregion
@@ -210,7 +224,7 @@ public class AppNotifications extends BroadcastReceiver {
         else
             title = nNewTests + " nuove verifiche";
 
-        return createNotificationWithBigText(title, text, bigText, AppNotificationsParams.AGENDA_NOTIFICATION_GOTO);
+        return createNotificationWithBigText(title, text, bigText, AppNotificationsParams.AGENDA_NOTIFICATION_GOTO, AppNotificationsParams.TESTS_NOTIFICATION_REQUEST_CODE);
     }
 
     private Notification createHomeworkNotification(List<Alert> allNewHomeworks) {
@@ -226,16 +240,18 @@ public class AppNotifications extends BroadcastReceiver {
                 String subject = rawSubject[1];
                 bigText += subject + " - " + alert.date;
             } else
-                loggerManager.w("Non o trovato la materia nell'avviso dei compiti: " + alert);
+                loggerManager.w("Non ho trovato la materia nell'avviso dei compiti: " + alert);
         }
 
-        if (nNewHomeworks > 1)
+        if (nNewHomeworks == 1)
             title = "Nuovo compito";
         else
             title = nNewHomeworks + " nuovi compiti";
 
-        return createNotificationWithBigText(title, text, bigText, AppNotificationsParams.AGENDA_NOTIFICATION_GOTO);
+        return createNotificationWithBigText(title, text, bigText, AppNotificationsParams.AGENDA_NOTIFICATION_GOTO, AppNotificationsParams.HOMEWORKS_NOTIFICATION_REQUEST_CODE);
     }
+
+    //endregion
 
     //region Newsletters
 
@@ -256,6 +272,7 @@ public class AppNotifications extends BroadcastReceiver {
 
         if (allNewNewsletters.size() == 0 || allOldNewsletters.size() == 0) return;
 
+        notificationManager.cancel(AppNotificationsParams.NEWSLETTERS_NOTIFICATION_ID);
         notificationManager.notify(AppNotificationsParams.NEWSLETTERS_NOTIFICATION_ID, createNewslettersNotification(allNewNewsletters));
     }
 
@@ -269,10 +286,11 @@ public class AppNotifications extends BroadcastReceiver {
         else
             notificationTitle = "Nuova circolare";
 
-        return createNotification(notificationTitle, AppNotificationsParams.NEWSLETTERS_NOTIFICATION_GOTO, AppNotificationsParams.NEWSLETTERS_NOTIFICATION_REQUEST_CODE);
+        return createNotificationForMoreInformation(notificationTitle, AppNotificationsParams.NEWSLETTERS_NOTIFICATION_GOTO, AppNotificationsParams.NEWSLETTERS_NOTIFICATION_REQUEST_CODE);
     }
 
     //endregion
+
     //region Alerts
 
     private void checkNewsForAlerts() {
@@ -285,13 +303,24 @@ public class AppNotifications extends BroadcastReceiver {
             return;
         }
 
+        //In questa lista ci saranno gli avvisi dei compiti e delle verifiche che non dovranno essere notificati
+        List<Alert> testHomeworkAlerts = new Vector<>(10);
+
         List<Alert> allOldAlerts = notificationsDBController.readAlerts();
         notificationsDBController.replaceAlerts(allNewAlerts);
 
         allNewAlerts.removeAll(allOldAlerts);   //Rimuovo gli avvisi vecchi da quelli nuovi
 
+        for (Alert alert : allNewAlerts) {
+            if (alert.object.startsWith("V") || alert.object.startsWith("C"))
+                testHomeworkAlerts.add(alert);
+        }
+
+        allNewAlerts.removeAll(testHomeworkAlerts);
+
         if (allNewAlerts.size() == 0 || allOldAlerts.size() == 0) return;
 
+        notificationManager.cancel(AppNotificationsParams.ALERTS_NOTIFICATION_ID);
         notificationManager.notify(AppNotificationsParams.ALERTS_NOTIFICATION_ID, createAlertsNotification(allNewAlerts));
     }
 
@@ -300,15 +329,16 @@ public class AppNotifications extends BroadcastReceiver {
 
         int nAlertsToNotify = alertsToNotify.size();
 
-        if (nAlertsToNotify > 1)
-            notificationTitle = nAlertsToNotify + " nuovi avvisi";
-        else
+        if (nAlertsToNotify == 1)
             notificationTitle = "Nuovo avviso";
+        else
+            notificationTitle = nAlertsToNotify + " nuovi avvisi";
 
-        return createNotification(notificationTitle, AppNotificationsParams.ALERTS_NOTIFICATION_GOTO, AppNotificationsParams.ALERTS_NOTIFICATION_REQUEST_CODE);
+        return createNotificationForMoreInformation(notificationTitle, AppNotificationsParams.ALERTS_NOTIFICATION_GOTO, AppNotificationsParams.ALERTS_NOTIFICATION_REQUEST_CODE);
     }
 
     //endregion
+
     //region Votes
 
     private void checkNewsForVotes() {
@@ -336,7 +366,8 @@ public class AppNotifications extends BroadcastReceiver {
             if (_newVotes == null) continue;
 
             //Rimuovo tutti i voti vecchi da quelli nuovi cosi che rimangano solo quelli nuovi se ce ne sono.
-            _newVotes.removeAll(allOldVotes.get(subject));
+            for (Vote vote : allOldVotes.get(subject))
+                _newVotes.remove(vote);
 
             if (_newVotes.size() == 0) continue;
 
@@ -347,12 +378,15 @@ public class AppNotifications extends BroadcastReceiver {
         if (notifiedVotesCounter == 0 || notifiedSubjects.size() == 0 || allOldVotes.size() == 0) return;
 
         Notification notification = createVotesNotification(notifiedSubjects, notifiedVotesCounter);
+        notificationManager.cancel(AppNotificationsParams.VOTES_NOTIFICATION_ID);
         notificationManager.notify(AppNotificationsParams.VOTES_NOTIFICATION_ID, notification);
     }
 
     private Notification createVotesNotification(List<String> notifiedSubjects, int notifiedVotesCounter) {
         String notificationTitle;
-        String notificationText = "";
+        String notificationText = "Clicca per maggiori informazioni";
+        String notificationBigText = "";
+
         int notifiedSubjectsLength = notifiedSubjects.size();
 
         if (notifiedVotesCounter > 1)
@@ -361,24 +395,24 @@ public class AppNotifications extends BroadcastReceiver {
             notificationTitle = "È stato pubblicato un nuovo voto in " + notifiedSubjects.get(0);
 
         if (notifiedSubjectsLength == 1)
-            notificationText = "Materia: " + notifiedSubjects.get(0);
+            notificationBigText = "Materia: " + notifiedSubjects.get(0);
         else if (notifiedSubjectsLength > 1) {
-            notificationText = "Materie: ";
+            notificationBigText = "Materie: ";
 
             for (int i = 0; i < notifiedSubjectsLength; i++) {
-                notificationText += notifiedSubjects.get(i);
+                notificationBigText += notifiedSubjects.get(i);
 
                 if (i != notifiedSubjectsLength - 1)
-                    notificationText += ", ";
+                    notificationBigText += ", ";
             }
         }
 
-        return createNotification(notificationTitle, notificationText, AppNotificationsParams.VOTES_NOTIFICATION_GOTO, AppNotificationsParams.VOTES_NOTIFICATION_REQUEST_CODE);
+        return createNotificationWithBigText(notificationTitle, notificationText, notificationBigText, AppNotificationsParams.VOTES_NOTIFICATION_GOTO, AppNotificationsParams.VOTES_NOTIFICATION_REQUEST_CODE);
     }
 
     //endregion
 
-    private Notification createNotification(String title, String goTo, int requestCode) {
+    private Notification createNotificationForMoreInformation(String title, String goTo, int requestCode) {
         Intent intent = new Intent(context, ActivityManager.class).putExtra("goTo", goTo).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         return new NotificationCompat.Builder(context, "0")
                 .setContentIntent(PendingIntent.getActivity(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE))
@@ -389,7 +423,7 @@ public class AppNotifications extends BroadcastReceiver {
                 .build();
     }
 
-    private Notification createNotification(String title, String content, String goTo, int requestCode) {
+    private Notification createNotificationForMoreInformation(String title, String content, String goTo, int requestCode) {
         Intent intent = new Intent(context, ActivityManager.class).putExtra("goTo", goTo).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         return new NotificationCompat.Builder(context, "0")
                 .setContentIntent(PendingIntent.getActivity(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE))
@@ -400,10 +434,10 @@ public class AppNotifications extends BroadcastReceiver {
                 .build();
     }
 
-    private Notification createNotificationWithBigText(String title, String contentText, String bigText, String goTo) {
+    private Notification createNotificationWithBigText(String title, String contentText, String bigText, String goTo, int requestCode) {
         Intent intent = new Intent(context, ActivityManager.class).putExtra("goTo", goTo).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         return new NotificationCompat.Builder(context, "0")
-                .setContentIntent(PendingIntent.getActivity(context, 5, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE))
+                .setContentIntent(PendingIntent.getActivity(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE))
                 .setSmallIcon(R.drawable.ic_giuaschool_black)
                 .setContentTitle(title)
                 .setContentText(contentText)
@@ -432,18 +466,6 @@ public class AppNotifications extends BroadcastReceiver {
             logErrorInLoggerManager(e);
             sendErrorNotification(e.toString());
         }
-    }
-
-    private void sendErrorNotification(String error) {
-        if (!isDebugMode) return;
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
-                .setSmallIcon(R.drawable.ic_giuaschool_black)
-                .setContentTitle("Si è verificato un errore")
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(error))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-        notificationManager.notify(12, builder.build());
     }
 
     private void makeGsuiteLogin() {
@@ -491,6 +513,23 @@ public class AppNotifications extends BroadcastReceiver {
     }
 
     private void logErrorInLoggerManager(Exception e) {
-        loggerManager.e("Messaggio: " + e.getMessage() + " Errore: " + e);
+        String stacktrace = "";
+        for (StackTraceElement s : e.getStackTrace()) {
+            stacktrace += s.toString();
+        }
+
+        loggerManager.e("Messaggio: " + e.getMessage() + "\nErrore: " + e + "\nStacktrace: " + stacktrace);
+    }
+
+    private void sendErrorNotification(String error) {
+        if (!isDebugMode) return;
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "0")
+                .setSmallIcon(R.drawable.ic_giuaschool_black)
+                .setContentTitle("Si è verificato un errore")
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(error))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        notificationManager.notify(AppNotificationsParams.DEBUG_NOTIFICATION_ID, builder.build());
     }
 }
