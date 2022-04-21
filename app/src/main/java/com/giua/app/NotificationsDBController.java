@@ -42,6 +42,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
 
     private final Context context;
     private final LoggerManager lm;
+    private finale SQLiteDatabase db;
 
     //!!!
     //FIXME: USARE SQLiteDatabase.releaseMemory() DOVE L'APP VA IN BACKGROUND O ALTRO
@@ -65,6 +66,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         super(context, DB_NAME, null, DB_VERSION);
         this.context = context.getApplicationContext();
         lm = new LoggerManager("NotificationsDBController", this.context);
+        db = getWritableDatabase();
     }
 
     @Override
@@ -76,8 +78,6 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         VotesTable.createTable(db);
         NewslettersTable.createTable(db);
         AlertsTable.createTable(db);
-
-        db.close();
     }
 
     @Override
@@ -94,7 +94,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
 
 
     //region DB Alert
-    private void addAlert(Alert alert, SQLiteDatabase db) {
+    private void addAlert(Alert alert) {
         ContentValues values = new ContentValues();
 
         values.put(DBAlert.STATUS_COL.name, alert.status);
@@ -126,13 +126,10 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
 
     public void addAlerts(List<Alert> alerts) {
-        SQLiteDatabase db = getWritableDatabase();
-
         for (Alert alert : alerts) {
             addAlert(alert, db);
         }
 
-        db.close();
     }
 
     public void replaceAlerts(List<Alert> alerts) {
@@ -141,13 +138,10 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
 
     public void deleteAlerts() {
-        SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + ALERTS_TABLE + ";");
-        db.close();
     }
 
     public List<Alert> readAlerts() {
-        SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + ALERTS_TABLE + " ORDER BY " + DBAlert.ALERT_ID + " DESC", null);
 
         List<Alert> alerts = new Vector<>();
@@ -192,7 +186,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
 
     //region DB Alerts Homeworks
-    private long addAlertHomework(Alert alert, SQLiteDatabase db) {
+    private long addAlertHomework(Alert alert) {
         ContentValues values = new ContentValues();
 
         values.put(DBAlertHomeworks.STATUS_COL.name, alert.status);
@@ -226,19 +220,13 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     //endregion
 
     public void deleteAlertsHomeworks() {
-        SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + ALERTS_HOMEWORKS_TABLE + ";");
-        db.close();
     }
 
-    public void addAlertsHomeworks(List<Alert> alerts) {
-        SQLiteDatabase db = getWritableDatabase();
-
+    public void addAlertsHomeworks(List<Alert> alerts) {        
         for (Alert alert : alerts) {
-            addAlertHomework(alert, db);
+            addAlertHomework(alert);
         }
-
-        db.close();
     }
 
     public void replaceAlertsHomeworks(List<Alert> alerts) {
@@ -246,7 +234,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         addAlertsHomeworks(alerts);
     }
 
-    private long addAlertTest(Alert alert, SQLiteDatabase db) {
+    private long addAlertTest(Alert alert) {
         ContentValues values = new ContentValues();
 
         values.put(DBAlertTests.STATUS_COL.name, alert.status);
@@ -278,7 +266,6 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
 
     public List<Alert> readAlertsHomeworks() {
-        SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + ALERTS_HOMEWORKS_TABLE + " ORDER BY " + DBAlertHomeworks.ALERT_ID + " DESC", null);
 
         List<Alert> alerts = new Vector<>();
@@ -323,9 +310,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
 
     public void deleteAlertsTests() {
-        SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + ALERTS_TESTS_TABLE + ";");
-        db.close();
     }
 
     //endregion
@@ -338,13 +323,10 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
 
     public void addAlertsTests(List<Alert> alerts) {
-        SQLiteDatabase db = getWritableDatabase();
-
         for (Alert alert : alerts) {
             addAlertTest(alert, db);
         }
 
-        db.close();
     }
 
     public void replaceVotes(Map<String, List<Vote>> votes) {
@@ -358,7 +340,6 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
 
     public List<Alert> readAlertsTests() {
-        SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + ALERTS_TESTS_TABLE + " ORDER BY " + DBAlertTests.ALERT_ID + " DESC", null);
 
         List<Alert> alerts = new Vector<>();
@@ -402,7 +383,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         return alerts;
     }
 
-    private long addNewsletter(Newsletter newsletter, SQLiteDatabase db) {
+    private long addNewsletter(Newsletter newsletter) {
         ContentValues values = new ContentValues();
 
         values.put(DBNewsletter.STATUS_COL.name, newsletter.getStatus());
@@ -429,9 +410,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     //region DBVote
 
     public void deleteVotes() {
-        SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + VOTES_TABLE + ";");
-        db.close();
     }
 
     private enum DBAlert {
@@ -455,7 +434,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         }
     }
 
-    private void addSubject(String subject, List<Vote> votes, SQLiteDatabase db){
+    private void addSubject(String subject, List<Vote> votes){
         for(Vote vote : votes) {
             ContentValues values = new ContentValues();
 
@@ -474,17 +453,12 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
 
     public void addVotes(Map<String, List<Vote>> votes){
-        SQLiteDatabase db = getWritableDatabase();
-
         for (String m : votes.keySet()) {
             addSubject(m, votes.get(m), db);
         }
-
-        db.close();
     }
 
     public Map<String, List<Vote>> readVotes() {
-        SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery("SELECT * FROM " + VOTES_TABLE, null);
 
@@ -543,9 +517,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
 
     //region DBNewsletter
     public void deleteNewsletters() {
-        SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + NEWSLETTERS_TABLE + ";");
-        db.close();
     }
 
     private enum DBAlertHomeworks {
@@ -591,17 +563,12 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
 
     public void addNewsletters(List<Newsletter> newsletters) {
-        SQLiteDatabase db = getWritableDatabase();
-
         for (Newsletter n : newsletters) {
-            addNewsletter(n, db);
+            addNewsletter(n);
         }
-
-        db.close();
     }
 
     public List<Newsletter> readNewsletters() {
-        SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery("SELECT * FROM " + NEWSLETTERS_TABLE, null);
 
@@ -650,7 +617,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     //endregion
 
     public static class AlertsTable {
-        public static void createTable(SQLiteDatabase db) {
+        public static void createTable(SQLiteDatabase dB) {
             String query = "CREATE TABLE " + ALERTS_TABLE + " ("
                     + DBAlert.STATUS_COL + " TEXT, "
                     + DBAlert.DATE_COL + " TEXT,"
@@ -670,7 +637,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
 
     public static class AlertsHomeworksTable {
-        public static void createTable(SQLiteDatabase db) {
+        public static void createTable(SQLiteDatabase dB) {
             String query = "CREATE TABLE " + ALERTS_HOMEWORKS_TABLE + " ("
                     + DBAlertHomeworks.STATUS_COL + " TEXT, "
                     + DBAlertHomeworks.DATE_COL + " TEXT,"
@@ -690,7 +657,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
 
     public static class VotesTable {
-        public static void createTable(SQLiteDatabase db) {
+        public static void createTable(SQLiteDatabase dB) {
             String query8 = "CREATE TABLE " + VOTES_TABLE + " ("
                     + DBVote.VALUE_COL.name + " TEXT,"
                     + DBVote.DATE_COL.name + " TEXT,"
@@ -706,7 +673,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
 
     public static class NewslettersTable {
-        public static void createTable(SQLiteDatabase db) {
+        public static void createTable(SQLiteDatabase dB) {
             String query = "CREATE TABLE " + NEWSLETTERS_TABLE + " ("
                     + DBNewsletter.STATUS_COL.name + " TEXT,"
                     + DBNewsletter.NUMBER_COL.name + " INTEGER,"
@@ -720,7 +687,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
 
     public static class AlertsTestsTable {
-        public static void createTable(SQLiteDatabase db) {
+        public static void createTable(SQLiteDatabase dB) {
             String query = "CREATE TABLE " + ALERTS_TESTS_TABLE + " ("
                     + DBAlertTests.STATUS_COL + " TEXT, "
                     + DBAlertTests.DATE_COL + " TEXT,"
