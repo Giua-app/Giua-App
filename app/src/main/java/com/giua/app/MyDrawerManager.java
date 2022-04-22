@@ -41,6 +41,8 @@ import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
+import java.util.HashMap;
+
 public class MyDrawerManager {
 
     private final Activity activity;
@@ -112,6 +114,36 @@ public class MyDrawerManager {
                 .withAccountHeader(accountHeaderBuilder.build())
                 .withSliderBackgroundColor(activity.getResources().getColor(R.color.general_view_color, activity.getTheme()))
                 .addDrawerItems(createAllDrawerItems()).build();
+    }
+
+    public static Long getItemIdentifierFromGoTo(String goTo) {
+        HashMap<String, Long> hashMap = new HashMap<>();
+        hashMap.put(AppNotificationsParams.VOTES_NOTIFICATION_GOTO, 5L);
+        hashMap.put(AppNotificationsParams.NEWSLETTERS_NOTIFICATION_GOTO, 13L);
+        hashMap.put(AppNotificationsParams.ALERTS_NOTIFICATION_GOTO, 14L);
+        hashMap.put(AppNotificationsParams.AGENDA_NOTIFICATION_GOTO, 16L);
+
+        return hashMap.get(goTo);
+    }
+
+    public static long getItemIdentifierFromName(String name) {
+        HashMap<String, Long> hashMap = new HashMap<>();
+        hashMap.put("home", 0L);
+        hashMap.put("lezioni svolte", 2L);
+        hashMap.put("argomenti e attività", 3L);
+        hashMap.put("voti", 5L);
+        hashMap.put("assenze", 6L);
+        hashMap.put("note", 7L);
+        hashMap.put("osservazioni", 8L);
+        hashMap.put("autorizzazioni", 9L);
+        hashMap.put("pagella", 10L);
+        hashMap.put("colloqui", 11L);
+        hashMap.put("circolari", 13L);
+        hashMap.put("avvisi", 14L);
+        hashMap.put("documenti", 15L);
+        hashMap.put("agenda", 16L);
+
+        return hashMap.get(name.toLowerCase());
     }
 
     private void addAccountsToDrawer(String activeUsername, Drawable icAccountProfile, AccountHeaderBuilder accountHeaderBuilder) {

@@ -50,6 +50,7 @@ public class StudentLoginActivity extends AppCompatActivity {
     String cookie = "";
     LoggerManager loggerManager;
     ProgressBar progressBar;
+    String goTo = "";
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -58,6 +59,8 @@ public class StudentLoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_student_login);
         loggerManager = new LoggerManager("StudentLoginActivity", this);
         loggerManager.d("onCreate chiamato");
+
+        goTo = getIntent().getStringExtra("goTo");
 
         webView = findViewById(R.id.studentWebView);
         obscureLayoutView = findViewById(R.id.studentObscureLayoutView);
@@ -124,7 +127,7 @@ public class StudentLoginActivity extends AppCompatActivity {
             AppData.addAccountUsername(this, "gsuite");
             AppData.saveActiveUsername(this, "gsuite");
         }
-        String goTo = getIntent().getStringExtra("goTo");
+
         if (goTo == null)
             goTo = "";
         Intent intent = new Intent(StudentLoginActivity.this, DrawerActivity.class).putExtra("goTo", goTo);

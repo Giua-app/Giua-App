@@ -214,12 +214,12 @@ public class AppNotifications extends BroadcastReceiver {
 
             if (rawSubject.length > 1) {
                 String subject = rawSubject[1];
-                bigText += subject + " - " + alert.date;
+                bigText += subject + " - " + alert.date + "\n";
             } else
                 loggerManager.w("Non ho trovato la materia nell'avviso delle verifiche: " + alert);
         }
 
-        if (nNewTests > 1)
+        if (nNewTests == 1)
             title = "Nuova verifica";
         else
             title = nNewTests + " nuove verifiche";
@@ -238,7 +238,7 @@ public class AppNotifications extends BroadcastReceiver {
 
             if (rawSubject.length > 1) {
                 String subject = rawSubject[1];
-                bigText += subject + " - " + alert.date;
+                bigText += subject + " - " + alert.date + "\n";
             } else
                 loggerManager.w("Non ho trovato la materia nell'avviso dei compiti: " + alert);
         }
@@ -278,15 +278,16 @@ public class AppNotifications extends BroadcastReceiver {
 
     private Notification createNewslettersNotification(List<Newsletter> allNewNewsletters) {
         String notificationTitle = "";
+        String notificationContent = "Clicca per andare alle circolari";
 
         int nNewslettersToNotify = allNewNewsletters.size();
 
-        if (nNewslettersToNotify > 1)
-            notificationTitle = nNewslettersToNotify + " nuove circolari";
-        else
+        if (nNewslettersToNotify == 1)
             notificationTitle = "Nuova circolare";
+        else
+            notificationTitle = nNewslettersToNotify + " nuove circolari";
 
-        return createNotificationForMoreInformation(notificationTitle, AppNotificationsParams.NEWSLETTERS_NOTIFICATION_GOTO, AppNotificationsParams.NEWSLETTERS_NOTIFICATION_REQUEST_CODE);
+        return createNotification(notificationTitle, notificationContent, AppNotificationsParams.NEWSLETTERS_NOTIFICATION_GOTO, AppNotificationsParams.NEWSLETTERS_NOTIFICATION_REQUEST_CODE);
     }
 
     //endregion
@@ -303,7 +304,7 @@ public class AppNotifications extends BroadcastReceiver {
             return;
         }
 
-        //In questa lista ci saranno gli avvisi dei compiti e delle verifiche che non dovranno essere notificati
+        //In questa lista ci saranno gli avvisi dei compiti e delle verifiche che NON dovranno essere notificati
         List<Alert> testHomeworkAlerts = new Vector<>(10);
 
         List<Alert> allOldAlerts = notificationsDBController.readAlerts();
@@ -326,6 +327,7 @@ public class AppNotifications extends BroadcastReceiver {
 
     private Notification createAlertsNotification(List<Alert> alertsToNotify) {
         String notificationTitle = "";
+        String notificationContent = "Clicca per andare agli avvisi";
 
         int nAlertsToNotify = alertsToNotify.size();
 
@@ -334,7 +336,7 @@ public class AppNotifications extends BroadcastReceiver {
         else
             notificationTitle = nAlertsToNotify + " nuovi avvisi";
 
-        return createNotificationForMoreInformation(notificationTitle, AppNotificationsParams.ALERTS_NOTIFICATION_GOTO, AppNotificationsParams.ALERTS_NOTIFICATION_REQUEST_CODE);
+        return createNotification(notificationTitle, notificationContent, AppNotificationsParams.ALERTS_NOTIFICATION_GOTO, AppNotificationsParams.ALERTS_NOTIFICATION_REQUEST_CODE);
     }
 
     //endregion
@@ -384,15 +386,15 @@ public class AppNotifications extends BroadcastReceiver {
 
     private Notification createVotesNotification(List<String> notifiedSubjects, int notifiedVotesCounter) {
         String notificationTitle;
-        String notificationText = "Clicca per maggiori informazioni";
+        String notificationText = "Clicca per andare ai voti";
         String notificationBigText = "";
 
         int notifiedSubjectsLength = notifiedSubjects.size();
 
-        if (notifiedVotesCounter > 1)
-            notificationTitle = "Sono stati pubblicati nuovi voti";
-        else
+        if (notifiedVotesCounter == 1)
             notificationTitle = "È stato pubblicato un nuovo voto in " + notifiedSubjects.get(0);
+        else
+            notificationTitle = "Sono stati pubblicati nuovi voti";
 
         if (notifiedSubjectsLength == 1)
             notificationBigText = "Materia: " + notifiedSubjects.get(0);
@@ -403,7 +405,7 @@ public class AppNotifications extends BroadcastReceiver {
                 notificationBigText += notifiedSubjects.get(i);
 
                 if (i != notifiedSubjectsLength - 1)
-                    notificationBigText += ", ";
+                    notificationBigText += "\n";
             }
         }
 
@@ -412,18 +414,7 @@ public class AppNotifications extends BroadcastReceiver {
 
     //endregion
 
-    private Notification createNotificationForMoreInformation(String title, String goTo, int requestCode) {
-        Intent intent = new Intent(context, ActivityManager.class).putExtra("goTo", goTo).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        return new NotificationCompat.Builder(context, "0")
-                .setContentIntent(PendingIntent.getActivity(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE))
-                .setSmallIcon(R.drawable.ic_giuaschool_black)
-                .setContentTitle(title)
-                .setContentText("Clicca per avere più informazioni")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .build();
-    }
-
-    private Notification createNotificationForMoreInformation(String title, String content, String goTo, int requestCode) {
+    private Notification createNotification(String title, String content, String goTo, int requestCode) {
         Intent intent = new Intent(context, ActivityManager.class).putExtra("goTo", goTo).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         return new NotificationCompat.Builder(context, "0")
                 .setContentIntent(PendingIntent.getActivity(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE))

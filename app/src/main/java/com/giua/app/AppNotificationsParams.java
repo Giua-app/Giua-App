@@ -46,7 +46,7 @@ public class AppNotificationsParams {
     public static final int TESTS_NOTIFICATION_REQUEST_CODE = 4;
 
     public static final int HOMEWORKS_NOTIFICATION_ID = 14;
-    public static final int HOMEWORKS_NOTIFICATION_REQUEST_CODE = 4;
+    public static final int HOMEWORKS_NOTIFICATION_REQUEST_CODE = 5;
 
     public static final String AGENDA_NOTIFICATION_GOTO = "Agenda";
 
