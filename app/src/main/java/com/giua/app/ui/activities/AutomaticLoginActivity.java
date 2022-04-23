@@ -93,11 +93,6 @@ public class AutomaticLoginActivity extends AppCompatActivity {
 
                 if (!savedSiteUrl.equals("")) GlobalVariables.gS.setPrivateSiteUrl(savedSiteUrl);
 
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 GlobalVariables.gS.login();
                 AccountData.setCredentials(this, username, password, GlobalVariables.gS.getCookie(), GlobalVariables.gS.getUserTypeString());
                 AccountData.setSiteUrl(this, username, GlobalVariables.gS.getSiteUrl());
@@ -135,6 +130,11 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                     AppData.removeAccountUsername(this, AppData.getActiveUsername(this));
                     AppData.saveActiveUsername(this, "");
                     setErrorMessage("Le credenziali di accesso non sono più valide");
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     startActivity(new Intent(AutomaticLoginActivity.this, ActivityManager.class));
                 }
             } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
