@@ -72,9 +72,9 @@ public class StudentLoginActivity extends AppCompatActivity {
             public boolean shouldOverrideUrlLoading(WebView webView, WebResourceRequest request) {
                 loggerManager.d("Richiesto caricamento dell'url " + request.getUrl().toString());
                 String requestedUrl = request.getUrl().toString();
-                if (requestedUrl.equals(GiuaScraper.getSiteURL() + "/") || requestedUrl.equals(GiuaScraper.getSiteURL() + "/#")) {
+                if (requestedUrl.equals(GiuaScraper.getGlobalSiteUrl() + "/") || requestedUrl.equals(GiuaScraper.getGlobalSiteUrl() + "/#")) {
                     loggerManager.d("Ottengo cookie del registro...");
-                    String rawCookie = CookieManager.getInstance().getCookie(GiuaScraper.getSiteURL());
+                    String rawCookie = CookieManager.getInstance().getCookie(GiuaScraper.getGlobalSiteUrl());
                     if (rawCookie != null) {
                         cookie = rawCookie.split("=")[1];
                         onStoppedWebView(getIntent().getStringExtra("sender").equals("LoginActivity")); //Aumenta il conteggio solo se StudentLogin viene chiamata dal LoginActivity
@@ -106,7 +106,7 @@ public class StudentLoginActivity extends AppCompatActivity {
         CookieManager.getInstance().setAcceptCookie(true);
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
 
-        webView.loadUrl(GiuaScraper.getSiteURL() + "/login/gsuite");
+        webView.loadUrl(GiuaScraper.getGlobalSiteUrl() + "/login/gsuite");
     }
 
 
@@ -120,7 +120,7 @@ public class StudentLoginActivity extends AppCompatActivity {
         loggerManager.d("Creazione credenziali con cookie ottenuto da google");
         GlobalVariables.gS = new GiuaScraper("gsuite", "gsuite", cookie, true, new LoggerManager("GiuaScraper", this));
         AccountData.setCredentials(this, "gsuite", "gsuite", cookie, "Studente");
-        AccountData.setSiteUrl(this, "gsuite", GiuaScraper.getSiteURL());
+        AccountData.setSiteUrl(this, "gsuite", GiuaScraper.getGlobalSiteUrl());
         obscureLayoutView.setVisibility(View.GONE);
         loggerManager.d("Avvio DrawerActivity");
         if (!AppData.getAllAccountUsernames(this).contains("gsuite")) {

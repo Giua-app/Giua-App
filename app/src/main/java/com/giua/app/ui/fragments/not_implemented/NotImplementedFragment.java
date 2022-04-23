@@ -35,8 +35,8 @@ import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.giua.app.GlobalVariables;
 import com.giua.app.R;
-import com.giua.webscraper.GiuaScraper;
 
 /**
  * Questo frammento viene visualizzato quando si cerca di visualizzare una schermata non ancora implementata
@@ -60,7 +60,7 @@ public class NotImplementedFragment extends Fragment {
         WebView webView = root.findViewById(R.id.not_implemented_webview);
         webView.setWebViewClient(new WebViewClient() {
             public boolean shouldOverrideUrlLoading(WebView webView, WebResourceRequest request) {
-                return request.getUrl().toString().equals(GiuaScraper.getSiteURL() + "/logout/") || !request.getUrl().toString().contains(GiuaScraper.getSiteURL());
+                return request.getUrl().toString().equals(GlobalVariables.gS.getSiteUrl() + "/logout/") || !request.getUrl().toString().contains(GlobalVariables.gS.getSiteUrl());
             }
 
             @Override
@@ -85,7 +85,7 @@ public class NotImplementedFragment extends Fragment {
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setUseWideViewPort(true);
         webView.getSettings().setLoadWithOverviewMode(true);
-        CookieManager.getInstance().setCookie(GiuaScraper.getSiteURL(), "PHPSESSID=" + cookie + ";path=/; HttpOnly; SameSite=lax");
+        CookieManager.getInstance().setCookie(GlobalVariables.gS.getSiteUrl(), "PHPSESSID=" + cookie + ";path=/; HttpOnly; SameSite=lax");
 
         webView.loadUrl(url);
 

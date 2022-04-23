@@ -38,7 +38,6 @@ import com.giua.app.ui.fragments.not_implemented.NotImplementedFragment;
 import com.giua.app.ui.fragments.reportcard.ReportCardFragment;
 import com.giua.app.ui.fragments.votes.VotesFragment;
 import com.giua.pages.UrlPaths;
-import com.giua.webscraper.GiuaScraper;
 
 import java.util.Objects;
 
@@ -183,7 +182,7 @@ public class MyFragmentManager {
     private void showUnstableDialog(Fragment fragment, String tag, String toolbarTxt, String subtitle, String url) {
         int openWithWebview = SettingsData.getSettingInt(activity, SettingKey.OPEN_UNSTABLE_FEAT_WITH_WEBVIEW);
         if(openWithWebview == 1){ //Apri in webview
-            executeChangeFragment(new NotImplementedFragment(GiuaScraper.getSiteURL() + "/" + url, GlobalVariables.gS.getCookie()), tag, toolbarTxt, "Funzionalità Instabile");
+            executeChangeFragment(new NotImplementedFragment(GlobalVariables.gS.getSiteUrl() + "/" + url, GlobalVariables.gS.getCookie()), tag, toolbarTxt, "Funzionalità Instabile");
             return;
         }
         if(openWithWebview == 0){ //Apri come app
@@ -200,7 +199,7 @@ public class MyFragmentManager {
                     .setPositiveButton("Ok", (dialog, id) -> {
                         loggerManager.w("Visualizzo la funzionalità instabile (" + tag +") come non implementata");
                         SettingsData.saveSettingInt(activity, SettingKey.OPEN_UNSTABLE_FEAT_WITH_WEBVIEW, 1);
-                        executeChangeFragment(new NotImplementedFragment(GiuaScraper.getSiteURL() + "/" + url, GlobalVariables.gS.getCookie()), tag, toolbarTxt, "Funzionalità Instabile");
+                        executeChangeFragment(new NotImplementedFragment(GlobalVariables.gS.getSiteUrl() + "/" + url, GlobalVariables.gS.getCookie()), tag, toolbarTxt, "Funzionalità Instabile");
                     })
 
                     .setNegativeButton("Annulla", (dialog, id) -> {
@@ -228,7 +227,7 @@ public class MyFragmentManager {
         if (toolbarTitle.contentEquals(toolbar.getTitle())) return;
 
         loggerManager.w("Pagina " + toolbarTitle + " non ancora implementata, la faccio visualizzare dalla webview");
-        fragment = new NotImplementedFragment(GiuaScraper.getSiteURL() + "/" + url, GlobalVariables.gS.getCookie());
+        fragment = new NotImplementedFragment(GlobalVariables.gS.getSiteUrl() + "/" + url, GlobalVariables.gS.getCookie());
         changeFragmentWithManager(fragment, tag, toolbarTitle, "Non ancora implementato!", url);
     }
 

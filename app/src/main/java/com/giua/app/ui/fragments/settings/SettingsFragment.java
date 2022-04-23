@@ -391,7 +391,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private boolean siteUrlChanged(Preference preference, Object o) {
         String defaultUrl = SettingsData.getSettingString(requireActivity(), SettingKey.DEFAULT_URL);
         if (Pattern.matches("https?://([a-zA-Z0-9]+[.])+([a-zA-Z0-9]+)(:[0-9]+)?((/[a-zA-Z0-9-_]+)+)?", (String) o)) {
-            GiuaScraper.setSiteURL((String) o);
+            GiuaScraper.setGlobalSiteUrl((String) o);
             SettingsData.saveSettingString(requireActivity(), SettingKey.DEFAULT_URL, (String) o);
             if (!o.equals(defaultUrl)) {
                 AppData.saveActiveUsername(context, "");

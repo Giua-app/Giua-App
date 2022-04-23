@@ -88,8 +88,11 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                 String password = AccountData.getPassword(this, username);
                 String cookie = AccountData.getCookie(this, username);
                 String savedSiteUrl = AccountData.getSiteUrl(this, username);
-                if (!savedSiteUrl.equals("")) GiuaScraper.setSiteURL(savedSiteUrl);
+
                 GlobalVariables.gS = new GiuaScraper(username, password, cookie, true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
+
+                if (!savedSiteUrl.equals("")) GlobalVariables.gS.setPrivateSiteUrl(savedSiteUrl);
+
                 try {
                     Thread.sleep(10000);
                 } catch (InterruptedException e) {
@@ -97,7 +100,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                 }
                 GlobalVariables.gS.login();
                 AccountData.setCredentials(this, username, password, GlobalVariables.gS.getCookie(), GlobalVariables.gS.getUserTypeString());
-                AccountData.setSiteUrl(this, username, GiuaScraper.getSiteURL());
+                AccountData.setSiteUrl(this, username, GlobalVariables.gS.getSiteUrl());
                 if (!AppData.getAllAccountUsernames(this).contains(GlobalVariables.gS.getUser()))
                     AppData.addAccountUsername(this, GlobalVariables.gS.getUser());
                 startDrawerActivity();

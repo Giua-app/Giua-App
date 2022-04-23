@@ -48,7 +48,7 @@ public class Analytics {
                 "\"event\": \"" + eventName + "\"," +
                 "\"properties\": {" +
                 "\"distinct_id\": \"0\"," +
-                "\"scraper_url\": \"" + GiuaScraperUtils.escapeString(GiuaScraper.getSiteURL()) + "\"," +
+                "\"scraper_url\": \"" + GiuaScraperUtils.escapeString(GiuaScraper.getGlobalSiteUrl()) + "\"," +
                 "\"app_ver\": \"" + GiuaScraperUtils.escapeString(BuildConfig.VERSION_NAME) + "\"," +
                 "\"os\": \"Android " + Build.VERSION.RELEASE + " (SDK " + Build.VERSION.SDK_INT + ")\"" +
                 "}}";
@@ -100,7 +100,7 @@ public class Analytics {
                     "\"event\": \"" + eventName + "\"," +
                     "\"properties\": {" +
                     "\"distinct_id\": \"0\"," +
-                    "\"scraper_url\": \"" + GiuaScraperUtils.escapeString(GiuaScraper.getSiteURL()) + "\"," +
+                    "\"scraper_url\": \"" + GiuaScraperUtils.escapeString(GiuaScraper.getGlobalSiteUrl()) + "\"," +
                     "\"app_ver\": \"" + GiuaScraperUtils.escapeString(BuildConfig.VERSION_NAME) + "\"," +
                     "\"os\": \"Android " + Build.VERSION.RELEASE + " (SDK " + Build.VERSION.SDK_INT + ")\"";
         }

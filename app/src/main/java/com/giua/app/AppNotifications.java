@@ -446,10 +446,10 @@ public class AppNotifications extends BroadcastReceiver {
         String siteUrl = AccountData.getSiteUrl(context, activeUsername);
         String defaultUrl = SettingsData.getSettingString(context, SettingKey.DEFAULT_URL);
 
-        if (siteUrl.equals("")) GiuaScraper.setSiteURL(defaultUrl);  //siteUrl non impostato quindi usa defaultUrl
-        else GiuaScraper.setSiteURL(siteUrl);
-
         gS = new GiuaScraper(activeUsername, password, cookie, true, loggerManager);
+
+        if (siteUrl.equals("")) gS.setPrivateSiteUrl(defaultUrl);  //siteUrl non impostato quindi usa defaultUrl
+        else gS.setPrivateSiteUrl(siteUrl);
 
         try {
             gS.login();

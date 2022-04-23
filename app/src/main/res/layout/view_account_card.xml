@@ -19,10 +19,9 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:background="@drawable/corner_radius_10dp"
     android:foreground="@drawable/ripple_effect"
     android:minWidth="140dp"
@@ -43,8 +42,8 @@
 
     <ImageView
         android:id="@+id/view_account_card_image"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="10dp"
         android:contentDescription="Immagine account"
@@ -58,9 +57,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:fontFamily="@font/varelaroundregular"
-        android:paddingHorizontal="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view_account_card_image"
+        android:layout_marginTop="5dp"
+        android:textAlignment="center"
         tools:text="nome.cognome.f1" />
 
     <TextView
@@ -70,6 +70,7 @@
         android:layout_gravity="center_horizontal"
         android:fontFamily="@font/varelaroundregular"
         android:paddingBottom="10dp"
+        android:layout_marginTop="5dp"
         app:layout_constraintEnd_toEndOf="@+id/view_account_card_username"
         app:layout_constraintStart_toStartOf="@+id/view_account_card_username"
         app:layout_constraintTop_toBottomOf="@+id/view_account_card_username"
