@@ -135,11 +135,6 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                     AppData.removeAccountUsername(this, AppData.getActiveUsername(this));
                     AppData.saveActiveUsername(this, "");
                     setErrorMessage("Le credenziali di accesso non sono più valide");
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
                     startActivity(new Intent(AutomaticLoginActivity.this, ActivityManager.class));
                 }
             } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
