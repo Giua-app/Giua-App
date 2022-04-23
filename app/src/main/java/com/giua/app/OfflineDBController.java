@@ -56,7 +56,7 @@ public class OfflineDBController extends SQLiteOpenHelper {
     //FIXME: USARE SQLiteDatabase.releaseMemory() DOVE L'APP VA IN BACKGROUND O ALTRO
 
     private static final String DB_NAME = "giuapp_offline_data";
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION = 4;
 
     private static final String ALERTS_TABLE = "alerts";
     private static final String ABSENCES_TABLE ="absences";
@@ -161,7 +161,7 @@ public class OfflineDBController extends SQLiteOpenHelper {
 
     public List<Alert> readAlerts() {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + ALERTS_TABLE + " ORDER BY " + DBAlert.ALERT_ID + " DESC", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + ALERTS_TABLE + " ORDER BY " + DBAlert.ALERT_ID.name + " DESC", null);
 
         List<Alert> alerts = new Vector<>();
 
@@ -829,18 +829,18 @@ public class OfflineDBController extends SQLiteOpenHelper {
     public static class AlertsTable {
         public static void createTable(SQLiteDatabase db) {
             String query = "CREATE TABLE " + ALERTS_TABLE + " ("
-                    + DBAlert.STATUS_COL + " TEXT, "
-                    + DBAlert.DATE_COL + " TEXT,"
-                    + DBAlert.RECEIVERS_COL + " TEXT,"
-                    + DBAlert.OBJECT_COL + " TEXT,"
-                    + DBAlert.PAGE_COL + " INTEGER,"
-                    + DBAlert.DETAILS_URL_COL + " TEXT,"
-                    + DBAlert.DETAILS_COL + " TEXT,"
-                    + DBAlert.CREATOR_COL + " TEXT,"
-                    + DBAlert.TYPE_COL + " TEXT,"
-                    + DBAlert.ATTACHMENT_URLS_COL + " TEXT,"
-                    + DBAlert.IS_DETAILED_COL + " BOOLEAN,"
-                    + DBAlert.ALERT_ID + " INTEGER"+")";
+                    + DBAlert.STATUS_COL.name + " TEXT, "
+                    + DBAlert.DATE_COL.name + " TEXT,"
+                    + DBAlert.RECEIVERS_COL.name + " TEXT,"
+                    + DBAlert.OBJECT_COL.name + " TEXT,"
+                    + DBAlert.PAGE_COL.name + " INTEGER,"
+                    + DBAlert.DETAILS_URL_COL.name + " TEXT,"
+                    + DBAlert.DETAILS_COL.name + " TEXT,"
+                    + DBAlert.CREATOR_COL.name + " TEXT,"
+                    + DBAlert.TYPE_COL.name + " TEXT,"
+                    + DBAlert.ATTACHMENT_URLS_COL.name + " TEXT,"
+                    + DBAlert.IS_DETAILED_COL.name + " BOOLEAN,"
+                    + DBAlert.ALERT_ID.name + " INTEGER"+")";
 
             db.execSQL(query);
         }
@@ -964,6 +964,7 @@ public class OfflineDBController extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TESTS_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + VOTES_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + NEWSLETTERS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + DOCUMENT_TABLE);
         onCreate(db);
     }
 }
