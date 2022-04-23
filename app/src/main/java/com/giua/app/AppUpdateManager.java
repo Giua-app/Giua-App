@@ -182,6 +182,7 @@ public class AppUpdateManager {
      * Controlla LastUpdateReminderDate
      * @return true se si può inviare l'update, false se bisogna aspettare ad un altro giorno
      */
+    //TODO: trasferire in AppUtils
     public boolean checkUpdateReminderDate(){
         int dayOfYear;
         int year;

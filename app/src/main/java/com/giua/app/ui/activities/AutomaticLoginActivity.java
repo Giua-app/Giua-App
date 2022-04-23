@@ -90,6 +90,11 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                 String savedSiteUrl = AccountData.getSiteUrl(this, username);
                 if (!savedSiteUrl.equals("")) GiuaScraper.setSiteURL(savedSiteUrl);
                 GlobalVariables.gS = new GiuaScraper(username, password, cookie, true, SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE), new LoggerManager("GiuaScraper", this));
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 GlobalVariables.gS.login();
                 AccountData.setCredentials(this, username, password, GlobalVariables.gS.getCookie(), GlobalVariables.gS.getUserTypeString());
                 AccountData.setSiteUrl(this, username, GiuaScraper.getSiteURL());
@@ -144,12 +149,26 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                     runOnUiThread(() -> setErrorMessage(getString(R.string.maintenance_is_active_error)));
                 }
                 runOnUiThread(() -> btnLogout.setVisibility(View.VISIBLE));
-                //runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));
+                runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));
                 runOnUiThread(() -> pbLoadingScreen.setVisibility(View.GONE));
                 runOnUiThread(() -> tvAutoLogin.setText("Accesso fallito."));
 
             }
         });
+        new Thread(() -> { //mostra il pulsante per l'offline dopo 5 secondi
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            runOnUiThread(() -> {
+                btnOffline.setVisibility(View.INVISIBLE);
+                btnOffline.setAlpha(0f);
+                btnOffline.animate().alpha(1f).setDuration(400);
+                btnOffline.setVisibility(View.VISIBLE);
+            });
+
+        }).start();
     }
 
     private void btnLogoutOnClick(View view) {
@@ -186,14 +205,20 @@ public class AutomaticLoginActivity extends AppCompatActivity {
     }
 
     private void startStudentLoginActivity() {
-        runOnUiThread(() -> findViewById(R.id.loading_screen_btn_settings).setVisibility(View.GONE));
+        runOnUiThread(() -> {
+            findViewById(R.id.loading_screen_btn_settings).setVisibility(View.GONE);
+            btnOffline.setVisibility(View.GONE);
+        });
         loggerManager.d("Avvio StudentLoginActivity");
         startActivity(new Intent(AutomaticLoginActivity.this, StudentLoginActivity.class).putExtra("sender", "AutomaticLogin"));
         finish();
     }
 
     private void startDrawerActivity() {
-        runOnUiThread(() -> findViewById(R.id.loading_screen_btn_settings).setVisibility(View.GONE));
+        runOnUiThread(() -> {
+            findViewById(R.id.loading_screen_btn_settings).setVisibility(View.GONE);
+            btnOffline.setVisibility(View.GONE);
+        });
         loggerManager.d("Avvio DrawerActivity");
         String goTo = getIntent().getStringExtra("goTo");
         if (goTo == null)

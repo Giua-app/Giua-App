@@ -153,6 +153,7 @@ public class ActivityManager extends AppCompatActivity {
      * Controlla LastStartupDate (copiato da {@link AppUpdateManager#checkUpdateReminderDate()})
      * @return true se si può notificare l'avvio, false se bisogna aspettare ad un altro giorno
      */
+    //TODO: trasferire in AppUtils
     public boolean checkLastStartupDate(){
         int dayOfYear;
         int year;
