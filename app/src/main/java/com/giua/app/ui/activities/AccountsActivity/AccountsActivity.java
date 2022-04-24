@@ -184,6 +184,7 @@ public class AccountsActivity extends AppCompatActivity {
             gS.setPrivateSiteUrl(siteUrl);
             try {
                 gS.login();
+
                 runOnUiThread(() -> {
                     pbAccountCard.setVisibility(View.INVISIBLE);
                     AccountData.setCredentials(this, username, password);
@@ -199,8 +200,10 @@ public class AccountsActivity extends AppCompatActivity {
     private void onSwipeViewMove(SwipeView swipeView, SwipeView.Operation operation) {
         if (operation == SwipeView.Operation.SHOW_START_FROM_BOTTOM)
             btnAddAccount.setVisibility(View.INVISIBLE);
-        if (operation == SwipeView.Operation.HIDE_ALL_FROM_Y)
+        if (operation == SwipeView.Operation.HIDE_ALL_FROM_Y) {
             btnAddAccount.setVisibility(View.VISIBLE);
+            AppUtils.hideKeyboard(this, swipeView);
+        }
     }
 
     private TextWatcher onEditTextChanged(final TextInputLayout view) {
@@ -270,6 +273,8 @@ public class AccountsActivity extends AppCompatActivity {
         etAddAccountUsername.setText("");
         etAddAccountPassword.setText("");
         etAddAccountUrl.setText(defaultUrl.equals("") ? GiuaScraper.getGlobalSiteUrl() : defaultUrl);
+        swipeView.setMaxHeight(swipeView.getMaxScreenHeight() - AppUtils.convertDpToPx(70f, this));
+        swipeView.setStartHeight(AppUtils.convertDpToPx(250f, this));
         swipeView.show();
     }
 
@@ -296,7 +301,7 @@ public class AccountsActivity extends AppCompatActivity {
     }
 
     private void onSwipeViewTouchRelease(SwipeView swipeView) {
-        if (swipeView.getY() < swipeView.startHeight - AppUtils.convertDpToPx(50, this))
+        if (swipeView.getY() < swipeView.getStartHeight() - AppUtils.convertDpToPx(50, this))
             swipeView.showAllFromY();
         else {
             swipeView.hideAllFromY();
@@ -327,6 +332,8 @@ public class AccountsActivity extends AppCompatActivity {
         dotColorPreview.setBackgroundTintList(ColorStateList.valueOf(AccountData.getTheme(this, accountCard.username)));
         layoutAddAccount.setVisibility(View.GONE);
         layoutManageAccount.setVisibility(View.VISIBLE);
+        swipeView.setMaxHeight(AppUtils.convertDpToPx(200f, this));
+        swipeView.setStartHeight(swipeView.getMaxHeight());
         swipeView.show();
         lastClickedAccountCard = accountCard;
     }

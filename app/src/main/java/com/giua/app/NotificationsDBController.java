@@ -40,7 +40,6 @@ import java.util.Vector;
  */
 public class NotificationsDBController extends SQLiteOpenHelper {
 
-    private final Context context;
     private final LoggerManager lm;
     private final SQLiteDatabase db;
 
@@ -64,8 +63,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
      */
     public NotificationsDBController(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
-        this.context = context.getApplicationContext();
-        lm = new LoggerManager("NotificationsDBController", this.context);
+        lm = new LoggerManager("NotificationsDBController", context);
         db = getWritableDatabase();
     }
 
@@ -78,28 +76,28 @@ public class NotificationsDBController extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        lm.w("Aggiornamento database rilevato (" + oldVersion + " -> " + newVersion + "). " +
+        lm.w("Upgrade database rilevato (" + oldVersion + " -> " + newVersion + "). " +
                 "Impossibile convertire database, cancello e ne ricreo uno nuovo");
-        db.execSQL("DROP TABLE IF EXISTS " + ALERTS_TESTS_TABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + ALERTS_HOMEWORKS_TABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + VOTES_TABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + NEWSLETTERS_TABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + ALERTS_TABLE);
 
+        deleteTables(db);
         createTables(db);
     }
 
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        lm.w("Aggiornamento database rilevato (" + oldVersion + " -> " + newVersion + "). " +
+        lm.w("Downgrade database rilevato (" + oldVersion + " -> " + newVersion + "). " +
                 "Impossibile convertire database, cancello e ne ricreo uno nuovo");
+
+        deleteTables(db);
+        createTables(db);
+    }
+
+    private void deleteTables(SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + ALERTS_TESTS_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + ALERTS_HOMEWORKS_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + VOTES_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + NEWSLETTERS_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + ALERTS_TABLE);
-
-        createTables(db);
     }
 
     private void createTables(SQLiteDatabase db) {
@@ -198,18 +196,14 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         return alerts;
     }
 
-    public void addAlertsHomeworks(List<Alert> alerts) {
-        for (Alert alert : alerts) {
-            addAlertHomework(alert);
-        }
-    }
-
     //endregion
 
     //region DBAlertsHomeworks
 
-    public void deleteAlertsHomeworks() {
-        db.execSQL("DELETE FROM " + ALERTS_HOMEWORKS_TABLE + ";");
+    public void addAlertsHomeworks(List<Alert> alerts) {
+        for (Alert alert : alerts) {
+            addAlertHomework(alert);
+        }
     }
 
     private long addAlertHomework(Alert alert) {
@@ -235,12 +229,16 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         values.put(DBAlertHomeworks.ATTACHMENT_URLS_COL.name, attachmentUrls);
         values.put(DBAlertHomeworks.IS_DETAILED_COL.name, alert.isDetailed ? 1 : 0); //false = 0, true = 1
 
-        return db.insert(ALERTS_HOMEWORKS_TABLE, null, values);
+        return db.insertOrThrow(ALERTS_HOMEWORKS_TABLE, null, values);
     }
 
     public void replaceAlertsHomeworks(List<Alert> alerts) {
         deleteAlertsHomeworks();
         addAlertsHomeworks(alerts);
+    }
+
+    public void deleteAlertsHomeworks() {
+        db.execSQL("DELETE FROM " + ALERTS_HOMEWORKS_TABLE + ";");
     }
 
     public List<Alert> readAlertsHomeworks() {
@@ -287,6 +285,10 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         return alerts;
     }
 
+    //endregion
+
+    //region DBAlertsTests
+
     public void addAlertsTests(List<Alert> alerts) {
         for (Alert alert : alerts) {
             addAlertTest(alert);
@@ -316,12 +318,8 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         values.put(DBAlertTests.ATTACHMENT_URLS_COL.name, attachmentUrls);
         values.put(DBAlertTests.IS_DETAILED_COL.name, alert.isDetailed ? 1 : 0); //false = 0, true = 1
 
-        return db.insert(ALERTS_TESTS_TABLE, null, values);
+        return db.insertOrThrow(ALERTS_TESTS_TABLE, null, values);
     }
-
-    //endregion
-
-    //region DBAlertsTests
 
     public void replaceAlertsTests(List<Alert> alerts) {
         deleteAlertsTests();
@@ -375,6 +373,9 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         cursor.close();
         return alerts;
     }
+    //endregion
+
+    //region DBVotes
 
     public void addVotes(Map<String, List<Vote>> votes) {
         for (String m : votes.keySet()) {
@@ -389,59 +390,6 @@ public class NotificationsDBController extends SQLiteOpenHelper {
 
     public void deleteVotes() {
         db.execSQL("DELETE FROM " + VOTES_TABLE + ";");
-    }
-    //endregion
-
-    //region DBVotes
-
-    private long addNewsletter(Newsletter newsletter) {
-        ContentValues values = new ContentValues();
-
-        values.put(DBNewsletter.STATUS_COL.name, newsletter.getStatus());
-        values.put(DBNewsletter.NUMBER_COL.name, newsletter.number);
-        values.put(DBNewsletter.DATE_COL.name, newsletter.date);
-        values.put(DBNewsletter.OBJECT_COL.name, newsletter.object);
-        values.put(DBNewsletter.DETAILS_URL_COL.name, newsletter.detailsUrl);
-
-        //Non si può memorizzare una lista su sql
-        String attachmentUrls = null;
-        if (newsletter.attachmentsUrl != null) {
-            for (String url : newsletter.attachmentsUrl) {
-                attachmentUrls += url + ";";
-            }
-        }
-
-        values.put(DBNewsletter.ATTACHMENTS_URL_COL.name, attachmentUrls);
-        values.put(DBNewsletter.PAGE_COL.name, newsletter.page);
-
-        return db.insert(NEWSLETTERS_TABLE, null, values);
-    }
-
-    private void addSubject(String subject, List<Vote> votes){
-        for(Vote vote : votes) {
-            ContentValues values = new ContentValues();
-
-            values.put(DBVote.VALUE_COL.name, vote.value);
-            values.put(DBVote.QUARTERLY_COL.name, vote.quarterly);
-            values.put(DBVote.IS_ASTERISK_COL.name, vote.isAsterisk);
-            values.put(DBVote.DATE_COL.name, vote.date);
-            values.put(DBVote.JUDGEMENT_COL.name, vote.judgement);
-            values.put(DBVote.TEST_TYPE_COL.name, vote.testType);
-            values.put(DBVote.ARGUMENTS_COL.name, vote.arguments);
-            values.put(DBVote.IS_RELEVANT_FOR_MEAN_COL.name, vote.isRelevantForMean);
-            values.put(DBVote.SUBJECT.name, subject);
-
-            db.insert(VOTES_TABLE, null, values);
-        }
-    }
-
-    public void replaceNewsletters(List<Newsletter> newsletters) {
-        deleteNewsletters();
-        addNewsletters(newsletters);
-    }
-
-    public void deleteNewsletters() {
-        db.execSQL("DELETE FROM " + NEWSLETTERS_TABLE + ";");
     }
 
     public Map<String, List<Vote>> readVotes() {
@@ -482,7 +430,98 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         return votes;
     }
 
-    private enum DBVote{
+    //endregion
+
+    //region DBNewsletters
+
+    public void addNewsletters(List<Newsletter> newsletters) {
+        for (Newsletter n : newsletters) {
+            addNewsletter(n);
+        }
+    }
+
+    private long addNewsletter(Newsletter newsletter) {
+        ContentValues values = new ContentValues();
+
+        values.put(DBNewsletter.STATUS_COL.name, newsletter.getStatus());
+        values.put(DBNewsletter.NUMBER_COL.name, newsletter.number);
+        values.put(DBNewsletter.DATE_COL.name, newsletter.date);
+        values.put(DBNewsletter.OBJECT_COL.name, newsletter.object);
+        values.put(DBNewsletter.DETAILS_URL_COL.name, newsletter.detailsUrl);
+
+        //Non si può memorizzare una lista su sql
+        String attachmentUrls = null;
+        if (newsletter.attachmentsUrl != null) {
+            for (String url : newsletter.attachmentsUrl) {
+                attachmentUrls += url + ";";
+            }
+        }
+
+        values.put(DBNewsletter.ATTACHMENTS_URL_COL.name, attachmentUrls);
+        values.put(DBNewsletter.PAGE_COL.name, newsletter.page);
+
+        return db.insertOrThrow(NEWSLETTERS_TABLE, null, values);
+    }
+
+    private void addSubject(String subject, List<Vote> votes) {
+        for (Vote vote : votes) {
+            ContentValues values = new ContentValues();
+
+            values.put(DBVote.VALUE_COL.name, vote.value);
+            values.put(DBVote.QUARTERLY_COL.name, vote.quarterly);
+            values.put(DBVote.IS_ASTERISK_COL.name, vote.isAsterisk);
+            values.put(DBVote.DATE_COL.name, vote.date);
+            values.put(DBVote.JUDGEMENT_COL.name, vote.judgement);
+            values.put(DBVote.TEST_TYPE_COL.name, vote.testType);
+            values.put(DBVote.ARGUMENTS_COL.name, vote.arguments);
+            values.put(DBVote.IS_RELEVANT_FOR_MEAN_COL.name, vote.isRelevantForMean);
+            values.put(DBVote.SUBJECT.name, subject);
+
+            db.insertOrThrow(VOTES_TABLE, null, values);
+        }
+    }
+
+    public void replaceNewsletters(List<Newsletter> newsletters) {
+        deleteNewsletters();
+        addNewsletters(newsletters);
+    }
+
+    public void deleteNewsletters() {
+        db.execSQL("DELETE FROM " + NEWSLETTERS_TABLE + ";");
+    }
+
+    public List<Newsletter> readNewsletters() {
+        Cursor cursor = db.rawQuery("SELECT * FROM " + NEWSLETTERS_TABLE, null);
+
+        List<Newsletter> newsletters = new Vector<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                List<String> attachmentUrls = null;
+                try {
+                    attachmentUrls = Arrays.asList(cursor.getString(DBNewsletter.ATTACHMENTS_URL_COL.ordinal()).split(";"));
+                } catch (NullPointerException ignored) {
+                }
+
+                newsletters.add(new Newsletter(cursor.getString(DBNewsletter.STATUS_COL.ordinal()),
+                        cursor.getInt(DBNewsletter.NUMBER_COL.ordinal()),
+                        cursor.getString(DBNewsletter.DATE_COL.ordinal()),
+                        cursor.getString(DBNewsletter.OBJECT_COL.ordinal()),
+                        cursor.getString(DBNewsletter.DETAILS_URL_COL.ordinal()),
+                        attachmentUrls,
+                        cursor.getInt(DBNewsletter.PAGE_COL.ordinal())));
+
+
+            } while (cursor.moveToNext());
+            //muovi il cursore nella prossima riga
+        }
+        cursor.close();
+        return newsletters;
+    }
+
+    //endregion
+
+    private enum DBVote {
         VALUE_COL("value"),
         DATE_COL("date"),
         TEST_TYPE_COL("testType"),
@@ -497,15 +536,6 @@ public class NotificationsDBController extends SQLiteOpenHelper {
 
         DBVote(String name) {
             this.name = name;
-        }
-    }
-    //endregion
-
-    //region DBNewsletters
-
-    public void addNewsletters(List<Newsletter> newsletters) {
-        for (Newsletter n : newsletters) {
-            addNewsletter(n);
         }
     }
 
@@ -569,35 +599,6 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         }
     }
 
-    public List<Newsletter> readNewsletters() {
-        Cursor cursor = db.rawQuery("SELECT * FROM " + NEWSLETTERS_TABLE, null);
-
-        List<Newsletter> newsletters = new Vector<>();
-
-        if (cursor.moveToFirst()) {
-            do {
-                List<String> attachmentUrls = null;
-                try{
-                    attachmentUrls = Arrays.asList(cursor.getString(DBNewsletter.ATTACHMENTS_URL_COL.ordinal()).split(";"));
-                } catch(NullPointerException ignored){ }
-
-                newsletters.add(new Newsletter(cursor.getString(DBNewsletter.STATUS_COL.ordinal()),
-                        cursor.getInt(DBNewsletter.NUMBER_COL.ordinal()),
-                        cursor.getString(DBNewsletter.DATE_COL.ordinal()),
-                        cursor.getString(DBNewsletter.OBJECT_COL.ordinal()),
-                        cursor.getString(DBNewsletter.DETAILS_URL_COL.ordinal()),
-                        attachmentUrls,
-                        cursor.getInt(DBNewsletter.PAGE_COL.ordinal())));
-
-
-
-            } while (cursor.moveToNext());
-            //muovi il cursore nella prossima riga
-        }
-        cursor.close();
-        return newsletters;
-    }
-
     private enum DBNewsletter{
         STATUS_COL("status"),
         NUMBER_COL("number"),
@@ -613,8 +614,6 @@ public class NotificationsDBController extends SQLiteOpenHelper {
             this.name = name;
         }
     }
-
-    //endregion
 
     public static class AlertsTable {
         public static void createTable(SQLiteDatabase db) {

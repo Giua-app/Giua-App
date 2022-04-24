@@ -37,10 +37,10 @@ import com.giua.app.AppUtils;
 import com.giua.app.R;
 
 public class SwipeView extends LinearLayout {
-    public final float startHeight;   //L' altezza del layout alla posizione iniziale
+    private float startHeight;   //L' altezza del layout alla posizione iniziale
+    private float maxHeightAsY;
 
     public final ImageView imageView;
-    public final float maxHeightAsY;
     private final DisplayMetrics realMetrics;
     private float yOffset = -1f;
     private OnTouchRelease onTouchRelease = (swipeView) -> {
@@ -101,6 +101,38 @@ public class SwipeView extends LinearLayout {
         imageView.setLayoutParams(layoutParams);
         imageView.setImageResource(R.drawable.bottom_view_shape);
         addView(imageView);
+    }
+
+    public void setStartHeightAsY(float startHeightInPx) {
+        startHeight = startHeightInPx;
+    }
+
+    public float getMaxHeightAsY() {
+        return maxHeightAsY;
+    }
+
+    public void setMaxHeightAsY(float maxHeightInPx) {
+        maxHeightAsY = maxHeightInPx;
+    }
+
+    public float getMaxHeight() {
+        return realMetrics.heightPixels - maxHeightAsY;
+    }
+
+    public void setMaxHeight(float maxHeightInPx) {
+        maxHeightAsY = realMetrics.heightPixels - maxHeightInPx;
+    }
+
+    public float getMaxScreenHeight() {
+        return realMetrics.heightPixels;
+    }
+
+    public float getStartHeight() {
+        return startHeight;
+    }
+
+    public void setStartHeight(float startHeightInPx) {
+        startHeight = realMetrics.heightPixels - startHeightInPx;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -195,7 +227,7 @@ public class SwipeView extends LinearLayout {
     }
 
     /**
-     * Nasconde il layout con una animazione
+     * Mostra il layout con una animazione
      */
     public void show() {
         showStart();

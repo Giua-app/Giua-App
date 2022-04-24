@@ -156,7 +156,7 @@ dependencies {
     implementation 'com.github.Dhaval2404:ColorPicker:2.3'
 
     //--Giua scraper
-    implementation 'com.github.Giua-app:Giua-Webscraper:8017a31080'
+    implementation 'com.github.Giua-app:Giua-Webscraper:73e7413a46'
     //implementation fileTree(dir: 'libs', include: ['*.jar'])     //DEBUG
     //implementation 'com.fasterxml.jackson.core:jackson-core:2.12.5'   //DEBUG
     //implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.5'    //DEBUG

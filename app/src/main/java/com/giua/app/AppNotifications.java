@@ -51,7 +51,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Vector;
 
-//FIXME ?: Non supporta url diversi da quello del Giua per il login con Gsuite
+//Attenzione: Non supporta url diversi da quello del Giua per il login con Gsuite
 //FIXME: tutti i controlli allOld*.size() == 0 bisogna sostituirli con qualcos'altro altrimenti le prime circolari, avvisi, ecc non verranno mai notificati
 public class AppNotifications extends BroadcastReceiver {
     private Context context;
@@ -64,7 +64,6 @@ public class AppNotifications extends BroadcastReceiver {
     private String activeUsername = "";
 
     private boolean isDebugMode = false;
-    private boolean canSendNotifications = false;
     private boolean canSendNotificationsVotes = false;
     private boolean canSendNotificationsHomeworks = false;
     private boolean canSendNotificationsTests = false;
@@ -77,7 +76,7 @@ public class AppNotifications extends BroadcastReceiver {
 
         loggerManager = new LoggerManager("AppNotifications", context);
         activeUsername = AppData.getActiveUsername(context);
-        canSendNotifications = SettingsData.getSettingBoolean(context, SettingKey.NOTIFICATION);
+        boolean canSendNotifications = SettingsData.getSettingBoolean(context, SettingKey.NOTIFICATION);
 
         if (activeUsername.equals("") || !canSendNotifications) return;
 
@@ -176,13 +175,13 @@ public class AppNotifications extends BroadcastReceiver {
 
         //region Compiti
 
-        if (canSendNotificationsHomeworks && allOldHomeworks.size() != 0) {
+        if (canSendNotificationsHomeworks) {
             for (Alert alert : allOldHomeworks)
                 allNewHomeworks.remove(alert);
 
             if (allNewHomeworks.size() > 0) {
                 notificationManager.cancel(AppNotificationsParams.HOMEWORKS_NOTIFICATION_ID);
-                notificationManager.notify(AppNotificationsParams.HOMEWORKS_NOTIFICATION_ID, createHomeworkNotification(allNewHomeworks));
+                notificationManager.notify(AppNotificationsParams.HOMEWORKS_NOTIFICATION_ID, createHomeworksNotification(allNewHomeworks));
             }
         }
 
@@ -190,7 +189,7 @@ public class AppNotifications extends BroadcastReceiver {
 
         //region Verifiche
 
-        if (canSendNotificationsTests && allOldTests.size() != 0) {
+        if (canSendNotificationsTests) {
             for (Alert alert : allOldTests)
                 allNewTests.remove(alert);
 
@@ -227,7 +226,7 @@ public class AppNotifications extends BroadcastReceiver {
         return createNotificationWithBigText(title, text, bigText, AppNotificationsParams.AGENDA_NOTIFICATION_GOTO, AppNotificationsParams.TESTS_NOTIFICATION_REQUEST_CODE);
     }
 
-    private Notification createHomeworkNotification(List<Alert> allNewHomeworks) {
+    private Notification createHomeworksNotification(List<Alert> allNewHomeworks) {
         String title;
         String text = "Clicca per andare all'agenda";
         String bigText = "";
@@ -506,7 +505,7 @@ public class AppNotifications extends BroadcastReceiver {
     private void logErrorInLoggerManager(Exception e) {
         String stacktrace = "";
         for (StackTraceElement s : e.getStackTrace()) {
-            stacktrace += s.toString();
+            stacktrace += s.toString() + "\n";
         }
 
         loggerManager.e("Messaggio: " + e.getMessage() + "\nErrore: " + e + "\nStacktrace: " + stacktrace);
