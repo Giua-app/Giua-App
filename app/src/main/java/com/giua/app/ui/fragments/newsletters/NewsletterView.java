@@ -159,9 +159,14 @@ public class NewsletterView extends ConstraintLayout {
         upperView.setTranslationX(normalTranslationX);
     }
 
-    public void markAsRead() {
+    public void markAsReadWithAnimation() {
         markAsReadCompleteAnimation();
         newsletter.markAsRead();
+    }
+
+    public void markAsRead() {
+        newsletter.markAsRead();
+        refreshView();
     }
 
     private void markAsReadCompleteAnimation() {

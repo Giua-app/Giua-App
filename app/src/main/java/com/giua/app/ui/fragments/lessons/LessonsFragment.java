@@ -144,11 +144,11 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
                 lastCallTime = System.nanoTime();
                 try {
                     allLessons = GlobalVariables.gS.getLessonsPage(true).getAllLessonsFromDate(currentDate);
-                    if (allLessons == null)
-                        return;
+
+                    if (allLessons == null || isFragmentDestroyed) return;
+
                     hasCompletedLoading = true;
-                    if (!isFragmentDestroyed)
-                        activity.runOnUiThread(this::addViews);
+                    activity.runOnUiThread(this::addViews);
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     //Errore di connessione
                     activity.runOnUiThread(() -> {

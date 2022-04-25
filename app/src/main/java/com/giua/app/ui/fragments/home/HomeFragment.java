@@ -118,11 +118,11 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         offlineMode = activity.getIntent().getBooleanExtra("offline", false);
         addVoteNotRelevantForMean = SettingsData.getSettingBoolean(activity, SettingKey.VOTE_NRFM_ON_CHART);
 
-        GlobalVariables.gsThread.addTask(() -> {
+        new Thread(() -> {
 
-            if(offlineMode){
+            if (offlineMode) {
                 activity.runOnUiThread(() -> txUserInfo.setText("Accesso eseguito in modalità Offline"));
-            } else{
+            } else {
                 activity.runOnUiThread(() -> txUserInfo.setText("Accesso eseguito nell'account " + GlobalVariables.gS.getUser() + " (" + GlobalVariables.gS.getUserTypeString() + ")"));
             }
 
@@ -135,7 +135,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
                     root.findViewById(R.id.home_app_update_reminder).setOnClickListener(this::updateReminderOnClick);
                 });
             }
-        });
+        }).start();
 
         return root;
     }
@@ -179,8 +179,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
                 if (forceRefresh)
                     forceRefresh = false;
 
-                if (isFragmentDestroyed)
-                    return;
+                if (isFragmentDestroyed) return;
 
                 activity.runOnUiThread(() -> {
                     setupHomeworksTestsText(homeworks, tests);

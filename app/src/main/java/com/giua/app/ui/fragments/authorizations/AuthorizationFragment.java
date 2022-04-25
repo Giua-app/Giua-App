@@ -72,6 +72,9 @@ public class AuthorizationFragment extends Fragment implements IGiuaAppFragment 
         GlobalVariables.gsThread.addTask(() -> {
             try {
                 authorization = GlobalVariables.gS.getAuthorizationsPage(refresh).getAuthorizations();
+
+                if (isFragmentDestroyed) return;
+
                 activity.runOnUiThread(this::addViews);
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                 activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.your_connection_error), root));

@@ -206,6 +206,8 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
                     allAgendaObjects = GlobalVariables.gS.getAgendaPage(false)
                             .getAllAgendaObjectsWithoutDetails(getCurrentYear() + "-" + getNumberForScraping(Integer.parseInt(getCurrentMonth())));
 
+                    if (isFragmentDestroyed) return;
+
                     if (allAgendaObjects.isEmpty()) {
                         activity.runOnUiThread(() -> {
                             viewsLayout.removeViews(1, viewsLayout.getChildCount() - 1);
@@ -272,6 +274,8 @@ public class AgendaFragment extends Fragment implements IGiuaAppFragment {
     //region Listeners
 
     private void showDateActivities(Calendar selectedDate) {
+        if (isFragmentDestroyed) return;
+
         //Conto quanti oggetti ci sono nel giorno cliccato
         List<AgendaObject> agendaObjectsOfTheDay = new Vector<>();
         String day = String.valueOf(selectedDate.get(Calendar.DAY_OF_MONTH));

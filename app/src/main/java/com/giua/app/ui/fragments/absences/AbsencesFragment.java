@@ -97,6 +97,8 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
                 absencesPage = GlobalVariables.gS.getAbsencesPage(refresh);
                 absences = absencesPage.getAllAbsences();
 
+                if (isFragmentDestroyed) return;
+
                 activity.runOnUiThread(() -> {
                     setTextToOtherInfoObjects(R.id.absences_other_info_number_absences, "Numero di giorni di assenza: ", absencesPage.getAbsencesDayCount(), false);
                     setTextToOtherInfoObjects(R.id.absences_other_info_total_absences_time, "Totale ore di assenza: ", absencesPage.getTotalHourOfAbsences(), false);
@@ -225,6 +227,8 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
                         GlobalVariables.gS.getAbsencesPage(false).justifyAbsence(absenceView.absence, "", absenceView.justifyText);
                     else
                         GlobalVariables.gS.getAbsencesPage(false).deleteJustificationAbsence(absenceView.absence);
+
+                    if (isFragmentDestroyed) return;
                 } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                     activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.your_connection_error), root));
                     return;

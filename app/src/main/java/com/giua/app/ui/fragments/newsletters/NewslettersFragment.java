@@ -166,7 +166,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                     }
                 }
 
-                if (allNewsletters == null) return;
+                if (allNewsletters == null || isFragmentDestroyed) return;
 
                 activity.runOnUiThread(() -> tvNoElements.setVisibility(View.GONE));
                 if (currentPage == 1)   //Salviamo solo la prima pagina per l'offline
@@ -287,7 +287,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                 return true;
             case MotionEvent.ACTION_UP:
                 if (!newsletterView.newsletter.isRead() && newsletterView.upperView.getTranslationX() >= adaptiveHalfWidth) {
-                    newsletterView.markAsRead();
+                    newsletterView.markAsReadWithAnimation();
                     GlobalVariables.gsThread.addTask(() -> GlobalVariables.gS.getNewslettersPage(false).markNewsletterAsRead(newsletterView.newsletter));
                 } else
                     newsletterView.makeComeBackAnimation();
@@ -345,8 +345,6 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     }
 
     private void onScrollViewScrolled(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-
-
         if (!loadedAllPages && !loadingPage && !view.canScrollVertically(100) && scrollY - oldScrollY > 10)
             loadDataAndViews();
         if (scrollY - oldScrollY > 0)
@@ -440,7 +438,7 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
             public void onAnimationEnd(Animation animation) {
                 v.findViewById(R.id.newsletter_left_layout).setAlpha(0);
                 if (!isOnlyClosing)
-                    v.markAsRead();
+                    v.markAsReadWithAnimation();
             }
 
             @Override
@@ -483,6 +481,9 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         GlobalVariables.gsThread.addTask(() -> {
             try {
                 DownloadedFile downloadedFile = GlobalVariables.gS.download(url);
+
+                if (isFragmentDestroyed) return;
+
                 FileOutputStream out = new FileOutputStream(requireActivity().getCacheDir() + "/" + "circolare." + downloadedFile.fileExtension);
                 if (downloadedFile.data != null && downloadedFile.data.length > 0) {
                     out.write(downloadedFile.data);
@@ -497,9 +498,9 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                 activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.site_connection_error), root));
             } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
                 activity.runOnUiThread(() -> setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root));
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ignored) {
             }
+
             isDownloading = false;
             activity.runOnUiThread(() -> pbDownloading.setVisibility(View.GONE));
         });

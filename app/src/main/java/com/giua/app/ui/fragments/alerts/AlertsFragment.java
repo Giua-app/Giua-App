@@ -133,7 +133,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
             isLoadingContent = true;
             if (pbLoadingContent.getParent() == null)
                 viewsLayout.addView(pbLoadingContent);
-            GlobalVariables.gsThread.addTask(() -> {
+            new Thread(() -> {
                 allAlerts = new OfflineDBController(root.getContext()).readAlerts();
                 if (allAlerts.isEmpty()) {
                     hasLoadedAllPages = true;
@@ -143,7 +143,7 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
                     activity.runOnUiThread(this::addViews);
                     allAlertsToSave.addAll(allAlerts);
                 }
-            });
+            }).start();
         }
     }
 
@@ -163,6 +163,9 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
             GlobalVariables.gsThread.addTask(() -> {
                 try {
                     allAlerts = GlobalVariables.gS.getAlertsPage(false).getAllAlerts(currentPage);
+
+                    if (isFragmentDestroyed) return;
+
                     if (currentPage == 1)
                         new OfflineDBController(root.getContext()).addAlerts(allAlerts);
 
@@ -247,6 +250,8 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
         GlobalVariables.gsThread.addTask(() -> {
             try {
                 ((AlertView) view).alert.getDetails(GlobalVariables.gS);
+
+                if (isFragmentDestroyed) return;
 
                 activity.runOnUiThread(() -> {
                     Alert alert = ((AlertView) view).alert;
@@ -395,6 +400,9 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
             GlobalVariables.gsThread.addTask(() -> {
                 try {
                     DownloadedFile downloadedFile = GlobalVariables.gS.download(url);
+
+                    if (isFragmentDestroyed) return;
+
                     FileOutputStream out = new FileOutputStream(requireActivity().getFilesDir() + "/" + "allegato." + downloadedFile.fileExtension);
                     if (downloadedFile.data != null && downloadedFile.data.length > 0) {
                         out.write(downloadedFile.data);
