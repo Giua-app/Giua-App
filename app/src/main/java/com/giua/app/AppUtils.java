@@ -29,7 +29,10 @@ public class AppUtils {
 
     public static int convertDpToPx(float dp, Context context) {
         //https://stackoverflow.com/questions/4605527/converting-pixels-to-dp
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
+         
+ ​        ​DisplayMetrics realMetrics​ = ​new​ ​DisplayMetrics​(); 
+ ​        ((​Activity​) ​context​).​getWindowManager​().​getDefaultDisplay​().​getRealMetrics​(​realMetrics​);
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, realMetrics);
     }
 
     public static void hideKeyboard(Context context, View view) {
