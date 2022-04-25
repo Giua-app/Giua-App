@@ -92,7 +92,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         setupAboutScreenObject();
         setupIntroScreenObject();
-        setupExpModeObject();
+        //setupExpModeObject();
         setupSiteUrlObject();
         setupBugReportObject();
         setupDebugModeObject();
