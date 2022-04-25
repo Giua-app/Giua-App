@@ -204,7 +204,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (GlobalVariables.gS.isSessionValid(GlobalVariables.gS.getCookie())) {
                     if (chRememberCredentials.isChecked()) {
-                        AccountData.setCredentials(this, etUsername.getText().toString(), etPassword.getText().toString(), GlobalVariables.gS.getCookie(), GlobalVariables.gS.getUserTypeString());
+                        AccountData.setCredentials(this, etUsername.getText().toString(), etPassword.getText().toString(), GlobalVariables.gS.getCookie(), GlobalVariables.gS.getUserTypeString(), GlobalVariables.gS.getProfilePage(false).getProfileInformation()[2]);
                         AccountData.setSiteUrl(this, etUsername.getText().toString(), GlobalVariables.gS.getSiteUrl());
                         AppData.addAccountUsername(this, etUsername.getText().toString().toLowerCase());
                         AppData.saveActiveUsername(this, etUsername.getText().toString().toLowerCase());

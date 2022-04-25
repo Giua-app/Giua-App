@@ -46,6 +46,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
+        android:id="@+id/scrollView3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -71,12 +72,7 @@
         android:backgroundTint="@color/general_view_color"
         android:orientation="vertical"
         android:padding="10dp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/activity_accounts_table"
-        app:maxExtension="430dp"
-        app:startHeight="230dp">
+        android:visibility="invisible">
 
         <!--LinearLayout per gestire gli account-->
         <LinearLayout
@@ -85,33 +81,42 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <ImageView
+                android:id="@+id/accounts_manage_account_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/corner_radius_10dp"
+                android:backgroundTint="#EF5350"
+                android:contentDescription="Rimuovi account"
+                android:foreground="@drawable/ripple_effect"
+                android:padding="5dp"
+                android:src="@drawable/ic_baseline_delete_forever_24" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_marginStart="10dp"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/accounts_manage_account_username"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_weight="1"
                     android:fontFamily="@font/varelaroundregular"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    tools:text="mario.rossi.f1" />
 
-                <ImageView
-                    android:id="@+id/accounts_manage_account_delete"
+                <TextView
+                    android:id="@+id/accounts_manage_account_email"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:layout_weight="0.1"
-                    android:background="@drawable/corner_radius_10dp"
-                    android:backgroundTint="#EF5350"
-                    android:contentDescription="Rimuovi account"
-                    android:foreground="@drawable/ripple_effect"
-                    android:padding="5dp"
-                    android:src="@drawable/ic_baseline_delete_forever_24" />
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="@font/varelaroundregular"
+                    android:textSize="16sp"
+                    tools:text="mariorossi@example.com" />
+
             </LinearLayout>
 
             <LinearLayout

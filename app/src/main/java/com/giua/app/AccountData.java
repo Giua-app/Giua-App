@@ -44,6 +44,7 @@ public class AccountData {
     private static final String cookieKey = "cookie";
     private static final String siteUrlKey = "siteUrl";
     private static final String themeKey = "theme";
+    private static final String emailKey = "email";
     private static final String userTypeKey = "userType";
     private static MasterKey masterKey = null;
     private static final String masterKeyAlias = "masterKeyAlias";
@@ -85,23 +86,20 @@ public class AccountData {
 
     }
 
-    //add final String APIUrl to parameters
     public static void setCredentials(final Context context, final String username, final String password) {
 
         getSharedPreferences(context, username).edit()
-                //.putString(APIUrlKey, APIUrl)
                 .putString(passwordKey, password)
                 .apply();
     }
 
-    //add final String APIUrl to parameters
-    public static void setCredentials(final Context context, final String username, final String password, final String cookie, final String userType) {
+    public static void setCredentials(final Context context, final String username, final String password, final String cookie, final String userType, final String email) {
 
         getSharedPreferences(context, username).edit()
-                //.putString(APIUrlKey, APIUrl)
                 .putString(passwordKey, password)
                 .putString(cookieKey, cookie)
                 .putString(userTypeKey, userType)
+                .putString(emailKey, email)
                 .apply();
     }
 
@@ -135,6 +133,16 @@ public class AccountData {
 
     public static int getTheme(final Context context, final String username) {
         return getSharedPreferences(context, username).getInt(themeKey, Color.rgb(0, 123, 255));
+    }
+
+    public static void setEmail(final Context context, final String username, final String email) {
+        getSharedPreferences(context, username).edit()
+                .putString(themeKey, email)
+                .apply();
+    }
+
+    public static String getEmail(final Context context, final String username) {
+        return getSharedPreferences(context, username).getString(emailKey, "");
     }
 
     public static void removeAccount(final Context context, final String username) {

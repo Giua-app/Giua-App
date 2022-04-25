@@ -36,6 +36,7 @@ import com.giua.app.R;
 public class AccountCard extends LinearLayout {
 
     public final String username;
+    public final String email;
     public final String type;
     public final int color;
 
@@ -43,15 +44,17 @@ public class AccountCard extends LinearLayout {
         super(context);
 
         username = "";
+        email = "";
         type = "";
         color = -1;
         setVisibility(GONE);
     }
 
-    public AccountCard(Context context, String username, String type, @ColorInt int color) {
+    public AccountCard(Context context, String username, String email, String type, @ColorInt int color) {
         super(context);
 
         this.username = username;
+        this.email = email;
         this.type = type;
         this.color = color;
 
@@ -84,9 +87,8 @@ public class AccountCard extends LinearLayout {
     private Drawable getImageWithBackgroundColor(Context context, Drawable drawable, int color) {
         Drawable icAccountBackground = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_account_background, context.getTheme());
         icAccountBackground.setTint(color);
-        LayerDrawable icLayers = new LayerDrawable(new Drawable[]{icAccountBackground, drawable});
 
-        return icLayers;
+        return new LayerDrawable(new Drawable[]{icAccountBackground, drawable});
     }
 
 

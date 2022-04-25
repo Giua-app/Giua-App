@@ -94,7 +94,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                 if (!savedSiteUrl.equals("")) GlobalVariables.gS.setPrivateSiteUrl(savedSiteUrl);
 
                 GlobalVariables.gS.login();
-                AccountData.setCredentials(this, username, password, GlobalVariables.gS.getCookie(), GlobalVariables.gS.getUserTypeString());
+                AccountData.setCredentials(this, username, password, GlobalVariables.gS.getCookie(), GlobalVariables.gS.getUserTypeString(), GlobalVariables.gS.getProfilePage(false).getProfileInformation()[2]);
                 AccountData.setSiteUrl(this, username, GlobalVariables.gS.getSiteUrl());
                 if (!AppData.getAllAccountUsernames(this).contains(GlobalVariables.gS.getUser()))
                     AppData.addAccountUsername(this, GlobalVariables.gS.getUser());

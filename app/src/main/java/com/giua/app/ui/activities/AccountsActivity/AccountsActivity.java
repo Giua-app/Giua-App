@@ -67,8 +67,9 @@ public class AccountsActivity extends AppCompatActivity {
     LinearLayout layoutManageAccount;
     LinearLayout layoutAddAccount;
 
-    TextView tvManageAccountUsername;
     ImageView ivManageAccountDelete;
+    TextView tvManageAccountUsername;
+    TextView tvManageAccountEmail;
     EditText etManageAccountUrl;
     View dotColorPreview;
 
@@ -86,9 +87,10 @@ public class AccountsActivity extends AppCompatActivity {
 
     LoggerManager loggerManager;
     String goTo = "";
+    String lastUserShowed = ""; //L'ultimo utente cliccato per cui si è mostrata la swipeView
+
     boolean isChooserMode = false; //La chooser mode indica che l'utente sta scegeliendo un account con cui fare il login
     boolean isChangedSomething = false; //Indica se è stato modificato qualcosa
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,6 +109,7 @@ public class AccountsActivity extends AppCompatActivity {
         layoutManageAccount = findViewById(R.id.accounts_manage_account_layout);
         ivManageAccountDelete = findViewById(R.id.accounts_manage_account_delete);
         tvManageAccountUsername = findViewById(R.id.accounts_manage_account_username);
+        tvManageAccountEmail = findViewById(R.id.accounts_manage_account_email);
         etManageAccountUrl = findViewById(R.id.accounts_manage_account_url);
         dotColorPreview = findViewById(R.id.accounts_manage_account_dot_colored);
         View swipeViewColorLayout = findViewById(R.id.accounts_swipe_view_color_layout);
@@ -155,7 +158,8 @@ public class AccountsActivity extends AppCompatActivity {
         for (String username : allUsernames) {
             String type = AccountData.getUserType(this, username);
             int color = AccountData.getTheme(this, username);
-            AccountCard accountCard = new AccountCard(this, username, type, color);
+            String email = AccountData.getEmail(this, username);
+            AccountCard accountCard = new AccountCard(this, username, email, type, color);
 
             if (isChooserMode)
                 accountCard.setOnClickListener(this::onAccountCardClickWhileChoosing);
@@ -169,8 +173,8 @@ public class AccountsActivity extends AppCompatActivity {
 
     }
 
-    private void addNewAccountToLayout(String username, String password, @ColorInt int color, String siteUrl) {
-        AccountCard accountCard = new AccountCard(this, username, "", color);
+    private void addNewAccountToLayout(String username, String password, String email, @ColorInt int color, String siteUrl) {
+        AccountCard accountCard = new AccountCard(this, username, email, "", color);
         View pbAccountCard = accountCard.findViewById(R.id.view_account_card_pb);
 
         pbAccountCard.setVisibility(View.VISIBLE);
@@ -187,7 +191,7 @@ public class AccountsActivity extends AppCompatActivity {
 
                 runOnUiThread(() -> {
                     pbAccountCard.setVisibility(View.INVISIBLE);
-                    AccountData.setCredentials(this, username, password);
+                    AccountData.setCredentials(this, username, password, gS.getCookie(), gS.getUserTypeString(), gS.getProfilePage(false).getProfileInformation()[2]);
                     AccountData.setSiteUrl(this, username, siteUrl);
                     AppData.addAccountUsername(this, username);
                 });
@@ -202,6 +206,7 @@ public class AccountsActivity extends AppCompatActivity {
             btnAddAccount.setVisibility(View.INVISIBLE);
         if (operation == SwipeView.Operation.HIDE_ALL_FROM_Y) {
             btnAddAccount.setVisibility(View.VISIBLE);
+            lastUserShowed = "";
             AppUtils.hideKeyboard(this, swipeView);
         }
     }
@@ -249,7 +254,7 @@ public class AccountsActivity extends AppCompatActivity {
         if (username.equals("") || password.equals("") || !Pattern.matches("https?://([a-zA-Z0-9]+[.])+([a-zA-Z0-9]+)(:[0-9]+)?((/[a-zA-Z0-9-_]+)+)?", siteUrl))
             return;
 
-        addNewAccountToLayout(username, password, AccountData.getTheme(this, username), siteUrl);
+        addNewAccountToLayout(username, password, AccountData.getEmail(this, username), AccountData.getTheme(this, username), siteUrl);
         swipeView.hideAllFromY();
         AppUtils.hideKeyboard(this, view);
         isChangedSomething = true;
@@ -273,7 +278,7 @@ public class AccountsActivity extends AppCompatActivity {
         etAddAccountUsername.setText("");
         etAddAccountPassword.setText("");
         etAddAccountUrl.setText(defaultUrl.equals("") ? GiuaScraper.getGlobalSiteUrl() : defaultUrl);
-        swipeView.setMaxHeight(swipeView.getMaxScreenHeight() - AppUtils.convertDpToPx(70f, this));
+        swipeView.setMaxHeight(AppUtils.convertDpToPx(250f, this));
         swipeView.setStartHeight(AppUtils.convertDpToPx(250f, this));
         swipeView.show();
     }
@@ -294,10 +299,11 @@ public class AccountsActivity extends AppCompatActivity {
     }
 
     private void adaptSwipeViewSizeOnFocusChange(View view, boolean focused) {
-        if (focused)
+        if (focused) {
+            swipeView.setMaxHeight(swipeView.getMaxScreenHeight() - AppUtils.convertDpToPx(70f, this));
+            swipeView.setStartHeight(AppUtils.convertDpToPx(250f, this));
             swipeView.showAllFromY();
-        else if (swipeView.isHidden())
-            swipeView.showStart();
+        }
     }
 
     private void onSwipeViewTouchRelease(SwipeView swipeView) {
@@ -327,15 +333,25 @@ public class AccountsActivity extends AppCompatActivity {
 
     private void onAccountCardClick(View view) {
         AccountCard accountCard = (AccountCard) view;
+
+        if (lastUserShowed.equals(accountCard.username)) return;
+
+        if (accountCard.email.equals(""))
+            tvManageAccountEmail.setVisibility(View.GONE);
+        else
+            tvManageAccountEmail.setVisibility(View.VISIBLE);
+
         tvManageAccountUsername.setText(accountCard.username);
+        tvManageAccountEmail.setText(accountCard.email);
         etManageAccountUrl.setText(AccountData.getSiteUrl(this, accountCard.username));
         dotColorPreview.setBackgroundTintList(ColorStateList.valueOf(AccountData.getTheme(this, accountCard.username)));
         layoutAddAccount.setVisibility(View.GONE);
         layoutManageAccount.setVisibility(View.VISIBLE);
-        swipeView.setMaxHeight(AppUtils.convertDpToPx(200f, this));
-        swipeView.setStartHeight(swipeView.getMaxHeight());
+        swipeView.setMaxHeight(AppUtils.convertDpToPx(300f, this));
+        swipeView.setStartHeight(AppUtils.convertDpToPx(150f, this));
         swipeView.show();
         lastClickedAccountCard = accountCard;
+        lastUserShowed = accountCard.username;
     }
 
     private void onAccountCardClickWhileChoosing(View view) {
