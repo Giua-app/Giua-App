@@ -23,6 +23,7 @@ import android.content.Context;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.CookieManager;
 
 public class AppUtils {
 
@@ -34,5 +35,9 @@ public class AppUtils {
     public static void hideKeyboard(Context context, View view) {
         InputMethodManager imm = context.getSystemService(InputMethodManager.class);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    public static void clearWebViewCookies() {
+        CookieManager.getInstance().removeAllCookies(null);
     }
 }

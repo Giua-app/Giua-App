@@ -48,8 +48,10 @@ import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
 import com.giua.app.ui.activities.AutomaticLoginActivity;
 import com.giua.app.ui.activities.DrawerActivity;
+import com.giua.app.ui.activities.StudentLoginActivity;
 import com.giua.app.ui.views.SwipeView;
 import com.giua.webscraper.GiuaScraper;
+import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
@@ -73,6 +75,7 @@ public class AccountsActivity extends AppCompatActivity {
     EditText etManageAccountUrl;
     View dotColorPreview;
 
+    TextView tvAddAccountGsuite;
     TextView tvAddAccountSave;
     TextInputLayout tilAddAccountUsername;
     TextInputLayout tilAddAccountPassword;
@@ -112,10 +115,10 @@ public class AccountsActivity extends AppCompatActivity {
         tvManageAccountEmail = findViewById(R.id.accounts_manage_account_email);
         etManageAccountUrl = findViewById(R.id.accounts_manage_account_url);
         dotColorPreview = findViewById(R.id.accounts_manage_account_dot_colored);
-        View swipeViewColorLayout = findViewById(R.id.accounts_swipe_view_color_layout);
 
         layoutAddAccount = findViewById(R.id.accounts_add_account_layout);
         btnAddAccount = findViewById(R.id.accounts_add_account_button);
+        tvAddAccountGsuite = findViewById(R.id.accounts_add_account_gsuite);
         tvAddAccountSave = findViewById(R.id.accounts_add_account_save_text);
         tilAddAccountUsername = findViewById(R.id.accounts_add_account_username);
         tilAddAccountPassword = findViewById(R.id.accounts_add_account_password);
@@ -128,6 +131,11 @@ public class AccountsActivity extends AppCompatActivity {
 
         if (isChooserMode) btnAddAccount.setVisibility(View.GONE);
 
+        if (allUsernames.contains("gsuite"))
+            tvAddAccountGsuite.setVisibility(View.GONE);
+        else
+            checkGoogleLoginAvailability();
+
         accountCardParams.leftMargin = AppUtils.convertDpToPx(10, this);
         accountCardParams.rightMargin = AppUtils.convertDpToPx(10, this);
         accountCardParams.topMargin = AppUtils.convertDpToPx(10, this);
@@ -135,6 +143,13 @@ public class AccountsActivity extends AppCompatActivity {
         loggerManager = new LoggerManager("AccountsActivity", this);
 
         setupToolBar();
+        setupListeners();
+
+        addAccountCardsToLayout(allUsernames);
+    }
+
+    private void setupListeners() {
+        View swipeViewColorLayout = findViewById(R.id.accounts_swipe_view_color_layout);
 
         etManageAccountUrl.setOnFocusChangeListener(this::adaptSwipeViewSizeOnFocusChange);
         etAddAccountUsername.setOnFocusChangeListener(this::adaptSwipeViewSizeOnFocusChange);
@@ -143,13 +158,22 @@ public class AccountsActivity extends AppCompatActivity {
         swipeView.setOnTouchRelease(this::onSwipeViewTouchRelease);
         swipeView.setOnMove(this::onSwipeViewMove);
         ivManageAccountDelete.setOnClickListener(this::ivSwipeViewDeleteOnClick);
+        tvAddAccountGsuite.setOnClickListener(this::tvAddAccountGsuiteOnClick);
         btnAddAccount.setOnClickListener(this::btnAddAccountOnClick);
         swipeViewColorLayout.setOnClickListener(this::swipeViewColorLayoutOnClick);
         tvAddAccountSave.setOnClickListener(this::btnAddAccountSaveOnClick);
         etAddAccountUsername.addTextChangedListener(onEditTextChanged(tilAddAccountUsername));
         etAddAccountPassword.addTextChangedListener(onEditTextChanged(tilAddAccountPassword));
+    }
 
-        addAccountCardsToLayout(allUsernames);
+    private void checkGoogleLoginAvailability() {
+        new Thread(() -> {
+            try {
+                if (!GiuaScraper.isGoogleLoginAvailable())
+                    runOnUiThread(() -> tvAddAccountGsuite.setVisibility(View.INVISIBLE));
+            } catch (Exception ignored) {
+            }
+        });
     }
 
     private void addAccountCardsToLayout(Set<String> allUsernames) {
@@ -191,12 +215,25 @@ public class AccountsActivity extends AppCompatActivity {
 
                 runOnUiThread(() -> {
                     pbAccountCard.setVisibility(View.INVISIBLE);
-                    AccountData.setCredentials(this, username, password, gS.getCookie(), gS.getUserTypeString(), gS.getProfilePage(false).getProfileInformation()[2]);
+                    AccountData.setCredentials(this, username, password, gS.getCookie(), gS.getUserTypeString(), email);
                     AccountData.setSiteUrl(this, username, siteUrl);
                     AppData.addAccountUsername(this, username);
                 });
+            } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.SiteConnectionProblems e) {
+                runOnUiThread(() -> {
+                    layoutAllAccounts.removeView(accountCard);
+                    setErrorMessage("Problema di connessione", layoutAllAccounts);
+                });
+            } catch (GiuaScraperExceptions.SessionCookieEmpty | GiuaScraperExceptions.UnableToLogin e) {
+                runOnUiThread(() -> {
+                    layoutAllAccounts.removeView(accountCard);
+                    setErrorMessage("Credenziali non valide", layoutAllAccounts);
+                });
             } catch (Exception e) {
-                runOnUiThread(() -> layoutAllAccounts.removeView(accountCard));
+                runOnUiThread(() -> {
+                    layoutAllAccounts.removeView(accountCard);
+                    setErrorMessage("Impossibile aggiungere l'account. Riprova più tardi.", layoutAllAccounts);
+                });
             }
         }).start();
     }
@@ -235,6 +272,12 @@ public class AccountsActivity extends AppCompatActivity {
 
             }
         };
+    }
+
+    private void tvAddAccountGsuiteOnClick(View view) {
+        startActivity(new Intent(this, StudentLoginActivity.class)
+                .putExtra("requested_from_accounts_activity", true)
+                .putExtra("sender", "AccountsActivity"));
     }
 
     private void btnAddAccountSaveOnClick(View view) {
@@ -278,8 +321,8 @@ public class AccountsActivity extends AppCompatActivity {
         etAddAccountUsername.setText("");
         etAddAccountPassword.setText("");
         etAddAccountUrl.setText(defaultUrl.equals("") ? GiuaScraper.getGlobalSiteUrl() : defaultUrl);
-        swipeView.setMaxHeight(AppUtils.convertDpToPx(250f, this));
-        swipeView.setStartHeight(AppUtils.convertDpToPx(250f, this));
+        swipeView.setMaxHeight(AppUtils.convertDpToPx(300f, this));
+        swipeView.setStartHeight(AppUtils.convertDpToPx(300f, this));
         swipeView.show();
     }
 
@@ -288,6 +331,11 @@ public class AccountsActivity extends AppCompatActivity {
                 .setTitle("Attenzione")
                 .setMessage("Sei sicuro di voler eliminare l'account " + lastClickedAccountCard.username + " ?")
                 .setPositiveButton("Si", (dialogInterface, i) -> {
+                    if (lastClickedAccountCard.username.equals("gsuite")) {
+                        AppUtils.clearWebViewCookies();
+                        tvAddAccountGsuite.setVisibility(View.VISIBLE);
+                    }
+
                     AppData.removeAccountUsername(this, lastClickedAccountCard.username);
                     AccountData.removeAccount(this, lastClickedAccountCard.username);
                     addAccountCardsToLayout(AppData.getAllAccountUsernames(this));
@@ -307,7 +355,15 @@ public class AccountsActivity extends AppCompatActivity {
     }
 
     private void onSwipeViewTouchRelease(SwipeView swipeView) {
-        if (swipeView.getY() < swipeView.getStartHeight() - AppUtils.convertDpToPx(50, this))
+        boolean isAddingAccount = layoutManageAccount.getVisibility() == View.GONE;
+        float hideOffset;
+
+        if (isAddingAccount)
+            hideOffset = swipeView.getMaxScreenHeight() / 2;
+        else
+            hideOffset = AppUtils.convertDpToPx(50, this);
+
+        if (swipeView.getY() < swipeView.getStartHeight() - hideOffset)
             swipeView.showAllFromY();
         else {
             swipeView.hideAllFromY();
@@ -316,8 +372,7 @@ public class AccountsActivity extends AppCompatActivity {
             etAddAccountPassword.clearFocus();
             etAddAccountUrl.clearFocus();
 
-            //Non continuare se si stava aggiungendo un account
-            if (layoutManageAccount.getVisibility() == View.GONE) return;
+            if (isAddingAccount) return;
 
             //Controllo se l'URL è valido
             if (Pattern.matches("https?://([a-zA-Z0-9]+[.])+([a-zA-Z0-9]+)(:[0-9]+)?((/[a-zA-Z0-9-_]+)+)?", etManageAccountUrl.getText())) {
@@ -348,7 +403,7 @@ public class AccountsActivity extends AppCompatActivity {
         layoutAddAccount.setVisibility(View.GONE);
         layoutManageAccount.setVisibility(View.VISIBLE);
         swipeView.setMaxHeight(AppUtils.convertDpToPx(300f, this));
-        swipeView.setStartHeight(AppUtils.convertDpToPx(150f, this));
+        swipeView.setStartHeight(AppUtils.convertDpToPx(140f, this));
         swipeView.show();
         lastClickedAccountCard = accountCard;
         lastUserShowed = accountCard.username;

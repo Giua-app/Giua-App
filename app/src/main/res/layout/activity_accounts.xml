@@ -114,7 +114,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:fontFamily="@font/varelaroundregular"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     tools:text="mariorossi@example.com" />
 
             </LinearLayout>
@@ -180,9 +180,24 @@
                 android:fontFamily="@font/varelaroundregular"
                 android:foreground="@drawable/ripple_effect"
                 android:gravity="center_vertical"
+                android:textSize="18sp"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="5dp"
                 android:text="Conferma" />
+
+            <TextView
+                android:id="@+id/accounts_add_account_gsuite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/corner_radius_10dp"
+                android:backgroundTint="@color/main_color_lighter"
+                android:fontFamily="@font/varelaroundregular"
+                android:foreground="@drawable/ripple_effect"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="5dp"
+                android:text="Aggiungi con Gsuite"
+                android:textSize="16sp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/accounts_add_account_username"
@@ -201,7 +216,8 @@
                 android:id="@+id/accounts_add_account_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Password">
+                android:hint="Password"
+                app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"

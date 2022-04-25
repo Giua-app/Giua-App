@@ -38,6 +38,7 @@ import com.giua.app.AppData;
 import com.giua.app.GlobalVariables;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
+import com.giua.app.ui.activities.AccountsActivity.AccountsActivity;
 import com.giua.app.ui.views.ObscureLayoutView;
 import com.giua.webscraper.GiuaScraper;
 import com.google.android.material.snackbar.Snackbar;
@@ -52,6 +53,8 @@ public class StudentLoginActivity extends AppCompatActivity {
     ProgressBar progressBar;
     String goTo = "";
 
+    boolean isRequestedFromAccounts = false;
+
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +64,7 @@ public class StudentLoginActivity extends AppCompatActivity {
         loggerManager.d("onCreate chiamato");
 
         goTo = getIntent().getStringExtra("goTo");
+        isRequestedFromAccounts = getIntent().getBooleanExtra("requested_from_accounts_activity", false);
 
         webView = findViewById(R.id.studentWebView);
         obscureLayoutView = findViewById(R.id.studentObscureLayoutView);
@@ -119,19 +123,38 @@ public class StudentLoginActivity extends AppCompatActivity {
 
         loggerManager.d("Creazione credenziali con cookie ottenuto da google");
         GlobalVariables.gS = new GiuaScraper("gsuite", "gsuite", cookie, true, new LoggerManager("GiuaScraper", this));
-        AccountData.setCredentials(this, "gsuite", "gsuite", cookie, "Studente", GlobalVariables.gS.getProfilePage(false).getProfileInformation()[2]);
+        AccountData.setCredentials(this, "gsuite", "gsuite", cookie, "Studente", "");
         AccountData.setSiteUrl(this, "gsuite", GiuaScraper.getGlobalSiteUrl());
+
+        new Thread(() -> {
+            try {
+                String email = GlobalVariables.gS.getProfilePage(false).getProfileInformation()[2];
+                runOnUiThread(() -> AccountData.setEmail(this, "gsuite", email));
+            } catch (Exception ignored) {
+            }
+        });
+
         obscureLayoutView.setVisibility(View.GONE);
         loggerManager.d("Avvio DrawerActivity");
         if (!AppData.getAllAccountUsernames(this).contains("gsuite")) {
             AppData.addAccountUsername(this, "gsuite");
-            AppData.saveActiveUsername(this, "gsuite");
+
+            if (!isRequestedFromAccounts)
+                AppData.saveActiveUsername(this, "gsuite");
         }
 
         if (goTo == null)
             goTo = "";
-        Intent intent = new Intent(StudentLoginActivity.this, DrawerActivity.class).putExtra("goTo", goTo);
+
+        Intent intent;
+
+        if (!isRequestedFromAccounts)
+            intent = new Intent(this, DrawerActivity.class).putExtra("goTo", goTo);
+        else
+            intent = new Intent(this, AccountsActivity.class);
+
         startActivity(intent);
+        finish();
     }
 
     @Override

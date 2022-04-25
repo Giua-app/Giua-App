@@ -28,7 +28,6 @@ import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.CookieManager;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -42,6 +41,7 @@ import com.giua.app.AppData;
 import com.giua.app.AppNotifications;
 import com.giua.app.AppNotificationsParams;
 import com.giua.app.AppUpdateManager;
+import com.giua.app.AppUtils;
 import com.giua.app.BuildConfig;
 import com.giua.app.GiuaScraperThread;
 import com.giua.app.GlobalVariables;
@@ -196,7 +196,7 @@ public class DrawerActivity extends AppCompatActivity {
         Analytics.sendDefaultRequest(Analytics.LOG_OUT);
         AppData.removeAccountUsername(this, AppData.getActiveUsername(this));
         if (GlobalVariables.gS.getUser().equals("gsuite"))
-            CookieManager.getInstance().removeAllCookies(null); //Cancello il cookie della webview
+            AppUtils.clearWebViewCookies(); //Cancello il cookie della webview
         AppData.saveActiveUsername(this, "");
         Set<String> allAccountUsernames = AppData.getAllAccountUsernames(this);
         //Se vero vuol dire che ci sono altri account diponibili quindi lo faccio riloggare col primo

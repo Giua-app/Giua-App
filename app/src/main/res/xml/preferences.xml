@@ -79,12 +79,12 @@
             app:key="introScreen"
             app:title="Rivedi l'intro" />
 
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_test_tube"
-            android:key="experimentalMode"
-            android:title="Abilita funzionalità sperimentali"
-            app:isPreferenceVisible="true" />
+        <!--        <SwitchPreference-->
+        <!--            android:defaultValue="false"-->
+        <!--            android:icon="@drawable/ic_test_tube"-->
+        <!--            android:key="experimentalMode"-->
+        <!--            android:title="Abilita funzionalità sperimentali"-->
+        <!--            app:isPreferenceVisible="true" />-->
         <EditTextPreference
             app:icon="@drawable/ic_web_search_24"
             app:key="siteUrl"
