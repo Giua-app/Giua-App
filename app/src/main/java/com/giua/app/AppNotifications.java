@@ -474,8 +474,15 @@ public class AppNotifications extends BroadcastReceiver {
                 .userAgent("Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.91 Mobile Safari/537.36");
 
         //Inserisco tutti i cookie di Google presenti nella webview in session
-        String[] allCookiesRaw = CookieManager.getInstance().getCookie("https://accounts.google.com").split("; ");
-        for (String cookie : allCookiesRaw) {
+        String allCookiesRaw = CookieManager.getInstance().getCookie("https://accounts.google.com");
+
+        if (allCookiesRaw == null || allCookiesRaw.equals("")) {
+            loggerManager.e("Cookie google non presente");
+            return "";
+        }
+
+        String[] allCookiesRawSplit = CookieManager.getInstance().getCookie("https://accounts.google.com").split("; ");
+        for (String cookie : allCookiesRawSplit) {
             session.cookie(cookie.split("=")[0], cookie.split("=")[1]);
         }
 

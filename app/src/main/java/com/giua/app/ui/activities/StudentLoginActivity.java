@@ -38,7 +38,6 @@ import com.giua.app.AppData;
 import com.giua.app.GlobalVariables;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
-import com.giua.app.ui.activities.AccountsActivity.AccountsActivity;
 import com.giua.app.ui.views.ObscureLayoutView;
 import com.giua.webscraper.GiuaScraper;
 import com.google.android.material.snackbar.Snackbar;
@@ -81,7 +80,8 @@ public class StudentLoginActivity extends AppCompatActivity {
                     String rawCookie = CookieManager.getInstance().getCookie(GiuaScraper.getGlobalSiteUrl());
                     if (rawCookie != null) {
                         cookie = rawCookie.split("=")[1];
-                        onStoppedWebView(getIntent().getStringExtra("sender").equals("LoginActivity")); //Aumenta il conteggio solo se StudentLogin viene chiamata dal LoginActivity
+                        onStoppedWebView(getIntent().getStringExtra("sender").equals("LoginActivity") ||
+                                getIntent().getStringExtra("sender").equals("AccountsActivity")); //Aumenta il conteggio solo se StudentLogin viene chiamata dal LoginActivity
                         return true;
                     }
                     loggerManager.e("Errore, cookie ottenuto è null. Impossibile continuare");
@@ -146,13 +146,12 @@ public class StudentLoginActivity extends AppCompatActivity {
         if (goTo == null)
             goTo = "";
 
-        Intent intent;
+        if (isRequestedFromAccounts) {
+            onBackPressed();
+            return;
+        }
 
-        if (!isRequestedFromAccounts)
-            intent = new Intent(this, DrawerActivity.class).putExtra("goTo", goTo);
-        else
-            intent = new Intent(this, AccountsActivity.class);
-
+        Intent intent = new Intent(this, DrawerActivity.class).putExtra("goTo", goTo);
         startActivity(intent);
         finish();
     }

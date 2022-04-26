@@ -19,7 +19,6 @@
 
 package com.giua.app.ui.activities.AccountsActivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
@@ -47,7 +46,6 @@ import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
 import com.giua.app.ui.activities.AutomaticLoginActivity;
-import com.giua.app.ui.activities.DrawerActivity;
 import com.giua.app.ui.activities.StudentLoginActivity;
 import com.giua.app.ui.views.SwipeView;
 import com.giua.webscraper.GiuaScraper;
@@ -144,8 +142,6 @@ public class AccountsActivity extends AppCompatActivity {
 
         setupToolBar();
         setupListeners();
-
-        addAccountCardsToLayout(allUsernames);
     }
 
     private void setupListeners() {
@@ -176,7 +172,9 @@ public class AccountsActivity extends AppCompatActivity {
         });
     }
 
-    private void addAccountCardsToLayout(Set<String> allUsernames) {
+    private void addAccountCardsToLayout() {
+        Set<String> allUsernames = AppData.getAllAccountUsernames(this);
+
         layoutAllAccounts.removeAllViews();
 
         for (String username : allUsernames) {
@@ -278,6 +276,7 @@ public class AccountsActivity extends AppCompatActivity {
         startActivity(new Intent(this, StudentLoginActivity.class)
                 .putExtra("requested_from_accounts_activity", true)
                 .putExtra("sender", "AccountsActivity"));
+        isChangedSomething = true;
     }
 
     private void btnAddAccountSaveOnClick(View view) {
@@ -336,9 +335,13 @@ public class AccountsActivity extends AppCompatActivity {
                         tvAddAccountGsuite.setVisibility(View.VISIBLE);
                     }
 
+                    if (AppData.getActiveUsername(this).equals(lastClickedAccountCard.username))
+                        //TODO: selezionare il primo che trova, se non ce ne sono allora mettere una stringa vuota
+                        AppData.saveActiveUsername(this, "");
+
                     AppData.removeAccountUsername(this, lastClickedAccountCard.username);
                     AccountData.removeAccount(this, lastClickedAccountCard.username);
-                    addAccountCardsToLayout(AppData.getAllAccountUsernames(this));
+                    addAccountCardsToLayout();
                     swipeView.hideAllFromY();
                     isChangedSomething = true;
                 })
@@ -416,8 +419,6 @@ public class AccountsActivity extends AppCompatActivity {
     }
 
     private void swipeViewColorLayoutOnClick(View view) {
-        Context context = this;
-
         new ColorPickerDialog.Builder(this).setDefaultColor(AccountData.getTheme(this, lastClickedAccountCard.username))
                 .setTitle("Scegli un colore")
                 .setColorShape(ColorShape.CIRCLE)
@@ -426,12 +427,12 @@ public class AccountsActivity extends AppCompatActivity {
                     dotColorPreview.setBackgroundTintList(ColorStateList.valueOf(color));
                     AccountData.setTheme(view.getContext(), lastClickedAccountCard.username, color);
                     isChangedSomething = true;
-                    addAccountCardsToLayout(AppData.getAllAccountUsernames(context));
+                    addAccountCardsToLayout();
                 }).show();
     }
 
     private void startAutomaticLogin() {
-        startActivity(new Intent(AccountsActivity.this, AutomaticLoginActivity.class).putExtra("goTo", goTo));
+        startActivity(new Intent(AccountsActivity.this, AutomaticLoginActivity.class));
         finish();
     }
 
@@ -440,13 +441,18 @@ public class AccountsActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        addAccountCardsToLayout();
+        super.onResume();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() != android.R.id.home) return super.onOptionsItemSelected(item);
 
-        if (isChangedSomething) {
-            startActivity(new Intent(this, DrawerActivity.class));
-            finish();
-        } else {
+        if (isChangedSomething)
+            startAutomaticLogin();
+        else {
             swipeView.setVisibility(View.INVISIBLE);
             onBackPressed();
         }
@@ -455,9 +461,13 @@ public class AccountsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (swipeView.isHidden())
-            super.onBackPressed();
-        else
+        if (swipeView.isHidden()) {
+
+            if (!isChangedSomething)
+                super.onBackPressed();
+            else
+                startAutomaticLogin();
+        } else
             swipeView.hideAllFromY();
     }
 }
