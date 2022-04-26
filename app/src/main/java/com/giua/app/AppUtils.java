@@ -19,9 +19,7 @@
 
 package com.giua.app;
 
-import android.app.Activity;
 import android.content.Context;
-import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -31,9 +29,7 @@ public class AppUtils {
 
     public static int convertDpToPx(float dp, Context context) {
         //https://stackoverflow.com/questions/4605527/converting-pixels-to-dp
-        DisplayMetrics realMetrics = new DisplayMetrics();
-        ((Activity)context).getWindowManager().getDefaultDisplay().getRealMetrics(realMetrics);
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, realMetrics);
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
     }
 
     public static void hideKeyboard(Context context, View view) {

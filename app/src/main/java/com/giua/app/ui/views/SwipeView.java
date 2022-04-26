@@ -37,7 +37,7 @@ import com.giua.app.AppUtils;
 import com.giua.app.R;
 
 public class SwipeView extends LinearLayout {
-    private float startHeight;   //L' altezza del layout alla posizione iniziale
+    private float startHeightAsY;   //L' altezza del layout alla posizione iniziale
     private float maxHeightAsY;
 
     public final ImageView imageView;
@@ -58,7 +58,7 @@ public class SwipeView extends LinearLayout {
         realMetrics = new DisplayMetrics();
         ((Activity) context).getWindowManager().getDefaultDisplay().getRealMetrics(realMetrics);
 
-        startHeight = realMetrics.heightPixels - (float) realMetrics.heightPixels / 3;
+        startHeightAsY = realMetrics.heightPixels - (float) realMetrics.heightPixels / 3;
         maxHeightAsY = 0;
 
         imageView = new ImageView(context);
@@ -84,10 +84,10 @@ public class SwipeView extends LinearLayout {
         float maxHeight = a.getDimension(R.styleable.SwipeView_maxExtension, -1f);
 
         if (startHeightRaw < 0)
-            startHeight = realMetrics.heightPixels - (float) realMetrics.heightPixels / 3;
+            startHeightAsY = realMetrics.heightPixels - (float) realMetrics.heightPixels / 3;
         else
             //Converto startHeight nella y corrispondente all' altezza
-            startHeight = realMetrics.heightPixels - startHeightRaw;
+            startHeightAsY = realMetrics.heightPixels - startHeightRaw;
 
         if (maxHeight < 0)
             maxHeightAsY = 0;
@@ -103,8 +103,8 @@ public class SwipeView extends LinearLayout {
         addView(imageView);
     }
 
-    public void setStartHeightAsY(float startHeightInPx) {
-        startHeight = startHeightInPx;
+    public float getStartHeightAsY() {
+        return startHeightAsY;
     }
 
     public float getMaxHeightAsY() {
@@ -127,12 +127,12 @@ public class SwipeView extends LinearLayout {
         return realMetrics.heightPixels;
     }
 
-    public float getStartHeight() {
-        return startHeight;
+    public void setStartHeightAsY(float startHeightInPx) {
+        startHeightAsY = startHeightInPx;
     }
 
     public void setStartHeight(float startHeightInPx) {
-        startHeight = realMetrics.heightPixels - startHeightInPx;
+        startHeightAsY = realMetrics.heightPixels - startHeightInPx;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -166,7 +166,7 @@ public class SwipeView extends LinearLayout {
      * Fa vedere il layout portandolo a {@code startHeight} partendo dal basso
      */
     public void showStart() {
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", realMetrics.heightPixels, startHeight);
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", realMetrics.heightPixels, startHeightAsY);
         objectAnimator.setDuration(300);
         objectAnimator.start();
         onMove.onMoving(this, Operation.SHOW_START_FROM_BOTTOM);
@@ -190,7 +190,7 @@ public class SwipeView extends LinearLayout {
      * Porta il layout nella posizione iniziale partendo dalla sua posizione
      */
     public void moveToStart() {
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", getY(), startHeight);
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", getY(), startHeightAsY);
         objectAnimator.setDuration(300);
         objectAnimator.start();
         onMove.onMoving(this, Operation.MOVE_TO_START);
@@ -220,7 +220,7 @@ public class SwipeView extends LinearLayout {
      * Rende completamente visibile il layout partendo da {@code startHeight}
      */
     public void showAllFromStart() {
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", startHeight, maxHeightAsY);
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "translationY", startHeightAsY, maxHeightAsY);
         objectAnimator.setDuration(300);
         objectAnimator.start();
         onMove.onMoving(this, Operation.SHOW_ALL_FROM_START);

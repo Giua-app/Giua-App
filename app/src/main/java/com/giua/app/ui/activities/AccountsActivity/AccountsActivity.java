@@ -363,7 +363,7 @@ public class AccountsActivity extends AppCompatActivity {
         else
             hideOffset = AppUtils.convertDpToPx(50, this);
 
-        if (swipeView.getY() < swipeView.getStartHeight() - hideOffset)
+        if (swipeView.getY() < swipeView.getStartHeightAsY() - hideOffset)
             swipeView.showAllFromY();
         else {
             swipeView.hideAllFromY();
