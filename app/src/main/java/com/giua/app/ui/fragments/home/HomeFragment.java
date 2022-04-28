@@ -123,7 +123,8 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
             if (offlineMode) {
                 activity.runOnUiThread(() -> txUserInfo.setText("Accesso eseguito in modalità Offline"));
             } else {
-                activity.runOnUiThread(() -> txUserInfo.setText("Accesso eseguito nell'account " + GlobalVariables.gS.getUser() + " (" + GlobalVariables.gS.getUserTypeString() + ")"));
+                String userType = GlobalVariables.gS.getUserTypeString();
+                activity.runOnUiThread(() -> txUserInfo.setText("Accesso eseguito nell'account " + GlobalVariables.gS.getUser() + " (" + userType + ")"));
             }
 
             //TODO: Mettere la cache for check updates (almeno tra activity manager e home fragment visto che in ogni caso viene chiamata due volte)

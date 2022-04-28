@@ -73,6 +73,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
         findViewById(R.id.loading_screen_btn_settings).setOnClickListener(this::btnSettingOnClick);
 
         GiuaScraper.setDebugMode(true);
+
         loginWithPreviousCredentials();
     }
 
@@ -96,8 +97,8 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                 GlobalVariables.gS.login();
                 AccountData.setCredentials(this, username, password, GlobalVariables.gS.getCookie(), GlobalVariables.gS.getUserTypeString(), GlobalVariables.gS.getProfilePage(false).getProfileInformation()[2]);
                 AccountData.setSiteUrl(this, username, GlobalVariables.gS.getSiteUrl());
-                if (!AppData.getAllAccountUsernames(this).contains(GlobalVariables.gS.getUser()))
-                    AppData.addAccountUsername(this, GlobalVariables.gS.getUser());
+                if (!AppData.getAllAccountUsernames(this).contains(username))
+                    AppData.addAccountUsername(this, username);
                 startDrawerActivity();
             } catch (GiuaScraperExceptions.YourConnectionProblems | GiuaScraperExceptions.SiteConnectionProblems e) {
                 loggerManager.e("Errore di connessione - " + e.getMessage());

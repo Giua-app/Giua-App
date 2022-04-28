@@ -126,7 +126,7 @@ public class StudentLoginActivity extends AppCompatActivity {
         AccountData.setCredentials(this, "gsuite", "gsuite", cookie, "Studente", "");
         AccountData.setSiteUrl(this, "gsuite", GiuaScraper.getGlobalSiteUrl());
 
-        new Thread(() -> {
+        GlobalVariables.gsThread.addTask(() -> {
             try {
                 String email = GlobalVariables.gS.getProfilePage(false).getProfileInformation()[2];
                 runOnUiThread(() -> AccountData.setEmail(this, "gsuite", email));

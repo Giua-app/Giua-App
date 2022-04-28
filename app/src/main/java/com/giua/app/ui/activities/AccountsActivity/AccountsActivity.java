@@ -335,12 +335,16 @@ public class AccountsActivity extends AppCompatActivity {
                         tvAddAccountGsuite.setVisibility(View.VISIBLE);
                     }
 
-                    if (AppData.getActiveUsername(this).equals(lastClickedAccountCard.username))
-                        //TODO: selezionare il primo che trova, se non ce ne sono allora mettere una stringa vuota
-                        AppData.saveActiveUsername(this, "");
-
                     AppData.removeAccountUsername(this, lastClickedAccountCard.username);
                     AccountData.removeAccount(this, lastClickedAccountCard.username);
+
+                    Set<String> allUsernames = AppData.getAllAccountUsernames(this);
+
+                    if (AppData.getActiveUsername(this).equals(lastClickedAccountCard.username) && allUsernames.size() > 0)
+                        AppData.saveActiveUsername(this, allUsernames.toArray()[0].toString());
+                    else
+                        AppData.saveActiveUsername(this, "");
+
                     addAccountCardsToLayout();
                     swipeView.hideAllFromY();
                     isChangedSomething = true;
