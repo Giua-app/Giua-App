@@ -36,11 +36,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.github.dhaval2404.colorpicker.ColorPickerDialog;
 import com.github.dhaval2404.colorpicker.model.ColorShape;
 import com.giua.app.AccountData;
 import com.giua.app.AppData;
 import com.giua.app.AppUtils;
+import com.giua.app.GlobalVariables;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
@@ -50,7 +53,6 @@ import com.giua.app.ui.activities.StudentLoginActivity;
 import com.giua.app.ui.views.SwipeView;
 import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -61,7 +63,9 @@ public class AccountsActivity extends AppCompatActivity {
 
     LinearLayout layoutAllAccounts;
     AccountCard lastClickedAccountCard; //Serve per avere un riferimento della carta quando si cambia il tema dell'account
-    FloatingActionButton btnAddAccount;
+    FloatingActionMenu btnAddAccountMenu;
+    FloatingActionButton btnAddNormalAccount;
+    FloatingActionButton btnAddStudentAccount;
 
     SwipeView swipeView;
     LinearLayout layoutManageAccount;
@@ -73,7 +77,6 @@ public class AccountsActivity extends AppCompatActivity {
     EditText etManageAccountUrl;
     View dotColorPreview;
 
-    TextView tvAddAccountGsuite;
     TextView tvAddAccountSave;
     TextInputLayout tilAddAccountUsername;
     TextInputLayout tilAddAccountPassword;
@@ -115,8 +118,9 @@ public class AccountsActivity extends AppCompatActivity {
         dotColorPreview = findViewById(R.id.accounts_manage_account_dot_colored);
 
         layoutAddAccount = findViewById(R.id.accounts_add_account_layout);
-        btnAddAccount = findViewById(R.id.accounts_add_account_button);
-        tvAddAccountGsuite = findViewById(R.id.accounts_add_account_gsuite);
+        btnAddAccountMenu = findViewById(R.id.accounts_add_account_button_menu);
+        btnAddNormalAccount = findViewById(R.id.accounts_add_account_button);
+        btnAddStudentAccount = findViewById(R.id.accounts_add_account_student_button);
         tvAddAccountSave = findViewById(R.id.accounts_add_account_save_text);
         tilAddAccountUsername = findViewById(R.id.accounts_add_account_username);
         tilAddAccountPassword = findViewById(R.id.accounts_add_account_password);
@@ -125,12 +129,10 @@ public class AccountsActivity extends AppCompatActivity {
         etAddAccountPassword = tilAddAccountPassword.getEditText();
         etAddAccountUrl = tilAddAccountUrl.getEditText();
 
-        Set<String> allUsernames = AppData.getAllAccountUsernames(this);
+        if (isChooserMode) btnAddAccountMenu.setVisibility(View.GONE);
 
-        if (isChooserMode) btnAddAccount.setVisibility(View.GONE);
-
-        if (allUsernames.contains("gsuite"))
-            tvAddAccountGsuite.setVisibility(View.GONE);
+        if (AppData.getAllAccountUsernames(this).contains("gsuite"))
+            btnAddStudentAccount.setVisibility(View.GONE);
         else
             checkGoogleLoginAvailability();
 
@@ -154,8 +156,8 @@ public class AccountsActivity extends AppCompatActivity {
         swipeView.setOnTouchRelease(this::onSwipeViewTouchRelease);
         swipeView.setOnMove(this::onSwipeViewMove);
         ivManageAccountDelete.setOnClickListener(this::ivSwipeViewDeleteOnClick);
-        tvAddAccountGsuite.setOnClickListener(this::tvAddAccountGsuiteOnClick);
-        btnAddAccount.setOnClickListener(this::btnAddAccountOnClick);
+        btnAddNormalAccount.setOnClickListener(this::btnAddNormalAccountOnClick);
+        btnAddStudentAccount.setOnClickListener(this::btnAddStudentAccountOnClick);
         swipeViewColorLayout.setOnClickListener(this::swipeViewColorLayoutOnClick);
         tvAddAccountSave.setOnClickListener(this::btnAddAccountSaveOnClick);
         etAddAccountUsername.addTextChangedListener(onEditTextChanged(tilAddAccountUsername));
@@ -163,10 +165,10 @@ public class AccountsActivity extends AppCompatActivity {
     }
 
     private void checkGoogleLoginAvailability() {
-        new Thread(() -> {
+        GlobalVariables.gsThread.addTask(() -> {
             try {
                 if (!GiuaScraper.isGoogleLoginAvailable())
-                    runOnUiThread(() -> tvAddAccountGsuite.setVisibility(View.INVISIBLE));
+                    runOnUiThread(() -> btnAddStudentAccount.setVisibility(View.INVISIBLE));
             } catch (Exception ignored) {
             }
         });
@@ -238,9 +240,9 @@ public class AccountsActivity extends AppCompatActivity {
 
     private void onSwipeViewMove(SwipeView swipeView, SwipeView.Operation operation) {
         if (operation == SwipeView.Operation.SHOW_START_FROM_BOTTOM)
-            btnAddAccount.setVisibility(View.INVISIBLE);
+            btnAddAccountMenu.setVisibility(View.INVISIBLE);
         if (operation == SwipeView.Operation.HIDE_ALL_FROM_Y) {
-            btnAddAccount.setVisibility(View.VISIBLE);
+            btnAddAccountMenu.setVisibility(View.VISIBLE);
             lastUserShowed = "";
             AppUtils.hideKeyboard(this, swipeView);
         }
@@ -272,13 +274,6 @@ public class AccountsActivity extends AppCompatActivity {
         };
     }
 
-    private void tvAddAccountGsuiteOnClick(View view) {
-        startActivity(new Intent(this, StudentLoginActivity.class)
-                .putExtra("requested_from_accounts_activity", true)
-                .putExtra("sender", "AccountsActivity"));
-        isChangedSomething = true;
-    }
-
     private void btnAddAccountSaveOnClick(View view) {
         String username = etAddAccountUsername.getText().toString();
         String password = etAddAccountPassword.getText().toString();
@@ -302,17 +297,14 @@ public class AccountsActivity extends AppCompatActivity {
         isChangedSomething = true;
     }
 
-    private void setupToolBar() {
-        Toolbar toolbar = findViewById(R.id.activity_accounts_toolbar);
-        toolbar.setTitle(isChooserMode ? "Selezione account" : "Gestione account");
-        setSupportActionBar(toolbar);
-        if (!isChooserMode) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(false);
-        }
+    private void btnAddStudentAccountOnClick(View view) {
+        startActivity(new Intent(this, StudentLoginActivity.class)
+                .putExtra("requested_from_accounts_activity", true)
+                .putExtra("sender", "AccountsActivity"));
+        isChangedSomething = true;
     }
 
-    private void btnAddAccountOnClick(View view) {
+    private void btnAddNormalAccountOnClick(View view) {
         String defaultUrl = SettingsData.getSettingString(this, SettingKey.DEFAULT_URL);
 
         layoutManageAccount.setVisibility(View.GONE);
@@ -332,7 +324,7 @@ public class AccountsActivity extends AppCompatActivity {
                 .setPositiveButton("Si", (dialogInterface, i) -> {
                     if (lastClickedAccountCard.username.equals("gsuite")) {
                         AppUtils.clearWebViewCookies();
-                        tvAddAccountGsuite.setVisibility(View.VISIBLE);
+                        btnAddStudentAccount.setVisibility(View.VISIBLE);
                     }
 
                     AppData.removeAccountUsername(this, lastClickedAccountCard.username);
@@ -435,6 +427,16 @@ public class AccountsActivity extends AppCompatActivity {
                 }).show();
     }
 
+    private void setupToolBar() {
+        Toolbar toolbar = findViewById(R.id.activity_accounts_toolbar);
+        toolbar.setTitle(isChooserMode ? "Selezione account" : "Gestione account");
+        setSupportActionBar(toolbar);
+        if (!isChooserMode) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(false);
+        }
+    }
+
     private void startAutomaticLogin() {
         startActivity(new Intent(AccountsActivity.this, AutomaticLoginActivity.class));
         finish();
@@ -447,6 +449,8 @@ public class AccountsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         addAccountCardsToLayout();
+        if (AppData.getAllAccountUsernames(this).contains("gsuite"))
+            btnAddStudentAccount.setVisibility(View.GONE);
         super.onResume();
     }
 

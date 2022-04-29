@@ -185,20 +185,6 @@
                 android:paddingVertical="5dp"
                 android:text="Conferma" />
 
-            <TextView
-                android:id="@+id/accounts_add_account_gsuite"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/corner_radius_10dp"
-                android:backgroundTint="@color/main_color_lighter"
-                android:fontFamily="@font/varelaroundregular"
-                android:foreground="@drawable/ripple_effect"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="5dp"
-                android:text="Aggiungi con Gsuite"
-                android:textSize="16sp" />
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/accounts_add_account_username"
                 android:layout_width="match_parent"
@@ -243,8 +229,8 @@
 
     </com.giua.app.ui.views.SwipeView>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/accounts_add_account_button"
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/accounts_add_account_button_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
@@ -252,5 +238,30 @@
         android:contentDescription="Aggiungi account"
         android:src="@drawable/ic_baseline_add_24"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:menu_colorNormal="@color/main_color"
+        app:menu_labels_colorNormal="@color/main_color"
+        app:menu_colorPressed="@color/main_color">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/accounts_add_account_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_account_profile"
+            app:fab_colorPressed="@color/main_color"
+            app:fab_colorNormal="@color/main_color"
+            app:fab_label="Aggiungi account"
+            app:fab_size="mini" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/accounts_add_account_student_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_account_profile"
+            app:fab_colorNormal="@color/main_color"
+            app:fab_colorPressed="@color/main_color"
+            app:fab_label="Aggiungi account studente"
+            app:fab_size="mini" />
+
+    </com.github.clans.fab.FloatingActionMenu>
 </androidx.constraintlayout.widget.ConstraintLayout>

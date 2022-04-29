@@ -152,6 +152,9 @@ dependencies {
     //--jsoup HTML parser library @ https://jsoup.org/
     implementation 'org.jsoup:jsoup:1.14.3'
 
+    //--Floating add button with submenus
+    implementation 'com.github.clans:fab:1.6.4'
+
     //--Color picker
     implementation 'com.github.Dhaval2404:ColorPicker:2.3'
 
