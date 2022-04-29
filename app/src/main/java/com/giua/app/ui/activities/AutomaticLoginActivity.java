@@ -104,6 +104,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                 loggerManager.e("Errore di connessione - " + e.getMessage());
                 loggerManager.e(Arrays.toString(e.getStackTrace()));
                 runOnUiThread(() -> btnLogout.setVisibility(View.VISIBLE));
+                runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));
                 if(SettingsData.getSettingBoolean(this, SettingKey.EXP_MODE))
                     runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));
 
@@ -145,6 +146,7 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
                     runOnUiThread(() -> setErrorMessage("Il sito è in manutenzione sino alle " + simpleDateFormat.format(maintenance.end)));
                 } catch (Exception e2) {
+                    loggerManager.e("Errore nel ricevere informazioni manutenzione: " + e.getMessage());
                     runOnUiThread(() -> setErrorMessage(getString(R.string.maintenance_is_active_error)));
                 }
                 runOnUiThread(() -> btnLogout.setVisibility(View.VISIBLE));

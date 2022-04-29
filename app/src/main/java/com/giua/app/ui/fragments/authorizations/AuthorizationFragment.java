@@ -61,6 +61,8 @@ public class AuthorizationFragment extends Fragment implements IGiuaAppFragment 
         ((SwipeRefreshLayout) root.findViewById(R.id.authorizations_swipe_refresh)).setRefreshing(true);
         ((SwipeRefreshLayout) root.findViewById(R.id.authorizations_swipe_refresh)).setOnRefreshListener(this::onRefresh);
 
+        offlineMode = activity.getIntent().getBooleanExtra("offline", false);
+
         return root;
     }
 
@@ -106,7 +108,10 @@ public class AuthorizationFragment extends Fragment implements IGiuaAppFragment 
 
     private void onRefresh() {
         refresh = true;
-        loadDataAndViews();
+        if (!offlineMode)
+            loadDataAndViews();
+        else
+            loadOfflineDataAndViews();
     }
 
     private void setErrorMessage(String message, View root) {
@@ -116,7 +121,10 @@ public class AuthorizationFragment extends Fragment implements IGiuaAppFragment 
 
     @Override
     public void onStart() {
-        loadDataAndViews();
+        if (!offlineMode)
+            loadDataAndViews();
+        else
+            loadOfflineDataAndViews();
         super.onStart();
     }
 

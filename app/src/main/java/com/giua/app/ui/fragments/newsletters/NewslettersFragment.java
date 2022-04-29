@@ -103,8 +103,6 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         demoMode = SettingsData.getSettingBoolean(requireActivity(), SettingKey.DEMO_MODE);
-        if (getArguments() != null)
-            offlineMode = getArguments().getBoolean("offline");
         root = inflater.inflate(R.layout.fragment_newsletters, container, false);
 
         newslettersLayout = root.findViewById(R.id.newsletter_linear_layout);
@@ -129,13 +127,19 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         buttonGoUp.setOnClickListener((view -> scrollView.smoothScrollTo(0, 0)));
         buttonFilterConfirm.setOnClickListener(this::btnFilterConfirmOnClick);
 
+        offlineMode = activity.getIntent().getBooleanExtra("offline", false);
+
         activity.getSystemService(NotificationManager.class).cancel(10);
 
         return root;
     }
 
     @Override
-    public void loadOfflineDataAndViews() {}
+    public void loadOfflineDataAndViews() {
+        tvNoElements.setText("Non disponibile offline");
+        tvNoElements.setVisibility(View.VISIBLE);
+        root.findViewById(R.id.newsletter_filter_cardview).setVisibility(View.INVISIBLE);
+    }
 
     @Override
     public void loadDataAndViews() {
@@ -358,7 +362,10 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
         loadedAllPages = false;
         currentPage = 1;
         isFilterApplied = false;
-        loadDataAndViews();
+        if (!offlineMode)
+            loadDataAndViews();
+        else
+            loadOfflineDataAndViews();
     }
 
     private void btnFilterConfirmOnClick(View view) {
@@ -530,7 +537,10 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onStart() {
-        loadDataAndViews();
+        if (!offlineMode)
+            loadDataAndViews();
+        else
+            loadOfflineDataAndViews();
         super.onStart();
     }
 

@@ -61,9 +61,11 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
     LinearLayout otherInfoLayoutButton;
     LinearLayout confirmLayout;
     AbsencesPage absencesPage;
+    TextView tvNoElements;
     boolean isFragmentDestroyed = false;
     boolean confirmActionIsDelete;  //Indica cosa deve fare il bottone di conferma una volta cliccato. true: elimina la giustificazione ; false: la modifica/pubblica
     boolean refresh = false;
+    boolean offlineMode = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_absences, container, false);
@@ -75,6 +77,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
         btnConfirm = root.findViewById(R.id.absences_confirm_button);
         otherInfoLayoutButton = root.findViewById(R.id.absences_other_info_layout_button);
         confirmLayout = root.findViewById(R.id.absences_confirm_layout);
+        tvNoElements = root.findViewById(R.id.absences_no_elements_text);
 
         activity = requireActivity();
 
@@ -84,11 +87,20 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
         btnConfirm.setOnClickListener(this::btnConfirmOnClick);
         otherInfoLayoutButton.setOnClickListener(this::otherInfoOnClick);
 
+        offlineMode = activity.getIntent().getBooleanExtra("offline", false);
+
         return root;
     }
 
     @Override
-    public void loadOfflineDataAndViews() {}
+    public void loadOfflineDataAndViews() {
+        tvNoElements.setText("Non disponibile offline");
+        tvNoElements.setVisibility(View.VISIBLE);
+        otherInfoLayoutButton.setVisibility(View.INVISIBLE);
+        root.findViewById(R.id.absences_other_info_number_absences).setVisibility(View.INVISIBLE);
+        root.findViewById(R.id.absences_other_info_total_absences_time).setVisibility(View.INVISIBLE);
+        swipeRefreshLayout.setRefreshing(false);
+    }
 
     @Override
     public void loadDataAndViews() {
@@ -114,19 +126,19 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
                 activity.runOnUiThread(() -> {
                     setErrorMessage(activity.getString(R.string.your_connection_error), root);
-                    root.findViewById(R.id.absences_no_elements_text).setVisibility(View.VISIBLE);
+                    tvNoElements.setVisibility(View.VISIBLE);
                     swipeRefreshLayout.setRefreshing(false);
                 });
             } catch (GiuaScraperExceptions.SiteConnectionProblems e) {
                 activity.runOnUiThread(() -> {
                     setErrorMessage(activity.getString(R.string.site_connection_error), root);
-                    root.findViewById(R.id.absences_no_elements_text).setVisibility(View.VISIBLE);
+                    tvNoElements.setVisibility(View.VISIBLE);
                     swipeRefreshLayout.setRefreshing(false);
                 });
             } catch (GiuaScraperExceptions.MaintenanceIsActiveException e) {
                 activity.runOnUiThread(() -> {
                     setErrorMessage(activity.getString(R.string.maintenance_is_active_error), root);
-                    root.findViewById(R.id.absences_no_elements_text).setVisibility(View.VISIBLE);
+                    tvNoElements.setVisibility(View.VISIBLE);
                     swipeRefreshLayout.setRefreshing(false);
                 });
             } catch (GiuaScraperExceptions.NotLoggedIn e) {
@@ -253,7 +265,10 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onStart() {
-        loadDataAndViews();
+        if (!offlineMode)
+            loadDataAndViews();
+        else
+            loadOfflineDataAndViews();
         super.onStart();
     }
 

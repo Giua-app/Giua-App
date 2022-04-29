@@ -85,6 +85,7 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
     boolean hasCompletedLoading = false;
     boolean isSpammingClick = false;
     boolean isFragmentDestroyed = false;
+    boolean offlineMode = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_lessons, container, false);
@@ -126,11 +127,16 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         calendarView.setOnDateChangeListener(this::calendarOnChangeDateListener);
         btnConfirmDate.setOnClickListener(this::btnConfirmDateOnClick);
 
+        offlineMode = activity.getIntent().getBooleanExtra("offline", false);
+
         return root;
     }
 
     @Override
-    public void loadOfflineDataAndViews() {}
+    public void loadOfflineDataAndViews() {
+        tvNoElements.setText("Non disponibile offline");
+        tvNoElements.setVisibility(View.VISIBLE);
+    }
 
     @Override
     public void loadDataAndViews() {
@@ -231,13 +237,19 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         lastCallTime = 0;
         hasCompletedLoading = false;
         isSpammingClick = false;
-        loadDataAndViews();
+        if (!offlineMode)
+            loadDataAndViews();
+        else
+            loadOfflineDataAndViews();
     }
 
     private void btnConfirmDateOnClick(View view) {
         btnConfirmDate.setVisibility(View.GONE);
         isSpammingClick = false;
-        loadDataAndViews();
+        if (!offlineMode)
+            loadDataAndViews();
+        else
+            loadOfflineDataAndViews();
     }
 
     private void lessonViewOnClick(View view) {
@@ -272,7 +284,10 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         try {
             currentDate = getCurrentDate(formatterForScraping.parse(year + "-" + (month + 1) + "-" + dayOfMonth));
             setTextWithNames();
-            loadDataAndViews();
+            if (!offlineMode)
+                loadDataAndViews();
+            else
+                loadOfflineDataAndViews();
             obscureLayoutView.callOnClick();
         } catch (ParseException e) {
             e.printStackTrace();
@@ -307,7 +322,10 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         calendarView.setDate(currentDate.getTime());
         viewsLayout.removeAllViews();
         setTextWithNames();
-        loadDataAndViews();
+        if (!offlineMode)
+            loadDataAndViews();
+        else
+            loadOfflineDataAndViews();
     }
 
     private void nextDateOnClick(View view) {
@@ -316,7 +334,10 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
         calendarView.setDate(currentDate.getTime());
         viewsLayout.removeAllViews();
         setTextWithNames();
-        loadDataAndViews();
+        if (!offlineMode)
+            loadDataAndViews();
+        else
+            loadOfflineDataAndViews();
     }
 
     //endregion
@@ -361,7 +382,10 @@ public class LessonsFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void onStart() {
-        loadDataAndViews();
+        if (!offlineMode)
+            loadDataAndViews();
+        else
+            loadOfflineDataAndViews();
         super.onStart();
     }
 
