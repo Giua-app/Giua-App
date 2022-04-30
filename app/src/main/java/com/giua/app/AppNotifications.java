@@ -101,15 +101,15 @@ public class AppNotifications extends BroadcastReceiver {
     private void checkAndSendNotifications() {
         loggerManager.d("Inizio a controllare le novità per le notifiche");
 
-        if (activeUsername.equals("gsuite")) makeGsuiteLogin();
-        else makeLogin();
-
-        if (!gS.isSessionValid(gS.getCookie())) {
-            loggerManager.e("Il login non ha funzionato");
-            return;
-        }
-
         try {
+
+            if (activeUsername.equals("gsuite")) makeGsuiteLogin();
+            else makeLogin();
+
+            if (!gS.isSessionValid(gS.getCookie())) {
+                loggerManager.e("Il login non ha funzionato");
+                return;
+            }
 
             if (canSendNotificationsVotes) checkNewsForVotes();
             if (canSendNotificationsAlerts) checkNewsForAlerts();

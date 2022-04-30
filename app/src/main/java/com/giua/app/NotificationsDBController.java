@@ -44,7 +44,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     private final SQLiteDatabase db;
 
     //!!!
-    //FIXME: USARE SQLiteDatabase.releaseMemory() DOVE L'APP VA IN BACKGROUND O ALTRO
+    //ATTENZIONE: USARE SQLiteDatabase.releaseMemory() DOVE L'APP VA IN BACKGROUND O ALTRO
 
     private static final String DB_NAME = "giuapp_notification_data";
     private static final int DB_VERSION = 1;
