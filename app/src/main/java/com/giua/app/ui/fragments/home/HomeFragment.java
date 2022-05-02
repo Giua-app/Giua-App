@@ -50,11 +50,13 @@ import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
 import com.giua.app.ui.activities.DrawerActivity;
 import com.giua.objects.Vote;
+import com.giua.pages.VotesPage;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -156,7 +158,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
                     setupHomeworksTestsText(homeworks, tests);
                     setupMeanVotesText(allVotes);
                     if (!allVotes.isEmpty()) {
-                        chart.setData(generateLineData(allVotes));
+                        chart.setData(generateLineData(Arrays.asList("Primo quadrimestre", "Secondo quadrimestre", "Terzo trimestre"), allVotes));
                         chart.invalidate();
                     }
                     swipeRefreshLayout.setRefreshing(false);
@@ -171,7 +173,8 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     public void loadDataAndViews() {
         GlobalVariables.gsThread.addTask(() -> {
             try {
-                Map<String, List<Vote>> allVotes = GlobalVariables.gS.getVotesPage(forceRefresh).getAllVotes();
+                VotesPage votesPage = GlobalVariables.gS.getVotesPage(forceRefresh);
+                Map<String, List<Vote>> allVotes = votesPage.getAllVotes();
                 int homeworks = GlobalVariables.gS.getHomePage(forceRefresh).getNearHomeworks();
                 int tests = GlobalVariables.gS.getHomePage(false).getNearTests();
 
@@ -186,7 +189,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
                     setupHomeworksTestsText(homeworks, tests);
                     setupMeanVotesText(allVotes);
                     if (!allVotes.isEmpty()) {
-                        chart.setData(generateLineData(allVotes));
+                        chart.setData(generateLineData(votesPage.getAllQuarterlyNames(), allVotes));
                         chart.invalidate();
                     }
                     swipeRefreshLayout.setRefreshing(false);
@@ -286,12 +289,11 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         tvTests.setMinWidth(0);
     }
 
-    private LineData generateLineData(Map<String, List<Vote>> allVotes) {
+    private LineData generateLineData(List<String> allQuarterlyNames, Map<String, List<Vote>> allVotes) {
+
         List<Entry> entriesFirstQuarter = new ArrayList<>();
         List<Entry> entriesSecondQuarter = new ArrayList<>();
         List<Entry> entriesThirdQuarter = new ArrayList<>();
-        List<Entry> entriesFourthQuarter = new ArrayList<>();
-        List<Entry> entriesFifthQuarter = new ArrayList<>();
 
         int voteCounter = 0;
 
@@ -299,7 +301,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         for (Vote vote : allVotesSorted) {
             if (vote.isAsterisk || !(vote.isRelevantForMean || addVoteNotRelevantForMean)) break;
 
-            switch (vote.quarterlyToInt()) {
+            switch (vote.quarterly) {
                 case 1:
                     entriesFirstQuarter.add(new Entry(voteCounter, vote.toFloat()));
                     break;
@@ -309,12 +311,6 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
                 case 3:
                     entriesThirdQuarter.add(new Entry(voteCounter, vote.toFloat()));
                     break;
-                case 4:
-                    entriesFourthQuarter.add(new Entry(voteCounter, vote.toFloat()));
-                    break;
-                case 5:
-                    entriesFifthQuarter.add(new Entry(voteCounter, vote.toFloat()));
-                    break;
             }
 
             voteCounter++;
@@ -323,13 +319,29 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         if (voteCounter == 1)    //Se si ha solamente un voto allora duplicalo nel grafico per far visualizzare almeno una riga
             entriesFirstQuarter.add(new Entry(voteCounter, allVotesSorted.get(0).toFloat()));
 
-        LineDataSet lineDataSetFirstQuarter = getLineForChart(entriesFirstQuarter, "Primo quadrimestre", Color.argb(255, 5, 157, 192));
-        LineDataSet lineDataSetSecondQuarter = getLineForChart(entriesSecondQuarter, "Secondo quadrimestre", Color.argb(255, 0, 88, 189));
-        LineDataSet lineDataSetThirdQuarter = getLineForChart(entriesThirdQuarter, "Terzo quadrimestre", Color.argb(255, 0, 189, 75));
-        LineDataSet lineDataSetFourthQuarter = getLineForChart(entriesFourthQuarter, "Quarto quadrimestre", Color.argb(255, 230, 213, 0));
-        LineDataSet lineDataSetFifthQuarter = getLineForChart(entriesFifthQuarter, "Quinto quadrimestre", Color.argb(255, 230, 74, 0));
+        String firstQuarterName = "";
+        String secondQuarterName = "";
+        String thirdQuarterName = "";
+        int nQuarterlyNames = allQuarterlyNames.size();
 
-        return new LineData(lineDataSetFirstQuarter, lineDataSetSecondQuarter, lineDataSetThirdQuarter, lineDataSetFourthQuarter, lineDataSetFifthQuarter);
+        if(nQuarterlyNames >= 3){
+            thirdQuarterName = allQuarterlyNames.get(0);
+            secondQuarterName = allQuarterlyNames.get(1);
+            firstQuarterName = allQuarterlyNames.get(2);
+        }
+        if(nQuarterlyNames == 2) {
+            secondQuarterName = allQuarterlyNames.get(0);
+            firstQuarterName = allQuarterlyNames.get(1);
+        }
+        if(nQuarterlyNames == 1)
+            firstQuarterName = allQuarterlyNames.get(0);
+
+
+        LineDataSet lineDataSetFirstQuarter = getLineForChart(entriesFirstQuarter, firstQuarterName, Color.argb(255, 5, 157, 192));
+        LineDataSet lineDataSetSecondQuarter = getLineForChart(entriesSecondQuarter, secondQuarterName, Color.argb(255, 0, 88, 189));
+        LineDataSet lineDataSetThirdQuarter = getLineForChart(entriesThirdQuarter, thirdQuarterName, Color.argb(255, 0, 189, 75));
+
+        return new LineData(lineDataSetFirstQuarter, lineDataSetSecondQuarter, lineDataSetThirdQuarter);
     }
 
     private LineDataSet getLineForChart(List<Entry> entries, String text, @ColorInt int color) {

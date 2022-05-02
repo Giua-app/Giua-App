@@ -44,6 +44,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -322,6 +323,18 @@ public class AppNotifications extends BroadcastReceiver {
 
         notificationManager.cancel(AppNotificationsParams.ALERTS_NOTIFICATION_ID);
         notificationManager.notify(AppNotificationsParams.ALERTS_NOTIFICATION_ID, createAlertsNotification(allNewAlerts));
+
+        //DEBUG
+        String s1 = "";
+        for(Alert alert : allNewAlerts){
+            s1 += alert.getId() + "; ";
+        }
+        String s2 = "";
+        for(Alert alert : allOldAlerts){
+            s2 += alert.getId() + "; ";
+        }
+        loggerManager.w("Notificati gli avvisi: " + s1);
+        loggerManager.w("Avvisi vecchi: " + s2);
     }
 
     private Notification createAlertsNotification(List<Alert> alertsToNotify) {

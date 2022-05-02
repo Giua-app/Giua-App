@@ -45,6 +45,7 @@ import com.giua.app.SettingsData;
 import com.giua.app.ui.activities.DrawerActivity;
 import com.giua.app.ui.views.ObscureLayoutView;
 import com.giua.objects.Vote;
+import com.giua.pages.VotesPage;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -61,6 +62,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
     ObscureLayoutView obscureLayoutView;    //Questo bottone viene visualizzato dietro al detail layout e se viene cliccato si esce dai dettagli
     SwipeRefreshLayout swipeRefreshLayout;
     Map<String, List<Vote>> allVotes;
+    VotesPage votesPage;
     Activity activity;
     View root;
     boolean refreshVotes = false;
@@ -109,7 +111,8 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
     public void loadDataAndViews() {
         GlobalVariables.gsThread.addTask(() -> {
             try {
-                allVotes = GlobalVariables.gS.getVotesPage(refreshVotes).getAllVotes();
+                votesPage = GlobalVariables.gS.getVotesPage(refreshVotes);
+                allVotes = votesPage.getAllVotes();
                 new OfflineDBController(activity).addVotes(allVotes);
                 refreshVotes = false;
                 if (isFragmentDestroyed)
@@ -218,7 +221,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
     @SuppressLint("ClickableViewAccessibility")
     private void addVoteView(String subject) {
-        voteView = new VoteView(requireActivity(), null, subject, SettingsData.getSettingBoolean(activity, SettingKey.SHOW_CENTS), allVotes.get(subject), this::singleVoteOnClick);
+        voteView = new VoteView(requireActivity(), null, subject, votesPage.getAllQuarterlyNames(), allVotes.get(subject), this::singleVoteOnClick, SettingsData.getSettingBoolean(activity, SettingKey.SHOW_CENTS));
         voteView.setId(View.generateViewId());
 
         voteView.setLayoutParams(params);

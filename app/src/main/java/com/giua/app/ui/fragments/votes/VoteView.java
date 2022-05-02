@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -50,16 +51,21 @@ public class VoteView extends ConstraintLayout {
     private List<LinearLayout> listVoteLayouts;
     private final List<Vote> allVotes;
     private final OnClickListener onClick;
-    private List<Integer> quarterlyCounter;
+    private final int maxQuarterly;
+    private final List<String> allQuarterliesNames;
     private final boolean shouldShowCents;
 
-    public VoteView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, String subject, boolean shouldShowCents, List<Vote> allVotes, OnClickListener onClick) {
+    public VoteView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, String subject,  List<String> allQuarterliesNames, List<Vote> allVotes, OnClickListener onClick, boolean shouldShowCents) {
         super(context, attrs);
 
         this.subjectName = subject;
         this.allVotes = allVotes;
         this.onClick = onClick;
+        this.allQuarterliesNames = allQuarterliesNames;
         this.shouldShowCents = shouldShowCents;
+
+        maxQuarterly = allQuarterliesNames.size();
+
         initializeComponent(context);
     }
 
@@ -72,21 +78,13 @@ public class VoteView extends ConstraintLayout {
 
         tvSubject.setText(this.subjectName);
 
-        //Conto quanti e quali quadrimestri si dovranno visualizzare
-        quarterlyCounter = new Vector<>();
-        int length = allVotes.size();
-        for (int i = 0; i < length; i++) {
-            if (!quarterlyCounter.contains(allVotes.get(i).quarterlyToInt()))
-                quarterlyCounter.add(allVotes.get(i).quarterlyToInt());
-        }
-
         //Indica se il quadrimestre che stiamo aggiungendo è il primo fra tutti
         boolean isFirst = true;
         //Creo i quadrimestri visivamente
-        for (int quarter : quarterlyCounter) {
-            TextView quarterlyTextView = createTextViewForQuarterly(context, GiuaScraperUtils.getQuarterNameWithNumbers(quarter), isFirst);
+        for (int quarterly = 1; quarterly <= maxQuarterly; quarterly++) {
+            TextView quarterlyTextView = createTextViewForQuarterly(context, allQuarterliesNames.get(maxQuarterly-quarterly), isFirst);
             HorizontalScrollView horizontalScrollView = createHorizontalScrollView(context);
-            TextView meanTextView = createTextViewForMeans(context, VotesPage.getMeanOf(allVotes, quarter), isFirst);
+            TextView meanTextView = createTextViewForMeans(context, VotesPage.getMeanOf(allVotes, quarterly), isFirst);
 
             ((LinearLayout) findViewById(R.id.list_vote_layout)).addView(quarterlyTextView);
             ((LinearLayout) findViewById(R.id.list_vote_layout)).addView(horizontalScrollView);
@@ -163,8 +161,7 @@ public class VoteView extends ConstraintLayout {
 
     private void createSingleVotes() {
         for (Vote vote : allVotes) {
-            int listVoteLayoutsIndex = quarterlyCounter.indexOf(vote.quarterlyToInt());
-            SingleVoteView tvVote = new SingleVoteView(getContext(), null, vote, listVoteLayouts.get(listVoteLayoutsIndex).getChildCount() == 0);
+            SingleVoteView tvVote = new SingleVoteView(getContext(), null, vote, listVoteLayouts.get(vote.quarterly-1).getChildCount() == 0);
             tvVote.setOnClickListener(onClick);
 
             if (!vote.isAsterisk)
@@ -176,7 +173,7 @@ public class VoteView extends ConstraintLayout {
                 tvVote.setBackgroundTintList(getColorFromVote(getNumberFromVote(vote)));
             else
                 tvVote.setBackgroundTintList(getResources().getColorStateList(R.color.non_vote, getContext().getTheme()));
-            listVoteLayouts.get(listVoteLayoutsIndex).addView(tvVote);
+            listVoteLayouts.get(vote.quarterly-1).addView(tvVote);
         }
     }
 

@@ -72,9 +72,10 @@ public class ActivityManager extends AppCompatActivity {
 
         if (GlobalVariables.gsThread == null)
             GlobalVariables.gsThread = new GiuaScraperThread();
-        else if(GlobalVariables.gsThread.isInterrupted() || GlobalVariables.gsThread.isInterrupting()){
+        else if(GlobalVariables.gsThread.isInterrupting())
+            GlobalVariables.gsThread.stopInterrupting();
+        else if(GlobalVariables.gsThread.isInterrupted())
             GlobalVariables.gsThread.start();
-        }
 
         setupCaoc(); //Crash handler
 

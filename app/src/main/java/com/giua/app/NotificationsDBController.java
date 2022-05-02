@@ -416,7 +416,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
                         cursor.getString(DBVote.TEST_TYPE_COL.ordinal()),
                         cursor.getString(DBVote.ARGUMENTS_COL.ordinal()),
                         cursor.getString(DBVote.JUDGEMENT_COL.ordinal()),
-                        cursor.getString(DBVote.QUARTERLY_COL.ordinal()),
+                        cursor.getInt(DBVote.QUARTERLY_COL.ordinal()),
                         isAsterisk,
                         isRelevantForMean));
 
