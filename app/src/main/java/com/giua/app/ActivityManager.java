@@ -75,7 +75,7 @@ public class ActivityManager extends AppCompatActivity {
         else if(GlobalVariables.gsThread.isInterrupting())
             GlobalVariables.gsThread.stopInterrupting();
         else if(GlobalVariables.gsThread.isInterrupted())
-            GlobalVariables.gsThread.start();
+            GlobalVariables.gsThread.run();
 
         setupCaoc(); //Crash handler
 
