@@ -107,7 +107,7 @@ public class AppNotifications extends BroadcastReceiver {
             if (activeUsername.equals("gsuite")) makeGsuiteLogin();
             else makeLogin();
 
-            if (!gS.isSessionValid(gS.getCookie())) {
+            if (gS == null || !gS.isSessionValid(gS.getCookie())) {
                 loggerManager.e("Il login non ha funzionato");
                 return;
             }
