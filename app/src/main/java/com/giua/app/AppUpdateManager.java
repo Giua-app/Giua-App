@@ -54,7 +54,7 @@ public class AppUpdateManager {
     Context context;
     //Semantic Version Regex
     final String semVerRegex = "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$";
-
+    private int upgradable = -1;
 
     public AppUpdateManager(Context context){
         this.context = context;
@@ -95,6 +95,8 @@ public class AppUpdateManager {
     }
 
     public boolean checkForUpdates(){
+        if(upgradable != -1) return upgradable == 1;
+
         loggerManager.d("Controllo aggiornamenti...");
         JsonNode rootNode;
         try {
@@ -102,12 +104,14 @@ public class AppUpdateManager {
         } catch(Exception e){
             loggerManager.e("Errore critico: " + e.getMessage());
             loggerManager.e(Arrays.toString(e.getStackTrace()));
+            upgradable = 0;
             return false;
         }
 
 
         if (rootNode == null) {   //Si è verificato un errore di qualche tipo
             loggerManager.e("Errore critico sconosciuto");
+            upgradable = 0;
             return false;
         }
 
@@ -128,14 +132,18 @@ public class AppUpdateManager {
         } else {
             //Non è una versione, esci silenziosamente
             loggerManager.w("Versione tag trovata su github non rispetta SemVer, annullo");
+            upgradable = 0;
             return false;
         }
 
         if(isUpdateNewerThanApp()){
             loggerManager.w("Rilevata nuova versione");
+            upgradable = 1;
             return true;
         }
+
         loggerManager.w("Nessuna nuova versione rilevata");
+        upgradable = 0;
         return false;
     }
 

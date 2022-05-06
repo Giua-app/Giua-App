@@ -41,6 +41,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.giua.app.AppUpdateManager;
+import com.giua.app.AppUtils;
 import com.giua.app.GlobalVariables;
 import com.giua.app.IGiuaAppFragment;
 import com.giua.app.LoggerManager;
@@ -65,7 +66,8 @@ import java.util.Vector;
 
 public class HomeFragment extends Fragment implements IGiuaAppFragment {
 
-    LineChart chart;
+    LinearLayout contentLayout;
+    List<HomeChartView> allCharts;
     Activity activity;
     TextView tvHomeworks;
     TextView tvTests;
@@ -79,6 +81,12 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
     boolean offlineMode = false;
     boolean addVoteNotRelevantForMean = false;
 
+    final @ColorInt int[] QUARTERLY_COLORS = new int[]{
+            Color.argb(255, 5, 157, 192),
+            Color.argb(255, 0, 88, 189),
+            Color.argb(255, 0, 189, 75)
+    };
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -87,33 +95,17 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         activity = requireActivity();
         loggerManager = new LoggerManager("HomeFragment", activity);
 
-        chart = root.findViewById(R.id.home_mean_chart);
-        chart.getAxisLeft().setEnabled(false);
-        chart.getAxisRight().setEnabled(true);
-        chart.getAxisRight().setTextSize(14);
-        chart.getAxisRight().setTextColor(activity.getResources().getColor(R.color.night_white_light_black, activity.getTheme()));
-        chart.getAxisRight().setAxisMinimum(0f);
-        chart.getAxisRight().setAxisMaximum(10f);
-        chart.getAxisRight().setLabelCount(5, false);
-        chart.getXAxis().setEnabled(false);
-        chart.setNoDataText("Nessun voto");
-        Description desc = new Description();
-        desc.setText("");
-        chart.setDescription(desc);
-        chart.getLegend().setTextSize(13);
-        chart.getLegend().setTextColor(activity.getResources().getColor(R.color.night_white_light_black, activity.getTheme()));
-        chart.getLegend().setWordWrapEnabled(true);
-        chart.setTouchEnabled(false);
-        chart.setDragEnabled(false);
-        chart.setScaleEnabled(false);
-        chart.setPinchZoom(false);
-        chart.invalidate();
-
+        contentLayout = root.findViewById(R.id.home_content_layout);
         tvHomeworks = root.findViewById(R.id.home_txt_homeworks);
         tvTests = root.findViewById(R.id.home_txt_tests);
         swipeRefreshLayout = root.findViewById(R.id.home_swipe_refresh_layout);
         txUserInfo = root.findViewById(R.id.home_user_info);
 
+        allCharts = new Vector<>(4);
+        allCharts.add(new HomeChartView(activity));
+        contentLayout.addView(allCharts.get(0));
+
+        allCharts.get(0).setOnClickListener(this::mainChartOnClick);
         root.findViewById(R.id.home_agenda_alerts).setOnClickListener(this::agendaAlertsOnClick);
         swipeRefreshLayout.setRefreshing(true);
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
@@ -129,7 +121,6 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
                 activity.runOnUiThread(() -> txUserInfo.setText("Accesso eseguito nell'account " + GlobalVariables.gS.getUser() + " (" + userType + ")"));
             }
 
-            //TODO: Mettere la cache for check updates (almeno tra activity manager e home fragment visto che in ogni caso viene chiamata due volte)
             AppUpdateManager manager = new AppUpdateManager(activity);
             if (manager.checkForUpdates()) {
                 activity.runOnUiThread(() -> {
@@ -141,6 +132,21 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         }).start();
 
         return root;
+    }
+
+    private void mainChartOnClick(View view) {
+        boolean isFirst = true;
+        for(HomeChartView homeChartView : allCharts) {
+            if (isFirst) {
+                isFirst = false;
+                continue;
+            }
+
+            if(homeChartView.getVisibility() == View.INVISIBLE)
+                homeChartView.setVisibility(View.VISIBLE);
+            else
+                homeChartView.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -156,10 +162,22 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
 
                 activity.runOnUiThread(() -> {
                     setupHomeworksTestsText(homeworks, tests);
-                    setupMeanVotesText(allVotes);
                     if (!allVotes.isEmpty()) {
-                        chart.setData(generateLineData(Arrays.asList("Primo quadrimestre", "Secondo quadrimestre", "Terzo trimestre"), allVotes));
-                        chart.invalidate();
+                        allCharts.get(0).refreshData(
+                                activity,
+                                "Andamento generale",
+                                getMeanOfAllVotes(allVotes),
+                                generateEntries(allVotes),
+                                Arrays.asList(
+                                        "Primo Quadrimestre",
+                                        "Secondo Quadrimestre",
+                                        "Terzo Quadrimestre"
+                                ),
+                                Arrays.asList(
+                                        QUARTERLY_COLORS[0],
+                                        QUARTERLY_COLORS[1],
+                                        QUARTERLY_COLORS[2]
+                                ));
                     }
                     swipeRefreshLayout.setRefreshing(false);
                 });
@@ -187,11 +205,8 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
 
                 activity.runOnUiThread(() -> {
                     setupHomeworksTestsText(homeworks, tests);
-                    setupMeanVotesText(allVotes);
-                    if (!allVotes.isEmpty()) {
-                        chart.setData(generateLineData(votesPage.getAllQuarterlyNames(), allVotes));
-                        chart.invalidate();
-                    }
+                    if (!allVotes.isEmpty())
+                        refreshCharts(allVotes, votesPage);
                     swipeRefreshLayout.setRefreshing(false);
                 });
             } catch (GiuaScraperExceptions.YourConnectionProblems e) {
@@ -216,6 +231,58 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
             } catch (IllegalStateException ignored) {
             }   //Si verifica quando questa schermata è stata distrutta ma il thread cerca comunque di fare qualcosa
         });
+    }
+
+    private void refreshCharts(Map<String, List<Vote>> allVotes, VotesPage votesPage) {
+        allCharts.get(0).refreshData(
+                activity,
+                "Andamento generale",
+                getMeanOfAllVotes(allVotes),
+                generateEntries(allVotes),
+                votesPage.getAllQuarterlyNames(),
+                Arrays.asList(
+                        QUARTERLY_COLORS[0],
+                        QUARTERLY_COLORS[1],
+                        QUARTERLY_COLORS[2]
+                ));
+
+        List<String> allQuarterlyNames = votesPage.getAllQuarterlyNames();
+        List<Vote> allVotesSorted = sortVotes(allVotes);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        int nQuarterly = allQuarterlyNames.size();
+        float mean = 0;
+
+        params.topMargin = AppUtils.convertDpToPx(20, activity);
+
+        for(int i = 1; i < allCharts.size(); i++)
+            contentLayout.removeView(allCharts.get(i));
+
+        allCharts = allCharts.subList(0, 1);
+
+        for(int quarterly = 0; quarterly < nQuarterly; quarterly++){
+            HomeChartView homeChartView = new HomeChartView(activity);
+            List<Entry> entries = new Vector<>();
+
+            int j = 0;
+            for(Vote vote : allVotesSorted){
+                if(vote.quarterly != quarterly+1) continue;
+
+                float voteValue = vote.toFloat();
+
+                mean += voteValue;
+                entries.add(new Entry(j, voteValue));
+                j++;
+            }
+
+            mean = mean / j;
+
+            homeChartView.refreshData(activity, allQuarterlyNames.get(quarterly), mean,entries, allQuarterlyNames.get(quarterly), QUARTERLY_COLORS[quarterly]);
+            homeChartView.setVisibility(View.INVISIBLE);
+            homeChartView.setLayoutParams(params);
+
+            allCharts.add(homeChartView);
+            contentLayout.addView(homeChartView);
+        }
     }
 
     @Override
@@ -289,11 +356,11 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         tvTests.setMinWidth(0);
     }
 
-    private LineData generateLineData(List<String> allQuarterlyNames, Map<String, List<Vote>> allVotes) {
+    private List<List<Entry>> generateEntries(Map<String, List<Vote>> allVotes) {
 
-        List<Entry> entriesFirstQuarter = new ArrayList<>();
-        List<Entry> entriesSecondQuarter = new ArrayList<>();
-        List<Entry> entriesThirdQuarter = new ArrayList<>();
+        List<Entry> entriesFirstQuarter = new Vector<>();
+        List<Entry> entriesSecondQuarter = new Vector<>();
+        List<Entry> entriesThirdQuarter = new Vector<>();
 
         int voteCounter = 0;
 
@@ -319,45 +386,14 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         if (voteCounter == 1)    //Se si ha solamente un voto allora duplicalo nel grafico per far visualizzare almeno una riga
             entriesFirstQuarter.add(new Entry(voteCounter, allVotesSorted.get(0).toFloat()));
 
-        String firstQuarterName = "";
-        String secondQuarterName = "";
-        String thirdQuarterName = "";
-        int nQuarterlyNames = allQuarterlyNames.size();
+        List<List<Entry>> entries = new Vector<>(3);
+        entries.add(entriesFirstQuarter);
+        entries.add(entriesSecondQuarter);
+        entries.add(entriesThirdQuarter);
 
-        if(nQuarterlyNames >= 3){
-            thirdQuarterName = allQuarterlyNames.get(0);
-            secondQuarterName = allQuarterlyNames.get(1);
-            firstQuarterName = allQuarterlyNames.get(2);
-        }
-        if(nQuarterlyNames == 2) {
-            secondQuarterName = allQuarterlyNames.get(0);
-            firstQuarterName = allQuarterlyNames.get(1);
-        }
-        if(nQuarterlyNames == 1)
-            firstQuarterName = allQuarterlyNames.get(0);
-
-
-        LineDataSet lineDataSetFirstQuarter = getLineForChart(entriesFirstQuarter, firstQuarterName, Color.argb(255, 5, 157, 192));
-        LineDataSet lineDataSetSecondQuarter = getLineForChart(entriesSecondQuarter, secondQuarterName, Color.argb(255, 0, 88, 189));
-        LineDataSet lineDataSetThirdQuarter = getLineForChart(entriesThirdQuarter, thirdQuarterName, Color.argb(255, 0, 189, 75));
-
-        return new LineData(lineDataSetFirstQuarter, lineDataSetSecondQuarter, lineDataSetThirdQuarter);
+        return entries;
     }
 
-    private LineDataSet getLineForChart(List<Entry> entries, String text, @ColorInt int color) {
-        LineDataSet lineDataSet = new LineDataSet(entries, text);
-        lineDataSet.setDrawCircles(false);
-        lineDataSet.setDrawCircleHole(false);
-        lineDataSet.setDrawValues(false);
-        lineDataSet.setLineWidth(3);
-        lineDataSet.setDrawFilled(true);
-        lineDataSet.setColor(color);
-        lineDataSet.setFillColor(color);
-        lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        lineDataSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
-
-        return lineDataSet;
-    }
 
     /**
      * Riordina in una lista tutti i voti di tutte le materie secondo le date
@@ -411,28 +447,6 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         });
 
         return listToSort;
-    }
-
-    private void setupMeanVotesText(Map<String, List<Vote>> allVotes) {
-        DecimalFormat df = new DecimalFormat("0.00");
-        float meanFirstQuarter = getMeanOfAllVotes(allVotes);
-
-        if (meanFirstQuarter == 0f)
-            ((TextView) root.findViewById(R.id.home_txt_mean)).setTextColor(activity.getResources().getColorStateList(R.color.non_vote, activity.getTheme()));
-        else if (meanFirstQuarter >= 6)
-            ((TextView) root.findViewById(R.id.home_txt_mean)).setTextColor(activity.getResources().getColorStateList(R.color.good_vote_darker, activity.getTheme()));
-        else if (meanFirstQuarter < 6 && meanFirstQuarter >= 5)
-            ((TextView) root.findViewById(R.id.home_txt_mean)).setTextColor(activity.getResources().getColorStateList(R.color.middle_vote, activity.getTheme()));
-        else
-            ((TextView) root.findViewById(R.id.home_txt_mean)).setTextColor(activity.getResources().getColorStateList(R.color.bad_vote, activity.getTheme()));
-        if (meanFirstQuarter == 0f)
-            ((TextView) root.findViewById(R.id.home_txt_mean)).setText("/");
-        else
-            ((TextView) root.findViewById(R.id.home_txt_mean)).setText(df.format(meanFirstQuarter));
-
-        root.findViewById(R.id.home_txt_mean).setBackground(null);
-        ((TextView) root.findViewById(R.id.home_txt_mean)).setMinWidth(0);
-
     }
 
     private int getNumberFromMonth(String month) {
