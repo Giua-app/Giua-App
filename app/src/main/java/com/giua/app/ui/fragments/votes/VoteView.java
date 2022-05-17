@@ -82,7 +82,7 @@ public class VoteView extends ConstraintLayout {
         boolean isFirst = true;
         //Creo i quadrimestri visivamente
         for (int quarterly = 1; quarterly <= maxQuarterly; quarterly++) {
-            TextView quarterlyTextView = createTextViewForQuarterly(context, allQuarterliesNames.get(quarterly), isFirst);
+            TextView quarterlyTextView = createTextViewForQuarterly(context, allQuarterliesNames.get(quarterly-1), isFirst);
             HorizontalScrollView horizontalScrollView = createHorizontalScrollView(context);
             TextView meanTextView = createTextViewForMeans(context, VotesPage.getMeanOf(allVotes, quarterly), isFirst);
 
