@@ -30,6 +30,7 @@ import com.giua.objects.Newsletter;
 import com.giua.objects.Vote;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,9 +104,17 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     private void createTables(SQLiteDatabase db) {
         AlertsTestsTable.createTable(db);
         AlertsHomeworksTable.createTable(db);
+
         VotesTable.createTable(db);
+        HashMap<String, List<Vote>> noVotes = new HashMap<>();
+        noVotes.put("N", Collections.emptyList());
+        addVotes(noVotes);
+
         NewslettersTable.createTable(db);
+        addNewsletters(Arrays.asList(new Newsletter("",-1,"","","",Collections.emptyList(),-1)));
+
         AlertsTable.createTable(db);
+        addAlerts(Arrays.asList(new Alert("LETTO", "", "","","",-1)));
     }
 
 

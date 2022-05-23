@@ -53,7 +53,6 @@ import java.util.Random;
 import java.util.Vector;
 
 //Attenzione: Non supporta url diversi da quello del Giua per il login con Gsuite
-//FIXME: tutti i controlli allOld*.size() == 0 bisogna sostituirli con qualcos'altro altrimenti le prime circolari, avvisi, ecc non verranno mai notificati
 public class AppNotifications extends BroadcastReceiver {
     private Context context;
     private NotificationManagerCompat notificationManager;
@@ -257,9 +256,11 @@ public class AppNotifications extends BroadcastReceiver {
 
     private void checkNewsForNewsletters() {
         List<Newsletter> allNewNewsletters;
+        List<Newsletter> allNewNewslettersOnSecondPage;
 
         try {
             allNewNewsletters = gS.getNewslettersPage(false).getAllNewsletters(1);
+            allNewNewslettersOnSecondPage = gS.getNewslettersPage(false).getAllNewsletters(2);
         } catch (Exception e) {
             loggerManager.w("Controllo delle CIRCOLARI in background non riuscito: " + e + " " + e.getMessage());
             return;
@@ -267,10 +268,11 @@ public class AppNotifications extends BroadcastReceiver {
 
         List<Newsletter> allOldNewsletters = notificationsDBController.readNewsletters();
         notificationsDBController.replaceNewsletters(allNewNewsletters);
+        notificationsDBController.addNewsletters(allNewNewslettersOnSecondPage);
 
         allNewNewsletters.removeAll(allOldNewsletters);   //Rimuovo gli avvisi vecchi da quelli nuovi
 
-        if (allNewNewsletters.size() == 0 || allOldNewsletters.size() == 0) return;
+        if (allNewNewsletters.size() == 0 || allOldNewsletters.get(0).page == -1) return;
 
         notificationManager.cancel(AppNotificationsParams.NEWSLETTERS_NOTIFICATION_ID);
         notificationManager.notify(AppNotificationsParams.NEWSLETTERS_NOTIFICATION_ID, createNewslettersNotification(allNewNewsletters));
@@ -296,9 +298,11 @@ public class AppNotifications extends BroadcastReceiver {
 
     private void checkNewsForAlerts() {
         List<Alert> allNewAlerts;
+        List<Alert> allNewAlertsOnSecondPage;
 
         try {
             allNewAlerts = gS.getAlertsPage(false).getAllAlerts(1);
+            allNewAlertsOnSecondPage = gS.getAlertsPage(false).getAllAlerts(2);
         } catch (Exception e) {
             loggerManager.w("Controllo degli AVVISI in background non riuscito: " + e + " " + e.getMessage());
             return;
@@ -309,6 +313,7 @@ public class AppNotifications extends BroadcastReceiver {
 
         List<Alert> allOldAlerts = notificationsDBController.readAlerts();
         notificationsDBController.replaceAlerts(allNewAlerts);
+        notificationsDBController.addAlerts(allNewAlertsOnSecondPage);
 
         allNewAlerts.removeAll(allOldAlerts);   //Rimuovo gli avvisi vecchi da quelli nuovi
 
@@ -319,7 +324,7 @@ public class AppNotifications extends BroadcastReceiver {
 
         allNewAlerts.removeAll(testHomeworkAlerts);
 
-        if (allNewAlerts.size() == 0 || allOldAlerts.size() == 0) return;
+        if (allNewAlerts.size() == 0 || allOldAlerts.get(0).page == -1) return;
 
         notificationManager.cancel(AppNotificationsParams.ALERTS_NOTIFICATION_ID);
         notificationManager.notify(AppNotificationsParams.ALERTS_NOTIFICATION_ID, createAlertsNotification(allNewAlerts));
@@ -389,7 +394,7 @@ public class AppNotifications extends BroadcastReceiver {
             notifiedSubjects.add(subject);
         }
 
-        if (notifiedVotesCounter == 0 || notifiedSubjects.size() == 0 || allOldVotes.size() == 0) return;
+        if (notifiedVotesCounter == 0 || notifiedSubjects.size() == 0 || allOldVotes.get("N") != null) return;
 
         Notification notification = createVotesNotification(notifiedSubjects, notifiedVotesCounter);
         notificationManager.cancel(AppNotificationsParams.VOTES_NOTIFICATION_ID);

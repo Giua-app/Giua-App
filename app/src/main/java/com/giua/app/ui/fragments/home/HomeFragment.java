@@ -20,17 +20,22 @@
 package com.giua.app.ui.fragments.home;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -103,6 +108,7 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
 
         allCharts = new Vector<>(4);
         allCharts.add(new HomeChartView(activity));
+        ((LinearLayout) allCharts.get(0).findViewById(R.id.view_home_main_layout)).addView(createArrowIconForChart(), 0);
         contentLayout.addView(allCharts.get(0));
 
         allCharts.get(0).setOnClickListener(this::mainChartOnClick);
@@ -134,10 +140,29 @@ public class HomeFragment extends Fragment implements IGiuaAppFragment {
         return root;
     }
 
+    private ImageView createArrowIconForChart() {
+        ImageView imageView = new ImageView(activity);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        imageView.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24);
+        params.gravity = Gravity.RIGHT;
+        params.weight = 1.0f;
+        imageView.setLayoutParams(params);
+
+        return imageView;
+    }
+
     private void mainChartOnClick(View view) {
         boolean isFirst = true;
         for(HomeChartView homeChartView : allCharts) {
             if (isFirst) {
+                LinearLayout mainLayout = homeChartView.findViewById(R.id.view_home_main_layout);
+                ImageView ivArrow = (ImageView) mainLayout.getChildAt(0);
+                float rotation = ivArrow.getRotationX();
+
+                if(rotation == 180) ivArrow.setRotationX(0);
+                else ivArrow.setRotationX(180);
+
                 isFirst = false;
                 continue;
             }
