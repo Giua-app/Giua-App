@@ -42,7 +42,7 @@ import java.util.Vector;
 public class NotificationsDBController extends SQLiteOpenHelper {
 
     private final LoggerManager lm;
-    private final SQLiteDatabase db;
+    private SQLiteDatabase db;
 
     //!!!
     //ATTENZIONE: USARE SQLiteDatabase.releaseMemory() DOVE L'APP VA IN BACKGROUND O ALTRO

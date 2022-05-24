@@ -49,6 +49,7 @@ import com.giua.app.IGiuaAppFragment;
 import com.giua.app.LoggerManager;
 import com.giua.app.MyDrawerManager;
 import com.giua.app.MyFragmentManager;
+import com.giua.app.NotificationsDBController;
 import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
@@ -79,6 +80,7 @@ public class DrawerActivity extends AppCompatActivity {
     String unstableFeatures = "";
     MyDrawerManager myDrawerManager;
     public MyFragmentManager myFragmentManager;
+    public NotificationsDBController notificationsDBController;
 
     boolean offlineMode = false;
     boolean demoMode = false;
@@ -96,6 +98,7 @@ public class DrawerActivity extends AppCompatActivity {
         offlineMode = getIntent().getBooleanExtra("offline", false);
         demoMode = SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE);
         goTo = getIntent().getStringExtra("goTo");
+        notificationsDBController = new NotificationsDBController(this);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -450,6 +453,7 @@ public class DrawerActivity extends AppCompatActivity {
             GlobalVariables.gsThread.interrupt();
             myDrawerManager = null;
             myFragmentManager = null;
+            notificationsDBController.close();
         }
         super.onDestroy();
     }

@@ -65,6 +65,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
     VotesPage votesPage;
     Activity activity;
     View root;
+
     boolean refreshVotes = false;
     boolean offlineMode = false;
     boolean isFragmentDestroyed = false;
@@ -114,6 +115,7 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
                 votesPage = GlobalVariables.gS.getVotesPage(refreshVotes);
                 allVotes = votesPage.getAllVotes();
                 new OfflineDBController(activity).addVotes(allVotes);
+                ((DrawerActivity) activity).notificationsDBController.replaceVotes(allVotes);
                 refreshVotes = false;
                 if (isFragmentDestroyed)
                     return;

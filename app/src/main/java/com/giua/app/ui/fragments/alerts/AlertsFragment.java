@@ -166,8 +166,11 @@ public class AlertsFragment extends Fragment implements IGiuaAppFragment {
 
                     if (isFragmentDestroyed) return;
 
-                    if (currentPage == 1)
+                    if (currentPage == 1) {
                         new OfflineDBController(root.getContext()).addAlerts(allAlerts);
+                        ((DrawerActivity) activity).notificationsDBController.replaceAlerts(allAlerts);
+                        ((DrawerActivity) activity).notificationsDBController.addAlerts(GlobalVariables.gS.getAlertsPage(false).getAllAlerts(2));
+                    }
 
                     if (allAlerts.isEmpty() && currentPage == 1) {
                         hasLoadedAllPages = true;

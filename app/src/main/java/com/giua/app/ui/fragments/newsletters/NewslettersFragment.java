@@ -72,7 +72,6 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
     View root;
 
     List<Newsletter> allNewsletters = new Vector<>();
-    List<Newsletter> allNewsletterToSave = new Vector<>();
 
     LinearLayout newslettersLayout;
     SwipeRefreshLayout swipeRefreshLayout;
@@ -173,8 +172,9 @@ public class NewslettersFragment extends Fragment implements IGiuaAppFragment {
                 if (allNewsletters == null || isFragmentDestroyed) return;
 
                 activity.runOnUiThread(() -> tvNoElements.setVisibility(View.GONE));
-                if (currentPage == 1)   //Salviamo solo la prima pagina per l'offline
-                    allNewsletterToSave = allNewsletters;
+
+                if (currentPage == 1)
+                    ((DrawerActivity) activity).notificationsDBController.replaceNewsletters(allNewsletters);
                 if (allNewsletters.isEmpty() && currentPage == 1)
                     activity.runOnUiThread(() -> tvNoElements.setVisibility(View.VISIBLE));
                 else if (allNewsletters.isEmpty())
