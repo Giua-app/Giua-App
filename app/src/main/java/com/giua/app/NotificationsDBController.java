@@ -102,6 +102,8 @@ public class NotificationsDBController extends SQLiteOpenHelper {
     }
 
     private void createTables(SQLiteDatabase db) {
+        this.db = db;
+
         AlertsTestsTable.createTable(db);
         AlertsHomeworksTable.createTable(db);
 
