@@ -328,6 +328,18 @@ public class ActivityManager extends AppCompatActivity {
             NotificationManager notificationManager2 = getSystemService(NotificationManager.class);
             notificationManager2.createNotificationChannel(channel2);
 
+            //DEBUG
+            /*Intent intent = new Intent(this, ActivityManager.class).putExtra("goTo", AppNotificationsParams.ALERTS_NOTIFICATION_GOTO).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            Notification n = new NotificationCompat.Builder(this, "0")
+                    .setContentIntent(PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE))
+                    .setSmallIcon(R.drawable.ic_giuaschool_black)
+                    .setContentTitle("CIAO")
+                    .setContentText("CIAONE")
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .build();
+
+            NotificationManagerCompat.from(this).notify(AppNotificationsParams.TESTS_NOTIFICATION_ID, n);*/
+
         }
         loggerManager.d("Notification Manager setup completato");
     }

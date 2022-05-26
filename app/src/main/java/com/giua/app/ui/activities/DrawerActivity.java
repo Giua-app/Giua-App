@@ -454,7 +454,7 @@ public class DrawerActivity extends AppCompatActivity {
     protected void onDestroy() {
         loggerManager.d("onDestroy chiamato");
         if (!isStartingAnotherActivity) {   //Se non si sta startando un' altra activity vuol dire che l'app è stata chiusa
-            GlobalVariables.gsThread.interrupt();
+            GlobalVariables.gsThread.interruptLoop();
             myDrawerManager = null;
             myFragmentManager = null;
             notificationsDBController.close();

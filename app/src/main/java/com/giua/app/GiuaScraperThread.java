@@ -60,12 +60,16 @@ public class GiuaScraperThread extends Thread {
      */
     @Override
     public boolean isInterrupted() {
-        return (!isInterrupting() && isInterrupted) || super.isInterrupted();
+        return (isInterrupted && !isRunning) || super.isInterrupted();
     }
 
     @Override
     public void interrupt() {
+        isInterrupted = true;
         super.interrupt();
+    }
+
+    public void interruptLoop() {
         isInterrupted = true;
     }
 
@@ -73,12 +77,12 @@ public class GiuaScraperThread extends Thread {
      * Se il thread si sta interrompendo, ma non ha ancora smesso di funzionare allora
      * non farlo interrompere.
      */
-    public void stopInterrupting(){
+    public void stopInterrupting() {
         isInterrupted = false;
     }
 
     public void restart() {
-        interrupt();
+        interruptLoop();
         start();
     }
 
