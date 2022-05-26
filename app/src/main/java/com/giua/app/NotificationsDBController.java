@@ -80,8 +80,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         lm.w("Upgrade database rilevato (" + oldVersion + " -> " + newVersion + "). " +
                 "Impossibile convertire database, cancello e ne ricreo uno nuovo");
 
-        deleteTables(db);
-        createTables(db);
+        recreateTables(db);
     }
 
     @Override
@@ -89,6 +88,19 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         lm.w("Downgrade database rilevato (" + oldVersion + " -> " + newVersion + "). " +
                 "Impossibile convertire database, cancello e ne ricreo uno nuovo");
 
+        recreateTables(db);
+    }
+
+    public boolean recreateTables() {
+        if (db == null) return false;
+
+        deleteTables(db);
+        createTables(db);
+        return true;
+    }
+
+
+    private void recreateTables(SQLiteDatabase db) {
         deleteTables(db);
         createTables(db);
     }
@@ -105,7 +117,10 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         this.db = db;
 
         AlertsTestsTable.createTable(db);
+        addAlertsTests(Arrays.asList(new Alert("LETTO", "", "", "", "", -2)));
+
         AlertsHomeworksTable.createTable(db);
+        addAlertsHomeworks(Arrays.asList(new Alert("LETTO", "", "", "", "", -2)));
 
         VotesTable.createTable(db);
         HashMap<String, List<Vote>> noVotes = new HashMap<>();
@@ -113,10 +128,10 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         addVotes(noVotes);
 
         NewslettersTable.createTable(db);
-        addNewsletters(Arrays.asList(new Newsletter("",-1,"","","",Collections.emptyList(),-1)));
+        addNewsletters(Arrays.asList(new Newsletter("", -1, "", "", "", Collections.emptyList(), -2)));
 
         AlertsTable.createTable(db);
-        addAlerts(Arrays.asList(new Alert("LETTO", "", "","","",-1)));
+        addAlerts(Arrays.asList(new Alert("LETTO", "", "", "", "", -2)));
     }
 
 
@@ -394,6 +409,24 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         }
     }
 
+    private void addSubject(String subject, List<Vote> votes) {
+        for (Vote vote : votes) {
+            ContentValues values = new ContentValues();
+
+            values.put(DBVote.VALUE_COL.name, vote.value);
+            values.put(DBVote.QUARTERLY_COL.name, vote.quarterly);
+            values.put(DBVote.IS_ASTERISK_COL.name, vote.isAsterisk);
+            values.put(DBVote.DATE_COL.name, vote.date);
+            values.put(DBVote.JUDGEMENT_COL.name, vote.judgement);
+            values.put(DBVote.TEST_TYPE_COL.name, vote.testType);
+            values.put(DBVote.ARGUMENTS_COL.name, vote.arguments);
+            values.put(DBVote.IS_RELEVANT_FOR_MEAN_COL.name, vote.isRelevantForMean);
+            values.put(DBVote.SUBJECT.name, subject);
+
+            db.insertOrThrow(VOTES_TABLE, null, values);
+        }
+    }
+
     public void replaceVotes(Map<String, List<Vote>> votes) {
         deleteVotes();
         addVotes(votes);
@@ -472,24 +505,6 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         values.put(DBNewsletter.PAGE_COL.name, newsletter.page);
 
         return db.insertOrThrow(NEWSLETTERS_TABLE, null, values);
-    }
-
-    private void addSubject(String subject, List<Vote> votes) {
-        for (Vote vote : votes) {
-            ContentValues values = new ContentValues();
-
-            values.put(DBVote.VALUE_COL.name, vote.value);
-            values.put(DBVote.QUARTERLY_COL.name, vote.quarterly);
-            values.put(DBVote.IS_ASTERISK_COL.name, vote.isAsterisk);
-            values.put(DBVote.DATE_COL.name, vote.date);
-            values.put(DBVote.JUDGEMENT_COL.name, vote.judgement);
-            values.put(DBVote.TEST_TYPE_COL.name, vote.testType);
-            values.put(DBVote.ARGUMENTS_COL.name, vote.arguments);
-            values.put(DBVote.IS_RELEVANT_FOR_MEAN_COL.name, vote.isRelevantForMean);
-            values.put(DBVote.SUBJECT.name, subject);
-
-            db.insertOrThrow(VOTES_TABLE, null, values);
-        }
     }
 
     public void replaceNewsletters(List<Newsletter> newsletters) {

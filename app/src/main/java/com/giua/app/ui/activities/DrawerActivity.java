@@ -232,6 +232,10 @@ public class DrawerActivity extends AppCompatActivity {
             }
             AppData.saveActiveUsername(this, (String) allUsernames[indexOfSelectedUsername]);
             GlobalVariables.gS = null;
+
+            if (!notificationsDBController.recreateTables())
+                loggerManager.e("Cambiando account non si è potuto ricreare il database delle notifiche. Causa: db == null");
+
             startActivity(new Intent(this, ActivityManager.class));
             finish();
         }
@@ -449,7 +453,7 @@ public class DrawerActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         loggerManager.d("onDestroy chiamato");
-        if (!isStartingAnotherActivity) {
+        if (!isStartingAnotherActivity) {   //Se non si sta startando un' altra activity vuol dire che l'app è stata chiusa
             GlobalVariables.gsThread.interrupt();
             myDrawerManager = null;
             myFragmentManager = null;

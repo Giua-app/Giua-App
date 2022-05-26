@@ -147,6 +147,7 @@ public class StudentLoginActivity extends AppCompatActivity {
             goTo = "";
 
         if (isRequestedFromAccounts) {
+            webView.clearHistory();
             onBackPressed();
             return;
         }

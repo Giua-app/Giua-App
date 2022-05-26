@@ -44,7 +44,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -58,7 +57,6 @@ public class AppNotifications extends BroadcastReceiver {
     private NotificationManagerCompat notificationManager;
     private LoggerManager loggerManager;
     private GiuaScraper gS;
-    private OfflineDBController offlineDB;
     private NotificationsDBController notificationsDBController;
 
     private String activeUsername = "";
@@ -88,7 +86,6 @@ public class AppNotifications extends BroadcastReceiver {
         isDebugMode = SettingsData.getSettingBoolean(context, SettingKey.DEBUG_MODE);
 
         notificationManager = NotificationManagerCompat.from(context);
-        offlineDB = new OfflineDBController(context);
         notificationsDBController = new NotificationsDBController(context);
 
         new Thread(this::checkAndSendNotifications).start();
@@ -116,7 +113,6 @@ public class AppNotifications extends BroadcastReceiver {
             if (canSendNotificationsNewsletters) checkNewsForNewsletters();
             if (canSendNotificationsHomeworks | canSendNotificationsTests) checkNewsForAgenda();
 
-            offlineDB.close();
             notificationsDBController.close();
 
         } catch (Exception e) {
@@ -175,7 +171,7 @@ public class AppNotifications extends BroadcastReceiver {
 
         //region Compiti
 
-        if (canSendNotificationsHomeworks) {
+        if (canSendNotificationsHomeworks && allOldHomeworks.get(0).page != -2) {
             for (Alert alert : allOldHomeworks)
                 allNewHomeworks.remove(alert);
 
@@ -189,7 +185,7 @@ public class AppNotifications extends BroadcastReceiver {
 
         //region Verifiche
 
-        if (canSendNotificationsTests) {
+        if (canSendNotificationsTests && allOldTests.get(0).page != -2) {
             for (Alert alert : allOldTests)
                 allNewTests.remove(alert);
 
@@ -272,7 +268,7 @@ public class AppNotifications extends BroadcastReceiver {
 
         allNewNewsletters.removeAll(allOldNewsletters);   //Rimuovo gli avvisi vecchi da quelli nuovi
 
-        if (allNewNewsletters.size() == 0 || allOldNewsletters.get(0).page == -1) return;
+        if (allNewNewsletters.size() == 0 || allOldNewsletters.get(0).page == -2) return;
 
         notificationManager.cancel(AppNotificationsParams.NEWSLETTERS_NOTIFICATION_ID);
         notificationManager.notify(AppNotificationsParams.NEWSLETTERS_NOTIFICATION_ID, createNewslettersNotification(allNewNewsletters));
@@ -324,7 +320,7 @@ public class AppNotifications extends BroadcastReceiver {
 
         allNewAlerts.removeAll(testHomeworkAlerts);
 
-        if (allNewAlerts.size() == 0 || allOldAlerts.get(0).page == -1) return;
+        if (allNewAlerts.size() == 0 || allOldAlerts.get(0).page == -2) return;
 
         notificationManager.cancel(AppNotificationsParams.ALERTS_NOTIFICATION_ID);
         notificationManager.notify(AppNotificationsParams.ALERTS_NOTIFICATION_ID, createAlertsNotification(allNewAlerts));
