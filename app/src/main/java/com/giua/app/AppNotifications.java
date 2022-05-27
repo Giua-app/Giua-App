@@ -171,7 +171,7 @@ public class AppNotifications extends BroadcastReceiver {
 
         //region Compiti
 
-        if (canSendNotificationsHomeworks && allOldHomeworks.get(0).page != -2) {
+        if (canSendNotificationsHomeworks && allOldHomeworks.size() > 0 && allOldHomeworks.get(0).page != -2) {
             for (Alert alert : allOldHomeworks)
                 allNewHomeworks.remove(alert);
 
@@ -185,7 +185,7 @@ public class AppNotifications extends BroadcastReceiver {
 
         //region Verifiche
 
-        if (canSendNotificationsTests && allOldTests.get(0).page != -2) {
+        if (canSendNotificationsTests && allOldTests.size() > 0 && allOldTests.get(0).page != -2) {
             for (Alert alert : allOldTests)
                 allNewTests.remove(alert);
 
