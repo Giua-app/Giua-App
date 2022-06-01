@@ -117,10 +117,10 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         this.db = db;
 
         AlertsTestsTable.createTable(db);
-        addAlertsTests(Arrays.asList(new Alert("LETTO", "", "", "", "", -2)));
+        addAlertsTests(Arrays.asList(new Alert("LETTO", "", "", "", "/-2", -2)));
 
         AlertsHomeworksTable.createTable(db);
-        addAlertsHomeworks(Arrays.asList(new Alert("LETTO", "", "", "", "", -2)));
+        addAlertsHomeworks(Arrays.asList(new Alert("LETTO", "", "", "", "/-2", -2)));
 
         VotesTable.createTable(db);
         HashMap<String, List<Vote>> noVotes = new HashMap<>();
@@ -131,7 +131,7 @@ public class NotificationsDBController extends SQLiteOpenHelper {
         addNewsletters(Arrays.asList(new Newsletter("", -1, "", "", "", Collections.emptyList(), -2)));
 
         AlertsTable.createTable(db);
-        addAlerts(Arrays.asList(new Alert("LETTO", "", "", "", "", -2)));
+        addAlerts(Arrays.asList(new Alert("LETTO", "", "", "", "/-2", -2)));
     }
 
 
