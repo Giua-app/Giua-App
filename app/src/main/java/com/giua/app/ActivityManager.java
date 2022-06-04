@@ -32,7 +32,6 @@ import com.giua.app.ui.activities.AccountsActivity.AccountsActivity;
 import com.giua.app.ui.activities.AppIntroActivity;
 import com.giua.app.ui.activities.AutomaticLoginActivity;
 import com.giua.app.ui.activities.CaocActivity;
-import com.giua.app.ui.activities.DrawerActivity;
 import com.giua.app.ui.activities.LoginActivity;
 import com.giua.webscraper.GiuaScraper;
 
@@ -209,38 +208,53 @@ public class ActivityManager extends AppCompatActivity {
      * Controlla compatibilità tra la nuova versione e quella vecchia
      */
     private void checkForCompatibility() {
-        final String lastVer = AppData.getAppVersion(this);
+        String oldVer = AppData.getAppVersion(this);
+
+        if (oldVer.equals("")) //Serve perchè in nuove versioni la versione non è più su Settings
+            oldVer = SettingsData.getSettingString(this, "appVersion");
+
+        if (oldVer.equals("")) return;
+
+        String[] oldVerSplit = oldVer.split("[.-]");
+
+        int[] oldVerArray = new int[]{
+                Integer.parseInt(oldVerSplit[0]),
+                Integer.parseInt(oldVerSplit[1]),
+                Integer.parseInt(oldVerSplit[2])
+        };
+
         final String appVer = BuildConfig.VERSION_NAME;
+        final String[] appVerSplit = appVer.split("[.-]");
 
-        //0.6.1
-        if (!lastVer.contains(appVer) && lastVer.contains("0.6.1")
-                && AppData.getIntroStatus(this) != 2) {
+        final int[] appVerArray = new int[]{
+                Integer.parseInt(appVerSplit[0]),
+                Integer.parseInt(appVerSplit[1]),
+                Integer.parseInt(appVerSplit[2])
+        };
 
-            CompatibilityManager.checkFor061Update(this);
-        }
+        final int[] VER061 = new int[]{0, 6, 1};
+        final int[] VER062 = new int[]{0, 6, 2};
+        final int[] VER063 = new int[]{0, 6, 3};
+        final int[] VER066 = new int[]{0, 6, 6};
 
-        //Serve perchè in nuove versioni la versione non è più su Settings
-        final String oldVer = SettingsData.getSettingString(this, "appVersion");
+        if (AppUpdateManager.compareVersions(appVerArray, oldVerArray) == 0) //E' nella stessa versione, non fare nulla
+            return;
 
-        //0.6.2
-        if (!oldVer.equals("") && oldVer.contains("0.6.2")) {
-            CompatibilityManager.checkFor062Update(this);
-        }
+        //Aggiornamento da 0.6.1
+        if (AppUpdateManager.compareVersions(oldVerArray, VER061) <= 0)
+            CompatibilityManager.applyCompatibilityForUpdateFrom061(this);
 
-        //0.6.3
-        if (!lastVer.contains(appVer) && lastVer.contains("0.6.3")
-                && !AccountData.getSharedPreferencesForOldLogin(this).getString("user", "NOTFOUND").equals("NOTFOUND")) {
-            CompatibilityManager.checkFor063Update(this);
-        }
-    }
+        //Aggiornamento da 0.6.2
+        if (AppUpdateManager.compareVersions(oldVerArray, VER062) <= 0)
+            CompatibilityManager.applyCompatibilityForUpdateFrom062(this);
 
-    private void startDrawerActivity() {
-        loggerManager.d("Avvio direttamente Drawer Activity dato che gS esiste già");
-        String goTo = getIntent().getStringExtra("goTo");
-        if (goTo == null)
-            goTo = "";
-        startActivity(new Intent(ActivityManager.this, DrawerActivity.class).putExtra("goTo", goTo));
-        finish();
+        //Aggiornamento da 0.6.3
+        if (AppUpdateManager.compareVersions(oldVerArray, VER063) <= 0)
+            CompatibilityManager.applyCompatibilityForUpdateFrom063(this);
+
+        //Aggiornamento da 0.6.6
+        if (AppUpdateManager.compareVersions(oldVerArray, VER066) <= 0)
+            CompatibilityManager.applyCompatibilityForUpdateFrom066(this);
     }
 
     //Questa funzione viene chiamata solo al primo avvio di sempre dell'app
@@ -284,9 +298,12 @@ public class ActivityManager extends AppCompatActivity {
     private void checkForUpdates(){
         new Thread(() -> {
             AppUpdateManager manager = new AppUpdateManager(ActivityManager.this);
-            if (SettingsData.getSettingBoolean(this, SettingKey.UPDATES_NOTIFICATION) && manager.checkForUpdates() && manager.checkUpdateReminderDate()) {
-                manager.createNotification();
-            }
+
+            if (!SettingsData.getSettingBoolean(this, SettingKey.UPDATES_NOTIFICATION)) return;
+            if (!manager.checkForUpdates()) return;
+            if (!manager.checkUpdateReminderDate()) return;
+
+            manager.createNotification();
         }).start();
     }
 

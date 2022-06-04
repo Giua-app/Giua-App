@@ -54,7 +54,6 @@ import com.giua.app.R;
 import com.giua.app.SettingKey;
 import com.giua.app.SettingsData;
 import com.giua.app.ui.activities.AccountsActivity.AccountsActivity;
-import com.giua.objects.Vote;
 import com.giua.webscraper.GiuaScraper;
 import com.giua.webscraper.GiuaScraperExceptions;
 import com.google.android.material.snackbar.Snackbar;
@@ -62,9 +61,6 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
@@ -433,20 +429,6 @@ public class DrawerActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        GlobalVariables.gsThread.addTask(() -> {  //Questo serve a prevenire la perdita di news
-            try {
-                AppData.saveNumberNewslettersInt(this, GlobalVariables.gS.getHomePage(false).getNumberNewsletters());
-                AppData.saveNumberAlertsInt(this, GlobalVariables.gS.getHomePage(false).getNumberAlerts());
-
-                Map<String, List<Vote>> votes = GlobalVariables.gS.getVotesPage(false).getAllVotes();
-                int numberVotes = 0;
-                for (String subject : votes.keySet()) {
-                    numberVotes += Objects.requireNonNull(votes.get(subject)).size();
-                }
-                AppData.saveNumberVotesInt(this, numberVotes);
-            } catch (Exception ignored) {
-            }
-        });
         super.onStop();
     }
 

@@ -30,7 +30,7 @@ public class CompatibilityManager {
     /**
      * Controlla se la versione vecchia era 0.6.1 e nel caso cancella i log e imposta l'intro
      */
-    public static void checkFor061Update(Context context) {
+    public static void applyCompatibilityForUpdateFrom061(Context context) {
         LoggerManager lm = new LoggerManager("CompatManager", context);
 
         lm.w("Rilevato aggiornamento da 0.6.1");
@@ -51,12 +51,12 @@ public class CompatibilityManager {
         AppData.saveIntroStatus(context, -2);
     }
 
-    public static void checkFor062Update(Context context){
+    public static void applyCompatibilityForUpdateFrom062(Context context) {
         LoggerManager lm = new LoggerManager("CompatManager", context);
         final String oldVer = SettingsData.getSettingString(context, "appVersion");
 
         lm.w("Rilevato aggiornamento da 0.6.2");
-        lm.d("Cancello impostazioni vecchie (versione & intro");
+        lm.d("Cancello impostazioni vecchie (versione & intro)");
         SettingsData.saveSettingString(context, "appVersion", null);
         SettingsData.saveSettingString(context, "introStatus", null);
 
@@ -64,7 +64,7 @@ public class CompatibilityManager {
         AppData.saveAppVersion(context, oldVer);
     }
 
-    public static void checkFor063Update(Context context) {
+    public static void applyCompatibilityForUpdateFrom063(Context context) {
         LoggerManager lm = new LoggerManager("CompatManager", context);
 
         lm.w("Rilevato aggiornamento da 0.6.3");
@@ -79,6 +79,15 @@ public class CompatibilityManager {
 
         lm.d("Elimino AccountData vecchio");
         sharedPreferences.edit().clear().apply();
+    }
 
+    public static void applyCompatibilityForUpdateFrom066(Context context) {
+        LoggerManager lm = new LoggerManager("CompatManager", context);
+
+        lm.w("Rilevato aggiornamento da 0.6.6");
+        lm.d("Elimino i dati in AppData non più utilizzati");
+
+        AppData.clearOfflineData(context);
+        AppData.clearNotificationsData(context);
     }
 }

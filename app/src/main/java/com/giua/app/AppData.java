@@ -33,6 +33,8 @@ public class AppData {
      */
     private static final String appDataPreferenceKey = "appData";
 
+    //region Chiavi rimaste per compatibilità ma non più utilizzate
+
     //Chiavi per il salvataggio delle cose offline
     private static final String voteKey = "votes";
     private static final String newsletterKey = "newsletters";
@@ -43,6 +45,8 @@ public class AppData {
     private static final String numberAlertsKey = "number_alerts";
     private static final String numberVotesKey = "number_votes";
     private static final String notificationErrorsCounter = "notification_errors";
+
+    //endregion
 
     //Chiavi per il salvataggio delle versioni
     private static final String lastUpdateVersionKey = "last_update_version";
@@ -65,79 +69,21 @@ public class AppData {
         return context.getSharedPreferences(appDataPreferenceKey, Context.MODE_PRIVATE);
     }
 
-    //region Dati per l'offline
-
-    public static void saveVotesString(final Context context, final String jsonString) {
+    //region Funzioni per rimuove i dati inutili
+    public static void clearOfflineData(final Context context) {
         getSharedPreferences(context).edit()
-                .putString(voteKey, jsonString)
+                .remove(voteKey)
+                .remove(newsletterKey)
+                .remove(alertsKey)
                 .apply();
     }
 
-    public static String getVotesString(final Context context) {
-        return getSharedPreferences(context).getString(voteKey, null);
-    }
-
-    public static void saveNewslettersString(final Context context, final String jsonString) {
+    public static void clearNotificationsData(final Context context) {
         getSharedPreferences(context).edit()
-                .putString(newsletterKey, jsonString)
-                .apply();
-    }
-
-    public static String getNewslettersString(final Context context) {
-        return getSharedPreferences(context).getString(newsletterKey, null);
-    }
-
-    public static void saveAlertsString(final Context context, final String jsonString) {
-        getSharedPreferences(context).edit()
-                .putString(alertsKey, jsonString)
-                .apply();
-    }
-
-    public static String getAlertsString(final Context context) {
-        return getSharedPreferences(context).getString(alertsKey, null);
-    }
-
-    //endregion
-
-    //region Dati per le notifiche
-
-    public static void saveNumberNewslettersInt(final Context context, final int value) {
-        getSharedPreferences(context).edit()
-                .putInt(numberNewslettersKey, value)
-                .apply();
-    }
-
-    public static int getNumberNewslettersInt(final Context context) {
-        return getSharedPreferences(context).getInt(numberNewslettersKey, -1);
-    }
-
-    public static void saveNumberAlertsInt(final Context context, final int value) {
-        getSharedPreferences(context).edit()
-                .putInt(numberAlertsKey, value)
-                .apply();
-    }
-
-    public static int getNumberAlertsInt(final Context context) {
-        return getSharedPreferences(context).getInt(numberAlertsKey, -1);
-    }
-
-    public static void saveNumberVotesInt(final Context context, final int value) {
-        getSharedPreferences(context).edit()
-                .putInt(numberVotesKey, value)
-                .apply();
-    }
-
-    public static int getNumberVotesInt(final Context context) {
-        return getSharedPreferences(context).getInt(numberVotesKey, -1);
-    }
-
-    public static int getNumberNotificationErrors(final Context context) {
-        return getSharedPreferences(context).getInt(notificationErrorsCounter, 0);
-    }
-
-    public static void saveNumberNotificationErrors(final Context context, final int value) {
-        getSharedPreferences(context).edit()
-                .putInt(notificationErrorsCounter, value)
+                .remove(numberNewslettersKey)
+                .remove(numberVotesKey)
+                .remove(numberAlertsKey)
+                .remove(notificationErrorsCounter)
                 .apply();
     }
 

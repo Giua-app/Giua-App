@@ -47,9 +47,7 @@ import java.util.Iterator;
 public class AppUpdateManager {
 
     final Connection session = Jsoup.newSession().ignoreContentType(true);
-    Integer[] updateVer = {0,0,0};
     String tagName;
-    Integer[] currentVer = {0,0,0};
     LoggerManager loggerManager;
     Context context;
     //Semantic Version Regex
@@ -89,19 +87,75 @@ public class AppUpdateManager {
         context.startActivity(intent);
     }
 
-    public static String getPrettyAppVersion(){
+    public static String getPrettyAppVersion() {
         String[] temp = BuildConfig.VERSION_NAME.split("-")[0].split("\\.");
         return temp[0] + "." + temp[1] + "." + temp[2];
     }
 
-    public boolean checkForUpdates(){
-        if(upgradable != -1) return upgradable == 1;
+    /**
+     * Confronta {@code version1} con {@code version2}
+     *
+     * @param version1 un array formato dai numeri della versione
+     * @param version2 un array formato dai numeri della versione
+     * @return 1 se {@code version1} è maggiore di {@code version2} <br>
+     * 0 se sono uguali <br>
+     * -1 se {@code version1} è minore di {@code version2}
+     */
+    public static int compareVersions(int[] version1, int[] version2) {
+        int result = version1[0] - version2[0];
+        if (result == 0) {
+            result = version1[1] - version2[1];
+            if (result == 0) {
+                result = version1[2] - version2[2];
+            }
+        }
+
+        return Integer.compare(result, 0);
+    }
+
+
+    public JsonNode getReleasesJson() {
+        String response;
+        try {
+            response = session.newRequest()
+                    .url("https://api.github.com/repos/giua-app/giua-app/releases")
+                    .execute().body();
+        } catch (IOException e) {
+            loggerManager.e("Impossibile contattare API di github! - " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        JsonNode rootNode;
+        try {
+            rootNode = objectMapper.readTree(response);
+        } catch (IOException e) {
+            loggerManager.e("Impossibile leggere json! - " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+
+        return rootNode;
+    }
+
+    /**
+     * Controlla se c'è un aggiornamento
+     *
+     * @return true se c'è, false se non c'è
+     */
+    public boolean checkForUpdates() {
+        if (upgradable != -1) return upgradable == 1;
+
+        int[] currentVer = new int[3];
+        int[] updateVer = new int[3];
 
         loggerManager.d("Controllo aggiornamenti...");
         JsonNode rootNode;
         try {
             rootNode = getReleasesJson().get(0);
-        } catch(Exception e){
+        } catch (Exception e) {
             loggerManager.e("Errore critico: " + e.getMessage());
             loggerManager.e(Arrays.toString(e.getStackTrace()));
             upgradable = 0;
@@ -136,7 +190,7 @@ public class AppUpdateManager {
             return false;
         }
 
-        if(isUpdateNewerThanApp()){
+        if (compareVersions(updateVer, currentVer) == 1) {
             loggerManager.w("Rilevata nuova versione");
             upgradable = 1;
             return true;
@@ -147,47 +201,8 @@ public class AppUpdateManager {
         return false;
     }
 
-
-    public JsonNode getReleasesJson(){
-        String response;
-        try {
-            response = session.newRequest()
-                    .url("https://api.github.com/repos/giua-app/giua-app/releases")
-                    .execute().body();
-        } catch (IOException e) {
-            loggerManager.e("Impossibile contattare API di github! - " + e.getMessage());
-            e.printStackTrace();
-            return null;
-        }
-
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        JsonNode rootNode;
-        try {
-            rootNode = objectMapper.readTree(response);
-        } catch (IOException e) {
-            loggerManager.e("Impossibile leggere json! - " + e.getMessage());
-            e.printStackTrace();
-            return null;
-        }
-
-        return rootNode;
-    }
-
-
-    private boolean isUpdateNewerThanApp(){
-        int result = updateVer[0] - currentVer[0];
-        if (result == 0) {
-            result = updateVer[1] - currentVer[1];
-            if (result == 0) {
-                result = updateVer[2] - currentVer[2];
-            }
-        }
-        return result > 0; //Negativo = minore , 0 = uguale , Positivo = maggiore
-    }
-
     /**
-     * Controlla LastUpdateReminderDate
+     * Controlla LastUpdateReminderDate, serve a mandare la notifica di aggiornamento una sola volta al giorno
      * @return true se si può inviare l'update, false se bisogna aspettare ad un altro giorno
      */
     //TODO: trasferire in AppUtils
