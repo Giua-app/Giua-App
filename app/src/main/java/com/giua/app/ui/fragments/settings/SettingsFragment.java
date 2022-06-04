@@ -92,7 +92,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         setupAboutScreenObject();
         setupIntroScreenObject();
-        //setupExpModeObject();
+        setupExpModeObject();
         setupSiteUrlObject();
         setupBugReportObject();
         setupDebugModeObject();
@@ -176,7 +176,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                             "per favore non segnalare bug con questa modalità attiva.\n\n" +
                             "Dopo l'attivazione sarà necessario riavviare l'app.\n" +
                             "Funzionalità incluse:\n" +
-                            "- Possibilità di usare più account\n\n" +
+                            "- Modalità Offline\n\n" +
                             "Vuoi attivare la modalità sperimentale?")
                     .setPositiveButton("Si", (dialog, which) -> {
                         SettingsData.saveSettingBoolean(requireActivity(), SettingKey.EXP_MODE, true);

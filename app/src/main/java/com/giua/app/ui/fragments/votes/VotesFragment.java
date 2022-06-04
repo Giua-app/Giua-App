@@ -95,17 +95,8 @@ public class VotesFragment extends Fragment implements IGiuaAppFragment {
 
     @Override
     public void loadOfflineDataAndViews() {
-        new Thread(() -> {
-            try {
-                allVotes = new OfflineDBController(activity).readVotes();
-                refreshVotes = false;
-                if (isFragmentDestroyed)
-                    return;
-                activity.runOnUiThread(this::addViews);
-            } catch (IllegalStateException ignored) {
-                //Si verifica quando questa schermata è stata distrutta ma il thread cerca comunque di fare qualcosa
-            }
-        }).start();
+        tvNoElements.setText("Non disponibile offline");
+        tvNoElements.setVisibility(View.VISIBLE);
     }
 
     @Override

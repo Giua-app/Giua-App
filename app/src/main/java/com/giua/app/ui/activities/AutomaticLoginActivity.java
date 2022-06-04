@@ -150,26 +150,29 @@ public class AutomaticLoginActivity extends AppCompatActivity {
                     runOnUiThread(() -> setErrorMessage(getString(R.string.maintenance_is_active_error)));
                 }
                 runOnUiThread(() -> btnLogout.setVisibility(View.VISIBLE));
-                runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));
+                if(SettingsData.getSettingBoolean(this, SettingKey.EXP_MODE))
+                    runOnUiThread(() -> btnOffline.setVisibility(View.VISIBLE));
                 runOnUiThread(() -> pbLoadingScreen.setVisibility(View.GONE));
                 runOnUiThread(() -> tvAutoLogin.setText("Accesso fallito."));
 
             }
         });
-        new Thread(() -> { //mostra il pulsante per l'offline dopo 5 secondi
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            runOnUiThread(() -> {
-                btnOffline.setVisibility(View.INVISIBLE);
-                btnOffline.setAlpha(0f);
-                btnOffline.animate().alpha(1f).setDuration(400);
-                btnOffline.setVisibility(View.VISIBLE);
-            });
+        if(SettingsData.getSettingBoolean(this, SettingKey.EXP_MODE)) {
+            new Thread(() -> { //mostra il pulsante per l'offline dopo 5 secondi
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                runOnUiThread(() -> {
+                    btnOffline.setVisibility(View.INVISIBLE);
+                    btnOffline.setAlpha(0f);
+                    btnOffline.animate().alpha(1f).setDuration(400);
+                    btnOffline.setVisibility(View.VISIBLE);
+                });
 
-        }).start();
+            }).start();
+        }
     }
 
     private void btnLogoutOnClick(View view) {
