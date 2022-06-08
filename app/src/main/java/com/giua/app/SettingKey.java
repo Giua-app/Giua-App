@@ -100,5 +100,11 @@ public abstract class SettingKey {
      */
     public static final String OPEN_UNSTABLE_FEAT_WITH_WEBVIEW = "openUnstableFeaturesWithWebview";
 
+    public static final String PARTY_MODE = "partyMode";
+
+    public static final String FIRST_PARTY = "firstParty";
+
+    public static final String PARTY_MODE_INDICATOR = "partyModeIndicator";
+
 
 }

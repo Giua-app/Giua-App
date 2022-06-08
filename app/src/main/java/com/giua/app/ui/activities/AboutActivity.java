@@ -22,11 +22,13 @@ package com.giua.app.ui.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,18 +41,27 @@ import com.danielstone.materialaboutlibrary.items.MaterialAboutTitleItem;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutCard;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutList;
 import com.danielstone.materialaboutlibrary.util.OpenSourceLicense;
+import com.giua.app.ActivityManager;
 import com.giua.app.Analytics;
 import com.giua.app.AppUpdateManager;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
+import com.giua.app.SettingKey;
+import com.giua.app.SettingsData;
 import com.google.android.material.snackbar.Snackbar;
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 
 public class AboutActivity extends MaterialAboutActivity {
 
-    int importantInteger = 20000 - 300 - 20001;
+    int importantInteger = -23;
     LoggerManager loggerManager;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        //setTheme(R.style.Theme_GiuaApp_PartyMode);
+        super.onCreate(savedInstanceState);
+    }
 
     @NonNull
     @Override
@@ -58,8 +69,6 @@ public class AboutActivity extends MaterialAboutActivity {
         loggerManager = new LoggerManager("AboutActivity", this);
         loggerManager.d("getMaterialAboutList chiamato");
         loggerManager.d("costruisco pagina about...");
-
-        importantInteger += 160 + 120 + 20 - 1;
 
         MaterialAboutCard.Builder appCardBuilder = new MaterialAboutCard.Builder();
 
@@ -77,7 +86,7 @@ public class AboutActivity extends MaterialAboutActivity {
                         .sizeDp(18),
                 "Versione",
                 false)
-                .setOnClickAction(this::justANormalJavaFunction));
+                .setOnClickAction(this::soLongAndThanksForAllTheFish));
 
         appCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text("Changelog")
@@ -303,53 +312,141 @@ public class AboutActivity extends MaterialAboutActivity {
 
 
 
-    private void justANormalJavaFunction(){
+    private void soLongAndThanksForAllTheFish(){
+        if(SettingsData.getSettingBoolean(this, SettingKey.FIRST_PARTY)) {
+            SettingsData.saveSettingBoolean(this, SettingKey.PARTY_MODE, true);
+            Toast.makeText(this, "Dì addio ai tuoi occhi", Toast.LENGTH_SHORT).show();
+            this.finish();
+            Intent intent = new Intent(this, ActivityManager.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            return;
+        }
         importantInteger++;
+        loggerManager.d(""+importantInteger);
+        if(importantInteger == -16) {
+            Snackbar.make(findViewById(android.R.id.content), "Ehi...", Snackbar.LENGTH_SHORT).show();
+            Analytics.sendDefaultRequest(Analytics.HERE_TAKE_SOME_CAKE);
+            loggerManager.d("So Long, and Thanks for All the Fish");
+        }
         switch(importantInteger){
+            case 1:
+                new AlertDialog.Builder(this)
+                        .setTitle(":/")
+                        .setMessage("Quindi sei tornato...")
+                        .setPositiveButton("Si", (dialog, id) -> soLongAndThanksForAllTheFish())
+
+                        .setCancelable(false)
+                        .show();
+                break;
+            case 2:
+                new AlertDialog.Builder(this)
+                        .setTitle("-_-")
+                        .setMessage("...")
+                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish())
+
+                        .setCancelable(false)
+                        .show();
+                break;
             case 3:
-                Snackbar.make(findViewById(android.R.id.content), ";)", Snackbar.LENGTH_SHORT).show();
-                Analytics.sendDefaultRequest(Analytics.HERE_TAKE_SOME_CAKE);
-                loggerManager.d(";)");
+                new AlertDialog.Builder(this)
+                        .setTitle("-_-")
+                        .setMessage("Purtroppo quest'app non verrà più aggiornata spesso...")
+                        .setPositiveButton("Si...", (dialog, id) -> soLongAndThanksForAllTheFish())
+
+                        .setCancelable(false)
+                        .show();
+                break;
+            case 4:
+                new AlertDialog.Builder(this)
+                        .setTitle(";_;")
+                        .setMessage("...")
+                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish())
+
+                        .setCancelable(false)
+                        .show();
+                break;
+            case 5:
+                new AlertDialog.Builder(this)
+                        .setTitle(";-;")
+                        .setMessage("Non sono molto bravo con gli addii...")
+                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish())
+
+                        .setCancelable(false)
+                        .show();
                 break;
             case 6:
-                Snackbar.make(findViewById(android.R.id.content), "(ﾉ◕ヮ◕)ﾉ", Snackbar.LENGTH_SHORT).show();
-                loggerManager.d("(ﾉ◕ヮ◕)ﾉ");
+                new AlertDialog.Builder(this)
+                        .setTitle(";_;")
+                        .setMessage("...quindi ho pensato di fare qualcosa di diverso...")
+                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish())
+
+                        .setCancelable(false)
+                        .show();
+                break;
+            case 7:
+                new AlertDialog.Builder(this)
+                        .setTitle(";_;")
+                        .setMessage("...qualcosa di più di un semplice addio...")
+                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish())
+
+                        .setCancelable(false)
+                        .show();
+                break;
+            case 8:
+                new AlertDialog.Builder(this)
+                        .setTitle("'_'")
+                        .setMessage("se più avanti vuoi rivederlo, puoi sempre ritornare da me... sai dove trovarmi")
+                        .setPositiveButton("Ok, sono pronto", (dialog, id) -> soLongAndThanksForAllTheFish())
+
+                        .setCancelable(false)
+                        .show();
                 break;
             case 9:
-                Snackbar.make(findViewById(android.R.id.content), "(｡◕‿‿◕｡)", Snackbar.LENGTH_SHORT).show();
-                loggerManager.d("(｡◕‿‿◕｡)");
+                new AlertDialog.Builder(this)
+                        .setTitle("'_'")
+                        .setMessage("Sei pronto a scoprire cosa sia?")
+                        .setPositiveButton("Ok, sono pronto", (dialog, id) -> soLongAndThanksForAllTheFish())
+
+                        .setCancelable(false)
+                        .show();
+            case 10:
+                new AlertDialog.Builder(this)
+                        .setTitle("._.")
+                        .setMessage("3")
+                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish())
+
+                        .setCancelable(false)
+                        .show();
+                break;
+            case 11:
+                new AlertDialog.Builder(this)
+                        .setTitle("*-*")
+                        .setMessage("2")
+                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish())
+
+                        .setCancelable(false)
+                        .show();
                 break;
             case 12:
-                Snackbar.make(findViewById(android.R.id.content), "(╯°□°）╯︵ ┻━┻  puoi smetterla?", Snackbar.LENGTH_SHORT).show();
-                loggerManager.d("(╯°□°）╯︵ ┻━┻");
-                break;
-            case 15:
-                Snackbar.make(findViewById(android.R.id.content), "TI HO DETTO DI SMETTERLA", Snackbar.LENGTH_SHORT).show();
-                break;
-            case 18:
-                Snackbar.make(findViewById(android.R.id.content), "NON MI TOCCARE", Snackbar.LENGTH_SHORT).show();
-                break;
-            case 21:
-                Snackbar.make(findViewById(android.R.id.content), "STAI FERMO ALTRIMENTI...", Snackbar.LENGTH_SHORT).show();
-                break;
-            case 24:
-                Snackbar.make(findViewById(android.R.id.content), "altrimenti....uhh....", Snackbar.LENGTH_SHORT).show();
-                break;
-            case 27:
-                Snackbar.make(findViewById(android.R.id.content), "TI FACCIO CRASHARE", Snackbar.LENGTH_SHORT).show();
-                break;
-            case 30:
-                Snackbar.make(findViewById(android.R.id.content), "SI HAI CAPITO BENE", Snackbar.LENGTH_SHORT).show();
-                break;
-            case 33:
-                Snackbar.make(findViewById(android.R.id.content), "TOCCAMI ANCORA E TI FARO' ESPLODERE IL TELEFONO", Snackbar.LENGTH_SHORT).show();
-                break;
-            case 36:
-                Snackbar.make(findViewById(android.R.id.content), "va bene si non posso farlo, PERO' POSSO FARE QUESTO!", Snackbar.LENGTH_SHORT).show();
-                break;
-            case 39:
-                finish();
+                new AlertDialog.Builder(this)
+                        .setTitle("^-^ <(bye)")
+                        .setMessage("1")
+                        .setPositiveButton("Addio, e grazie per tutto il pesce", (dialog, id) -> {
+                            SettingsData.saveSettingBoolean(this, SettingKey.PARTY_MODE, true);
+                            SettingsData.saveSettingBoolean(this, SettingKey.FIRST_PARTY, true);
+                            Toast.makeText(this, "Dì addio ai tuoi occhi", Toast.LENGTH_SHORT).show();
+                            this.finish();
+                            Intent intent = new Intent(this, ActivityManager.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        })
+
+                        .setCancelable(false)
+                        .show();
                 break;
         }
+
+
     }
 }

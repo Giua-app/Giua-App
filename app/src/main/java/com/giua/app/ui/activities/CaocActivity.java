@@ -42,6 +42,8 @@ import com.giua.app.AppData;
 import com.giua.app.BuildConfig;
 import com.giua.app.LoggerManager;
 import com.giua.app.R;
+import com.giua.app.SettingKey;
+import com.giua.app.SettingsData;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -137,6 +139,10 @@ public class CaocActivity extends AppCompatActivity {
 
         AppData.saveCrashStatus(this, true);
         loggerManager.e(getAllErrorDetailsFromIntent(getIntent()));
+
+        if(SettingsData.getSettingBoolean(this, SettingKey.PARTY_MODE_INDICATOR)){
+            ((TextView) findViewById(R.id.caoc_text)).setText("L'Easter Egg ha creato un errore inaspettato\nNon ci scusiamo per il disagio");
+        }
     }
 
 
@@ -179,6 +185,7 @@ public class CaocActivity extends AppCompatActivity {
         errorDetails += "Build version: " + BuildConfig.VERSION_NAME + " \n";
         errorDetails += "Build date: " + dateFormat.format(new Date(BuildConfig.BUILD_TIME)) + " \n";
         errorDetails += "Current date: " + dateFormat.format(currentDate) + " \n";
+        errorDetails += "Party Mode: " + SettingsData.getSettingBoolean(this, SettingKey.FIRST_PARTY) + " - " + SettingsData.getSettingBoolean(this, SettingKey.PARTY_MODE_INDICATOR) + " \n";
         errorDetails += "Device: " + getDeviceModelName() + " \n";
         errorDetails += "OS version: Android " + Build.VERSION.RELEASE + " (SDK " + Build.VERSION.SDK_INT + ") \n \n";
 

@@ -100,4 +100,43 @@
         <item name="android:fontFamily">@font/varelaroundregular</item>
     </style>
 
+
+    <style name="Theme.GiuaApp.PartyMode.Color.1" parent="Theme.GiuaApp.NoActionBar">
+        <item name="android:statusBarColor">#6900C5</item>
+        <item name="android:textColor">#3B55FF</item>
+
+        <item name="android:background">#00C51A</item>
+        <item name="android:backgroundTint">#00C51A</item>
+    </style>
+
+    <style name="Theme.GiuaApp.PartyMode.Color.2" parent="Theme.GiuaApp.NoActionBar">
+        <item name="android:statusBarColor">#0059C5</item>
+        <item name="android:textColor">#FFA03B</item>
+
+        <item name="android:backgroundTint">#002BC5</item>
+    </style>
+
+    <style name="Theme.GiuaApp.PartyMode.Color.3" parent="Theme.GiuaApp.NoActionBar">
+        <item name="android:statusBarColor">#B800C5</item>
+        <item name="android:textColor">#00FF0D</item>
+
+        <item name="android:background">#00C51A</item>
+        <item name="android:backgroundTint">#C5009A</item>
+    </style>
+
+
+    <style name="Theme.GiuaApp.PartyMode.Drawable.1" parent="Theme.GiuaApp.NoActionBar">
+        <item name="android:background">@drawable/ic_giuaschool_logo1</item>
+    </style>
+
+    <style name="Theme.GiuaApp.PartyMode.Drawable.2" parent="Theme.GiuaApp.NoActionBar">
+        <item name="android:background">@drawable/customactivityoncrash_error_image</item>
+    </style>
+
+    <style name="Theme.GiuaApp.PartyMode.Drawable.3" parent="Theme.GiuaApp.NoActionBar">
+        <item name="android:background">@mipmap/help_tutorial</item>
+    </style>
+
+
+
 </resources>

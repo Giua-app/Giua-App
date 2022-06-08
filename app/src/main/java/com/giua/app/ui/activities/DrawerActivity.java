@@ -86,10 +86,37 @@ public class DrawerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         if (savedInstanceState != null)
             savedInstanceState.clear();
+        boolean partyMode = SettingsData.getSettingBoolean(this, SettingKey.PARTY_MODE);
+        SettingsData.saveSettingBoolean(this, SettingKey.PARTY_MODE_INDICATOR, partyMode);
+        if(partyMode) {
+            SettingsData.saveSettingBoolean(this, SettingKey.PARTY_MODE, false);
+            int x = new Random().nextInt(6);
+            switch (x) {
+                case 0:
+                    setTheme(R.style.Theme_GiuaApp_PartyMode_Color_1);
+                    break;
+                case 1:
+                    setTheme(R.style.Theme_GiuaApp_PartyMode_Color_2);
+                    break;
+                case 2:
+                    setTheme(R.style.Theme_GiuaApp_PartyMode_Color_3);
+                    break;
+                case 3:
+                    setTheme(R.style.Theme_GiuaApp_PartyMode_Drawable_1);
+                    break;
+                case 4:
+                    setTheme(R.style.Theme_GiuaApp_PartyMode_Drawable_2);
+                    break;
+                case 5:
+                    setTheme(R.style.Theme_GiuaApp_PartyMode_Drawable_3);
+                    break;
+            }
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer);
         loggerManager = new LoggerManager("DrawerActivity", this);
         loggerManager.d("onCreate chiamato");
+
 
         offlineMode = getIntent().getBooleanExtra("offline", false);
         demoMode = SettingsData.getSettingBoolean(this, SettingKey.DEMO_MODE);

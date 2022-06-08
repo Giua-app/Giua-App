@@ -51,6 +51,7 @@
                 android:src="@drawable/customactivityoncrash_error_image" />
 
             <TextView
+                android:id="@+id/caoc_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/customactivityoncrash_activity_vertical_margin"
