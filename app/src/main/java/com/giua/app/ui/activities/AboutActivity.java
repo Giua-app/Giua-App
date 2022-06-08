@@ -56,6 +56,7 @@ public class AboutActivity extends MaterialAboutActivity {
 
     int importantInteger = -23;
     LoggerManager loggerManager;
+    boolean isDialogActive = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -86,7 +87,7 @@ public class AboutActivity extends MaterialAboutActivity {
                         .sizeDp(18),
                 "Versione",
                 false)
-                .setOnClickAction(this::soLongAndThanksForAllTheFish));
+                .setOnClickAction(() -> soLongAndThanksForAllTheFish(true)));
 
         appCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text("Changelog")
@@ -312,7 +313,7 @@ public class AboutActivity extends MaterialAboutActivity {
 
 
 
-    private void soLongAndThanksForAllTheFish(){
+    private void soLongAndThanksForAllTheFish(boolean fromButton){
         if(SettingsData.getSettingBoolean(this, SettingKey.FIRST_PARTY)) {
             SettingsData.saveSettingBoolean(this, SettingKey.PARTY_MODE, true);
             Toast.makeText(this, "Dì addio ai tuoi occhi", Toast.LENGTH_SHORT).show();
@@ -322,19 +323,23 @@ public class AboutActivity extends MaterialAboutActivity {
             startActivity(intent);
             return;
         }
-        importantInteger++;
-        loggerManager.d(""+importantInteger);
+        if(!isDialogActive && fromButton){
+            importantInteger++;
+        } else if (isDialogActive && !fromButton)
+            importantInteger++;
+
         if(importantInteger == -16) {
             Snackbar.make(findViewById(android.R.id.content), "Ehi...", Snackbar.LENGTH_SHORT).show();
             Analytics.sendDefaultRequest(Analytics.HERE_TAKE_SOME_CAKE);
             loggerManager.d("So Long, and Thanks for All the Fish");
         }
-        switch(importantInteger){
+        switch (importantInteger) {
             case 1:
+                isDialogActive = true;
                 new AlertDialog.Builder(this)
                         .setTitle(":/")
                         .setMessage("Quindi sei tornato...")
-                        .setPositiveButton("Si", (dialog, id) -> soLongAndThanksForAllTheFish())
+                        .setPositiveButton("Si", (dialog, id) -> soLongAndThanksForAllTheFish(false))
 
                         .setCancelable(false)
                         .show();
@@ -343,7 +348,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 new AlertDialog.Builder(this)
                         .setTitle("-_-")
                         .setMessage("...")
-                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish())
+                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish(false))
 
                         .setCancelable(false)
                         .show();
@@ -352,7 +357,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 new AlertDialog.Builder(this)
                         .setTitle("-_-")
                         .setMessage("Purtroppo quest'app non verrà più aggiornata spesso...")
-                        .setPositiveButton("Si...", (dialog, id) -> soLongAndThanksForAllTheFish())
+                        .setPositiveButton("Si...", (dialog, id) -> soLongAndThanksForAllTheFish(false))
 
                         .setCancelable(false)
                         .show();
@@ -361,7 +366,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 new AlertDialog.Builder(this)
                         .setTitle(";_;")
                         .setMessage("...")
-                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish())
+                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish(false))
 
                         .setCancelable(false)
                         .show();
@@ -370,7 +375,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 new AlertDialog.Builder(this)
                         .setTitle(";-;")
                         .setMessage("Non sono molto bravo con gli addii...")
-                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish())
+                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish(false))
 
                         .setCancelable(false)
                         .show();
@@ -379,7 +384,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 new AlertDialog.Builder(this)
                         .setTitle(";_;")
                         .setMessage("...quindi ho pensato di fare qualcosa di diverso...")
-                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish())
+                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish(false))
 
                         .setCancelable(false)
                         .show();
@@ -388,7 +393,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 new AlertDialog.Builder(this)
                         .setTitle(";_;")
                         .setMessage("...qualcosa di più di un semplice addio...")
-                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish())
+                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish(false))
 
                         .setCancelable(false)
                         .show();
@@ -397,7 +402,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 new AlertDialog.Builder(this)
                         .setTitle("'_'")
                         .setMessage("se più avanti vuoi rivederlo, puoi sempre ritornare da me... sai dove trovarmi")
-                        .setPositiveButton("Ok, sono pronto", (dialog, id) -> soLongAndThanksForAllTheFish())
+                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish(false))
 
                         .setCancelable(false)
                         .show();
@@ -406,15 +411,17 @@ public class AboutActivity extends MaterialAboutActivity {
                 new AlertDialog.Builder(this)
                         .setTitle("'_'")
                         .setMessage("Sei pronto a scoprire cosa sia?")
-                        .setPositiveButton("Ok, sono pronto", (dialog, id) -> soLongAndThanksForAllTheFish())
+                        .setPositiveButton("Ok, sono pronto", (dialog, id) -> soLongAndThanksForAllTheFish(false))
 
                         .setCancelable(false)
                         .show();
+
+                break;
             case 10:
                 new AlertDialog.Builder(this)
                         .setTitle("._.")
                         .setMessage("3")
-                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish())
+                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish(false))
 
                         .setCancelable(false)
                         .show();
@@ -423,7 +430,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 new AlertDialog.Builder(this)
                         .setTitle("*-*")
                         .setMessage("2")
-                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish())
+                        .setPositiveButton("(avanti)", (dialog, id) -> soLongAndThanksForAllTheFish(false))
 
                         .setCancelable(false)
                         .show();
@@ -438,7 +445,7 @@ public class AboutActivity extends MaterialAboutActivity {
                             Toast.makeText(this, "Dì addio ai tuoi occhi", Toast.LENGTH_SHORT).show();
                             this.finish();
                             Intent intent = new Intent(this, ActivityManager.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
                         })
 
@@ -446,7 +453,6 @@ public class AboutActivity extends MaterialAboutActivity {
                         .show();
                 break;
         }
-
 
     }
 }

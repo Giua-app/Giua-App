@@ -83,8 +83,7 @@
     </style>
 
     <style name="AppTheme.MaterialAboutActivity" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <item name="colorPrimary">@color/relative_main_color</item>
-        <item name="colorPrimaryDark">@color/relative_main_color</item>
+        <item name="colorPrimary">@color/main_color</item>
     </style>
 
     <style name="Theme.AppCompat.Transparent.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
@@ -134,7 +133,7 @@
     </style>
 
     <style name="Theme.GiuaApp.PartyMode.Drawable.3" parent="Theme.GiuaApp.NoActionBar">
-        <item name="android:background">@mipmap/help_tutorial</item>
+        <item name="android:background">@mipmap/gino_lamano</item>
     </style>
 
 
