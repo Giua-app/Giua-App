@@ -236,6 +236,7 @@ public class ActivityManager extends AppCompatActivity {
         final int[] VER062 = new int[]{0, 6, 2};
         final int[] VER063 = new int[]{0, 6, 3};
         final int[] VER066 = new int[]{0, 6, 6};
+        final int[] VER070 = new int[]{0, 7, 0};
 
         if (AppUpdateManager.compareVersions(appVerArray, oldVerArray) == 0) //E' nella stessa versione, non fare nulla
             return;
@@ -255,6 +256,10 @@ public class ActivityManager extends AppCompatActivity {
         //Aggiornamento da 0.6.6
         if (AppUpdateManager.compareVersions(oldVerArray, VER066) <= 0)
             CompatibilityManager.applyCompatibilityForUpdateFrom066(this);
+
+        //Aggiornamento da 0.7.0
+        if (AppUpdateManager.compareVersions(oldVerArray, VER070) <= 0)
+            CompatibilityManager.applyCompatibilityForUpdateFrom070(this);
     }
 
     //Questa funzione viene chiamata solo al primo avvio di sempre dell'app

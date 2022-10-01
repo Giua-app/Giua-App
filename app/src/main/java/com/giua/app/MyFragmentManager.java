@@ -188,11 +188,13 @@ public class MyFragmentManager {
             executeChangeFragment(fragment, tag, toolbarTxt, subtitle);
             return;
         }
-        SettingsData.saveSettingInt(activity, SettingKey.OPEN_UNSTABLE_FEAT_WITH_WEBVIEW, 1);
-        executeChangeFragment(new NotImplementedFragment(GlobalVariables.gS.getSiteUrl() + "/" + url, GlobalVariables.gS.getCookie()), tag, toolbarTxt, "Funzionalità Instabile");
-        /*
+
         if(openWithWebview == -1){ //Non impostato, chiedi all'utente
-            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            loggerManager.w("Visualizzo la funzionalità instabile (" + tag +") come non implementata");
+            SettingsData.saveSettingInt(activity, SettingKey.OPEN_UNSTABLE_FEAT_WITH_WEBVIEW, 1);
+            executeChangeFragment(new NotImplementedFragment(GlobalVariables.gS.getSiteUrl() + "/" + url, GlobalVariables.gS.getCookie()), tag, toolbarTxt, "Funzionalità Instabile");
+
+            /*AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle("Funzionalità Instabile");
             builder.setIcon(R.drawable.ic_alert_outline);
             builder.setMessage("E' stato segnalato che la schermata \"" + toolbarTxt + "\" potrebbe non funzionare come previsto in questa versione.\n\n" +
@@ -210,8 +212,8 @@ public class MyFragmentManager {
                         executeChangeFragment(fragment, tag, toolbarTxt, subtitle);
                     });
 
-            builder.show();
-        }*/
+            builder.show();*/
+        }
 
     }
 

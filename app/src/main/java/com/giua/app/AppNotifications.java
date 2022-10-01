@@ -506,6 +506,7 @@ public class AppNotifications extends BroadcastReceiver {
             return session.cookieStore().get(new URI("https://registro.giua.edu.it")).toString().split("=")[1].replace("]", "");
         } catch (IOException | URISyntaxException e) {
             loggerManager.e("Cookie google e cookie giua non più validi, impossibile continuare");
+            createNotification("Login Google scaduto", "Clicca qui per continuare a ricevere notifiche", "", 0);
         } catch (Exception e) {
             logErrorInLoggerManager(e);
             sendErrorNotification(e.toString());

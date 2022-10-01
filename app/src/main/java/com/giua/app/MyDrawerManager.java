@@ -213,24 +213,25 @@ public class MyDrawerManager {
 
 
                 createNotImplementedItem(10, true, false, "Pagella", UrlPaths.REPORTCARD_PAGE),
-                createNotImplementedItem(11, isParent, false, "Colloqui", UrlPaths.INTERVIEWS_PAGE),    //SOLO GENITORE,
+                createNotImplementedItem(11, true, false, "Richieste", "richieste/lista"), //TODO: trasferire stringa a scraper
+                createNotImplementedItem(12, isParent, false, "Colloqui", UrlPaths.INTERVIEWS_PAGE),    //SOLO GENITORE,
 
                 //CATEGORIA BACHECA
-                createCategoryItem(12, "Bacheca").withSubItems(
-                        createItem(13, R.id.nav_newsletters, true, "Circolari"),
-                        createItem(14, R.id.nav_alerts, true, "Avvisi"),
-                        createNotImplementedItem(15, true, true, "Documenti", UrlPaths.DOCUMENTS_PAGE)
+                createCategoryItem(13, "Bacheca").withSubItems(
+                        createItem(14, R.id.nav_newsletters, true, "Circolari"),
+                        createItem(15, R.id.nav_alerts, true, "Avvisi"),
+                        createNotImplementedItem(16, true, true, "Documenti", UrlPaths.DOCUMENTS_PAGE)
                 ),
 
 
-                createItem(16, R.id.nav_agenda, false, "Agenda"),
+                createItem(17, R.id.nav_agenda, false, "Agenda"),
 
                 new DividerDrawerItem(),
 
-                createDrawerSecondaryItem(17, "Impostazioni")
+                createDrawerSecondaryItem(18, "Impostazioni")
                         .withOnDrawerItemClickListener(settingsItemOnClick)
                         .withSelectable(false),
-                createDrawerSecondaryItem(18, "Esci")
+                createDrawerSecondaryItem(19, "Esci")
                         .withOnDrawerItemClickListener(logoutItemOnClick)
                         .withSelectable(false)
         };

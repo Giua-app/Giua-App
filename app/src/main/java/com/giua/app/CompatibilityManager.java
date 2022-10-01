@@ -90,4 +90,13 @@ public class CompatibilityManager {
         AppData.clearOfflineData(context);
         AppData.clearNotificationsData(context);
     }
+
+    public static void applyCompatibilityForUpdateFrom070(Context context) {
+        LoggerManager lm = new LoggerManager("CompatManager", context);
+
+        lm.w("Rilevato aggiornamento da 0.7.0");
+        lm.d("Imposto valore di default per funzionalità instabili");
+
+        SettingsData.saveSettingInt(context, SettingKey.OPEN_UNSTABLE_FEAT_WITH_WEBVIEW, 1);
+    }
 }
