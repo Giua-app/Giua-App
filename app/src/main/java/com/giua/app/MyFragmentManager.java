@@ -22,7 +22,6 @@ package com.giua.app;
 import android.app.Activity;
 
 import androidx.annotation.IdRes;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -189,6 +188,9 @@ public class MyFragmentManager {
             executeChangeFragment(fragment, tag, toolbarTxt, subtitle);
             return;
         }
+        SettingsData.saveSettingInt(activity, SettingKey.OPEN_UNSTABLE_FEAT_WITH_WEBVIEW, 1);
+        executeChangeFragment(new NotImplementedFragment(GlobalVariables.gS.getSiteUrl() + "/" + url, GlobalVariables.gS.getCookie()), tag, toolbarTxt, "Funzionalità Instabile");
+        /*
         if(openWithWebview == -1){ //Non impostato, chiedi all'utente
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle("Funzionalità Instabile");
@@ -209,7 +211,7 @@ public class MyFragmentManager {
                     });
 
             builder.show();
-        }
+        }*/
 
     }
 
