@@ -22,8 +22,6 @@ package com.giua.app;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.security.keystore.KeyGenParameterSpec;
-import android.security.keystore.KeyProperties;
 
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
@@ -46,23 +44,6 @@ public class AccountData {
     private static final String themeKey = "theme";
     private static final String emailKey = "email";
     private static final String userTypeKey = "userType";
-    private static MasterKey masterKey = null;
-    private static final String masterKeyAlias = "masterKeyAlias";
-
-    private static void createMasterKeyValueForEncryption(Context context) throws GeneralSecurityException, IOException {
-        if (masterKey == null) {
-            new KeyGenParameterSpec.Builder(
-                    masterKeyAlias,
-                    KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
-                    .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-                    .setKeySize(256)
-                    .build();
-            masterKey = new MasterKey.Builder(context)
-                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                    .build();
-        }
-    }
 
     public static SharedPreferences getSharedPreferencesForOldLogin(final Context context) {
         return context.getSharedPreferences(loginPreferenceKeyOld, Context.MODE_PRIVATE);
@@ -70,7 +51,9 @@ public class AccountData {
 
     private static SharedPreferences getSharedPreferences(final Context context, final String fileName) {
         try {
-            createMasterKeyValueForEncryption(context);
+            MasterKey masterKey = new MasterKey.Builder(context)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build();
 
             return EncryptedSharedPreferences.create(
                     context,
@@ -81,7 +64,7 @@ public class AccountData {
         } catch (GeneralSecurityException | IOException e) {
             LoggerManager loggerManager = new LoggerManager("AccountData", context);
             loggerManager.e("Errore critico recuperando le EncryptedSharedPreferences. " + e + "\n" + e.getMessage());
-            return null;
+            return getSharedPreferencesForOldLogin(context);
         }
 
     }
