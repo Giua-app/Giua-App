@@ -50,7 +50,6 @@ import com.giua.app.R;
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.Objects;
 
 public class TransparentUpdateDialogActivity extends AppCompatActivity {
 
@@ -80,11 +79,14 @@ public class TransparentUpdateDialogActivity extends AppCompatActivity {
             finish();
         }
 
-        url = Objects.requireNonNull(rootNode).get(0).findPath("browser_download_url").asText();
+        if (rootNode == null || rootNode.get(0) == null)
+            return;
+
+        url = rootNode.get(0).findPath("browser_download_url").asText();
         tagName = rootNode.get(0).findPath("tag_name").asText();
         date = Calendar.getInstance();
 
-        if(getIntent().getBooleanExtra("doUpdate", false)){
+        if (getIntent().getBooleanExtra("doUpdate", false)) {
             showDialogNewUpdate();
             return;
         }
