@@ -97,7 +97,6 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
         tvNoElements.setText("Non disponibile offline");
         tvNoElements.setVisibility(View.VISIBLE);
         otherInfoLayoutButton.setVisibility(View.INVISIBLE);
-        root.findViewById(R.id.absences_other_info_number_absences).setVisibility(View.INVISIBLE);
         root.findViewById(R.id.absences_other_info_total_absences_time).setVisibility(View.INVISIBLE);
         swipeRefreshLayout.setRefreshing(false);
     }
@@ -112,7 +111,6 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
                 if (isFragmentDestroyed) return;
 
                 activity.runOnUiThread(() -> {
-                    setTextToOtherInfoObjects(R.id.absences_other_info_number_absences, "Numero di giorni di assenza: ", absencesPage.getAbsencesDayCount(), false);
                     setTextToOtherInfoObjects(R.id.absences_other_info_total_absences_time, "Totale ore di assenza: ", absencesPage.getTotalHourOfAbsences(), false);
                 });
 
@@ -153,7 +151,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
     @Override
     public void addViews() {
         LinearLayout linearLayout = root.findViewById(R.id.absences_views_layout);
-        linearLayout.removeViews(3, linearLayout.getChildCount() - 3);
+        linearLayout.removeViews(2, linearLayout.getChildCount() - 2);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.setMargins(0, 40, 0, 0);
 
@@ -190,7 +188,7 @@ public class AbsencesFragment extends Fragment implements IGiuaAppFragment {
         confirmLayout.setVisibility(View.GONE);
         root.findViewById(R.id.absences_other_info_layout).setVisibility(View.VISIBLE);
         setTextToOtherInfoObjects(R.id.absences_other_info_number_short_delays, "Numero di ritardi brevi (entro 10 minuti): ", absencesPage.getShortDelaysCount(), true);
-        setTextToOtherInfoObjects(R.id.absences_other_info_number_delays, "Numero di ritardi (oltre 10 minuti): ", absencesPage.getDelaysCount(), true);
+        setTextToOtherInfoObjects(R.id.absences_other_info_number_delays, "Numero di ritardi (oltre 10 minuti): ", absencesPage.getLongDelaysCount(), true);
         setTextToOtherInfoObjects(R.id.absences_other_info_number_exits, "Numero di uscite anticipate: ", absencesPage.getEarlyExitsCount(), true);
         obscureLayoutView.show();
 
