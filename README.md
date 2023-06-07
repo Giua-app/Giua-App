@@ -1,4 +1,4 @@
-# Giua-App (Beta)
+# Giua-App
 
 <p align='center'>
   <a href='https://github.com/Giua-app/Giua-App/blob/master/LICENSE'><img src='https://img.shields.io/github/license/Giua-app/Giua-App'/></a>
@@ -11,9 +11,19 @@
   
 </p>
 
-### Attenzione
-**L'app dalla versione 0.7.0 riceverà solo aggiornamenti di manutenzione, questo significa che non verranno implementate nuove funzionalità ma solo risolti i bug che rendono impossibile il suo utilizzo.**
+# Attenzione!
+***Questo progetto non riceve più aggiornamenti ed è stato abbandonato***
 
+## Alternative a Giua-App
+
+#### Per le scuole
+Vi consigliamo di configurare dal registro le notifiche tramite Telegram, [maggiori informazioni nella documentazione.](https://iisgiua.github.io/giuaschool-docs/task-notifier.html)
+
+#### Per gli Studenti/Genitori
+Chiedete alla vostra scuola di attivare le notifiche tramite Telegram, se già presenti seguite le informazioni sul vostro registro.
+
+---
+Vecchio README:
 ## Che cos'è?
 Giua-App è una applicazione per Android che permette di visualizzare voti, assenze, lezioni e tutte le altre informazioni ottenibili da un sito con il registro elettronico [giua@school](https://github.com/trinko/giuaschool#giuaschool).
 Questa app usa la libreria [Giua-Webscraper](https://github.com/Giua-app/Giua-Webscraper) per ottenere le informazioni dal sito
