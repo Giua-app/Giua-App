@@ -20,7 +20,7 @@
 Vi consigliamo di configurare dal registro le notifiche tramite Telegram, [maggiori informazioni nella documentazione.](https://iisgiua.github.io/giuaschool-docs/task-notifier.html)
 
 #### Per gli Studenti/Genitori
-Chiedete alla vostra scuola di attivare le notifiche tramite Telegram, se già presenti seguite le informazioni sul vostro registro.
+Chiedete alla vostra scuola di attivare le notifiche tramite Telegram, se già presenti seguite le istruzioni sul vostro registro.
 
 ---
 Vecchio README:
